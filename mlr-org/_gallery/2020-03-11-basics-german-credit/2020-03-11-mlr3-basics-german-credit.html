@@ -2417,7 +2417,7 @@ Keys: classif.AdaBoostM1, classif.bart, classif.C50, classif.catboost, classif.c
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>train_set</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>[1] 934 804 503 353 267  55</code></pre>
+<pre><code>[1] 201 704 132 223 305 424</code></pre>
 </div>
 <p>In <a href="https://mlr3.mlr-org.com">mlr3</a> the training with a subset of the data can be declared by the additional argument <code>row_ids = train_set</code>:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2438,65 +2438,65 @@ Call:  stats::glm(formula = task$formula(), family = &quot;binomial&quot;, data 
 
 Coefficients:
                                               (Intercept)                                                        age  
-                                                1.972e+00                                                 -1.738e-02  
+                                                1.6153270                                                 -0.0119829  
                                                    amount     credit_historycritical account/other credits elsewhere  
-                                                1.386e-04                                                 -2.564e-01  
+                                                0.0001423                                                  0.0545112  
 credit_historyno credits taken/all credits paid back duly     credit_historyexisting credits paid back duly till now  
-                                               -7.467e-01                                                 -1.269e+00  
+                                               -0.7010432                                                 -1.2372112  
     credit_historyall credits at this bank paid back duly                                                   duration  
-                                               -1.849e+00                                                  2.896e-02  
+                                               -1.5176491                                                  0.0243413  
                                 employment_duration&lt; 1 yr                        employment_duration1 &lt;= ... &lt; 4 yrs  
-                                               -9.532e-02                                                 -3.202e-01  
+                                                0.0964626                                                 -0.0735021  
                       employment_duration4 &lt;= ... &lt; 7 yrs                                employment_duration&gt;= 7 yrs  
-                                               -8.647e-01                                                 -3.057e-01  
+                                               -0.5708161                                                  0.2523050  
                                          foreign_workerno                                                housingrent  
-                                                1.075e+00                                                 -5.135e-01  
+                                                1.5302123                                                 -0.6606734  
                                                housingown                                         installment_rate.L  
-                                               -1.138e+00                                                  7.388e-01  
+                                               -1.0938588                                                  0.8780142  
                                        installment_rate.Q                                         installment_rate.C  
-                                               -9.427e-02                                                 -1.178e-01  
+                                               -0.1256074                                                 -0.0181840  
                                   jobunskilled - resident                               jobskilled employee/official  
-                                                4.046e-01                                                  4.712e-01  
+                                               -0.0950214                                                 -0.1709335  
             jobmanager/self-empl./highly qualif. employee                                           number_credits.L  
-                                                2.368e-01                                                  9.676e-01  
+                                               -0.1830808                                                  0.0869611  
                                          number_credits.Q                                           number_credits.C  
-                                                2.754e-01                                                  4.071e-01  
+                                                0.1165910                                                  0.2386049  
                                 other_debtorsco-applicant                                     other_debtorsguarantor  
-                                                4.842e-02                                                 -1.129e+00  
+                                                0.3447404                                                 -0.8563601  
                             other_installment_plansstores                                other_installment_plansnone  
-                                               -7.846e-02                                                 -6.342e-01  
+                                                0.3183363                                                 -0.4949327  
                                       people_liable0 to 2    personal_status_sexfemale : non-single or male : single  
-                                               -1.202e-01                                                 -3.979e-01  
+                                               -0.4540724                                                 -0.3834644  
                 personal_status_sexmale : married/widowed                         personal_status_sexfemale : single  
-                                               -8.978e-01                                                 -5.235e-01  
+                                               -1.0445504                                                 -0.2953724  
                                       present_residence.L                                        present_residence.Q  
-                                                2.179e-01                                                 -4.552e-01  
+                                                0.1418704                                                 -0.3525819  
                                       present_residence.C                                       propertycar or other  
-                                                1.470e-01                                                  3.282e-01  
+                                                0.2260436                                                  0.1971837  
         propertybuilding soc. savings agr./life insurance                                        propertyreal estate  
-                                                2.741e-01                                                  1.379e+00  
+                                               -0.0374093                                                  0.6685406  
                                          purposecar (new)                                          purposecar (used)  
-                                               -1.892e+00                                                 -8.601e-01  
+                                               -1.6972111                                                 -0.8358362  
                                purposefurniture/equipment                                    purposeradio/television  
-                                               -9.039e-01                                                 -6.360e-02  
+                                               -1.0168920                                                 -0.0899452  
                                purposedomestic appliances                                             purposerepairs  
-                                               -4.224e-01                                                  8.200e-02  
+                                               -0.3296450                                                  0.0552592  
                                           purposevacation                                          purposeretraining  
-                                               -1.448e+01                                                 -7.967e-01  
+                                               -2.2986114                                                 -1.1332590  
                                           purposebusiness                                       savings... &lt;  100 DM  
-                                               -1.576e+00                                                 -2.185e-01  
+                                               -1.1045794                                                 -0.3214354  
                               savings100 &lt;= ... &lt;  500 DM                                savings500 &lt;= ... &lt; 1000 DM  
-                                               -1.965e-01                                                 -1.453e+00  
+                                               -0.3771564                                                 -1.2474731  
                                     savings... &gt;= 1000 DM                                           status... &lt; 0 DM  
-                                               -9.413e-01                                                 -4.205e-01  
+                                               -1.0896252                                                 -0.2273784  
                                    status0&lt;= ... &lt; 200 DM           status... &gt;= 200 DM / salary for at least 1 year  
-                                               -9.586e-01                                                 -1.828e+00  
+                                               -0.9218249                                                 -1.7115087  
                        telephoneyes (under customer name)  
-                                               -4.165e-01  
+                                               -0.3396867  
 
 Degrees of Freedom: 799 Total (i.e. Null);  745 Residual
-Null Deviance:      968.8 
-Residual Deviance: 676.9    AIC: 786.9</code></pre>
+Null Deviance:      989 
+Residual Deviance: 720  AIC: 830</code></pre>
 </div>
 <p>The stored object is a normal <code>glm</code> object and all its <code>S3</code> methods work as expected:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2516,75 +2516,75 @@ stats::glm(formula = task$formula(), family = &quot;binomial&quot;, data = data,
 
 Deviance Residuals: 
     Min       1Q   Median       3Q      Max  
--2.1083  -0.6714  -0.3437   0.6221   2.8128  
+-2.1441  -0.6992  -0.3658   0.6900   2.9703  
 
 Coefficients:
                                                             Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)                                                1.972e+00  1.398e+00   1.410  0.15850    
-age                                                       -1.738e-02  1.104e-02  -1.574  0.11548    
-amount                                                     1.386e-04  5.160e-05   2.686  0.00724 ** 
-credit_historycritical account/other credits elsewhere    -2.564e-01  6.716e-01  -0.382  0.70263    
-credit_historyno credits taken/all credits paid back duly -7.467e-01  5.207e-01  -1.434  0.15161    
-credit_historyexisting credits paid back duly till now    -1.269e+00  5.752e-01  -2.205  0.02743 *  
-credit_historyall credits at this bank paid back duly     -1.849e+00  5.295e-01  -3.491  0.00048 ***
-duration                                                   2.896e-02  1.063e-02   2.724  0.00645 ** 
-employment_duration&lt; 1 yr                                 -9.532e-02  5.019e-01  -0.190  0.84937    
-employment_duration1 &lt;= ... &lt; 4 yrs                       -3.202e-01  4.741e-01  -0.675  0.49942    
-employment_duration4 &lt;= ... &lt; 7 yrs                       -8.647e-01  5.203e-01  -1.662  0.09654 .  
-employment_duration&gt;= 7 yrs                               -3.057e-01  4.816e-01  -0.635  0.52562    
-foreign_workerno                                           1.075e+00  6.674e-01   1.611  0.10718    
-housingrent                                               -5.135e-01  2.758e-01  -1.862  0.06263 .  
-housingown                                                -1.138e+00  5.666e-01  -2.009  0.04453 *  
-installment_rate.L                                         7.388e-01  2.616e-01   2.824  0.00474 ** 
-installment_rate.Q                                        -9.427e-02  2.275e-01  -0.414  0.67861    
-installment_rate.C                                        -1.178e-01  2.267e-01  -0.520  0.60341    
-jobunskilled - resident                                    4.046e-01  8.112e-01   0.499  0.61798    
-jobskilled employee/official                               4.712e-01  7.884e-01   0.598  0.55003    
-jobmanager/self-empl./highly qualif. employee              2.368e-01  7.959e-01   0.298  0.76604    
-number_credits.L                                           9.676e-01  1.037e+00   0.933  0.35081    
-number_credits.Q                                           2.754e-01  8.600e-01   0.320  0.74881    
-number_credits.C                                           4.071e-01  6.010e-01   0.677  0.49821    
-other_debtorsco-applicant                                  4.842e-02  4.853e-01   0.100  0.92052    
-other_debtorsguarantor                                    -1.129e+00  4.911e-01  -2.300  0.02146 *  
-other_installment_plansstores                             -7.846e-02  4.747e-01  -0.165  0.86872    
-other_installment_plansnone                               -6.342e-01  2.863e-01  -2.215  0.02675 *  
-people_liable0 to 2                                       -1.202e-01  2.998e-01  -0.401  0.68834    
-personal_status_sexfemale : non-single or male : single   -3.979e-01  4.549e-01  -0.875  0.38176    
-personal_status_sexmale : married/widowed                 -8.978e-01  4.434e-01  -2.025  0.04289 *  
-personal_status_sexfemale : single                        -5.235e-01  5.311e-01  -0.986  0.32435    
-present_residence.L                                        2.179e-01  2.485e-01   0.877  0.38058    
-present_residence.Q                                       -4.552e-01  2.301e-01  -1.978  0.04791 *  
-present_residence.C                                        1.470e-01  2.281e-01   0.644  0.51927    
-propertycar or other                                       3.282e-01  2.932e-01   1.120  0.26290    
-propertybuilding soc. savings agr./life insurance          2.741e-01  2.761e-01   0.993  0.32075    
-propertyreal estate                                        1.379e+00  5.059e-01   2.726  0.00641 ** 
-purposecar (new)                                          -1.892e+00  4.404e-01  -4.295 1.75e-05 ***
-purposecar (used)                                         -8.601e-01  3.033e-01  -2.835  0.00458 ** 
-purposefurniture/equipment                                -9.039e-01  2.847e-01  -3.175  0.00150 ** 
-purposeradio/television                                   -6.360e-02  7.996e-01  -0.080  0.93660    
-purposedomestic appliances                                -4.224e-01  6.234e-01  -0.678  0.49796    
-purposerepairs                                             8.200e-02  4.597e-01   0.178  0.85842    
-purposevacation                                           -1.448e+01  5.217e+02  -0.028  0.97786    
-purposeretraining                                         -7.967e-01  4.114e-01  -1.937  0.05279 .  
-purposebusiness                                           -1.576e+00  8.275e-01  -1.905  0.05683 .  
-savings... &lt;  100 DM                                      -2.185e-01  3.271e-01  -0.668  0.50403    
-savings100 &lt;= ... &lt;  500 DM                               -1.965e-01  4.944e-01  -0.397  0.69102    
-savings500 &lt;= ... &lt; 1000 DM                               -1.453e+00  6.072e-01  -2.393  0.01671 *  
-savings... &gt;= 1000 DM                                     -9.413e-01  2.988e-01  -3.150  0.00163 ** 
-status... &lt; 0 DM                                          -4.205e-01  2.529e-01  -1.663  0.09634 .  
-status0&lt;= ... &lt; 200 DM                                    -9.586e-01  4.298e-01  -2.230  0.02573 *  
-status... &gt;= 200 DM / salary for at least 1 year          -1.828e+00  2.730e-01  -6.698 2.11e-11 ***
-telephoneyes (under customer name)                        -4.165e-01  2.398e-01  -1.737  0.08236 .  
+(Intercept)                                                1.615e+00  1.296e+00   1.247 0.212560    
+age                                                       -1.198e-02  1.030e-02  -1.164 0.244620    
+amount                                                     1.423e-04  5.055e-05   2.815 0.004882 ** 
+credit_historycritical account/other credits elsewhere     5.451e-02  6.226e-01   0.088 0.930227    
+credit_historyno credits taken/all credits paid back duly -7.010e-01  4.768e-01  -1.470 0.141496    
+credit_historyexisting credits paid back duly till now    -1.237e+00  5.299e-01  -2.335 0.019559 *  
+credit_historyall credits at this bank paid back duly     -1.518e+00  4.847e-01  -3.131 0.001740 ** 
+duration                                                   2.434e-02  1.053e-02   2.312 0.020763 *  
+employment_duration&lt; 1 yr                                  9.646e-02  5.168e-01   0.187 0.851939    
+employment_duration1 &lt;= ... &lt; 4 yrs                       -7.350e-02  5.019e-01  -0.146 0.883566    
+employment_duration4 &lt;= ... &lt; 7 yrs                       -5.708e-01  5.404e-01  -1.056 0.290857    
+employment_duration&gt;= 7 yrs                                2.523e-01  4.983e-01   0.506 0.612645    
+foreign_workerno                                           1.530e+00  6.578e-01   2.326 0.020011 *  
+housingrent                                               -6.607e-01  2.607e-01  -2.534 0.011272 *  
+housingown                                                -1.094e+00  5.543e-01  -1.973 0.048469 *  
+installment_rate.L                                         8.780e-01  2.503e-01   3.508 0.000451 ***
+installment_rate.Q                                        -1.256e-01  2.232e-01  -0.563 0.573670    
+installment_rate.C                                        -1.818e-02  2.264e-01  -0.080 0.935994    
+jobunskilled - resident                                   -9.502e-02  7.708e-01  -0.123 0.901889    
+jobskilled employee/official                              -1.709e-01  7.452e-01  -0.229 0.818578    
+jobmanager/self-empl./highly qualif. employee             -1.831e-01  7.500e-01  -0.244 0.807151    
+number_credits.L                                           8.696e-02  8.255e-01   0.105 0.916099    
+number_credits.Q                                           1.166e-01  6.910e-01   0.169 0.866019    
+number_credits.C                                           2.386e-01  5.320e-01   0.449 0.653775    
+other_debtorsco-applicant                                  3.447e-01  4.504e-01   0.765 0.444011    
+other_debtorsguarantor                                    -8.564e-01  4.652e-01  -1.841 0.065629 .  
+other_installment_plansstores                              3.183e-01  4.933e-01   0.645 0.518753    
+other_installment_plansnone                               -4.949e-01  2.767e-01  -1.789 0.073695 .  
+people_liable0 to 2                                       -4.541e-01  2.841e-01  -1.598 0.110019    
+personal_status_sexfemale : non-single or male : single   -3.835e-01  4.497e-01  -0.853 0.393860    
+personal_status_sexmale : married/widowed                 -1.045e+00  4.458e-01  -2.343 0.019124 *  
+personal_status_sexfemale : single                        -2.954e-01  5.199e-01  -0.568 0.569923    
+present_residence.L                                        1.419e-01  2.338e-01   0.607 0.544063    
+present_residence.Q                                       -3.526e-01  2.225e-01  -1.585 0.113026    
+present_residence.C                                        2.260e-01  2.220e-01   1.018 0.308639    
+propertycar or other                                       1.972e-01  2.803e-01   0.704 0.481684    
+propertybuilding soc. savings agr./life insurance         -3.741e-02  2.622e-01  -0.143 0.886564    
+propertyreal estate                                        6.685e-01  5.059e-01   1.321 0.186348    
+purposecar (new)                                          -1.697e+00  4.223e-01  -4.019 5.84e-05 ***
+purposecar (used)                                         -8.358e-01  2.949e-01  -2.834 0.004591 ** 
+purposefurniture/equipment                                -1.017e+00  2.773e-01  -3.667 0.000245 ***
+purposeradio/television                                   -8.995e-02  1.010e+00  -0.089 0.929042    
+purposedomestic appliances                                -3.296e-01  5.756e-01  -0.573 0.566875    
+purposerepairs                                             5.526e-02  4.272e-01   0.129 0.897069    
+purposevacation                                           -2.299e+00  1.219e+00  -1.886 0.059362 .  
+purposeretraining                                         -1.133e+00  3.913e-01  -2.896 0.003776 ** 
+purposebusiness                                           -1.105e+00  8.587e-01  -1.286 0.198305    
+savings... &lt;  100 DM                                      -3.214e-01  3.287e-01  -0.978 0.328160    
+savings100 &lt;= ... &lt;  500 DM                               -3.772e-01  4.745e-01  -0.795 0.426671    
+savings500 &lt;= ... &lt; 1000 DM                               -1.247e+00  5.460e-01  -2.285 0.022323 *  
+savings... &gt;= 1000 DM                                     -1.090e+00  2.964e-01  -3.676 0.000237 ***
+status... &lt; 0 DM                                          -2.274e-01  2.430e-01  -0.936 0.349419    
+status0&lt;= ... &lt; 200 DM                                    -9.218e-01  3.926e-01  -2.348 0.018865 *  
+status... &gt;= 200 DM / salary for at least 1 year          -1.712e+00  2.685e-01  -6.374 1.85e-10 ***
+telephoneyes (under customer name)                        -3.397e-01  2.279e-01  -1.491 0.136035    
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 968.76  on 799  degrees of freedom
-Residual deviance: 676.86  on 745  degrees of freedom
-AIC: 786.86
+    Null deviance: 988.95  on 799  degrees of freedom
+Residual deviance: 720.00  on 745  degrees of freedom
+AIC: 830
 
-Number of Fisher Scoring iterations: 14</code></pre>
+Number of Fisher Scoring iterations: 5</code></pre>
 </div>
 <h4 id="random-forest">Random Forest</h4>
 <p>Just like the logistic regression, we could train a random forest instead. We use the fast implementation from the <a href="https://cran.r-project.org/package=ranger">ranger</a> package. For this, we first need to define the learner and then actually train it.</p>
@@ -2602,14 +2602,14 @@ Number of Fisher Scoring iterations: 14</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learner_rf</span><span class='op'>$</span><span class='fu'>importance</span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>                 status                duration                  amount          credit_history                property 
-           0.0387644169            0.0188211333            0.0143942158            0.0132153813            0.0091962585 
-                    age                 savings        installment_rate                 purpose     employment_duration 
-           0.0083219239            0.0063396295            0.0038472401            0.0038329619            0.0035448176 
-              telephone           other_debtors other_installment_plans          number_credits                 housing 
-           0.0034798466            0.0032885401            0.0026746646            0.0023276287            0.0019123201 
-      present_residence     personal_status_sex                     job           people_liable          foreign_worker 
-           0.0017251265            0.0016772498            0.0015415901            0.0012762807            0.0003309479 </code></pre>
+<pre><code>                 status                duration          credit_history                  amount                 purpose 
+           0.0329235598            0.0134295392            0.0104092860            0.0094535878            0.0041505318 
+                savings        installment_rate                     age other_installment_plans          number_credits 
+           0.0041344571            0.0039715347            0.0034731747            0.0029940401            0.0028366404 
+          other_debtors                 housing                property       present_residence           people_liable 
+           0.0027675592            0.0026135756            0.0025556631            0.0019050440            0.0014788754 
+                    job     personal_status_sex     employment_duration               telephone          foreign_worker 
+           0.0014238830            0.0011392806            0.0008483567            0.0004325367            0.0002573084 </code></pre>
 </div>
 <p>In order to obtain a plot for the importance values, we convert the importance to a <a href="https://cran.r-project.org/package=data.table">data.table</a> and then process it with <a href="https://cran.r-project.org/package=ggplot2">ggplot2</a>:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2642,13 +2642,13 @@ Number of Fisher Scoring iterations: 14</code></pre>
 </div>
 <pre><code>&lt;PredictionClassif&gt; for 200 observations:
     row_ids truth response
-          2  good     good
-          3  good     good
+          2  good      bad
+          6  good     good
           7  good     good
 ---                       
-        992   bad      bad
-        994   bad      bad
-        995   bad      bad</code></pre>
+        971   bad     good
+        976   bad      bad
+        979   bad     good</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2658,12 +2658,12 @@ Number of Fisher Scoring iterations: 14</code></pre>
 <pre><code>&lt;PredictionClassif&gt; for 200 observations:
     row_ids truth response
           2  good     good
-          3  good     good
+          6  good     good
           7  good     good
 ---                       
-        992   bad      bad
-        994   bad     good
-        995   bad      bad</code></pre>
+        971   bad     good
+        976   bad      bad
+        979   bad     good</code></pre>
 </div>
 <p>The <code>$predict()</code> method returns a <a href="https://mlr3.mlr-org.com/reference/Prediction.html"><code>Prediction</code></a> object. It can be converted to a <a href="https://www.rdocumentation.org/packages/data.table/topics/data.table-package"><code>data.table</code></a> if one wants to use it downstream.</p>
 <p>We can also display the prediction results aggregated in a confusion matrix:</p>
@@ -2674,16 +2674,16 @@ Number of Fisher Scoring iterations: 14</code></pre>
 </div>
 <pre><code>        truth
 response bad good
-    bad   29   20
-    good  36  115</code></pre>
+    bad   29   16
+    good  24  131</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>prediction_rf</span><span class='op'>$</span><span class='va'>confusion</span>
 </code></pre>
 </div>
 <pre><code>        truth
 response bad good
-    bad   23   10
-    good  42  125</code></pre>
+    bad   27    5
+    good  26  142</code></pre>
 </div>
 <h4 id="predict-probabilities">Predict Probabilities</h4>
 <p>Most learners may not only predict a class variable (“response”), but also their degree of “belief” / “uncertainty” in a given response. Typically, we achieve this by setting the <code>$predict_type</code> slot of a <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a> to <code>"prob"</code>. Sometimes this needs to be done <em>before</em> the learner is trained. Alternatively, we can directly create the learner with this option: <code>lrn("classif.log_reg", predict_type = "prob")</code>.</p>
@@ -2699,14 +2699,14 @@ response bad good
 </code></pre>
 </div>
 <pre><code>&lt;PredictionClassif&gt; for 200 observations:
-    row_ids truth response   prob.bad prob.good
-          2  good     good 0.45989910 0.5401009
-          3  good     good 0.17771873 0.8222813
-          7  good     good 0.04211824 0.9578818
----                                            
-        992   bad      bad 0.58948294 0.4105171
-        994   bad      bad 0.54164268 0.4583573
-        995   bad      bad 0.86896955 0.1310305</code></pre>
+    row_ids truth response   prob.bad  prob.good
+          2  good      bad 0.56529769 0.43470231
+          6  good     good 0.12321676 0.87678324
+          7  good     good 0.02640308 0.97359692
+---                                             
+        971   bad     good 0.27334325 0.72665675
+        976   bad      bad 0.91190635 0.08809365
+        979   bad     good 0.14405093 0.85594907</code></pre>
 </div>
 <p>Note that sometimes one needs to be cautious when dealing with the probability interpretation of the predictions.</p>
 <h3 id="performance-evaluation">Performance Evaluation</h3>
@@ -2726,11 +2726,7 @@ response bad good
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>res</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/resample.html'>resample</a></span><span class='op'>(</span><span class='va'>task</span>, learner <span class='op'>=</span> <span class='va'>learner_logreg</span>, resampling <span class='op'>=</span> <span class='va'>resampling</span><span class='op'>)</span>
-</code></pre>
-</div>
-<pre><code>INFO  [19:48:01.721] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 1/1) </code></pre>
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>res</span>
+<span class='va'>res</span>
 </code></pre>
 </div>
 <pre><code>&lt;ResampleResult&gt; of 1 iterations
@@ -2746,7 +2742,7 @@ response bad good
 </code></pre>
 </div>
 <pre><code>classif.ce 
- 0.2852853 </code></pre>
+ 0.2732733 </code></pre>
 </div>
 <p>The default measure in this scenario is the <a href="https://mlr3.mlr-org.com/reference/mlr_measures_classif.ce.html"><code>classification error</code></a>. Lower is better.</p>
 <p>We can easily run different resampling strategies, e.g. repeated holdout (<code>"subsampling"</code>), or cross validation. Most methods perform repeated train/predict cycles on different data subsets and aggregate the result (usually as the mean). Doing this manually would require us to write loops. <a href="https://mlr3.mlr-org.com">mlr3</a> does the job for us:</p>
@@ -2754,48 +2750,22 @@ response bad good
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>resampling</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"subsampling"</span>, repeats <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
 <span class='va'>rr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/resample.html'>resample</a></span><span class='op'>(</span><span class='va'>task</span>, learner <span class='op'>=</span> <span class='va'>learner_logreg</span>, resampling <span class='op'>=</span> <span class='va'>resampling</span><span class='op'>)</span>
-</code></pre>
-</div>
-<pre><code>INFO  [19:48:01.933] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 7/10) 
-INFO  [19:48:02.019] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 9/10) 
-INFO  [19:48:02.072] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 5/10) 
-INFO  [19:48:02.121] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 6/10) 
-INFO  [19:48:02.204] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 8/10) 
-INFO  [19:48:02.578] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 10/10) 
-INFO  [19:48:02.658] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 3/10) 
-INFO  [19:48:02.742] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 1/10) 
-INFO  [19:48:02.788] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 2/10) 
-INFO  [19:48:02.833] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 4/10) </code></pre>
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>rr</span><span class='op'>$</span><span class='fu'>aggregate</span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>rr</span><span class='op'>$</span><span class='fu'>aggregate</span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code>classif.ce 
- 0.2462462 </code></pre>
+ 0.2333333 </code></pre>
 </div>
 <p>Instead, we could also run cross-validation:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>resampling</span> <span class='op'>=</span> <span class='va'>resampling</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
 <span class='va'>rr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/resample.html'>resample</a></span><span class='op'>(</span><span class='va'>task</span>, learner <span class='op'>=</span> <span class='va'>learner_logreg</span>, resampling <span class='op'>=</span> <span class='va'>resampling</span><span class='op'>)</span>
-</code></pre>
-</div>
-<pre><code>INFO  [19:48:03.002] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 5/10) 
-INFO  [19:48:03.103] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 4/10) 
-INFO  [19:48:03.155] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 9/10) 
-INFO  [19:48:03.207] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 1/10) 
-INFO  [19:48:03.265] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 7/10) 
-INFO  [19:48:03.317] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 10/10) 
-INFO  [19:48:03.369] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 8/10) 
-INFO  [19:48:03.428] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 6/10) 
-INFO  [19:48:03.480] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 3/10) 
-INFO  [19:48:03.538] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 2/10) </code></pre>
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>rr</span><span class='op'>$</span><span class='fu'>aggregate</span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>rr</span><span class='op'>$</span><span class='fu'>aggregate</span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code>classif.ce 
-     0.249 </code></pre>
+     0.245 </code></pre>
 </div>
 <p><a href="https://mlr3.mlr-org.com">mlr3</a> features scores for many more measures. Here, we apply <a href="https://mlr3.mlr-org.com/reference/mlr_measures_classif.fpr.html"><code>mlr_measures_classif.fpr</code></a> for the false positive rate, and <a href="https://mlr3.mlr-org.com/reference/mlr_measures_classif.fnr.html"><code>mlr_measures_classif.fnr</code></a> for the false negative rate. Multiple measures can be provided as a list of measures (which can directly be constructed via <a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html"><code>msrs()</code></a>:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2805,7 +2775,7 @@ INFO  [19:48:03.538] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &
 </code></pre>
 </div>
 <pre><code>classif.fpr 
-  0.1372406 </code></pre>
+  0.1340364 </code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'># false positive rate and false negative</span>
 <span class='va'>measures</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msrs</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"classif.fpr"</span>, <span class='st'>"classif.fnr"</span><span class='op'>)</span><span class='op'>)</span>
@@ -2813,7 +2783,7 @@ INFO  [19:48:03.538] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &
 </code></pre>
 </div>
 <pre><code>classif.fpr classif.fnr 
-  0.1372406   0.4990714 </code></pre>
+  0.1340364   0.5051568 </code></pre>
 </div>
 <p>There are a few more resampling methods, and quite a few more measures (implemented in <a href="https://mlr3measures.mlr-org.com">mlr3measures</a>). They are automatically registered in the respective dictionaries:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2856,28 +2826,6 @@ Keys: aic, bic, classif.acc, classif.auc, classif.bacc, classif.bbrier, classif.
 <span class='va'>bmr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/benchmark.html'>benchmark</a></span><span class='op'>(</span><span class='va'>grid</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>INFO  [19:48:03.923] [mlr3] Running benchmark with 20 resampling iterations 
-INFO  [19:48:03.930] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 4/10) 
-INFO  [19:48:03.982] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 3/10) 
-INFO  [19:48:04.087] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 2/10) 
-INFO  [19:48:04.451] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 3/10) 
-INFO  [19:48:04.816] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 10/10) 
-INFO  [19:48:04.868] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 9/10) 
-INFO  [19:48:04.920] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 10/10) 
-INFO  [19:48:05.296] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 5/10) 
-INFO  [19:48:05.657] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 6/10) 
-INFO  [19:48:06.021] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 5/10) 
-INFO  [19:48:06.084] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 7/10) 
-INFO  [19:48:06.447] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 1/10) 
-INFO  [19:48:06.515] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 8/10) 
-INFO  [19:48:06.567] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 9/10) 
-INFO  [19:48:06.925] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 1/10) 
-INFO  [19:48:07.288] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 6/10) 
-INFO  [19:48:07.350] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 7/10) 
-INFO  [19:48:07.401] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 4/10) 
-INFO  [19:48:07.763] [mlr3] Applying learner &#39;classif.log_reg&#39; on task &#39;GermanCredit&#39; (iter 2/10) 
-INFO  [19:48:07.825] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;GermanCredit&#39; (iter 8/10) 
-INFO  [19:48:08.191] [mlr3] Finished benchmark </code></pre>
 </div>
 <p>Careful, large benchmarks may take a long time! This one should take less than a minute, however. In general, we want to use parallelization to speed things up on multi-core machines. For parallelization, <a href="https://mlr3.mlr-org.com">mlr3</a> relies on the <a href="https://cran.r-project.org/package=future">future</a> package:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2895,8 +2843,8 @@ INFO  [19:48:08.191] [mlr3] Finished benchmark </code></pre>
 </code></pre>
 </div>
 <pre><code>        learner_id classif.ce classif.auc
-1: classif.log_reg      0.255   0.7748203
-2:  classif.ranger      0.231   0.7953084</code></pre>
+1: classif.log_reg      0.255   0.7840177
+2:  classif.ranger      0.229   0.8028581</code></pre>
 </div>
 <p>We see that the two models perform very similarly.</p>
 <h2 id="deviating-from-hyperparameters-defaults">Deviating from hyperparameters defaults</h2>
@@ -3018,42 +2966,7 @@ INFO  [19:48:08.191] [mlr3] Finished benchmark </code></pre>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>bmr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/benchmark.html'>benchmark</a></span><span class='op'>(</span><span class='va'>grid</span><span class='op'>)</span>
-</code></pre>
-</div>
-<pre><code>INFO  [19:48:08.785] [mlr3] Running benchmark with 30 resampling iterations 
-INFO  [19:48:08.792] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 2/10) 
-INFO  [19:48:09.865] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 10/10) 
-INFO  [19:48:10.237] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 5/10) 
-INFO  [19:48:10.260] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 8/10) 
-INFO  [19:48:10.283] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 5/10) 
-INFO  [19:48:11.338] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 4/10) 
-INFO  [19:48:11.363] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 8/10) 
-INFO  [19:48:11.734] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 7/10) 
-INFO  [19:48:12.814] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 4/10) 
-INFO  [19:48:13.177] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 10/10) 
-INFO  [19:48:14.240] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 1/10) 
-INFO  [19:48:14.616] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 2/10) 
-INFO  [19:48:14.972] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 3/10) 
-INFO  [19:48:15.334] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 7/10) 
-INFO  [19:48:15.358] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 3/10) 
-INFO  [19:48:15.381] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 7/10) 
-INFO  [19:48:15.752] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 9/10) 
-INFO  [19:48:16.114] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 1/10) 
-INFO  [19:48:16.139] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 10/10) 
-INFO  [19:48:16.161] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 6/10) 
-INFO  [19:48:17.240] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 9/10) 
-INFO  [19:48:17.265] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 2/10) 
-INFO  [19:48:17.288] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 9/10) 
-INFO  [19:48:18.352] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 6/10) 
-INFO  [19:48:18.728] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 4/10) 
-INFO  [19:48:19.795] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 8/10) 
-INFO  [19:48:21.156] [mlr3] Applying learner &#39;med&#39; on task &#39;GermanCredit&#39; (iter 5/10) 
-INFO  [19:48:21.514] [mlr3] Applying learner &#39;low&#39; on task &#39;GermanCredit&#39; (iter 6/10) 
-INFO  [19:48:21.538] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 1/10) 
-INFO  [19:48:22.609] [mlr3] Applying learner &#39;high&#39; on task &#39;GermanCredit&#39; (iter 3/10) 
-INFO  [19:48:23.682] [mlr3] Finished benchmark </code></pre>
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>bmr</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>bmr</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code>&lt;BenchmarkResult&gt; of 30 rows with 3 resampling runs
@@ -3071,9 +2984,9 @@ INFO  [19:48:23.682] [mlr3] Finished benchmark </code></pre>
 </code></pre>
 </div>
 <pre><code>   learner_id classif.ce classif.auc
-1:        low      0.292   0.7152160
-2:        med      0.243   0.8012300
-3:       high      0.232   0.8033115</code></pre>
+1:        low      0.246   0.7593290
+2:        med      0.240   0.7985826
+3:       high      0.236   0.7948181</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/autoplot.html'>autoplot</a></span><span class='op'>(</span><span class='va'>bmr</span><span class='op'>)</span>
 </code></pre>
@@ -3184,7 +3097,7 @@ Keys: aic, bic, classif.acc, classif.auc, classif.bacc, classif.bbrier, classif.
 </div>
 <pre><code>[1] &quot;PredictionClassif&quot; &quot;Prediction&quot;        &quot;R6&quot;               </code></pre>
 </div>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
