@@ -23,6 +23,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -116,7 +117,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"NULL"}
+  {"type":"character","attributes":{},"value":["introduction-to-mlr3tuningspaces_files/anchor-4.2.2/anchor.min.js","introduction-to-mlr3tuningspaces_files/bowser-1.9.3/bowser.min.js","introduction-to-mlr3tuningspaces_files/distill-2.2.21/template.v2.js","introduction-to-mlr3tuningspaces_files/header-attrs-2.11/header-attrs.js","introduction-to-mlr3tuningspaces_files/jquery-3.6.0/jquery-3.6.0.js","introduction-to-mlr3tuningspaces_files/jquery-3.6.0/jquery-3.6.0.min.js","introduction-to-mlr3tuningspaces_files/jquery-3.6.0/jquery-3.6.0.min.map","introduction-to-mlr3tuningspaces_files/popper-2.6.0/popper.min.js","introduction-to-mlr3tuningspaces_files/tippy-6.2.7/tippy-bundle.umd.min.js","introduction-to-mlr3tuningspaces_files/tippy-6.2.7/tippy-light-border.css","introduction-to-mlr3tuningspaces_files/tippy-6.2.7/tippy.css","introduction-to-mlr3tuningspaces_files/tippy-6.2.7/tippy.umd.min.js","introduction-to-mlr3tuningspaces_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1530,464 +1531,195 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span class='fu'>skimr</span><span class='fu'>::</span><span class='fu'><a href='https://docs.ropensci.org/skimr/reference/skim.html'>skim</a></span><span class='op'>(</span><span class='va'>task</span><span class='op'>$</span><span class='fu'>data</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<table style="width: auto;" class="table table-condensed">
-<caption>
-<span id="tab:tuningspaces-004">Table 1: </span>Data summary
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-</th>
-</tr>
-</thead>
+<table>
+<caption><span id="tab:tuningspaces-004">Table 1: </span>Data summary</caption>
 <tbody>
-<tr>
-<td style="text-align:left;">
-Name
-</td>
-<td style="text-align:left;">
-task$data()
-</td>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">task$data()</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Number of rows
-</td>
-<td style="text-align:left;">
-768
-</td>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">768</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Number of columns
-</td>
-<td style="text-align:left;">
-9
-</td>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">9</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Key
-</td>
-<td style="text-align:left;">
-NULL
-</td>
+<tr class="even">
+<td style="text-align: left;">Key</td>
+<td style="text-align: left;">NULL</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-_______________________
-</td>
-<td style="text-align:left;">
-</td>
+<tr class="odd">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Column type frequency:
-</td>
-<td style="text-align:left;">
-</td>
+<tr class="even">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
 </tr>
-<tr>
-<td style="text-align:left;">
-factor
-</td>
-<td style="text-align:left;">
-1
-</td>
+<tr class="odd">
+<td style="text-align: left;">factor</td>
+<td style="text-align: left;">1</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-numeric
-</td>
-<td style="text-align:left;">
-8
-</td>
+<tr class="even">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">8</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-________________________
-</td>
-<td style="text-align:left;">
-</td>
+<tr class="odd">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Group variables
-</td>
-<td style="text-align:left;">
-None
-</td>
+<tr class="even">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Variable type: factor</strong></p>
 <table>
 <thead>
-<tr>
-<th style="text-align:left;">
-skim_variable
-</th>
-<th style="text-align:right;">
-n_missing
-</th>
-<th style="text-align:right;">
-complete_rate
-</th>
-<th style="text-align:left;">
-ordered
-</th>
-<th style="text-align:right;">
-n_unique
-</th>
-<th style="text-align:left;">
-top_counts
-</th>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: left;">ordered</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: left;">top_counts</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-diabetes
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-neg: 500, pos: 268
-</td>
+<tr class="odd">
+<td style="text-align: left;">diabetes</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">neg: 500, pos: 268</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Variable type: numeric</strong></p>
 <table>
 <thead>
-<tr>
-<th style="text-align:left;">
-skim_variable
-</th>
-<th style="text-align:right;">
-n_missing
-</th>
-<th style="text-align:right;">
-complete_rate
-</th>
-<th style="text-align:right;">
-mean
-</th>
-<th style="text-align:right;">
-sd
-</th>
-<th style="text-align:right;">
-p0
-</th>
-<th style="text-align:right;">
-p25
-</th>
-<th style="text-align:right;">
-p50
-</th>
-<th style="text-align:right;">
-p75
-</th>
-<th style="text-align:right;">
-p100
-</th>
-<th style="text-align:left;">
-hist
-</th>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-age
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1.00
-</td>
-<td style="text-align:right;">
-33.24
-</td>
-<td style="text-align:right;">
-11.76
-</td>
-<td style="text-align:right;">
-21.00
-</td>
-<td style="text-align:right;">
-24.00
-</td>
-<td style="text-align:right;">
-29.00
-</td>
-<td style="text-align:right;">
-41.00
-</td>
-<td style="text-align:right;">
-81.00
-</td>
-<td style="text-align:left;">
-▇▃▁▁▁
-</td>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">33.24</td>
+<td style="text-align: right;">11.76</td>
+<td style="text-align: right;">21.00</td>
+<td style="text-align: right;">24.00</td>
+<td style="text-align: right;">29.00</td>
+<td style="text-align: right;">41.00</td>
+<td style="text-align: right;">81.00</td>
+<td style="text-align: left;">▇▃▁▁▁</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-glucose
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-0.99
-</td>
-<td style="text-align:right;">
-121.69
-</td>
-<td style="text-align:right;">
-30.54
-</td>
-<td style="text-align:right;">
-44.00
-</td>
-<td style="text-align:right;">
-99.00
-</td>
-<td style="text-align:right;">
-117.00
-</td>
-<td style="text-align:right;">
-141.00
-</td>
-<td style="text-align:right;">
-199.00
-</td>
-<td style="text-align:left;">
-▁▇▇▃▂
-</td>
+<tr class="even">
+<td style="text-align: left;">glucose</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">121.69</td>
+<td style="text-align: right;">30.54</td>
+<td style="text-align: right;">44.00</td>
+<td style="text-align: right;">99.00</td>
+<td style="text-align: right;">117.00</td>
+<td style="text-align: right;">141.00</td>
+<td style="text-align: right;">199.00</td>
+<td style="text-align: left;">▁▇▇▃▂</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-insulin
-</td>
-<td style="text-align:right;">
-374
-</td>
-<td style="text-align:right;">
-0.51
-</td>
-<td style="text-align:right;">
-155.55
-</td>
-<td style="text-align:right;">
-118.78
-</td>
-<td style="text-align:right;">
-14.00
-</td>
-<td style="text-align:right;">
-76.25
-</td>
-<td style="text-align:right;">
-125.00
-</td>
-<td style="text-align:right;">
-190.00
-</td>
-<td style="text-align:right;">
-846.00
-</td>
-<td style="text-align:left;">
-▇▂▁▁▁
-</td>
+<tr class="odd">
+<td style="text-align: left;">insulin</td>
+<td style="text-align: right;">374</td>
+<td style="text-align: right;">0.51</td>
+<td style="text-align: right;">155.55</td>
+<td style="text-align: right;">118.78</td>
+<td style="text-align: right;">14.00</td>
+<td style="text-align: right;">76.25</td>
+<td style="text-align: right;">125.00</td>
+<td style="text-align: right;">190.00</td>
+<td style="text-align: right;">846.00</td>
+<td style="text-align: left;">▇▂▁▁▁</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-mass
-</td>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:right;">
-0.99
-</td>
-<td style="text-align:right;">
-32.46
-</td>
-<td style="text-align:right;">
-6.92
-</td>
-<td style="text-align:right;">
-18.20
-</td>
-<td style="text-align:right;">
-27.50
-</td>
-<td style="text-align:right;">
-32.30
-</td>
-<td style="text-align:right;">
-36.60
-</td>
-<td style="text-align:right;">
-67.10
-</td>
-<td style="text-align:left;">
-▅▇▃▁▁
-</td>
+<tr class="even">
+<td style="text-align: left;">mass</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">32.46</td>
+<td style="text-align: right;">6.92</td>
+<td style="text-align: right;">18.20</td>
+<td style="text-align: right;">27.50</td>
+<td style="text-align: right;">32.30</td>
+<td style="text-align: right;">36.60</td>
+<td style="text-align: right;">67.10</td>
+<td style="text-align: left;">▅▇▃▁▁</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-pedigree
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1.00
-</td>
-<td style="text-align:right;">
-0.47
-</td>
-<td style="text-align:right;">
-0.33
-</td>
-<td style="text-align:right;">
-0.08
-</td>
-<td style="text-align:right;">
-0.24
-</td>
-<td style="text-align:right;">
-0.37
-</td>
-<td style="text-align:right;">
-0.63
-</td>
-<td style="text-align:right;">
-2.42
-</td>
-<td style="text-align:left;">
-▇▃▁▁▁
-</td>
+<tr class="odd">
+<td style="text-align: left;">pedigree</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">0.63</td>
+<td style="text-align: right;">2.42</td>
+<td style="text-align: left;">▇▃▁▁▁</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-pregnant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1.00
-</td>
-<td style="text-align:right;">
-3.85
-</td>
-<td style="text-align:right;">
-3.37
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-1.00
-</td>
-<td style="text-align:right;">
-3.00
-</td>
-<td style="text-align:right;">
-6.00
-</td>
-<td style="text-align:right;">
-17.00
-</td>
-<td style="text-align:left;">
-▇▃▂▁▁
-</td>
+<tr class="even">
+<td style="text-align: left;">pregnant</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">3.85</td>
+<td style="text-align: right;">3.37</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">3.00</td>
+<td style="text-align: right;">6.00</td>
+<td style="text-align: right;">17.00</td>
+<td style="text-align: left;">▇▃▂▁▁</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-pressure
-</td>
-<td style="text-align:right;">
-35
-</td>
-<td style="text-align:right;">
-0.95
-</td>
-<td style="text-align:right;">
-72.41
-</td>
-<td style="text-align:right;">
-12.38
-</td>
-<td style="text-align:right;">
-24.00
-</td>
-<td style="text-align:right;">
-64.00
-</td>
-<td style="text-align:right;">
-72.00
-</td>
-<td style="text-align:right;">
-80.00
-</td>
-<td style="text-align:right;">
-122.00
-</td>
-<td style="text-align:left;">
-▁▃▇▂▁
-</td>
+<tr class="odd">
+<td style="text-align: left;">pressure</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">72.41</td>
+<td style="text-align: right;">12.38</td>
+<td style="text-align: right;">24.00</td>
+<td style="text-align: right;">64.00</td>
+<td style="text-align: right;">72.00</td>
+<td style="text-align: right;">80.00</td>
+<td style="text-align: right;">122.00</td>
+<td style="text-align: left;">▁▃▇▂▁</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-triceps
-</td>
-<td style="text-align:right;">
-227
-</td>
-<td style="text-align:right;">
-0.70
-</td>
-<td style="text-align:right;">
-29.15
-</td>
-<td style="text-align:right;">
-10.48
-</td>
-<td style="text-align:right;">
-7.00
-</td>
-<td style="text-align:right;">
-22.00
-</td>
-<td style="text-align:right;">
-29.00
-</td>
-<td style="text-align:right;">
-36.00
-</td>
-<td style="text-align:right;">
-99.00
-</td>
-<td style="text-align:left;">
-▆▇▁▁▁
-</td>
+<tr class="even">
+<td style="text-align: left;">triceps</td>
+<td style="text-align: right;">227</td>
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;">29.15</td>
+<td style="text-align: right;">10.48</td>
+<td style="text-align: right;">7.00</td>
+<td style="text-align: right;">22.00</td>
+<td style="text-align: right;">29.00</td>
+<td style="text-align: right;">36.00</td>
+<td style="text-align: right;">99.00</td>
+<td style="text-align: left;">▆▇▁▁▁</td>
 </tr>
 </tbody>
 </table>
@@ -2021,25 +1753,36 @@ triceps
 </div>
 <pre><code>                        key         learner n_values
  1:     classif.glmnet.rbv2  classif.glmnet        2
- 2:       classif.kknn.rbv2    classif.kknn        1
- 3:  classif.ranger.default  classif.ranger        4
- 4:     classif.ranger.rbv2  classif.ranger        8
- 5:   classif.rpart.default   classif.rpart        3
- 6:      classif.rpart.rbv2   classif.rpart        4
- 7:     classif.svm.default     classif.svm        4
- 8:        classif.svm.rbv2     classif.svm        5
- 9: classif.xgboost.default classif.xgboost        8
-10:    classif.xgboost.rbv2 classif.xgboost       13
-11:        regr.glmnet.rbv2     regr.glmnet        2
-12:          regr.kknn.rbv2       regr.kknn        1
-13:     regr.ranger.default     regr.ranger        4
-14:        regr.ranger.rbv2     regr.ranger        7
-15:      regr.rpart.default      regr.rpart        3
-16:         regr.rpart.rbv2      regr.rpart        4
-17:        regr.svm.default        regr.svm        4
-18:           regr.svm.rbv2        regr.svm        5
-19:    regr.xgboost.default    regr.xgboost        8
-20:       regr.xgboost.rbv2    regr.xgboost       13</code></pre>
+ 2:    classif.kknn.package    classif.kknn        4
+ 3:       classif.kknn.rbv2    classif.kknn        1
+ 4:  classif.ranger.default  classif.ranger        4
+ 5:  classif.ranger.package  classif.ranger        7
+ 6:     classif.ranger.rbv2  classif.ranger        8
+ 7:   classif.rpart.default   classif.rpart        3
+ 8:   classif.rpart.package   classif.rpart        9
+ 9:      classif.rpart.rbv2   classif.rpart        4
+10:     classif.svm.default     classif.svm        4
+11:     classif.svm.package     classif.svm        7
+12:        classif.svm.rbv2     classif.svm        5
+13: classif.xgboost.default classif.xgboost        8
+14: classif.xgboost.package classif.xgboost       16
+15:    classif.xgboost.rbv2 classif.xgboost       13
+16:        regr.glmnet.rbv2     regr.glmnet        2
+17:       regr.kknn.package       regr.kknn        4
+18:          regr.kknn.rbv2       regr.kknn        1
+19:     regr.ranger.default     regr.ranger        4
+20:     regr.ranger.package     regr.ranger        7
+21:        regr.ranger.rbv2     regr.ranger        7
+22:      regr.rpart.default      regr.rpart        3
+23:      regr.rpart.package      regr.rpart        9
+24:         regr.rpart.rbv2      regr.rpart        4
+25:        regr.svm.default        regr.svm        4
+26:        regr.svm.package        regr.svm        7
+27:           regr.svm.rbv2        regr.svm        5
+28:    regr.xgboost.default    regr.xgboost        8
+29:    regr.xgboost.package    regr.xgboost       16
+30:       regr.xgboost.rbv2    regr.xgboost       13
+                        key         learner n_values</code></pre>
 </div>
 <p>We can use the sugar function <a href="https://mlr3tuningspaces.mlr-org.com/reference/lts.html"><code>lts()</code></a> to retrieve a <a href="https://mlr3tuningspaces.mlr-org.com/reference/TuningSpace.html"><code>TuningSpace</code></a>.</p>
 <div class="layout-chunk" data-layout="l-body">
