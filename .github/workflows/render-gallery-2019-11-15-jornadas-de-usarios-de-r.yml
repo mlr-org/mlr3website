@@ -14,7 +14,7 @@ on:
 name: mlr3website
 
 jobs:
-  render-gallery-2019-11-15-jornadas-de-usarios-de-r.Rmd:
+  render-gallery-2019-11-15-jornadas-de-usarios-de-r:
     runs-on: ubuntu-latest
 
     env:
@@ -34,6 +34,6 @@ jobs:
 
       - name: Render post
         run: |
-          file = file.path("mlr-org", "_gallery", "2019-11-15-jornadas-de-usarios-de-r", "2019-11-15-jornadas-de-usarios-de-r.Rmd")
+          file = file.path("mlr-org", "_gallery", "2019-11-15-jornadas-de-usarios-de-r", "2019-11-15-jornadas-de-usarios-de-r")
           rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE)))
         shell: Rscript {0}

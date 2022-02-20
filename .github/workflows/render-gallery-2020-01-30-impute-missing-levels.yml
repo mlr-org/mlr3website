@@ -14,7 +14,7 @@ on:
 name: mlr3website
 
 jobs:
-  render-gallery-2020-01-30-impute-missing-levels.Rmd:
+  render-gallery-2020-01-30-impute-missing-levels:
     runs-on: ubuntu-latest
 
     env:
@@ -34,6 +34,6 @@ jobs:
 
       - name: Render post
         run: |
-          file = file.path("mlr-org", "_gallery", "2020-01-30-impute-missing-levels", "2020-01-30-impute-missing-levels.Rmd")
+          file = file.path("mlr-org", "_gallery", "2020-01-30-impute-missing-levels", "2020-01-30-impute-missing-levels")
           rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE)))
         shell: Rscript {0}
