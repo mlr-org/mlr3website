@@ -10,7 +10,7 @@ on:
 name: mlr3website
 
 jobs:
-  build-website:
+  render-gallery:
     runs-on: ubuntu-latest
 
     env:
@@ -30,6 +30,6 @@ jobs:
 
       - name: Render gallery
         run: |
-          files = list.files("mlr-org/_posts/", pattern = ".Rmd", full.names = TRUE, recursive = TRUE)
+          files = list.files("mlr-org/_gallery/", pattern = ".Rmd", full.names = TRUE, recursive = TRUE)
           mlr3misc::walk(files, function(file) rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE)))
         shell: Rscript {0}
