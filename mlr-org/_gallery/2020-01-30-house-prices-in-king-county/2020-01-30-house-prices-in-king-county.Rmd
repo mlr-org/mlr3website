@@ -471,6 +471,8 @@ In a final step, we now want to assess the model's quality on the held-out data 
 In order to do so, and to prevent data leakage, we can only add the median price from the training data.
 
 ```{r 2020-01-30-house-prices-in-king-county-043}
+library(data.table)
+
 data = task_train$data(cols = c("price", "zipcode"))
 data[, med_price := median(price), by = "zipcode"]
 test_data = task_test$data(cols = "zipcode")
