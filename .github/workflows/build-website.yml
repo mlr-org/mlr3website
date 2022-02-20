@@ -8,9 +8,8 @@ on:
       - main
     paths-ignore:
       - 'mlr-org/_gallery/**'
-      - '.github/workflows/render-gallery**'
 
-name: mlr3website
+name: build-website
 
 jobs:
   build-website:
@@ -31,7 +30,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
 
-      - name: Build website
+      - name: Build Website
         run: rmarkdown::render_site(input = "mlr-org", encoding = "UTF-8")
         shell: Rscript {0}
 

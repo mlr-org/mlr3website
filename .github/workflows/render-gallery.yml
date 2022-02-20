@@ -4,17 +4,17 @@ on:
     branches:
       - main
     paths:
-      - 'mlr-org/_gallery/2019-11-15-jornadas-de-usarios-de-r/**'
+      - 'mlr-org/_gallery/**'
   pull_request:
     branches:
       - main
     paths:
-      - 'mlr-org/_gallery/2019-11-15-jornadas-de-usarios-de-r/**'
+      - 'mlr-org/_gallery/**'
 
-name: 2019-11-15-jornadas-de-usarios-de-r
+name: render-gallery
 
 jobs:
-  render-post:
+  render-gallery:
     runs-on: ubuntu-latest
 
     env:
@@ -32,10 +32,14 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
 
-      - name: Render Post
+      - name: Render Gallery
         run: |
-          file = file.path("mlr-org", "_gallery", "2019-11-15-jornadas-de-usarios-de-r", paste0("2019-11-15-jornadas-de-usarios-de-r", ".Rmd"))
-          rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE))
+          files = list.files("mlr-org/_gallery/", pattern = ".Rmd", full.names = TRUE, recursive = TRUE)
+          mlr3misc::walk(files, function(file) rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE)))
+        shell: Rscript {0}
+
+      - name: Build Website
+        run: rmarkdown::render_site(input = "mlr-org", encoding = "UTF-8")
         shell: Rscript {0}
 
       - name: Commit Results
@@ -44,15 +48,9 @@ jobs:
           rm -f .github/workflows/pkg.lock
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git config --local pull.rebase false
-          git pull
           git add -A
-          git commit -m 'refactor: render 2019-11-15-jornadas-de-usarios-de-r'
+          git commit -m 'refactor: render gallery posts'
           git push origin
-      
-      - name: Build Website
-        run: rmarkdown::render_site(input = "mlr-org", encoding = "UTF-8")
-        shell: Rscript {0}
 
       - name: Deploy
         if: ${{ github.event_name == 'push' }}
