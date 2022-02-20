@@ -23,6 +23,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -1460,7 +1461,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Select Uncorrelated Features","description":"The following example describes a situation where we aim to remove correlated features. This in essence means, that we drop features until no features have a correlation higher then a given `cutoff`. This is often useful when we for example want to use linear models.","authors":[{"author":"Martin Binder","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""},{"author":"Florian Pfisterer","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-02-25T00:00:00.000+01:00","citationText":"Binder & Pfisterer, 2020"}
+{"title":"Select Uncorrelated Features","description":"The following example describes a situation where we aim to remove correlated features. This in essence means, that we drop features until no features have a correlation higher then a given `cutoff`. This is often useful when we for example want to use linear models.","authors":[{"author":"Martin Binder","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""},{"author":"Florian Pfisterer","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-02-25T00:00:00.000+00:00","citationText":"Binder & Pfisterer, 2020"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1550,7 +1551,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     <span class='va'>fn</span> <span class='op'>=</span> <span class='va'>task</span><span class='op'>$</span><span class='va'>feature_names</span>
     <span class='va'>data</span> <span class='op'>=</span> <span class='va'>task</span><span class='op'>$</span><span class='fu'>data</span><span class='op'>(</span>cols <span class='op'>=</span> <span class='va'>fn</span><span class='op'>)</span>
     <span class='va'>drop</span> <span class='op'>=</span> <span class='fu'>caret</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/findCorrelation.html'>findCorrelation</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span>, cutoff <span class='op'>=</span> <span class='va'>cutoff</span>, exact <span class='op'>=</span> <span class='cn'>TRUE</span>, names <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-    <span class='fu'><a href='https://rdrr.io/r/base/sets.html'>setdiff</a></span><span class='op'>(</span><span class='va'>fn</span>, <span class='va'>drop</span><span class='op'>)</span>
+    <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setops.html'>setdiff</a></span><span class='op'>(</span><span class='va'>fn</span>, <span class='va'>drop</span><span class='op'>)</span>
   <span class='op'>}</span>
   <span class='va'>x</span><span class='op'>$</span><span class='va'>cutoff</span> <span class='op'>=</span> <span class='cn'>NULL</span>
   <span class='va'>x</span>
@@ -1582,7 +1583,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html'>as.data.table</a></span><span class='op'>(</span><span class='va'>instance</span><span class='op'>$</span><span class='va'>archive</span><span class='op'>)</span><span class='op'>[</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>cutoff</span><span class='op'>)</span>,
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setorder.html'>order</a></span><span class='op'>(</span><span class='va'>cutoff</span><span class='op'>)</span>,
   <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>cutoff</span>, <span class='va'>classif.ce</span>,
     featurenames <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>resample_result</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>{</span>
       <span class='va'>x</span><span class='op'>$</span><span class='va'>learners</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>classif.rpart</span><span class='op'>$</span><span class='va'>train_task</span><span class='op'>$</span><span class='va'>feature_names</span>

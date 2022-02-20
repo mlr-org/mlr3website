@@ -2108,7 +2108,7 @@ fare
 <p>We’ll drop them for now and see how we can deal with them later on.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>task</span><span class='op'>$</span><span class='fu'>select</span><span class='op'>(</span>cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sets.html'>setdiff</a></span><span class='op'>(</span><span class='va'>task</span><span class='op'>$</span><span class='va'>feature_names</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cabin"</span>, <span class='st'>"name"</span>, <span class='st'>"ticket"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>task</span><span class='op'>$</span><span class='fu'>select</span><span class='op'>(</span>cols <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setops.html'>setdiff</a></span><span class='op'>(</span><span class='va'>task</span><span class='op'>$</span><span class='va'>feature_names</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cabin"</span>, <span class='st'>"name"</span>, <span class='st'>"ticket"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>

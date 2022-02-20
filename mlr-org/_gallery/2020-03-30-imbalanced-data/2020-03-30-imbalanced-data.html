@@ -1572,7 +1572,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   number.of.instances <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5000</span>, <span class='fl'>10000</span><span class='op'>)</span>
 <span class='op'>)</span>
 <span class='co'># select imbalanced data sets (without categorical features as SMOTE cannot handle them)</span>
-<span class='va'>ds</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>ds</span>, <span class='va'>minority.class.size</span> <span class='op'>/</span> <span class='va'>number.of.instances</span> <span class='op'>&lt;</span> <span class='fl'>0.2</span> <span class='op'>&amp;</span>
+<span class='va'>ds</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html'>subset</a></span><span class='op'>(</span><span class='va'>ds</span>, <span class='va'>minority.class.size</span> <span class='op'>/</span> <span class='va'>number.of.instances</span> <span class='op'>&lt;</span> <span class='fl'>0.2</span> <span class='op'>&amp;</span>
   <span class='va'>number.of.symbolic.features</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>)</span>
 <span class='va'>ds</span>
 
