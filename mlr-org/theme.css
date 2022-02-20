@@ -1,0 +1,239 @@
+/* base variables */
+
+/* Edit the CSS properties in this file to create a custom
+   Distill theme. Only edit values in the right column
+   for each row; values shown are the CSS defaults.
+   To return any property to the default,
+   you may set its value to: unset
+   All rows must end with a semi-colon.                      */
+
+/* Optional: embed custom fonts here with `@import`          */
+/* This must remain at the top of this file.                 */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css");
+
+
+html {
+  /*-- Main font sizes --*/
+  --title-size:      50px;
+  --body-size:       1.06rem;
+  --code-size:       14px;
+  --aside-size:      12px;
+  --fig-cap-size:    13px;
+  /*-- Main font colors --*/
+  --title-color:     #000000;
+  --header-color:    rgba(0, 0, 0, 0.8);
+  --body-color:      rgba(0, 0, 0, 0.8);
+  --aside-color:     rgba(0, 0, 0, 0.6);
+  --fig-cap-color:   rgba(0, 0, 0, 0.6);
+  /*-- Specify custom fonts ~~~ must be imported above   --*/
+  --heading-font:    sans-serif;
+  --mono-font:       monospace;
+  --body-font:       sans-serif;
+  --navbar-font:     sans-serif;  /* websites + blogs only */
+}
+
+/*-- ARTICLE METADATA --*/
+d-byline {
+  --heading-size:    0.6rem;
+  --heading-color:   rgba(0, 0, 0, 0.5);
+  --body-size:       0.8rem;
+  --body-color:      rgba(0, 0, 0, 0.8);
+}
+
+/*-- ARTICLE TABLE OF CONTENTS --*/
+.d-contents {
+  --heading-size:    18px;
+  --contents-size:   13px;
+}
+
+/*-- ARTICLE APPENDIX --*/
+d-appendix {
+  --heading-size:    15px;
+  --heading-color:   rgba(0, 0, 0, 0.65);
+  --text-size:       0.8em;
+  --text-color:      rgba(0, 0, 0, 0.5);
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+/* These properties only apply to Distill sites and blogs  */
+
+.distill-site-header {
+  --title-size:       18px;
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #455a64;
+}
+
+.distill-site-footer {
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #455a64;
+}
+
+/*-- Additional custom styles --*/
+/* Add any additional CSS rules below                      */
+
+/* Title left align */
+.distill-site-header .title {
+  text-align:         left;
+}
+
+/* Increase logo size */
+.distill-site-header .logo img {
+  max-height:         30px;
+  margin-bottom:      -6px
+}
+
+/* Feature grid */
+.grid-container {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Feature grid 3 columns on desktop */
+@media only screen and (min-width: 768px) {
+  /* Package grid */
+  .grid-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.grid-item {
+  text-align: center;
+  padding: 30px;
+}
+
+.grid-icon {
+  padding-bottom: 15px;
+}
+
+div.grid-icon i {
+  font-size: 3rem;
+}
+
+/* Style buttons */
+.btn-container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn {
+  background-color: #455a64;
+  border: none;
+  color: white;
+  padding: 10px 15px 10px 15px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+  background-color: #2a363c;
+}
+
+/* Button icons */
+a.btn i {
+  font-size: 2rem;
+  margin-right: 10px;
+}
+
+/* Headings */
+h1 {
+  font-size: 2.5rem !important;
+}
+
+h2 {
+  font-size: 2rem !important;
+}
+
+h3 {
+  font-size: 1.2rem !important;
+}
+
+
+/* Allow horizontal scroll in citation box */
+.citation {
+  overflow-x: auto !important;
+}
+
+/* Package grid */
+.grid-container-package {
+  display: inline-grid;
+  grid-template-columns: repeat(1, 1fr);
+  column-gap: 10px;
+  row-gap: 10px;
+  margin-bottom: 30px;
+}
+
+/* Package grid 3 columns on desktop */
+@media only screen and (min-width: 768px) {
+  /* Package grid */
+  .grid-container-package {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.grid-item-package {
+  text-align: left;
+  padding: 10px;
+  background-color: #f1f1f1;
+}
+
+.grid-item-package:hover {
+  background-color: #cccccc;
+}
+
+div.grid-item-package h3 {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+}
+
+div.grid-item-package a {
+  border-bottom: 0px;
+  text-decoration: none;
+}
+
+div.grid-item-package i {
+  font-size: 0.75rem;
+  margin-left: 10px;
+}
+
+i.status-stable {
+  color: #B4CFB0;
+}
+
+i.status-maturing {
+  color: #FBC6A4;
+}
+
+/* Banner */
+.banner {
+  width: auto;
+  height: auto;
+}
+
+img[src="images/banner.png"] {
+  width: 100%;
+  max-width: 1000px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 60px;
+  margin-bottom: -6rem;
+}
+
+/* Reduce space between banner and title */
+@media only screen and (min-width: 768px) {
+  /* Package grid */
+  img[src="images/banner.png"] {
+    margin-bottom: -6rem;
+  }
+}

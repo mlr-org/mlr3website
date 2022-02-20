@@ -1,0 +1,157 @@
+---
+title: "Machine Learning in R"
+description: |
+  Website of the mlr3 ecosystem
+preview: images/logo_color.png
+site: distill::distill_website
+output:
+    distill::distill_article:
+      includes:
+        before_body: _banner.html
+---
+
+An open-source machine learning framework providing a unified interface for
+machine learning in the R language.
+
+<div class="grid-container">
+  <div class="grid-item">
+  <div class="grid-icon"><i class="bi-code-square"></i></div>
+  A well designed and easy to learn interface.
+  </div>
+  <div class="grid-item">
+  <div class="grid-icon"><i class="bi-pen"></i></div>
+  More than 100 connected machine learning algorithms.
+  </div>
+  <div class="grid-item">
+  <div class="grid-icon"><i class="bi-box"></i></div>
+  Light on dependencies.
+  </div>
+  <div class="grid-item">
+  <div class="grid-icon"><i class="bi-stack"></i></div>
+  Quick parallelization with the `future` package.
+  </div>
+  <div class="grid-item">
+  <div class="grid-icon"><i class="bi-sliders"></i></div>
+  State-of-the-art optimization algorithms.
+  </div>
+  <div class="grid-item">
+  <div class="grid-icon"><i class="bi-share"></i></div>
+  Dataflow programming with pipelines.</div>
+</div>
+
+<div class="btn-container">
+<a href="https://github.com/mlr-org/mlr3" class="btn"><i class="bi-github"></i> GitHub</a>
+<a href="https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/" class="btn"><i class="bi-chat-dots"></i> Mattermost</a>
+<a href="https://twitter.com/bbischl" class="btn"><i class="bi-twitter"></i> Twitter</a>
+<a href="https://stackoverflow.com/questions/tagged/mlr3" class="btn"><i class="bi-stack-overflow"></i> StackOverflow</a>
+</div>
+
+## Quick Start
+
+The mlr3verse meta-package installs mlr3 and some of the most important extension packages:
+
+```{r, eval=FALSE}
+install.packages("mlr3verse")
+```
+
+### Basic Example
+
+```{r, include=FALSE}
+set.seed(7832)
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+Simple resampling:
+
+1. Load task and learner. Optionally, set hyperparameter values.
+1. Choose resampling strategy.
+1. Run automatic resampling
+1. Score with classification accuracy
+
+```{r, eval=FALSE}
+library(mlr3verse)
+
+task = tsk("penguins")
+learner = lrn("classif.rpart", cp = .01)
+
+resampling = rsmp("cv", folds = 3L)
+
+rr = resample(task, learner, resampling)
+
+rr$score(msr("classif.acc"))
+```
+
+### Tuning Example
+
+Quick tuning of a simple classification tree on the on penguins data set:
+
+1. Choose task.
+1. Load learner and set search space in one go.
+1. Run hyperparameter tuning with random search.
+1. Get best performing hyperparameter configuration.
+
+```{r, eval=FALSE}
+library(mlr3tuningspaces)
+
+task = tsk("penguins")
+
+learner = lts(lrn("classif.rpart"))
+
+instance = tune(
+  method = "random_search",
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.acc"),
+  term_evals = 10,
+  batch_size = 5
+)
+
+instance$result
+```
+
+### Pipelines Example
+
+Create a stacked learner:
+
+1. Load task.
+1. Choose list of base learners and super learner.
+1. Convert to graph learner.
+1. Train on german credit task.
+
+```{r, eval=FALSE}
+library(mlr3verse)
+library(mlr3pipelines)
+
+task = tsk("german_credit")
+
+base_learners = list(
+  lrn("classif.rpart", predict_type = "prob"),
+  lrn("classif.kknn", predict_type = "prob")
+)
+super_learner = lrn("classif.log_reg")
+
+graph_stack = pipeline_stacking(base_learners, super_learner)
+graph_learner = as_learner(graph_stack)
+
+graph_learner$train(task)
+```
+
+## Citing mlr3
+
+If you use `mlr3`, please cite our JOSS article:
+
+<div class="citation">
+```
+@Article{mlr3,
+  title = {{mlr3}: A modern object-oriented machine learning framework in {R}},
+  author = {Michel Lang and Martin Binder and Jakob Richter and Patrick Schratz and Florian Pfisterer and Stefan Coors and Quay Au and Giuseppe Casalicchio and Lars Kotthoff and Bernd Bischl},
+  journal = {Journal of Open Source Software},
+  year = {2019},
+  month = {dec},
+  doi = {10.21105/joss.01903},
+  url = {https://joss.theoj.org/papers/10.21105/joss.01903},
+}
+```
+</div>

@@ -1,0 +1,37 @@
+name: "mlr-org"
+title: "mlr-org"
+theme: theme.css
+favicon: images/favicon.ico
+description: |
+  Website of mlr3 - Machine Learning in R.
+output_dir: "docs"
+base_url: https://mlr-org.github.io/mlr-org-website/
+rss:
+  full_content: true
+  categories:
+    - R
+collections:
+  posts:
+    categories: true
+    feed_items_max: 1
+  gallery:
+    categories: true
+navbar:
+  logo:
+    image: images/logo.png
+    href: index.html
+  search: true
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "Blog"
+      href: blog.html
+    - text: "Packages"
+      href: packages.html
+    - text: "Resources"
+      href: resources.html 
+    - text: "Book"
+      href: https://mlr3book.mlr-org.com/ 
+    - text: "Gallery"
+      href: gallery.html
+output: distill::distill_article
