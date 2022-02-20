@@ -23,6 +23,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -1462,7 +1463,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Tuning Over Multiple Learners","description":"This use case shows how to tune over multiple learners for a single task.","authors":[{"author":"Jakob Richter","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""},{"author":"Bernd Bischl","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-02-01T00:00:00.000+01:00","citationText":"Richter & Bischl, 2020"}
+{"title":"Tuning Over Multiple Learners","description":"This use case shows how to tune over multiple learners for a single task.","authors":[{"author":"Jakob Richter","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""},{"author":"Bernd Bischl","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-02-01T00:00:00.000+00:00","citationText":"Richter & Bischl, 2020"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1528,6 +1529,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3verse.mlr-org.com'>mlr3verse</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3tuning.mlr-org.com'>mlr3tuning</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3learners.mlr-org.com'>mlr3learners</a></span><span class='op'>)</span>
 </code></pre>
 </div>
@@ -1679,12 +1681,6 @@ timestamp
 <th style="text-align:right;">
 batch_nr
 </th>
-<th style="text-align:right;">
-warnings
-</th>
-<th style="text-align:right;">
-errors
-</th>
 </tr>
 </thead>
 <tbody>
@@ -1699,19 +1695,13 @@ rf
 rf
 </td>
 <td style="text-align:right;">
-0.224
+0.304
 </td>
 <td style="text-align:left;">
-2022-02-20 08:35:31
+2022-02-20 19:48:07
 </td>
 <td style="text-align:right;">
 1
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
 </td>
 </tr>
 <tr>
@@ -1725,19 +1715,13 @@ xgb
 xgb
 </td>
 <td style="text-align:right;">
-0.125
+0.165
 </td>
 <td style="text-align:left;">
-2022-02-20 08:35:31
+2022-02-20 19:48:08
 </td>
 <td style="text-align:right;">
 2
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
 </td>
 </tr>
 </tbody>
@@ -1955,7 +1939,7 @@ rf
 0.408
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:46
+2022-02-18 07:01:46
 </td>
 <td style="text-align:right;">
 1
@@ -1987,7 +1971,7 @@ xgb
 0.282
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:47
+2022-02-18 07:01:47
 </td>
 <td style="text-align:right;">
 2
@@ -2019,7 +2003,7 @@ rf
 0.399
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:46
+2022-02-18 07:01:46
 </td>
 <td style="text-align:right;">
 1
@@ -2051,7 +2035,7 @@ xgb
 0.272
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:46
+2022-02-18 07:01:46
 </td>
 <td style="text-align:right;">
 2
@@ -2083,7 +2067,7 @@ xgb
 0.239
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:45
+2022-02-18 07:01:45
 </td>
 <td style="text-align:right;">
 1
@@ -2115,7 +2099,7 @@ rf
 0.310
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:46
+2022-02-18 07:01:46
 </td>
 <td style="text-align:right;">
 2
@@ -2147,7 +2131,7 @@ xgb
 0.250
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:46
+2022-02-18 07:01:46
 </td>
 <td style="text-align:right;">
 1
@@ -2179,7 +2163,7 @@ rf
 0.327
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:46
+2022-02-18 07:01:46
 </td>
 <td style="text-align:right;">
 2
@@ -2211,7 +2195,7 @@ xgb
 0.305
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:45
+2022-02-18 07:01:45
 </td>
 <td style="text-align:right;">
 1
@@ -2243,7 +2227,7 @@ rf
 0.309
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:46
+2022-02-18 07:01:46
 </td>
 <td style="text-align:right;">
 2
@@ -3997,7 +3981,7 @@ NA
 0.499
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:52
+2022-02-18 07:01:52
 </td>
 <td style="text-align:right;">
 1
@@ -4029,7 +4013,7 @@ NA
 0.449
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:53
+2022-02-18 07:01:53
 </td>
 <td style="text-align:right;">
 2
@@ -4061,7 +4045,7 @@ NA
 0.330
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:54
+2022-02-18 07:01:54
 </td>
 <td style="text-align:right;">
 3
@@ -4093,7 +4077,7 @@ NA
 0.457
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:55
+2022-02-18 07:01:55
 </td>
 <td style="text-align:right;">
 4
@@ -4125,7 +4109,7 @@ NA
 0.490
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:55
+2022-02-18 07:01:55
 </td>
 <td style="text-align:right;">
 5
@@ -4157,7 +4141,7 @@ NA
 0.702
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:56
+2022-02-18 07:01:56
 </td>
 <td style="text-align:right;">
 6
@@ -4189,7 +4173,7 @@ NA
 0.359
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:57
+2022-02-18 07:01:57
 </td>
 <td style="text-align:right;">
 7
@@ -4221,7 +4205,7 @@ NA
 0.310
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:57
+2022-02-18 07:01:57
 </td>
 <td style="text-align:right;">
 8
@@ -4253,7 +4237,7 @@ NA
 0.351
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:58
+2022-02-18 07:01:58
 </td>
 <td style="text-align:right;">
 9
@@ -4285,7 +4269,7 @@ NA
 0.463
 </td>
 <td style="text-align:left;">
-2022-02-18 08:01:59
+2022-02-18 07:01:59
 </td>
 <td style="text-align:right;">
 10
