@@ -47,6 +47,7 @@ We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important p
 
 ```{r mlr3fselect-basic-003}
 library(mlr3verse)
+library(mlr3fselect)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
