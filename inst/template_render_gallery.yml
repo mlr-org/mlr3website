@@ -3,14 +3,18 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'mlr-org/_gallery/<%= post_directory %>/**'
   pull_request:
     branches:
       - main
+    paths:
+      - 'mlr-org/_gallery/<%= post_directory %>/**'
 
 name: mlr3website
 
 jobs:
-  build-website:
+  render-gallery-<%= post_file %>:
     runs-on: ubuntu-latest
 
     env:
@@ -28,14 +32,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
 
-      - name: Build website
-        run: rmarkdown::render_site(input = "mlr-org", encoding = "UTF-8")
+      - name: Render post
+        run: |
+          file = file.path("mlr-org", "_gallery", "<%= post_directory %>", "<%= post_file %>")
+          rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE)))
         shell: Rscript {0}
-
-      - name: Deploy
-        if: ${{ github.event_name == 'push' }}
-        uses: JamesIves/github-pages-deploy-action@4.1.5
-        with:
-          branch: gh-pages
-          folder: mlr-org/docs
-          single-commit: true

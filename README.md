@@ -18,3 +18,8 @@ Only runs when a gallery post is added or changed.
 Renders all gallery post and builds website.
 Website is pushed to `gh-pages` branch.
 
+
+# Create workflow for gallery post
+
+`create_gallery_workflow("2019-08-03-useR-mlr3", "2019-08-03-useR-mlr3.Rmd") `
+
