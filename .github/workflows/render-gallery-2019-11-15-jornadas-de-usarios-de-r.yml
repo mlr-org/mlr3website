@@ -1,0 +1,60 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mlr-org/_gallery/2019-11-15-jornadas-de-usarios-de-r/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'mlr-org/_gallery/2019-11-15-jornadas-de-usarios-de-r/**'
+
+name: mlr3website
+
+jobs:
+  render-gallery-2019-11-15-jornadas-de-usarios-de-r:
+    runs-on: ubuntu-latest
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      - name: Render Post
+        run: |
+          file = file.path("mlr-org", "_gallery", "2019-11-15-jornadas-de-usarios-de-r", paste0("2019-11-15-jornadas-de-usarios-de-r", ".Rmd"))
+          rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE))
+        shell: Rscript {0}
+
+      - name: Commit Results
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          git config --local user.name "$GITHUB_ACTOR"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git add -A
+          git commit -m 'refactor: render 2019-11-15-jornadas-de-usarios-de-r'
+          git push origin
+      
+      - name: Build Website
+        run: rmarkdown::render_site(input = "mlr-org", encoding = "UTF-8")
+        shell: Rscript {0}
+
+      - name: Deploy
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: mlr-org/docs
+          single-commit: true
