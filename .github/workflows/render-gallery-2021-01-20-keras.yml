@@ -44,6 +44,7 @@ jobs:
           rm -f .github/workflows/pkg.lock
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git pull
           git add -A
           git commit -m 'refactor: render 2021-01-20-keras'
           git push origin
