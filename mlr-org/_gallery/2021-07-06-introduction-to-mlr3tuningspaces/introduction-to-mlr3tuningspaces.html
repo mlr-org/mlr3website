@@ -1460,7 +1460,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Introduction to mlr3tuningspaces","description":"We teach how to use the package mlr3tuningspaces.","authors":[{"author":"Marc Becker","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-07-06T00:00:00.000+02:00","citationText":"Becker, 2021"}
+{"title":"Introduction to mlr3tuningspaces","description":"We teach how to use the package mlr3tuningspaces.","authors":[{"author":"Marc Becker","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-07-06T00:00:00.000+00:00","citationText":"Becker, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1494,14 +1494,14 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#scope">Scope</a></li>
+<li><a href="#scope-a">Scope A</a></li>
 <li><a href="#prerequisites">Prerequisites</a></li>
 <li><a href="#tuning-search-space">Tuning Search Space</a></li>
 <li><a href="#package">Package</a></li>
 </ul>
 </nav>
 </div>
-<h1 id="scope">Scope</h1>
+<h1 id="scope-a">Scope A</h1>
 <p>The package <a href="https://mlr3tuningspaces.mlr-org.com">mlr3tuningspaces</a> offers a selection of published search spaces for many popular machine learning algorithms. In this post, we show how to tune a <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>mlr3 learners</code></a> with these search spaces.</p>
 <h1 id="prerequisites">Prerequisites</h1>
 <p>The packages <a href="https://mlr3verse.mlr-org.com">mlr3verse</a> and <a href="https://mlr3tuningspaces.mlr-org.com">mlr3tuningspaces</a> are required for this demonstration:</p>
@@ -1753,36 +1753,25 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <pre><code>                        key         learner n_values
  1:     classif.glmnet.rbv2  classif.glmnet        2
- 2:    classif.kknn.package    classif.kknn        4
- 3:       classif.kknn.rbv2    classif.kknn        1
- 4:  classif.ranger.default  classif.ranger        4
- 5:  classif.ranger.package  classif.ranger        7
- 6:     classif.ranger.rbv2  classif.ranger        8
- 7:   classif.rpart.default   classif.rpart        3
- 8:   classif.rpart.package   classif.rpart        9
- 9:      classif.rpart.rbv2   classif.rpart        4
-10:     classif.svm.default     classif.svm        4
-11:     classif.svm.package     classif.svm        7
-12:        classif.svm.rbv2     classif.svm        5
-13: classif.xgboost.default classif.xgboost        8
-14: classif.xgboost.package classif.xgboost       16
-15:    classif.xgboost.rbv2 classif.xgboost       13
-16:        regr.glmnet.rbv2     regr.glmnet        2
-17:       regr.kknn.package       regr.kknn        4
-18:          regr.kknn.rbv2       regr.kknn        1
-19:     regr.ranger.default     regr.ranger        4
-20:     regr.ranger.package     regr.ranger        7
-21:        regr.ranger.rbv2     regr.ranger        7
-22:      regr.rpart.default      regr.rpart        3
-23:      regr.rpart.package      regr.rpart        9
-24:         regr.rpart.rbv2      regr.rpart        4
-25:        regr.svm.default        regr.svm        4
-26:        regr.svm.package        regr.svm        7
-27:           regr.svm.rbv2        regr.svm        5
-28:    regr.xgboost.default    regr.xgboost        8
-29:    regr.xgboost.package    regr.xgboost       16
-30:       regr.xgboost.rbv2    regr.xgboost       13
-                        key         learner n_values</code></pre>
+ 2:       classif.kknn.rbv2    classif.kknn        1
+ 3:  classif.ranger.default  classif.ranger        4
+ 4:     classif.ranger.rbv2  classif.ranger        8
+ 5:   classif.rpart.default   classif.rpart        3
+ 6:      classif.rpart.rbv2   classif.rpart        4
+ 7:     classif.svm.default     classif.svm        4
+ 8:        classif.svm.rbv2     classif.svm        5
+ 9: classif.xgboost.default classif.xgboost        8
+10:    classif.xgboost.rbv2 classif.xgboost       13
+11:        regr.glmnet.rbv2     regr.glmnet        2
+12:          regr.kknn.rbv2       regr.kknn        1
+13:     regr.ranger.default     regr.ranger        4
+14:        regr.ranger.rbv2     regr.ranger        7
+15:      regr.rpart.default      regr.rpart        3
+16:         regr.rpart.rbv2      regr.rpart        4
+17:        regr.svm.default        regr.svm        4
+18:           regr.svm.rbv2        regr.svm        5
+19:    regr.xgboost.default    regr.xgboost        8
+20:       regr.xgboost.rbv2    regr.xgboost       13</code></pre>
 </div>
 <p>We can use the sugar function <a href="https://mlr3tuningspaces.mlr-org.com/reference/lts.html"><code>lts()</code></a> to retrieve a <a href="https://mlr3tuningspaces.mlr-org.com/reference/TuningSpace.html"><code>TuningSpace</code></a>.</p>
 <div class="layout-chunk" data-layout="l-body">

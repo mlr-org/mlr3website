@@ -32,8 +32,29 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
 
-      - name: Render post
+      - name: Render Post
         run: |
           file = file.path("mlr-org", "_gallery", "2021-07-06-introduction-to-mlr3tuningspaces", paste0("introduction-to-mlr3tuningspaces", ".Rmd"))
           rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE))
         shell: Rscript {0}
+
+      - name: Commit Results
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          git config --local user.name "$GITHUB_ACTOR"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git add -A
+          git commit -m 'refactor: render 2021-07-06-introduction-to-mlr3tuningspaces'
+          git push origin
+      
+      - name: Build Website
+        run: rmarkdown::render_site(input = "mlr-org", encoding = "UTF-8")
+        shell: Rscript {0}
+
+      - name: Deploy
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: mlr-org/docs
+          single-commit: true
