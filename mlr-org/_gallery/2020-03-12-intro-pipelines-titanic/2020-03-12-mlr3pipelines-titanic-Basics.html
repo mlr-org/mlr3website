@@ -23,6 +23,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -1459,7 +1460,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"A Pipeline for the Titanic Data Set - Basics","description":"This post shows how to build a Graph using the mlr3pipelines package on the \"titanic\" dataset.","authors":[{"author":"Florian Pfisterer","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-03-12T00:00:00.000+01:00","citationText":"Pfisterer, 2020"}
+{"title":"A Pipeline for the Titanic Data Set - Basics","description":"This post shows how to build a Graph using the mlr3pipelines package on the \"titanic\" dataset.","authors":[{"author":"Florian Pfisterer","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-03-12T00:00:00.000+00:00","citationText":"Pfisterer, 2020"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2107,7 +2108,7 @@ fare
 <p>We’ll drop them for now and see how we can deal with them later on.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>task</span><span class='op'>$</span><span class='fu'>select</span><span class='op'>(</span>cols <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setops.html'>setdiff</a></span><span class='op'>(</span><span class='va'>task</span><span class='op'>$</span><span class='va'>feature_names</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cabin"</span>, <span class='st'>"name"</span>, <span class='st'>"ticket"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>task</span><span class='op'>$</span><span class='fu'>select</span><span class='op'>(</span>cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sets.html'>setdiff</a></span><span class='op'>(</span><span class='va'>task</span><span class='op'>$</span><span class='va'>feature_names</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cabin"</span>, <span class='st'>"name"</span>, <span class='st'>"ticket"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
