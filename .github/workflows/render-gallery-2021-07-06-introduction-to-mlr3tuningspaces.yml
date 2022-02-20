@@ -37,3 +37,7 @@ jobs:
           file = file.path("mlr-org", "_gallery", "2021-07-06-introduction-to-mlr3tuningspaces", paste0("introduction-to-mlr3tuningspaces", ".Rmd"))
           rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE))
         shell: Rscript {0}
+
+      - name: Build website
+        run: rmarkdown::render_site(input = "mlr-org", encoding = "UTF-8")
+        shell: Rscript {0}
