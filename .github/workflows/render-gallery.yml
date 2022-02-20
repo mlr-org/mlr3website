@@ -33,3 +33,11 @@ jobs:
           files = list.files("mlr-org/_gallery/", pattern = ".Rmd", full.names = TRUE, recursive = TRUE)
           mlr3misc::walk(files, function(file) rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE)))
         shell: Rscript {0}
+
+      - name: Deploy
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: mlr-org/docs
+          single-commit: true
