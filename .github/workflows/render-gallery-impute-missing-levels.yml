@@ -4,17 +4,17 @@ on:
     branches:
       - gh-actions
     paths:
-      - 'mlr-org/_gallery/2019-08-03-useR-mlr3/**'
+      - 'mlr-org/_gallery/2020-01-30-impute-missing-levels/**'
   pull_request:
     branches:
       - gh-actions
     paths:
-      - 'mlr-org/_gallery/2019-08-03-useR-mlr3/**'
+      - 'mlr-org/_gallery/2020-01-30-impute-missing-levels/**'
 
 name: mlr3website
 
 jobs:
-  render-gallery-2019-08-03-useR-mlr3:
+  render-gallery-impute-missing-levels:
     runs-on: ubuntu-latest
 
     env:
@@ -34,6 +34,6 @@ jobs:
 
       - name: Render post
         run: |
-          file = file.path("mlr-org", "_gallery", "2019-08-03-useR-mlr3", "2019-08-03-useR-mlr3")
+          file = file.path("mlr-org", "_gallery", "2020-01-30-impute-missing-levels", paste0("impute-missing-levels", ".Rmd"))
           rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE)))
         shell: Rscript {0}
