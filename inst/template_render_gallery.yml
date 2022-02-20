@@ -2,19 +2,19 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - gh-actions
+      - main
     paths:
       - 'mlr-org/_gallery/<%= post_directory %>/**'
   pull_request:
     branches:
-      - gh-actions
+      - main
     paths:
       - 'mlr-org/_gallery/<%= post_directory %>/**'
 
 name: mlr3website
 
 jobs:
-  render-gallery-<%= post_file %>:
+  render-gallery-<%= post_directory %>:
     runs-on: ubuntu-latest
 
     env:
