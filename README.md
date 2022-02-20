@@ -6,7 +6,7 @@
 
 # Workflows
 
-**build-website**
+**build-website.yml**
 
 Builds website.
 Website is pushed to `gh-pages` branch.
