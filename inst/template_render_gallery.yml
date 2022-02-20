@@ -2,12 +2,12 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - gh-actions
     paths:
       - 'mlr-org/_gallery/<%= post_directory %>/**'
   pull_request:
     branches:
-      - main
+      - gh-actions
     paths:
       - 'mlr-org/_gallery/<%= post_directory %>/**'
 

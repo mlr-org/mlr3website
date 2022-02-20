@@ -2,12 +2,12 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - gh-actions
     paths:
       - 'mlr-org/_gallery/2019-11-15-jornadas-de-usarios-de-r/**'
   pull_request:
     branches:
-      - main
+      - gh-actions
     paths:
       - 'mlr-org/_gallery/2019-11-15-jornadas-de-usarios-de-r/**'
 
