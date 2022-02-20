@@ -11,10 +11,10 @@ on:
     paths:
       - 'mlr-org/_gallery/<%= post_directory %>/**'
 
-name: mlr3website
+name: <%= post_directory %>
 
 jobs:
-  render-gallery-<%= post_directory %>:
+  render-post:
     runs-on: ubuntu-latest
 
     env:

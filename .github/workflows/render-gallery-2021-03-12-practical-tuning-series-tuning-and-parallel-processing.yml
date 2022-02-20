@@ -11,10 +11,10 @@ on:
     paths:
       - 'mlr-org/_gallery/2021-03-12-practical-tuning-series-tuning-and-parallel-processing/**'
 
-name: mlr3website
+name: 2021-03-12-practical-tuning-series-tuning-and-parallel-processing
 
 jobs:
-  render-gallery-2021-03-12-practical-tuning-series-tuning-and-parallel-processing:
+  render-post:
     runs-on: ubuntu-latest
 
     env:
@@ -41,6 +41,7 @@ jobs:
       - name: Commit Results
         if: ${{ github.event_name == 'push' }}
         run: |
+          rm .github/workflows/pkg.lock
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git add -A

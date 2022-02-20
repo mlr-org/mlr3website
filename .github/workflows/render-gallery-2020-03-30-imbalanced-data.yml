@@ -11,10 +11,10 @@ on:
     paths:
       - 'mlr-org/_gallery/2020-03-30-imbalanced-data/**'
 
-name: mlr3website
+name: 2020-03-30-imbalanced-data
 
 jobs:
-  render-gallery-2020-03-30-imbalanced-data:
+  render-post:
     runs-on: ubuntu-latest
 
     env:
@@ -41,6 +41,7 @@ jobs:
       - name: Commit Results
         if: ${{ github.event_name == 'push' }}
         run: |
+          rm .github/workflows/pkg.lock
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git add -A
