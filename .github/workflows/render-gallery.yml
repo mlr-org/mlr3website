@@ -1,0 +1,35 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - gh-actions
+  pull_request:
+    branches:
+      - gh-actions
+
+name: mlr3website
+
+jobs:
+  build-website:
+    runs-on: ubuntu-latest
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      - name: Render gallery
+        run: |
+          files = list.files("mlr-org/_posts/", pattern = ".Rmd", full.names = TRUE, recursive = TRUE)
+          mlr3misc::walk(files, function(file) rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE)))
+        shell: Rscript {0}
