@@ -27,7 +27,7 @@ output:
 library(mlr3book)
 ```
 
-# Scope A
+# Scope
 
 The package `r mlr_pkg("mlr3tuningspaces")` offers a selection of published search spaces for many popular machine learning algorithms.
 In this post, we show how to tune a `r ref("Learner", "mlr3 learners")` with these search spaces.
@@ -85,6 +85,7 @@ We can use the sugar function `r ref("lts()")` to retrieve a `r ref("TuningSpace
 
 ```{r tuningspaces-007}
 tuning_space_rpart = lts("classif.rpart.default")
+tuning_space_rpart 
 ```
 
 The `$values` slot contains the list of of `r ref("TuneToken")`.
