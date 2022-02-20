@@ -35,5 +35,5 @@ jobs:
       - name: Render post
         run: |
           file = file.path("mlr-org", "_gallery", "2020-01-30-impute-missing-levels", paste0("impute-missing-levels", ".Rmd"))
-          rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE)))
+          rmarkdown::render(file, encoding = "UTF-8", params = list(eval_all = FALSE))
         shell: Rscript {0}
