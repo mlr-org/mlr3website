@@ -3,9 +3,13 @@ on:
   push:
     branches:
       - gh-actions
+    paths:
+      - 'mlr-org/_gallery/**'
   pull_request:
     branches:
       - gh-actions
+    paths:
+      - 'mlr-org/_gallery/**'
 
 name: mlr3website
 
