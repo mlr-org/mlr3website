@@ -18,7 +18,7 @@ The [mlr-org.com](https://mlr-org.com/) website is created with [Distill for R M
 
 * The website consists of pages and blog posts.
 * Pages are `.Rmd` files located in the `mlr-org/` directory (e.g. `packages.Rmd`).
-* Blog posts are stored in `_post` and `blog.Rmd` automatically list them.
+* Blog posts are stored in `_posts` and `blog.Rmd` automatically list them.
 * Gallery posts are stored in `_gallery` and `gallery.Rmd` automatically list them.
 * Change the style only in `theme.css` and add comments to all changes.
 * The files in `docs/` are the standalone static website which is published with GitHub Pages.
