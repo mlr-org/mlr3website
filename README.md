@@ -108,6 +108,8 @@ as.data.table(bmr) %>%
 ```
 ````
 
+You can also use [formattable](https://github.com/renkun-ken/formattable) to spice up the display of tables. 
+
 ## How to include figures
 
 1. Increase the default size of figures.
