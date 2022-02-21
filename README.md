@@ -38,7 +38,7 @@ Place external images in the subdirectory.
 1. Run `rmarkdown::render_site(encoding = 'UTF-8')` to render the website.
 The website is created within the `docs/` directory.
 Open `index.html` to check your post.
-1. Open a pull request and commit all changed files.
+1. Open a pull request and commit the subdirectory including all files.
 Merged posts are published via GitHub Pages.
 
 ## How to add a new gallery post
@@ -53,7 +53,7 @@ Place external images in the subdirectory.
 1. Run `rmarkdown::render_site(encoding = 'UTF-8')` to render the website.
 The website is created within the `docs/` directory.
 Open `index.html` to check your post.
-1. Open a pull request and commit only the subdirectory.
+1. Open a pull request and commit the subdirectory including all files.
 Merged gallery posts are published via GitHub Pages.
 
 ## How to style tables
