@@ -1,5 +1,7 @@
 # mlr3 website
 
+[![render-gallery](https://github.com/mlr-org/mlr3website/actions/workflows/render-gallery.yml/badge.svg?branch=main)](https://github.com/mlr-org/mlr3website/actions/workflows/render-gallery.yml)
+
 The [mlr-org.com](https://mlr-org.com/) website is created with [Distill for R Markdown](https://rstudio.github.io/distill/website.html) and published with [GitHub Pages](https://docs.github.com/en/pages).
 
 # Project Structure
