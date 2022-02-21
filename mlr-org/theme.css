@@ -115,9 +115,9 @@ div.grid-icon i {
 
 /* Style buttons */
 .btn-container {
-  display: flex;
+  display: inline-block;
   width: 100%;
-  justify-content: center;
+  text-align: center;
 }
 
 .btn {
@@ -234,6 +234,6 @@ img[src="images/banner.png"] {
 @media only screen and (min-width: 768px) {
   /* Package grid */
   img[src="images/banner.png"] {
-    margin-bottom: -6rem;
+    margin-bottom: -4rem;
   }
 }
