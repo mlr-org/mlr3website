@@ -27,33 +27,107 @@ Changes in `docs/` are overwritten by `rmarkdown::render_site()`.
 
 ## How to add a new blog post
 
-Open RStudio project in `mlr-org/` or set working directory to `mlr-org/`.
+Open the RStudio project in `mlr-org/` or set working directory to `mlr-org/`.
 
 1. Add a new post with `distill::create_post("Title of Post in Title Case")`.
-The new post is created within the `_post/` subdirectory.
-1. Write the post. 
+The new post is created within the `_posts/` subdirectory.
+1. Write the post.
 Place external images in the subdirectory.
+1. Apply the [mlr-style](https://github.com/mlr-org/mlr3/wiki/Style-Guide#styler-mlr-style) to the post.
 1. Call `rmarkdown::render("_posts/2022-02-22-example-post/example-post.Rmd")` to render the post.
 1. Run `rmarkdown::render_site(encoding = 'UTF-8')` to render the website.
-The website is created within the `docs/` directory. 
+The website is created within the `docs/` directory.
 Open `index.html` to check your post.
 1. Open a pull request and commit all changed files.
 Merged posts are published via GitHub Pages.
 
 ## How to add a new gallery post
 
-Open RStudio project in `mlr-org/` or set working directory to `mlr-org/`.
+Open the RStudio project in `mlr-org/` or set working directory to `mlr-org/`.
 
 1. Add a new post with `distill::create_post("Title of Post in Title Case", collection = "gallery")`.
 The new post is created within the `_gallery/` subdirectory.
-1. Write the post. 
+1. Write the post.
 Place external images in the subdirectory.
 1. Call `rmarkdown::render("_gallery/2022-02-22-example-post/example-post.Rmd")` to render the post.
 1. Run `rmarkdown::render_site(encoding = 'UTF-8')` to render the website.
-The website is created within the `docs/` directory. 
+The website is created within the `docs/` directory.
 Open `index.html` to check your post.
 1. Open a pull request and commit only the subdirectory.
 Merged gallery posts are published via GitHub Pages.
+
+## How to style tables
+
+1. Limit tables to important columns and rows.
+
+```r
+as.data.table(bmr)[, .(learner_id, classif.ce)]
+
+head(as.data.table(bmr))
+```
+
+
+1. Convert `data.table::data.table()` and `data.frame()` to html tables.
+
+
+````r
+```{r chunk-name, results = 'hide'}
+as.data.table(bmr)
+```
+
+```{r chunk-name-2, echo = FALSE}
+as.data.table(bmr) %>%
+  kable(format = "html") %>%
+  kable_styling(full_width = TRUE)
+```
+````
+
+1. Apply a wider [distill layout](https://rstudio.github.io/distill/figures.html) for wide tables.
+
+
+````r
+```{r chunk-name, layout="l-body-outset"}
+as.data.table(bmr)
+```
+
+```{r chunk-name-2, layout="l-page"}
+as.data.table(bmr)
+```
+````
+
+1. Use a vertical scroll box if the table is too long.
+
+````r
+```{r chunk-name, echo = FALSE}
+as.data.table(bmr) %>%
+  kable(format = "html") %>%
+  kable_styling(full_width = TRUE) %>%
+  scroll_box(height = "400px", extra_css = "border: 0px !important;")
+```
+````
+
+## How to include figures
+
+1. Increase the default size of figures.
+
+````r
+```{r chunk-name, fig.width=10, fig.height=10}
+plot()
+```
+````
+
+1. Apply a wider [distill layout](https://rstudio.github.io/distill/figures.html) for wide figures.
+
+
+````r
+```{r chunk-name, layout="l-body-outset"}
+plot()
+```
+
+```{r chunk-name-2, layout="l-page"}
+plot()
+```
+````
 
 # Workflows
 
