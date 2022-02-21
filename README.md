@@ -4,7 +4,7 @@
 
 The [mlr-org.com](https://mlr-org.com/) website is created with [Distill for R Markdown](https://rstudio.github.io/distill/website.html) and published with [GitHub Pages](https://docs.github.com/en/pages).
 
-# Project Structure
+# Project structure
 
 * `mlr3website` - The root directory contains the `mlr3website` R package.
 * `mlr-org/` - Distill project.
