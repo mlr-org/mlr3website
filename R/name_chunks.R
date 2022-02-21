@@ -3,11 +3,11 @@
 #' @description
 #' Names all chunks of all Rmd files using the pattern `[file-name]-[number]`.
 #'
-#' @param
-#' Collection to be named. Default `gallery`, names all chunks of gallery posts.
+#' @param collection (`character(1)`)\cr
+#'   Collection to be named. Default `gallery`, names all chunks of gallery posts.
 #'
 #' @export
-name_chunks_mlr3gallery = function(collection = "gallery") {
+name_chunks_mlr3website = function(collection = "gallery") {
   root = rprojroot::find_package_root_file()
   collection = paste0("_", collection)
   path = file.path(root, "mlr-org", collection)
