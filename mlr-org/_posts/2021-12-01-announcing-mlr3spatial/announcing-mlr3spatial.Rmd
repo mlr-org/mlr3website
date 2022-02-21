@@ -17,7 +17,7 @@ output:
 ---
 
 
-```{r setup, include=FALSE}
+```{r announcing-mlr3spatial-001, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -48,11 +48,11 @@ The vignette on [“Benchmarking parallel predictions”](https://mlr3spatial.ml
 
 ### Data Preparation
 
-```{r mlr3spatial-001, include=FALSE}
+```{r announcing-mlr3spatial-002, include=FALSE}
 library("stars")
 ```
 
-```{r mlr3spatial-002}
+```{r announcing-mlr3spatial-003}
 library("mlr3")
 library("mlr3spatial")
 ```
@@ -60,7 +60,7 @@ library("mlr3spatial")
 First, the TIFF files is read via `stars::read_stars()` and put into a `DataBackendRaster`.
 The DataBackend is then used to create a regression task with the response being `layer.1`.
 
-```{r mlr3spatial-003, error=TRUE}
+```{r announcing-mlr3spatial-004, error=TRUE}
 tif = system.file("tif/L7_ETMs.tif", package = "stars")
 stack = stars::read_stars(tif)
 
@@ -76,7 +76,7 @@ Since this is only an example, parallelization is not enabled here.
 Here we will use a simple regression tree as an example learner.
 In practice you might want to use a different learner - you can find an overview of available learners [here](https://mlr3extralearners.mlr-org.com/articles/learners/list_learners.html).
 
-```{r mlr3spatial-004}
+```{r announcing-mlr3spatial-005}
 learner = lrn("regr.rpart")
 set.seed(42)
 row_ids = sample(1:task$nrow, 500)
@@ -93,7 +93,7 @@ Users can select which R spatial format the returned raster should have.
 Note that by default `mlr3spatial` operates with `SpatRaster` objects from package `terra`.
 If a different output format is requested (e.g. `"stars"`), coercion is happening in the background which might take some time.
 
-```{r mlr3spatial-005, warning=FALSE}
+```{r announcing-mlr3spatial-006, warning=FALSE}
 ras = predict_spatial(task, learner, format = "stars")
 names(ras) = "cadmium"
 
@@ -105,7 +105,7 @@ print(ras)
 Finally we can plot the predictions.
 The color vector is extracted from the "viridis" color palette via `dput(viridis::viridis_pal()(5))` and provided to the S3 `plot()` call, which makes use of the S3 plot method within the `stars` package in this scenario.
 
-```{r mlr3spatial-006}
+```{r announcing-mlr3spatial-007}
 plot(ras, col = c("#440154FF", "#443A83FF", "#31688EFF", "#21908CFF", "#35B779FF", "#8FD744FF", "#FDE725FF"))
 ```
 

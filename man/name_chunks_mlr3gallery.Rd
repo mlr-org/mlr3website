@@ -4,7 +4,10 @@
 \alias{name_chunks_mlr3gallery}
 \title{Name all chunks}
 \usage{
-name_chunks_mlr3gallery()
+name_chunks_mlr3gallery(collection = "gallery")
+}
+\arguments{
+\item{Collection}{to be named. Default \code{gallery}, names all chunks of gallery posts.}
 }
 \description{
 Names all chunks of all Rmd files using the pattern \verb{[file-name]-[number]}.

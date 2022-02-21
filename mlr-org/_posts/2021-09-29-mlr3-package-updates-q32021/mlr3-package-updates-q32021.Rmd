@@ -16,7 +16,7 @@ output:
 ---
 
 
-```{r setup, include=FALSE}
+```{r mlr3-package-updates-q32021-001, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -107,8 +107,8 @@ Interval: 2021-07-01 - 2021-10-01
 
 ## Breaking
 
-- `autoplot()`: removed argument `crs`. 
-  The CRS is now inferred from the supplied Task. 
+- `autoplot()`: removed argument `crs`.
+  The CRS is now inferred from the supplied Task.
   Setting a different CRS than the task might lead to spurious issues and the initial idea of changing the CRS for plotting to have proper axes labeling does not apply (anymore) (#144)
 
 ## Features
@@ -130,7 +130,7 @@ Interval: 2021-07-01 - 2021-10-01
 
 **Description: Tuning for 'mlr3'**
 
-- Adds `AutoTuner$base_learner()` method to extract the base learner from 
+- Adds `AutoTuner$base_learner()` method to extract the base learner from
   nested learner objects.
 - `tune()` supports multi-criteria tuning.
 - Allows empty search space.

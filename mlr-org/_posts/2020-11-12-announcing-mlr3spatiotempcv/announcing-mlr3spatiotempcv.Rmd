@@ -15,7 +15,7 @@ output:
 ---
 
 
-```{r setup, include=FALSE}
+```{r announcing-mlr3spatiotempcv-001, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -37,7 +37,7 @@ For more detailed information and a detailed walk-through, see the ["Spatiotempo
 
 To finish with something visual, a simple example which showcases the visualization capabilities of [mlr3spatiotempcv](https://mlr3spatiotempcv.mlr-org.com/) for different partitioning methods (random (non-spatial) partitioning (Fig.1) vs. k-means based partitioning (spatial) (Fig. 2)):
 
-```{r mlr3spatiotempcv-vis-example, fig.width=10, fig.height=10}
+```{r announcing-mlr3spatiotempcv-002, fig.width=10, fig.height=10}
 library("mlr3")
 library("mlr3spatiotempcv")
 set.seed(42)
