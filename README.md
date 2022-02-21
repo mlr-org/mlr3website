@@ -34,6 +34,7 @@ The new post is created within the `_posts/` subdirectory.
 1. Write the post.
 Place external images in the subdirectory.
 1. Apply the [mlr-style](https://github.com/mlr-org/mlr3/wiki/Style-Guide#styler-mlr-style) to the post.
+1. Name chunks with `name_chunks_mlr3website(collection = "posts")`.
 1. Call `rmarkdown::render("_posts/2022-02-22-example-post/example-post.Rmd")` to render the post.
 1. Run `rmarkdown::render_site(encoding = 'UTF-8')` to render the website.
 The website is created within the `docs/` directory.
@@ -49,6 +50,7 @@ Open the RStudio project in `mlr-org/` or set working directory to `mlr-org/`.
 The new post is created within the `_gallery/` subdirectory.
 1. Write the post.
 Place external images in the subdirectory.
+1. Name chunks with `name_chunks_mlr3website(collection = "gallery")`.
 1. Call `rmarkdown::render("_gallery/2022-02-22-example-post/example-post.Rmd")` to render the post.
 1. Run `rmarkdown::render_site(encoding = 'UTF-8')` to render the website.
 The website is created within the `docs/` directory.
