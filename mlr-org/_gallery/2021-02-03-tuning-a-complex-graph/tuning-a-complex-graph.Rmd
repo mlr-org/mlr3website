@@ -17,7 +17,6 @@ output:
     toc: true
     self_contained: false
     highlight_downlit: true
-    css: ../../custom.css
 bibliography: bibliography.bib
 params:
   eval_all: FALSE
@@ -226,7 +225,7 @@ The grid being used will look like the following (note that the dependencies we 
 generate_design_grid(tune_ps1, resolution = 4)
 ```
 
-```{r tuning-a-complex-graph-014, echo = FALSE, layout="l-body-outset"}
+```{r tuning-a-complex-graph-014, echo = FALSE, layout="l-page"}
 generate_design_grid(tune_ps1, resolution = 4)$data %>%
   kable(format = "html") %>%
   kable_styling(full_width = TRUE) %>%
