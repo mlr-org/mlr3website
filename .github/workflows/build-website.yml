@@ -32,6 +32,15 @@ jobs:
         run: rmarkdown::render_site(input = "mlr-org", encoding = "UTF-8")
         shell: Rscript {0}
 
+      # bug in render_site deletes rss feed
+      # rss feed with last post can be restored by rendering the post again
+      # https://github.com/rstudio/distill/issues/381
+      - name: Restore RSS Feed
+        run: |
+          files = list.files("mlr-org/_posts", ".Rmd", full.names = TRUE, recursive = TRUE)
+          rmarkdown::render(files[length(files)], encoding = "UTF-8")
+        shell: Rscript {0}
+
       - name: Deploy
         if: ${{ github.event_name == 'push' }}
         uses: JamesIves/github-pages-deploy-action@4.1.5
