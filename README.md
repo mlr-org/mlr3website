@@ -4,8 +4,12 @@ The [mlr-org.com](https://mlr-org.com/) website is created with [Distill for R M
 
 # Project Structure
 
-* `mlr3website` R package is located in the root directory
-* `mlr-org/` contains distill website
+* `mlr3website` - The root directory contains the `mlr3website` R package.
+* `mlr-org/` - Distill project.
+* `mlr-org/docs/` - Rendered website. Is created when `rmarkdown::render_site()` is called. Is not pushed to the remote repository.
+* `mlr-org/_posts/` - Blog posts.
+* `mlr-org/_gallery` - Gallery posts.
+* `mlr-org/theme.css` - Custom styling.
 * `.github` contains workflows to build website and render gallery posts
 
 ## How to change the website

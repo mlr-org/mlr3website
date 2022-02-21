@@ -13,38 +13,51 @@ output:
 An open-source machine learning framework providing a unified interface for
 machine learning in the R language.
 
-<div class="grid-container">
-  <div class="grid-item">
-  <div class="grid-icon"><i class="bi-code-square"></i></div>
-  A well designed and easy to learn interface.
-  </div>
-  <div class="grid-item">
-  <div class="grid-icon"><i class="bi-pen"></i></div>
-  More than 100 connected machine learning algorithms.
-  </div>
-  <div class="grid-item">
-  <div class="grid-icon"><i class="bi-box"></i></div>
-  Light on dependencies.
-  </div>
-  <div class="grid-item">
-  <div class="grid-icon"><i class="bi-stack"></i></div>
-  Quick parallelization with the `future` package.
-  </div>
-  <div class="grid-item">
-  <div class="grid-icon"><i class="bi-sliders"></i></div>
-  State-of-the-art optimization algorithms.
-  </div>
-  <div class="grid-item">
-  <div class="grid-icon"><i class="bi-share"></i></div>
-  Dataflow programming with pipelines.</div>
-</div>
+```{r, echo = FALSE}
+# Feature grid
+library(mlr3misc)
+library(htmltools)
+library(data.table)
 
-<div class="btn-container">
-<a href="https://github.com/mlr-org/mlr3" class="btn"><i class="bi-github"></i> GitHub</a>
-<a href="https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/" class="btn"><i class="bi-chat-dots"></i> Mattermost</a>
-<a href="https://twitter.com/bbischl" class="btn"><i class="bi-twitter"></i> Twitter</a>
-<a href="https://stackoverflow.com/questions/tagged/mlr3" class="btn"><i class="bi-stack-overflow"></i> StackOverflow</a>
-</div>
+content = rbindlist(list(
+  list(icon = "code-square", text = "A well designed and easy to learn interface."),
+  list(icon = "pen", text = "More than 100 connected machine learning algorithms."),
+  list(icon = "box", text = "Light on dependencies."),
+  list(icon = "stack", text = "Quick parallelization with the `future` package."),
+  list(icon = "sliders", text = "State-of-the-art optimization algorithms."),
+  list(icon = "share", text = "Dataflow programming with pipelines.")
+))
+
+div(class = "grid-container",
+  pmap(content, function(icon, text) {
+    div(class = "grid-item",
+      div(class="grid-icon",
+        tags$i(class = sprintf("bi-%s", icon))
+      ),
+      text
+    )
+  })
+)
+```
+
+```{r, echo = FALSE}
+# Social buttons
+content = rbindlist(list(
+  list(name = "GitHub", url = "https://github.com/mlr-org/mlr3", icon = "github"),
+  list(name = "Mattermost", url = "https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/", icon = "chat-dots"),
+  list(name = "Twitter", url = "https://twitter.com/bbischl", icon = "twitter"),
+  list(name = "StackOverflow", url = "https://stackoverflow.com/questions/tagged/mlr3", icon = "stack-overflow")
+))
+
+div(class = "btn-container",
+  pmap(content, function(name, url, icon) {
+    a(href = url, class="btn",
+      tags$i(class = sprintf("bi-%s", icon)),
+      name
+    )
+  })
+)
+```
 
 ## Quick Start
 
