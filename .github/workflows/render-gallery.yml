@@ -10,6 +10,8 @@ on:
       - main
     paths:
       - 'mlr-org/_gallery/**'
+  schedule:
+    - cron: "0 6 * * *"
 
 name: render-gallery
 
@@ -45,7 +47,7 @@ jobs:
       - name: Commit Results
         if: ${{ github.event_name == 'push' }}
         run: |
-          rm -f .github/workflows/pkg.lock
+          rm -f .github/pkg.lock
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git config --local pull.rebase false
