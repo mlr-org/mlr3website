@@ -1,75 +1,84 @@
 ---
 title: "Resources"
 description: |
-  Useful resources for learning mlr3 
+  Useful resources for learning mlr3
 preview: images/logo_color.png
 site: distill::distill_website
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, include = FALSE}
+# Collection of resources
+# Resources are rendered in a 3 columns grid.
+# Text description should be one sentence
+
+library(mlr3misc)
+library(htmltools)
+library(data.table)
+
+resource_grid = function(content) {
+  div(class = "grid-container-package",
+    pmap(content, function(name, icon, url, text) {
+        div(class = "grid-item-package",
+          h3(
+            a(href = url, name),
+            tags$i(class = sprintf("bi-%s", icon))
+          ),
+          text
+        )
+    })
+  )
+}
+```
+
 ## General
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3book.mlr-org.com/">Book</a> <i class="bi-book"></i></h3>
-  Central entry point to the mlr3verse.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3gallery.mlr-org.com/">Gallery</a> <i class="bi-image"></i></h3>
-  The gallery has some case studies and demonstrates how frequently occurring problems can be solved.
-  </div>
-</div> 
+```{r, echo = FALSE}
+content = rbindlist(list(
+  list(name = "Book", icon = "book", url = "https://mlr3book.mlr-org.com/", text = "Central entry point to the mlr3verse."),
+  list(name = "Gallery", icon = "image", url = "https://mlr3gallery.mlr-org.com/", text = "The gallery has some case studies and demonstrates how frequently occurring problems can be solved.")
+))
+
+resource_grid(content)
+```
 
 ## Cheat Sheets
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://cheatsheets.mlr-org.com/mlr3.pdf">mlr3</a> <i class="bi-file-text"></i></h3>
-  Core package cheat sheet.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://cheatsheets.mlr-org.com/mlr3tuning.pdf">mlr3tuning</a> <i class="bi-file-text"></i></h3>
-  Tuning cheat sheet.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://cheatsheets.mlr-org.com/mlr3fselect.pdf">mlr3fselect</a> <i class="bi-file-text"></i></h3>
-  Feature selection cheat sheet.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://cheatsheets.mlr-org.com/mlr3pipelines.pdf">mlr3pipelines</a> <i class="bi-file-text"></i></h3>
-  Pipelines cheat sheet.
-  </div>
-</div>
+```{r, echo = FALSE}
+content = rbindlist(list(
+  list(name = "mlr3", icon = "file-text", url = "https://cheatsheets.mlr-org.com/mlr3.pdf", text = "Core package cheat sheet."),
+  list(name = "mlr3tuning", icon = "file-text", url = "https://cheatsheets.mlr-org.com/mlr3tuning.pdf", text = "Tuning cheat sheet."),
+  list(name = "mlr3fselect", icon = "file-text", url = "https://cheatsheets.mlr-org.com/mlr3fselect.pdf", text = "Feature selection cheat sheet."),
+  list(name = "mlr3pipelines", icon = "file-text", url = "https://cheatsheets.mlr-org.com/mlr3pipelines.pdf", text = "Pipelines cheat sheet.")
+))
+
+resource_grid(content)
+```
 
 ## Videos
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://www.youtube.com/watch?v=wsP2hiFnDQs">useR2019 talk</a> <i class="bi-youtube"></i></h3>
-  on mlr3book.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://www.youtube.com/watch?v=gEW5RxkbQuQ">useR2019 talk</a> <i class="bi-youtube"></i></h3>
-  on mlr3pipelines and mlr3tuning.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://www.youtube.com/watch?v=T43hO2o_nZw">useR2020 tutorial</a> <i class="bi-youtube"></i></h3>
-  on mlr3, mlr3tuning and mlr3pipelines.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://av.tib.eu/media/55271">ODSC talk 2021</a> <i class="bi-youtube"></i></h3>
-  about mlr3spatiotempcv and mlr3spatial.
-  </div>
-</div>
+```{r, echo = FALSE}
+content = rbindlist(list(
+  list(name = "useR2019 talk", icon = "youtube", url = "https://www.youtube.com/watch?v=wsP2hiFnDQs", text = "on mlr3book."),
+  list(name = "useR2019 talk", icon = "youtube", url = "https://www.youtube.com/watch?v=gEW5RxkbQuQ", text = "on mlr3pipelines and mlr3tuning."),
+  list(name = "useR2020 tutorial", icon = "youtube", url = "https://www.youtube.com/watch?v=T43hO2o_nZw", text = "on mlr3, mlr3tuning and mlr3pipelines."),
+  list(name = "ODSC talk 2021", icon = "youtube", url = "https://av.tib.eu/media/55271", text = "on mlr3spatiotempcv and mlr3spatial.")
+))
+
+resource_grid(content)
+```
 
 ## Courses/Lectures
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://introduction-to-machine-learning.netlify.app/">I2ML course</a> <i class="bi-display"></i></h3>
-  is a free and open flipped classroom course on the basics of machine learning. 
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://github.com/mlr-org/mlr-outreach">mlr-outreach</a> <i class="bi-display"></i></h3>
-  contains public talks and slides resources.
-  </div>
-</div> 
+```{r, echo = FALSE}
+content = rbindlist(list(
+  list(name = "I2ML course", icon = "display", url = "https://introduction-to-machine-learning.netlify.app/", text = "on mlr3book."),
+  list(name = "mlr-outreach", icon = "display", url = "https://github.com/mlr-org/mlr-outreach", text = "on mlr3pipelines and mlr3tuning.")
+))
+
+resource_grid(content)
+```
+

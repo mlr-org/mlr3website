@@ -1,7 +1,7 @@
 Package: mlr3website
 Title: R Package to Build the Website of the mlr3 Ecosystem via Distill
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R:
     person("Marc", "Becker", , "marcbecker@posteo.de", role = c("cre", "aut"),
            comment = c(ORCID = "0000-0002-8115-0400"))
 Description: Use this package to install all dependencies and additional
@@ -37,6 +37,7 @@ Imports:
     git2r,
     glmnet,
     gridExtra,
+    htmltools,
     igraph,
     kableExtra,
     kknn,

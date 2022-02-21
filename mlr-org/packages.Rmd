@@ -1,7 +1,7 @@
 ---
 title: "Packages"
 description: |
-  Package collection of the mlr3 ecosystem.  
+  Package collection of the mlr3 ecosystem.
 preview: images/logo_color.png
 site: distill::distill_website
 ---
@@ -13,189 +13,146 @@ knitr::opts_chunk$set(echo = FALSE)
 The mlr3 ecosystem is a collection of R packages for machine learning.
 The base package mlr3 only provides the basic building blocks for machine learning.
 The extensions packages extent mlr3 with functionality for specialized tasks.
-The packages are listed bellow with a short description. 
+The packages are listed bellow with a short description.
 For more information on the packages, check out their reference manuals.
 The dot next to the package name indicates the [lifecycle stage](https://lifecycle.r-lib.org/articles/stages.html).
 Packages with a green dot <i class="bi-circle-fill status-stable"></i> are stable.
-Experimental packages are marked with an orange dot <i class="bi-circle-fill status-maturing"></i>.  
+Experimental packages are marked with an orange dot <i class="bi-circle-fill status-experimental"></i>.
 
-<!---
-Collection of mlr3 ecosystem packages.
-Package should be described in one sentence.
--->
+```{r, include = FALSE}
+# Collection of mlr3 ecosystem packages
+# Packages are rendered in a 3 columns grid.
+# Text description should be one sentence
+
+library(mlr3misc)
+library(htmltools)
+library(data.table)
+
+package_grid = function(content) {
+  div(class = "grid-container-package",
+    pmap(content, function(name, status, url, text) {
+        div(class = "grid-item-package",
+          h3(
+            a(href = url, name),
+            tags$i(class = sprintf("bi-circle-fill status-%s", status))
+          ),
+          text
+        )
+    })
+  )
+}
+```
 
 ## <i class="bi-house-heart"></i> Core
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3.mlr-org.com/">mlr3</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Basic building blocks for machine learning.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3verse.mlr-org.com/">mlr3verse</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Meta-package intended to simplify both installation and loading of packages from the mlr3 ecosystem.
-  </div>
-</div> 
+```{r}
+content = rbindlist(list(
+  list(name = "mlr3", status = "stable", url = "https://mlr3.mlr-org.com/", text = "Basic building blocks for machine learning."),
+  list(name = "mlr3verse", status = "stable", url = "https://mlr3verse.mlr-org.com/", text = "Meta-package intended to simplify both installation and loading of packages from the mlr3 ecosystem.")
+))
 
-## <i class="bi-sliders"></i> Optimization 
+package_grid(content)
+```
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3tuning.mlr-org.com/">mlr3tuning</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Hyperparameter tuning for mlr3 learners.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3tuningspaces.mlr-org.com/">mlr3tuningspaces</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Collection of search spaces for hyperparameter tuning.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3hyperband.mlr-org.com/">mlr3hyperband</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Successive halving and hyperband tuner for mlr3tuning.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3mbo.mlr-org.com/">mlr3mbo</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Model-based optimization for mlr3tuning.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://github.com/mlr-org/miesmuschel/">miesmuschel</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Flexible mixed integer evolutionary strategies.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://github.com/mlr-org/mlr3automl/">mlr3automl</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Automated machine learning.
-  </div>
-</div> 
+
+## <i class="bi-sliders"></i> Optimization
+
+```{r}
+content = rbindlist(list(
+  list(name = "mlr3tuning", status = "stable", url = "https://mlr3tuning.mlr-org.com/", text = "Hyperparameter tuning for mlr3 learners."),
+  list(name = "mlr3tuningspaces", status = "stable", url = "https://mlr3tuningspaces.mlr-org.com/", text = "Collection of search spaces for hyperparameter tuning."),
+  list(name = "mlr3hyperband", status = "stable", url = "https://mlr3hyperband.mlr-org.com/", text = "Successive halving and hyperband tuner for mlr3tuning."),
+  list(name = "mlr3mbo", status = "experimental", url = "https://mlr3mbo.mlr-org.com/", text = " Model-based optimization for mlr3tuning."),
+  list(name = "miesmuschel", status = "experimental", url = "https://github.com/mlr-org/miesmuschel/", text = "Flexible mixed integer evolutionary strategies."),
+  list(name = "mlr3automl", status = "experimental", url = "https://github.com/mlr-org/mlr3automl/", text = "Automated machine learning.")
+))
+
+package_grid(content)
+```
 
 ## <i class="bi-funnel"></i> Feature Selection
 
-<div class="grid-container-package">
- 
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3fselect.mlr-org.com/">mlr3filters</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Filter feature selection.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3fselect.mlr-org.com/">mlr3fselect</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Wrapper feature selection. 
-  </div>
-</div> 
+```{r}
+content = rbindlist(list(
+  list(name = "mlr3filters", status = "stable", url = "https://mlr3fselect.mlr-org.com/", text = "Filter feature selection."),
+  list(name = "mlr3fselect", status = "stable", url = "https://mlr3fselect.mlr-org.com/", text = "Wrapper feature selection.")
+))
+
+package_grid(content)
+```
 
 ## <i class="bi-hdd"></i> Data
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3db.mlr-org.com/">mlr3db</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Data backend to transparently work with databases.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3oml.mlr-org.com/">mlr3oml</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Connector to OpenML.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3data.mlr-org.com/">mlr3data</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Data sets and tasks.
-  </div>
-</div>
+```{r}
+content = rbindlist(list(
+  list(name = "mlr3db", status = "stable", url = "https://mlr3db.mlr-org.com/", text = "Data backend to transparently work with databases."),
+  list(name = "mlr3oml", status = "stable", url = "https://mlr3oml.mlr-org.com/", text = "Connector to OpenML."),
+  list(name = "mlr3data", status = "stable", url = "https://mlr3data.mlr-org.com/", text = "Data sets and tasks.")
+))
+
+package_grid(content)
+```
 
 ## <i class="bi-pen"></i> Learners
 
-The mlr3 ecosystem 
+```{r}
+content = rbindlist(list(
+  list(name = "mlr3learners", status = "stable", url = "https://mlr3learners.mlr-org.com/", text = "Essential learners for mlr3, maintained by the mlr-org team."),
+  list(name = "mlr3extralearners", status = "stable", url = "https://mlr3extralearners.mlr-org.com/", text = "Extra learners for mlr3, implemented by the community."),
+  list(name = "mlr3keras", status = "experimental", url = "https://github.com/mlr-org/mlr3keras/", text = "Deep learning with Keras.")
+))
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3learners.mlr-org.com/">mlr3learners</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Essential learners for mlr3, maintained by the mlr-org team.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3extralearners.mlr-org.com/">mlr3extralearners</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Extra learners for mlr3, implemented by the community.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://github.com/mlr-org/mlr3keras/">mlr3keras</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Deep learning with Keras.
-  </div>
-</div>
+package_grid(content)
+```
 
 ## <i class="bi-bar-chart-line"></i> Visualization
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3viz.mlr-org.com/">mlr3viz</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Visualizations for tasks, predictions, resample results and benchmarks.
-  </div>
-</div>
+```{r}
+content = rbindlist(list(
+  list(name = "mlr3viz", status = "stable", url = "https://mlr3viz.mlr-org.com/", text = "Visualizations for tasks, predictions, resample results and benchmarks.")
+))
+
+package_grid(content)
+```
 
 ## <i class="bi-share"></i> Pipelines
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3pipelines.mlr-org.com/">mlr3pipelines</a> <i class="bi-circle-fill status-stable"></i></h3>
-   Dataflow programming toolkit.
-  </div>
-</div>
+```{r}
+content = rbindlist(list(
+  list(name = "mlr3pipelines", status = "stable", url = "https://mlr3pipelines.mlr-org.com/", text = "Dataflow programming toolkit.")
+))
+
+package_grid(content)
+```
 
 ## <i class="bi-list-task"></i> Tasks
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3spatiotempcv.mlr-org.com/">mlr3spatiotempcv</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Spatiotemporal resampling and visualization methods.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3cluster.mlr-org.com/">mlr3cluster</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Cluster analysis.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3proba.mlr-org.com/">mlr3proba</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Probabilistic predictions.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3ordinal.mlr-org.com/">mlr3ordinal</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Ordinal regression.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://github.com/mlr-org/mlr3multioutput">mlr3multioutput</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Storing and working with multi-output tasks.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3temporal.mlr-org.com/">mlr3temporal</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Time series analysis.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3spatial.mlr-org.com/">mlr3spatial</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Spatial data backends and prediction functions.
-  </div>
-</div>
+```{r}
+content = rbindlist(list(
+  list(name = "mlr3spatiotempcv", status = "stable", url = "https://mlr3spatiotempcv.mlr-org.com/", text = "Spatiotemporal resampling and visualization methods."),
+  list(name = "mlr3cluster", status = "stable", url = "https://mlr3cluster.mlr-org.com/", text = "Cluster analysis."),
+  list(name = "mlr3proba", status = "stable", url = "https://mlr3proba.mlr-org.com/", text = "Probabilistic predictions."),
+  list(name = "mlr3ordinal", status = "experimental", url = "https://mlr3ordinal.mlr-org.com/", text = "Ordinal regression."),
+  list(name = "mlr3multioutput", status = "experimental", url = "https://github.com/mlr-org/mlr3multioutput", text = "Storing and working with multi-output tasks."),
+  list(name = "mlr3temporal", status = "experimental", url = "https://mlr3temporal.mlr-org.com/", text = "Time series analysis."),
+  list(name = "mlr3spatial", status = "stable", url = "https://mlr3spatial.mlr-org.com/", text = "Spatial data backends and prediction functions.")
+))
 
-## <i class="bi-balloon"></i> Utilities 
+package_grid(content)
+```
 
-<div class="grid-container-package">
-  <div class="grid-item-package">
-  <h3><a href="https://bbotk.mlr-org.com/">bbotk</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Black-box optimization toolkit.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://paradox.mlr-org.com/">paradox</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Universal parameter space description and tools.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3misc.mlr-org.com/">mlr3misc</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Miscellaneous helper functions.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3measures.mlr-org.com/">mlr3measures</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Performance measures for supervised learning.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3benchmark.mlr-org.com/">mlr3benchmark</a> <i class="bi-circle-fill status-stable"></i></h3>
-  Analysis and tools for benchmarking.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://mlr3fairness.mlr-org.com/">mlr3fairness</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Machine learning fairness.
-  </div>
-  <div class="grid-item-package">
-  <h3><a href="https://github.com/mlr-org/mlr3batchmark/">mlr3batchmark</a> <i class="bi-circle-fill status-maturing"></i></h3>
-  Connector between mlr3 and batchtools.
-  </div>
-</div>
+## <i class="bi-balloon"></i> Utilities
+
+```{r}
+content = rbindlist(list(
+  list(name = "bbotk", status = "stable", url = "https://bbotk.mlr-org.com/", text = "Black-box optimization toolkit."),
+  list(name = "paradox", status = "stable", url = "https://paradox.mlr-org.com/", text = "Universal parameter space description and tools."),
+  list(name = "mlr3misc", status = "stable", url = "https://mlr3misc.mlr-org.com/", text = "Miscellaneous helper functions."),
+  list(name = "mlr3measures", status = "stable", url = "https://mlr3measures.mlr-org.com/", text = "Performance measures for supervised learning."),
+  list(name = "mlr3benchmark", status = "stable", url = "https://mlr3benchmark.mlr-org.com/", text = "Analysis and tools for benchmarking."),
+  list(name = "mlr3fairness", status = "experimental", url = "https://mlr3fairness.mlr-org.com/", text = "Machine learning fairness."),
+  list(name = "mlr3batchmark", status = "experimental", url = "https://github.com/mlr-org/mlr3batchmark/", text = "Connector between mlr3 and batchtools.")
+))
+
+package_grid(content)
+```
