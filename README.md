@@ -16,7 +16,7 @@ The [mlr-org.com](https://mlr-org.com/) website is created with [Distill for R M
 
 ## How to change the website
 
-* The website consists of pages and blog posts.
+* The website consists of pages, blog and gallery posts.
 * Pages are `.Rmd` files located in the `mlr-org/` directory (e.g. `packages.Rmd`).
 * Blog posts are stored in `_posts` and `blog.Rmd` automatically list them.
 * Gallery posts are stored in `_gallery` and `gallery.Rmd` automatically list them.
