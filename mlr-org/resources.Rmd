@@ -21,64 +21,60 @@ library(data.table)
 
 resource_grid = function(content) {
   div(class = "grid-container-package",
-    pmap(content, function(name, icon, url, text) {
+    pmap(content, function(category, name, icon, url, text) {
         div(class = "grid-item-package",
           h3(
             a(href = url, name),
             tags$i(class = sprintf("bi-%s", icon))
           ),
-          text
+          paste0(text, ".")
         )
     })
   )
 }
+
+content = rowwise_table(
+    ~category,     ~name,               ~icon,       ~url,                                                    ~text,
+    "general",     "Book",              "book",      "https://mlr3book.mlr-org.com/",                         "Central entry point to the mlr3verse",
+    "general",     "Gallery",           "image",     "https://mlr3gallery.mlr-org.com/",                      "The gallery has some case studies and demonstrates how frequently occurring problems can be solved",
+
+    "cheatsheets", "mlr3",              "file-text", "https://cheatsheets.mlr-org.com/mlr3.pdf",              "Core package cheat sheet",
+    "cheatsheets", "mlr3tuning",        "file-text", "https://cheatsheets.mlr-org.com/mlr3tuning.pdf",        "Tuning cheat sheet",
+    "cheatsheets", "mlr3fselect",       "file-text", "https://cheatsheets.mlr-org.com/mlr3fselect.pdf",       "Feature selection cheat sheet",
+    "cheatsheets", "mlr3pipelines",     "file-text", "https://cheatsheets.mlr-org.com/mlr3pipelines.pdf",     "Pipelines cheat sheet",
+
+    "videos",      "useR2019 talk",     "youtube",   "https://www.youtube.com/watch?v=wsP2hiFnDQs",           "on mlr3book",
+    "videos",      "useR2019 talk",     "youtube",   "https://www.youtube.com/watch?v=gEW5RxkbQuQ",           "on mlr3pipelines and mlr3tuning",
+    "videos",      "useR2020 tutorial", "youtube",   "https://www.youtube.com/watch?v=T43hO2o_nZw",           "on mlr3, mlr3tuning and mlr3pipelines",
+    "videos",      "ODSC talk 2021",    "youtube",   "https://av.tib.eu/media/55271",                         "on mlr3spatiotempcv and mlr3spatial",
+
+    "courses",     "I2ML course",       "display",   "https://introduction-to-machine-learning.netlify.app/", "on mlr3book",
+    "courses",     "mlr-outreach",      "display",   "https://github.com/mlr-org/mlr-outreach",               "on mlr3pipelines and mlr3tuning"
+)
+
+setkeyv(content, "category")
 ```
 
 ## General
 
 ```{r, echo = FALSE}
-content = rbindlist(list(
-  list(name = "Book", icon = "book", url = "https://mlr3book.mlr-org.com/", text = "Central entry point to the mlr3verse."),
-  list(name = "Gallery", icon = "image", url = "https://mlr3gallery.mlr-org.com/", text = "The gallery has some case studies and demonstrates how frequently occurring problems can be solved.")
-))
-
-resource_grid(content)
+resource_grid(content[.("general")])
 ```
 
 ## Cheat Sheets
 
 ```{r, echo = FALSE}
-content = rbindlist(list(
-  list(name = "mlr3", icon = "file-text", url = "https://cheatsheets.mlr-org.com/mlr3.pdf", text = "Core package cheat sheet."),
-  list(name = "mlr3tuning", icon = "file-text", url = "https://cheatsheets.mlr-org.com/mlr3tuning.pdf", text = "Tuning cheat sheet."),
-  list(name = "mlr3fselect", icon = "file-text", url = "https://cheatsheets.mlr-org.com/mlr3fselect.pdf", text = "Feature selection cheat sheet."),
-  list(name = "mlr3pipelines", icon = "file-text", url = "https://cheatsheets.mlr-org.com/mlr3pipelines.pdf", text = "Pipelines cheat sheet.")
-))
-
-resource_grid(content)
+resource_grid(content[.("cheatsheets")])
 ```
 
 ## Videos
 
 ```{r, echo = FALSE}
-content = rbindlist(list(
-  list(name = "useR2019 talk", icon = "youtube", url = "https://www.youtube.com/watch?v=wsP2hiFnDQs", text = "on mlr3book."),
-  list(name = "useR2019 talk", icon = "youtube", url = "https://www.youtube.com/watch?v=gEW5RxkbQuQ", text = "on mlr3pipelines and mlr3tuning."),
-  list(name = "useR2020 tutorial", icon = "youtube", url = "https://www.youtube.com/watch?v=T43hO2o_nZw", text = "on mlr3, mlr3tuning and mlr3pipelines."),
-  list(name = "ODSC talk 2021", icon = "youtube", url = "https://av.tib.eu/media/55271", text = "on mlr3spatiotempcv and mlr3spatial.")
-))
-
-resource_grid(content)
+resource_grid(content[.("videos")])
 ```
 
 ## Courses/Lectures
 
 ```{r, echo = FALSE}
-content = rbindlist(list(
-  list(name = "I2ML course", icon = "display", url = "https://introduction-to-machine-learning.netlify.app/", text = "on mlr3book."),
-  list(name = "mlr-outreach", icon = "display", url = "https://github.com/mlr-org/mlr-outreach", text = "on mlr3pipelines and mlr3tuning.")
-))
-
-resource_grid(content)
+resource_grid(content[.("courses")])
 ```
-
