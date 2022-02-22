@@ -1,16 +1,19 @@
+
 ---
 title: "Exploring Learner Predictions with Partial Dependence and Functional ANOVA"
-authors: ["zachary-jones"]
+author:
+  - name: Zachary Jones
+    url:  http://zmjones.com/
 description: |
   Using partial dependency plots in mlr.
 date: 2016-08-11
-draft: true
 categories: ["R", "r-bloggers"]
 tags: ["partial dependence", "benchmark", "prediction", "ANOVA", "rstats"]
 output:
   distill::distill_article:
     self_contained: false
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, eval = FALSE)
@@ -193,5 +196,3 @@ plotPartialDependence(fa.bv, geom = "tile", data = getTaskData(bh.task))
 When overplotting the training data on the plot it is easy to see that much of the variation of the effect is due to extrapolation. Although it hasn't been implemented yet, weighting the functional ANOVA appropriately can ensure that the estimated effects do not depend (or depend less) on regions of the feature space which are sparse.
 
 I also plan on implementing the faster estimation algorith for expanding the functionality of the functional ANOVA function include faster computation using the algorithm in [Hooker (2007)](http://faculty.bscb.cornell.edu/~hooker/fame_jcgs.pdf) and weighting (in order to avoid excessive reliance on points of extrapolation) using outlier detection or joint density estimation.
-
-
