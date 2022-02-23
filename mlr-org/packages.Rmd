@@ -4,6 +4,7 @@ description: |
   Package collection of the mlr3 ecosystem.
 preview: images/logo_color.png
 site: distill::distill_website
+bibliography: publications.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -21,6 +22,15 @@ Experimental packages are marked with an orange dot <i class="bi-circle-fill sta
 Planned packages are marked with a red dot <i class="bi-circle-fill status-planned"></i>.
 
 ![Graph of Extension Packages](https://raw.githubusercontent.com/mlr-org/mlr3/master/man/figures/mlr3verse.svg?sanitize=true)
+
+If you use our packages in your research, please cite our articles on mlr3 [@mlr3], mlr3proba [@mlr3proba] or mlr3pipelines [@mlr3pipelines].
+To get the citation information of other packages, call
+
+```{r eval = FALSE, echo = TRUE}
+citation("[package]")
+```
+
+
 
 ```{r, include = FALSE}
 # Collection of mlr3 ecosystem packages
