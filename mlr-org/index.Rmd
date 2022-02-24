@@ -16,14 +16,15 @@ library(mlr3misc)
 library(htmltools)
 library(data.table)
 
-content = rbindlist(list(
-  list(icon = "code-square", text = "A scientifically designed and easy to learn interface."),
-  list(icon = "pen", text = "More than 100 connected machine learning algorithms."),
-  list(icon = "box", text = "Light on dependencies."),
-  list(icon = "stack", text = "Quick parallelization with the `future` package."),
-  list(icon = "sliders", text = "State-of-the-art optimization algorithms."),
-  list(icon = "share", text = "Dataflow programming with pipelines.")
-))
+content = rowwise_table(
+    ~icon,          ~text,
+    "code-square",  "A scientifically designed and easy to learn interface.",
+    "pen",          "More than 100 connected machine learning algorithms.",
+    "box",          "Light on dependencies.",
+    "stack",        "Quick parallelization with the `future` package.",
+    "sliders",      "State-of-the-art optimization algorithms.",
+    "share",        "Dataflow programming with pipelines."
+)
 
 div(class = "grid-container",
   pmap(content, function(icon, text) {
