@@ -1444,8 +1444,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--/radix_placeholder_distill-->
   <script src="practical-tuning-series-build-an-automated-machine-learning-system_files/header-attrs-2.11/header-attrs.js"></script>
-  <script src="practical-tuning-series-build-an-automated-machine-learning-system_files/kePrint-0.0.1/kePrint.js"></script>
-  <link href="practical-tuning-series-build-an-automated-machine-learning-system_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="practical-tuning-series-build-an-automated-machine-learning-system_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="practical-tuning-series-build-an-automated-machine-learning-system_files/popper-2.6.0/popper.min.js"></script>
   <link href="practical-tuning-series-build-an-automated-machine-learning-system_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1649,1187 +1647,495 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div style="border: 1px solid #ddd; padding: 0px; border: 0px !important;overflow-y: scroll; height:400px; ">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-id
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-class
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-lower
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-upper
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-nlevels
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> id </th>
+   <th style="text-align:left;"> class </th>
+   <th style="text-align:right;"> lower </th>
+   <th style="text-align:right;"> upper </th>
+   <th style="text-align:right;"> nlevels </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-removeconstants_prerobustify.ratio
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-removeconstants_prerobustify.rel_tol
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-removeconstants_prerobustify.abs_tol
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-removeconstants_prerobustify.na_ignore
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-removeconstants_prerobustify.affect_columns
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-imputehist.affect_columns
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-missind.which
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-missind.type
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-missind.affect_columns
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-imputesample.affect_columns
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-encode.method
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-encode.affect_columns
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-removeconstants_postrobustify.ratio
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-removeconstants_postrobustify.rel_tol
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-removeconstants_postrobustify.abs_tol
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-removeconstants_postrobustify.na_ignore
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-removeconstants_postrobustify.affect_columns
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-kknn.k
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-kknn.distance
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-kknn.kernel
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-kknn.scale
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-kknn.ykernel
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.cachesize
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.class.weights
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.coef0
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.cost
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.cross
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.decision.values
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.degree
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.epsilon
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.fitted
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.gamma
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.kernel
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.nu
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.scale
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.shrinking
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.tolerance
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm.type
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.alpha
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.always.split.variables
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.class.weights
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.holdout
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.importance
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.keep.inbag
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.max.depth
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.min.node.size
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.min.prop
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.minprop
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.mtry
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.mtry.ratio
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.num.random.splits
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.num.threads
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.num.trees
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.oob.error
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.regularization.factor
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.regularization.usedepth
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.replace
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.respect.unordered.factors
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.sample.fraction
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.save.memory
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.scale.permutation.importance
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.se.method
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.seed
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.split.select.weights
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.splitrule
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.verbose
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ranger.write.forest
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-branch.selection
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_prerobustify.ratio </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_prerobustify.rel_tol </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_prerobustify.abs_tol </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_prerobustify.na_ignore </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_prerobustify.affect_columns </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> imputehist.affect_columns </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> missind.which </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> missind.type </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> missind.affect_columns </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> imputesample.affect_columns </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> encode.method </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> encode.affect_columns </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_postrobustify.ratio </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_postrobustify.rel_tol </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_postrobustify.abs_tol </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_postrobustify.na_ignore </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> removeconstants_postrobustify.affect_columns </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> kknn.k </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> kknn.distance </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> kknn.kernel </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> kknn.scale </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> kknn.ykernel </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.cachesize </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.class.weights </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.coef0 </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.cost </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.cross </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.decision.values </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.degree </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.epsilon </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.fitted </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.gamma </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.kernel </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.nu </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.scale </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.shrinking </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.tolerance </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> svm.type </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.alpha </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.always.split.variables </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.class.weights </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.holdout </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.importance </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.keep.inbag </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.max.depth </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.min.node.size </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.min.prop </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.minprop </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.mtry </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.mtry.ratio </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.num.random.splits </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.num.threads </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.num.trees </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.oob.error </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.regularization.factor </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.regularization.usedepth </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.replace </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.respect.unordered.factors </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.sample.fraction </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.save.memory </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.scale.permutation.importance </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.se.method </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.seed </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.split.select.weights </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.splitrule </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.verbose </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ranger.write.forest </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> branch.selection </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
 </tbody>
-</table>
-</div>
+</table></div>
 </div>
 <h1 id="tune-the-pipeline">Tune the pipeline</h1>
 <p>We will only tune one hyperparameter for each learner in this example. Additionally, we tune the branching parameter which selects one of the three learners. We have to specify that a hyperparameter is only valid for a certain learner by using <code>depends = branch.selection == &lt;learner_id&gt;</code>.</p>
@@ -2939,128 +2245,56 @@ NA
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body-outset">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-iteration
-</th>
-<th style="text-align:right;">
-kknn.k
-</th>
-<th style="text-align:right;">
-svm.cost
-</th>
-<th style="text-align:right;">
-ranger.mtry
-</th>
-<th style="text-align:left;">
-branch.selection
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-<th style="text-align:left;">
-task_id
-</th>
-<th style="text-align:left;">
-learner_id
-</th>
-<th style="text-align:left;">
-resampling_id
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> iteration </th>
+   <th style="text-align:right;"> kknn.k </th>
+   <th style="text-align:right;"> svm.cost </th>
+   <th style="text-align:right;"> ranger.mtry </th>
+   <th style="text-align:left;"> branch.selection </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
--0.1316039
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-svm
-</td>
-<td style="text-align:right;">
-0.2324275
-</td>
-<td style="text-align:left;">
-pima
-</td>
-<td style="text-align:left;">
-graph_learner.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-ranger
-</td>
-<td style="text-align:right;">
-0.2284944
-</td>
-<td style="text-align:left;">
-pima
-</td>
-<td style="text-align:left;">
-graph_learner.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-ranger
-</td>
-<td style="text-align:right;">
-0.2597179
-</td>
-<td style="text-align:left;">
-pima
-</td>
-<td style="text-align:left;">
-graph_learner.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> -0.1316039 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:left;"> svm </td>
+   <td style="text-align:right;"> 0.2324275 </td>
+   <td style="text-align:left;"> pima </td>
+   <td style="text-align:left;"> graph_learner.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> ranger </td>
+   <td style="text-align:right;"> 0.2284944 </td>
+   <td style="text-align:left;"> pima </td>
+   <td style="text-align:left;"> graph_learner.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> ranger </td>
+   <td style="text-align:right;"> 0.2597179 </td>
+   <td style="text-align:left;"> pima </td>
+   <td style="text-align:left;"> graph_learner.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <p>Next, we want to compare the predictive performances estimated on the outer resampling to the inner resampling. Significantly lower predictive performances on the outer resampling indicate that the models with the optimized hyperparameters overfit the data.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -3070,80 +2304,40 @@ cv
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-iteration
-</th>
-<th style="text-align:left;">
-task_id
-</th>
-<th style="text-align:left;">
-learner_id
-</th>
-<th style="text-align:left;">
-resampling_id
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> iteration </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+   <th style="text-align:right;"> classif.ce </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-pima
-</td>
-<td style="text-align:left;">
-graph_learner.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.2304688
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-pima
-</td>
-<td style="text-align:left;">
-graph_learner.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.2578125
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-pima
-</td>
-<td style="text-align:left;">
-graph_learner.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.2070312
-</td>
-</tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> pima </td>
+   <td style="text-align:left;"> graph_learner.tuned </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.2304688 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> pima </td>
+   <td style="text-align:left;"> graph_learner.tuned </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.2578125 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> pima </td>
+   <td style="text-align:left;"> graph_learner.tuned </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.2070312 </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <p>The aggregated performance of all outer resampling iterations is essentially the unbiased performance of the graph learner with optimal hyperparameter found by random search.</p>
 <div class="layout-chunk" data-layout="l-body">

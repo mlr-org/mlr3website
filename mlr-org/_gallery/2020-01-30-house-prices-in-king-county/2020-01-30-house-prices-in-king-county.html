@@ -1709,7 +1709,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>train.idx</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='va'>tsk</span><span class='op'>$</span><span class='va'>nrow</span><span class='op'>)</span>, <span class='fl'>0.7</span> <span class='op'>*</span> <span class='va'>tsk</span><span class='op'>$</span><span class='va'>nrow</span><span class='op'>)</span>
-<span class='va'>test.idx</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sets.html'>setdiff</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='va'>tsk</span><span class='op'>$</span><span class='va'>nrow</span><span class='op'>)</span>, <span class='va'>train.idx</span><span class='op'>)</span>
+<span class='va'>test.idx</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setops.html'>setdiff</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='va'>tsk</span><span class='op'>$</span><span class='va'>nrow</span><span class='op'>)</span>, <span class='va'>train.idx</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
@@ -1726,7 +1726,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>For now, we leave out the <code>zipcode</code> variable, as we also have the <code>latitude</code> and <code>longitude</code> of each house. Again, we use <code>$clone()</code>, so we do not change the original task.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>tsk_nozip</span> <span class='op'>=</span> <span class='va'>task_train</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='fu'>select</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/sets.html'>setdiff</a></span><span class='op'>(</span><span class='va'>tsk</span><span class='op'>$</span><span class='va'>feature_names</span>, <span class='st'>"zipcode"</span><span class='op'>)</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>tsk_nozip</span> <span class='op'>=</span> <span class='va'>task_train</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='fu'>select</span><span class='op'>(</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setops.html'>setdiff</a></span><span class='op'>(</span><span class='va'>tsk</span><span class='op'>$</span><span class='va'>feature_names</span>, <span class='st'>"zipcode"</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># Get the learner</span>
 <span class='va'>lrn</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"regr.rpart"</span><span class='op'>)</span>

@@ -1440,8 +1440,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--/radix_placeholder_distill-->
   <script src="2020-02-01-tuning-multiplexer_files/header-attrs-2.11/header-attrs.js"></script>
-  <script src="2020-02-01-tuning-multiplexer_files/kePrint-0.0.1/kePrint.js"></script>
-  <link href="2020-02-01-tuning-multiplexer_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="2020-02-01-tuning-multiplexer_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="2020-02-01-tuning-multiplexer_files/popper-2.6.0/popper.min.js"></script>
   <link href="2020-02-01-tuning-multiplexer_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1659,90 +1657,42 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;">
-branch.selection
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-<th style="text-align:left;">
-x_domain_branch.selection
-</th>
-<th style="text-align:right;">
-runtime_learners
-</th>
-<th style="text-align:left;">
-timestamp
-</th>
-<th style="text-align:right;">
-batch_nr
-</th>
-<th style="text-align:right;">
-warnings
-</th>
-<th style="text-align:right;">
-errors
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> branch.selection </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:left;"> x_domain_branch.selection </th>
+   <th style="text-align:right;"> runtime_learners </th>
+   <th style="text-align:left;"> timestamp </th>
+   <th style="text-align:right;"> batch_nr </th>
+   <th style="text-align:right;"> warnings </th>
+   <th style="text-align:right;"> errors </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.1778846
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.280
-</td>
-<td style="text-align:left;">
-2022-02-22 22:50:50
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.3269231
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.137
-</td>
-<td style="text-align:left;">
-2022-02-22 22:50:50
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.1778846 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.375 </td>
+   <td style="text-align:left;"> 2022-02-24 18:13:35 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.3269231 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.227 </td>
+   <td style="text-align:left;"> 2022-02-24 18:13:35 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <p>But: Via this approach we can now get unbiased performance results via nested resampling and using the <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a> (which would make much more sense if we would select from 100 models and not 2).</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1768,132 +1718,60 @@ xgb
 
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-iteration
-</th>
-<th style="text-align:left;">
-branch.selection
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-<th style="text-align:left;">
-task_id
-</th>
-<th style="text-align:left;">
-learner_id
-</th>
-<th style="text-align:left;">
-resampling_id
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> iteration </th>
+   <th style="text-align:left;"> branch.selection </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.2349398
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.1626506
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.3012048
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.2813396
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.2932444
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.2349398 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.1626506 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.3012048 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.2813396 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.2932444 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -1903,364 +1781,144 @@ cv
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-page">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-iteration
-</th>
-<th style="text-align:left;">
-branch.selection
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-<th style="text-align:left;">
-x_domain_branch.selection
-</th>
-<th style="text-align:right;">
-runtime_learners
-</th>
-<th style="text-align:left;">
-timestamp
-</th>
-<th style="text-align:right;">
-batch_nr
-</th>
-<th style="text-align:left;">
-task_id
-</th>
-<th style="text-align:left;">
-learner_id
-</th>
-<th style="text-align:left;">
-resampling_id
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> iteration </th>
+   <th style="text-align:left;"> branch.selection </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:left;"> x_domain_branch.selection </th>
+   <th style="text-align:right;"> runtime_learners </th>
+   <th style="text-align:left;"> timestamp </th>
+   <th style="text-align:right;"> batch_nr </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.2349398
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.408
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:46
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.2469880
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.282
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:47
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.1626506
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.399
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:46
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.2530120
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.272
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:46
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.3795181
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.239
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:45
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.3012048
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.310
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:46
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.3714859
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.250
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:46
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.2813396
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.327
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:46
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.3353414
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-0.305
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:45
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.2932444
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-0.309
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:46
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.2349398 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.408 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:46 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.2469880 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.282 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:47 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.1626506 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.399 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:46 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.2530120 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.272 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:46 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.3795181 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.239 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:45 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.3012048 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.310 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:46 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.3714859 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.250 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:46 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.2813396 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.327 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:46 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.3353414 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 0.305 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:45 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.2932444 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 0.309 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:46 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <h1 id="model-selection-and-tuning-with-pipelines">Model-Selection and Tuning with Pipelines</h1>
 <p>Now let’s select from our given set of models and tune their hyperparameters. One way to do this is to define a search space for each individual learner, wrap them all with the <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a>, then call <a href="https://mlr3.mlr-org.com/reference/benchmark.html"><code>benchmark()</code></a> on them. As this is pretty standard, we will skip this here, and show an even neater option, where you can tune over models and hyperparameters in one go. If you have quite a large space of potential learners and combine this with an efficient tuning algorithm, this can save quite some time in tuning as you can learn during optimization which options work best and focus on them. NB: Many AutoML systems work in a very similar way.</p>
@@ -2273,1629 +1931,677 @@ cv
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div style="border: 1px solid #ddd; padding: 0px; border: 0px !important;overflow-y: scroll; height:400px; ">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-id
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-class
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-lower
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-upper
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-nlevels
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> id </th>
+   <th style="text-align:left;"> class </th>
+   <th style="text-align:right;"> lower </th>
+   <th style="text-align:right;"> upper </th>
+   <th style="text-align:right;"> nlevels </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-branch.selection
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.alpha
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.approxcontrib
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.base_score
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.booster
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.callbacks
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.colsample_bylevel
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.colsample_bynode
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.colsample_bytree
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.disable_default_eval_metric
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.early_stopping_rounds
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.eta
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.eval_metric
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.feature_selector
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.feval
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.gamma
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.grow_policy
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.interaction_constraints
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.iterationrange
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.lambda
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.lambda_bias
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.max_bin
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.max_delta_step
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.max_depth
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.max_leaves
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.maximize
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.min_child_weight
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.missing
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.monotone_constraints
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.normalize_type
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.nrounds
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.nthread
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.ntreelimit
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.num_parallel_tree
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.objective
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.one_drop
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.outputmargin
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.predcontrib
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.predictor
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.predinteraction
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.predleaf
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.print_every_n
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.process_type
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.rate_drop
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.refresh_leaf
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.reshape
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.seed_per_iteration
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.sampling_method
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.sample_type
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.save_name
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.save_period
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.scale_pos_weight
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.sketch_eps
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.skip_drop
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.single_precision_histogram
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.strict_shape
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.subsample
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.top_k
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.training
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.tree_method
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.tweedie_variance_power
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.updater
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.verbose
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.watchlist
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb.xgb_model
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.alpha
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.always.split.variables
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.class.weights
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.holdout
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.importance
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.keep.inbag
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.max.depth
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.min.node.size
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.min.prop
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.minprop
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.mtry
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.mtry.ratio
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.num.random.splits
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.num.threads
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.num.trees
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.oob.error
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.regularization.factor
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.regularization.usedepth
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.replace
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.respect.unordered.factors
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.sample.fraction
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.save.memory
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.scale.permutation.importance
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.se.method
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.seed
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
--Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.split.select.weights
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.splitrule
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.verbose
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf.write.forest
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> branch.selection </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.alpha </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.approxcontrib </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.base_score </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.booster </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.callbacks </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.colsample_bylevel </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.colsample_bynode </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.colsample_bytree </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.disable_default_eval_metric </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.early_stopping_rounds </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.eta </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.eval_metric </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.feature_selector </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.feval </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.gamma </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.grow_policy </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.interaction_constraints </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.iterationrange </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.lambda </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.lambda_bias </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.max_bin </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.max_delta_step </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.max_depth </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.max_leaves </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.maximize </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.min_child_weight </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.missing </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.monotone_constraints </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.normalize_type </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.nrounds </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.nthread </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.ntreelimit </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.num_parallel_tree </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.objective </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.one_drop </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.outputmargin </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.predcontrib </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.predictor </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.predinteraction </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.predleaf </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.print_every_n </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.process_type </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.rate_drop </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.refresh_leaf </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.reshape </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.seed_per_iteration </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.sampling_method </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.sample_type </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.save_name </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.save_period </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.scale_pos_weight </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.sketch_eps </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.skip_drop </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.single_precision_histogram </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.strict_shape </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.subsample </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.top_k </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.training </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.tree_method </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.tweedie_variance_power </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.updater </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.verbose </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.watchlist </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb.xgb_model </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.alpha </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.always.split.variables </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.class.weights </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.holdout </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.importance </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.keep.inbag </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.max.depth </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.min.node.size </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.min.prop </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.minprop </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.mtry </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.mtry.ratio </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.num.random.splits </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.num.threads </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.num.trees </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.oob.error </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.regularization.factor </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.regularization.usedepth </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.replace </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.respect.unordered.factors </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.sample.fraction </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.save.memory </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.scale.permutation.importance </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.se.method </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.seed </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> -Inf </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.split.select.weights </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.splitrule </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.verbose </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf.write.forest </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
 </tbody>
-</table>
-</div>
+</table></div>
 </div>
 <p>We decide to tune the <code>mtry</code> parameter of the random forest and the <code>nrounds</code> parameter of xgboost. Additionally, we tune branching parameter that selects our learner.</p>
 <p>We also have to reflect the hierarchical order of the parameter sets (admittedly, this is somewhat inconvenient). We can only set the <code>mtry</code> value if the pipe is configured to use the random forest (<a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.ranger.html"><code>ranger</code></a>). The same applies for the xgboost parameter.</p>
@@ -3936,364 +2642,144 @@ NA
 
 </div>
 <div class="layout-chunk" data-layout="l-page">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;">
-branch.selection
-</th>
-<th style="text-align:right;">
-rf.mtry
-</th>
-<th style="text-align:right;">
-xgb.nrounds
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-<th style="text-align:left;">
-x_domain_branch.selection
-</th>
-<th style="text-align:right;">
-x_domain_xgb.nrounds
-</th>
-<th style="text-align:right;">
-x_domain_rf.mtry
-</th>
-<th style="text-align:right;">
-runtime_learners
-</th>
-<th style="text-align:left;">
-timestamp
-</th>
-<th style="text-align:right;">
-batch_nr
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> branch.selection </th>
+   <th style="text-align:right;"> rf.mtry </th>
+   <th style="text-align:right;"> xgb.nrounds </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:left;"> x_domain_branch.selection </th>
+   <th style="text-align:right;"> x_domain_xgb.nrounds </th>
+   <th style="text-align:right;"> x_domain_rf.mtry </th>
+   <th style="text-align:right;"> runtime_learners </th>
+   <th style="text-align:left;"> timestamp </th>
+   <th style="text-align:right;"> batch_nr </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-292
-</td>
-<td style="text-align:right;">
-0.1875000
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-292
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.499
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:52
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-19
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.2692308
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-19
-</td>
-<td style="text-align:right;">
-0.449
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:53
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.2307692
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-0.330
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:54
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-229
-</td>
-<td style="text-align:right;">
-0.1875000
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-229
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.457
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:55
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-301
-</td>
-<td style="text-align:right;">
-0.1875000
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-301
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.490
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:55
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-20
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.2596154
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-20
-</td>
-<td style="text-align:right;">
-0.702
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:56
-</td>
-<td style="text-align:right;">
-6
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.2355769
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-0.359
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:57
-</td>
-<td style="text-align:right;">
-7
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.2355769
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0.310
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:57
-</td>
-<td style="text-align:right;">
-8
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.2500000
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-0.351
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:58
-</td>
-<td style="text-align:right;">
-9
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-18
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.2451923
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-18
-</td>
-<td style="text-align:right;">
-0.463
-</td>
-<td style="text-align:left;">
-2022-02-18 07:01:59
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 292 </td>
+   <td style="text-align:right;"> 0.1875000 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 292 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.499 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:52 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 19 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.2692308 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 19 </td>
+   <td style="text-align:right;"> 0.449 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:53 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.2307692 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.330 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:54 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 229 </td>
+   <td style="text-align:right;"> 0.1875000 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 229 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.457 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:55 </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 301 </td>
+   <td style="text-align:right;"> 0.1875000 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> 301 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.490 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:55 </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 20 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.2596154 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 20 </td>
+   <td style="text-align:right;"> 0.702 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:56 </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.2355769 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 0.359 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:57 </td>
+   <td style="text-align:right;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.2355769 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.310 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:57 </td>
+   <td style="text-align:right;"> 8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.2500000 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.351 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:58 </td>
+   <td style="text-align:right;"> 9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 18 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.2451923 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 18 </td>
+   <td style="text-align:right;"> 0.463 </td>
+   <td style="text-align:left;"> 2022-02-18 07:01:59 </td>
+   <td style="text-align:right;"> 10 </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <p>The following shows a quick way to visualize the tuning results.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -4332,204 +2818,84 @@ NA
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-iteration
-</th>
-<th style="text-align:left;">
-branch.selection
-</th>
-<th style="text-align:right;">
-rf.mtry
-</th>
-<th style="text-align:right;">
-xgb.nrounds
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-<th style="text-align:left;">
-learner_param_vals
-</th>
-<th style="text-align:left;">
-x_domain
-</th>
-<th style="text-align:left;">
-task_id
-</th>
-<th style="text-align:left;">
-learner_id
-</th>
-<th style="text-align:left;">
-resampling_id
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> iteration </th>
+   <th style="text-align:left;"> branch.selection </th>
+   <th style="text-align:right;"> rf.mtry </th>
+   <th style="text-align:right;"> xgb.nrounds </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:left;"> learner_param_vals </th>
+   <th style="text-align:left;"> x_domain </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.2108434
-</td>
-<td style="text-align:left;">
-rf , 1 , 1 , 0 , logloss, 1 , 5
-</td>
-<td style="text-align:left;">
-rf, 5
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.1807229
-</td>
-<td style="text-align:left;">
-rf , 1 , 1 , 0 , logloss, 1 , 1
-</td>
-<td style="text-align:left;">
-rf, 1
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.2289157
-</td>
-<td style="text-align:left;">
-rf , 1 , 1 , 0 , logloss, 1 , 1
-</td>
-<td style="text-align:left;">
-rf, 1
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-xgb
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-445
-</td>
-<td style="text-align:right;">
-0.1915519
-</td>
-<td style="text-align:left;">
-xgb , 445 , 1 , 0 , logloss, 1
-</td>
-<td style="text-align:left;">
-xgb, 445
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-rf
-</td>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.1858147
-</td>
-<td style="text-align:left;">
-rf , 1 , 1 , 0 , logloss, 1 , 7
-</td>
-<td style="text-align:left;">
-rf, 7
-</td>
-<td style="text-align:left;">
-sonar
-</td>
-<td style="text-align:left;">
-g.tuned
-</td>
-<td style="text-align:left;">
-cv
-</td>
-</tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.2108434 </td>
+   <td style="text-align:left;"> rf     , 1      , 1      , 0      , logloss, 1      , 5 </td>
+   <td style="text-align:left;"> rf, 5 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.1807229 </td>
+   <td style="text-align:left;"> rf     , 1      , 1      , 0      , logloss, 1      , 1 </td>
+   <td style="text-align:left;"> rf, 1 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.2289157 </td>
+   <td style="text-align:left;"> rf     , 1      , 1      , 0      , logloss, 1      , 1 </td>
+   <td style="text-align:left;"> rf, 1 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> xgb </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 445 </td>
+   <td style="text-align:right;"> 0.1915519 </td>
+   <td style="text-align:left;"> xgb    , 445    , 1      , 0      , logloss, 1 </td>
+   <td style="text-align:left;"> xgb, 445 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> rf </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0.1858147 </td>
+   <td style="text-align:left;"> rf     , 1      , 1      , 0      , logloss, 1      , 7 </td>
+   <td style="text-align:left;"> rf, 7 </td>
+   <td style="text-align:left;"> sonar </td>
+   <td style="text-align:left;"> g.tuned </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

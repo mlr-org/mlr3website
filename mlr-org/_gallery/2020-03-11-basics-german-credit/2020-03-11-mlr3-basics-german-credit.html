@@ -1687,621 +1687,262 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>skimr</span><span class='fu'>::</span><span class='fu'><a href='https://docs.ropensci.org/skimr/reference/skim.html'>skim</a></span><span class='op'>(</span><span class='va'>german</span><span class='op'>)</span>
 </code></pre>
 </div>
-<table style="width: auto;" class="table table-condensed">
-<caption>
-<span id="tab:2020-03-11-mlr3-basics-german-credit-005">Table 1: </span>Data summary
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-</th>
-</tr>
-</thead>
+<table>
+<caption><span id="tab:2020-03-11-mlr3-basics-german-credit-005">Table 1: </span>Data summary</caption>
 <tbody>
-<tr>
-<td style="text-align:left;">
-Name
-</td>
-<td style="text-align:left;">
-german
-</td>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">german</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Number of rows
-</td>
-<td style="text-align:left;">
-1000
-</td>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">1000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Number of columns
-</td>
-<td style="text-align:left;">
-21
-</td>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">21</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-_______________________
-</td>
-<td style="text-align:left;">
-</td>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Column type frequency:
-</td>
-<td style="text-align:left;">
-</td>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
 </tr>
-<tr>
-<td style="text-align:left;">
-factor
-</td>
-<td style="text-align:left;">
-18
-</td>
+<tr class="even">
+<td style="text-align: left;">factor</td>
+<td style="text-align: left;">18</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-numeric
-</td>
-<td style="text-align:left;">
-3
-</td>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">3</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-________________________
-</td>
-<td style="text-align:left;">
-</td>
+<tr class="even">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Group variables
-</td>
-<td style="text-align:left;">
-None
-</td>
+<tr class="odd">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Variable type: factor</strong></p>
 <table>
 <thead>
-<tr>
-<th style="text-align:left;">
-skim_variable
-</th>
-<th style="text-align:right;">
-n_missing
-</th>
-<th style="text-align:right;">
-complete_rate
-</th>
-<th style="text-align:left;">
-ordered
-</th>
-<th style="text-align:right;">
-n_unique
-</th>
-<th style="text-align:left;">
-top_counts
-</th>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: left;">ordered</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: left;">top_counts</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-status
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-…: 394, no : 274, …: 269, 0&lt;=: 63
-</td>
+<tr class="odd">
+<td style="text-align: left;">status</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">…: 394, no : 274, …: 269, 0&lt;=: 63</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-credit_history
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-no : 530, all: 293, exi: 88, cri: 49
-</td>
+<tr class="even">
+<td style="text-align: left;">credit_history</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">no : 530, all: 293, exi: 88, cri: 49</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-purpose
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:left;">
-fur: 280, oth: 234, car: 181, car: 103
-</td>
+<tr class="odd">
+<td style="text-align: left;">purpose</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">fur: 280, oth: 234, car: 181, car: 103</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-savings
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-unk: 603, …: 183, …: 103, 100: 63
-</td>
+<tr class="even">
+<td style="text-align: left;">savings</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">unk: 603, …: 183, …: 103, 100: 63</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-employment_duration
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-1 &lt;: 339, &gt;= : 253, 4 &lt;: 174, &lt; 1: 172
-</td>
+<tr class="odd">
+<td style="text-align: left;">employment_duration</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">1 &lt;: 339, &gt;= : 253, 4 &lt;: 174, &lt; 1: 172</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-installment_rate
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-&lt; 2: 476, 25 : 231, 20 : 157, &gt;= : 136
-</td>
+<tr class="even">
+<td style="text-align: left;">installment_rate</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">&lt; 2: 476, 25 : 231, 20 : 157, &gt;= : 136</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-personal_status_sex
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-mal: 548, fem: 310, fem: 92, mal: 50
-</td>
+<tr class="odd">
+<td style="text-align: left;">personal_status_sex</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">mal: 548, fem: 310, fem: 92, mal: 50</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-other_debtors
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-non: 907, gua: 52, co-: 41
-</td>
+<tr class="even">
+<td style="text-align: left;">other_debtors</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">non: 907, gua: 52, co-: 41</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-present_residence
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-&gt;= : 413, 1 &lt;: 308, 4 &lt;: 149, &lt; 1: 130
-</td>
+<tr class="odd">
+<td style="text-align: left;">present_residence</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">&gt;= : 413, 1 &lt;: 308, 4 &lt;: 149, &lt; 1: 130</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-property
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-bui: 332, unk: 282, car: 232, rea: 154
-</td>
+<tr class="even">
+<td style="text-align: left;">property</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">bui: 332, unk: 282, car: 232, rea: 154</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-other_installment_plans
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-non: 814, ban: 139, sto: 47
-</td>
+<tr class="odd">
+<td style="text-align: left;">other_installment_plans</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">non: 814, ban: 139, sto: 47</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-housing
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-ren: 714, for: 179, own: 107
-</td>
+<tr class="even">
+<td style="text-align: left;">housing</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">ren: 714, for: 179, own: 107</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-number_credits
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-1: 633, 2-3: 333, 4-5: 28, &gt;= : 6
-</td>
+<tr class="odd">
+<td style="text-align: left;">number_credits</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1: 633, 2-3: 333, 4-5: 28, &gt;= : 6</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-job
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-ski: 630, uns: 200, man: 148, une: 22
-</td>
+<tr class="even">
+<td style="text-align: left;">job</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">ski: 630, uns: 200, man: 148, une: 22</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-people_liable
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-0 t: 845, 3 o: 155
-</td>
+<tr class="odd">
+<td style="text-align: left;">people_liable</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0 t: 845, 3 o: 155</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-telephone
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-no: 596, yes: 404
-</td>
+<tr class="even">
+<td style="text-align: left;">telephone</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">no: 596, yes: 404</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-foreign_worker
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-no: 963, yes: 37
-</td>
+<tr class="odd">
+<td style="text-align: left;">foreign_worker</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">no: 963, yes: 37</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-credit_risk
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-goo: 700, bad: 300
-</td>
+<tr class="even">
+<td style="text-align: left;">credit_risk</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">goo: 700, bad: 300</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Variable type: numeric</strong></p>
 <table>
 <thead>
-<tr>
-<th style="text-align:left;">
-skim_variable
-</th>
-<th style="text-align:right;">
-n_missing
-</th>
-<th style="text-align:right;">
-complete_rate
-</th>
-<th style="text-align:right;">
-mean
-</th>
-<th style="text-align:right;">
-sd
-</th>
-<th style="text-align:right;">
-p0
-</th>
-<th style="text-align:right;">
-p25
-</th>
-<th style="text-align:right;">
-p50
-</th>
-<th style="text-align:right;">
-p75
-</th>
-<th style="text-align:right;">
-p100
-</th>
-<th style="text-align:left;">
-hist
-</th>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-duration
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-20.90
-</td>
-<td style="text-align:right;">
-12.06
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-12.0
-</td>
-<td style="text-align:right;">
-18.0
-</td>
-<td style="text-align:right;">
-24.00
-</td>
-<td style="text-align:right;">
-72
-</td>
-<td style="text-align:left;">
-▇▇▂▁▁
-</td>
+<tr class="odd">
+<td style="text-align: left;">duration</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">20.90</td>
+<td style="text-align: right;">12.06</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">12.0</td>
+<td style="text-align: right;">18.0</td>
+<td style="text-align: right;">24.00</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: left;">▇▇▂▁▁</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-amount
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-3271.25
-</td>
-<td style="text-align:right;">
-2822.75
-</td>
-<td style="text-align:right;">
-250
-</td>
-<td style="text-align:right;">
-1365.5
-</td>
-<td style="text-align:right;">
-2319.5
-</td>
-<td style="text-align:right;">
-3972.25
-</td>
-<td style="text-align:right;">
-18424
-</td>
-<td style="text-align:left;">
-▇▂▁▁▁
-</td>
+<tr class="even">
+<td style="text-align: left;">amount</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3271.25</td>
+<td style="text-align: right;">2822.75</td>
+<td style="text-align: right;">250</td>
+<td style="text-align: right;">1365.5</td>
+<td style="text-align: right;">2319.5</td>
+<td style="text-align: right;">3972.25</td>
+<td style="text-align: right;">18424</td>
+<td style="text-align: left;">▇▂▁▁▁</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-age
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-35.54
-</td>
-<td style="text-align:right;">
-11.35
-</td>
-<td style="text-align:right;">
-19
-</td>
-<td style="text-align:right;">
-27.0
-</td>
-<td style="text-align:right;">
-33.0
-</td>
-<td style="text-align:right;">
-42.00
-</td>
-<td style="text-align:right;">
-75
-</td>
-<td style="text-align:left;">
-▇▆▃▁▁
-</td>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">35.54</td>
+<td style="text-align: right;">11.35</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">27.0</td>
+<td style="text-align: right;">33.0</td>
+<td style="text-align: right;">42.00</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: left;">▇▆▃▁▁</td>
 </tr>
 </tbody>
 </table>
