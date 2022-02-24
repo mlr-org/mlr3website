@@ -23,7 +23,6 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -1439,8 +1438,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--/radix_placeholder_distill-->
   <script src="2020-03-18-iris-mlr3-basics_files/header-attrs-2.11/header-attrs.js"></script>
-  <script src="2020-03-18-iris-mlr3-basics_files/kePrint-0.0.1/kePrint.js"></script>
-  <link href="2020-03-18-iris-mlr3-basics_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="2020-03-18-iris-mlr3-basics_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="2020-03-18-iris-mlr3-basics_files/popper-2.6.0/popper.min.js"></script>
   <link href="2020-03-18-iris-mlr3-basics_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1461,7 +1458,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"mlr3 Basics on \"Iris\" - Hello World!","description":"Basic ML operations on iris: Train, predict, score, resample and benchmark. A simple, hands-on intro to mlr3.","authors":[{"author":"Bernd Bischl","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-03-18T00:00:00.000+00:00","citationText":"Bischl, 2020"}
+{"title":"mlr3 Basics on \"Iris\" - Hello World!","description":"Basic ML operations on iris: Train, predict, score, resample and benchmark. A simple, hands-on intro to mlr3.","authors":[{"author":"Bernd Bischl","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-03-18T00:00:00.000+01:00","citationText":"Bischl, 2020"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1647,199 +1644,89 @@ response     setosa versicolor virginica
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;">
-id
-</th>
-<th style="text-align:left;">
-class
-</th>
-<th style="text-align:right;">
-lower
-</th>
-<th style="text-align:right;">
-upper
-</th>
-<th style="text-align:right;">
-nlevels
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> id </th>
+   <th style="text-align:left;"> class </th>
+   <th style="text-align:right;"> lower </th>
+   <th style="text-align:right;"> upper </th>
+   <th style="text-align:right;"> nlevels </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-cp
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-keep_model
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-maxcompete
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-maxdepth
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-30
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-maxsurrogate
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-minbucket
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-minsplit
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-surrogatestyle
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-usesurrogate
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-xval
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> cp </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> keep_model </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maxcompete </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maxdepth </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 30 </td>
+   <td style="text-align:right;"> 30 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maxsurrogate </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> minbucket </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> minsplit </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surrogatestyle </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> usesurrogate </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> xval </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -1854,7 +1741,20 @@ Inf
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>cv10</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
 <span class='va'>rr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/resample.html'>resample</a></span><span class='op'>(</span><span class='va'>task</span>, <span class='va'>learner_1</span>, <span class='va'>cv10</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>rr</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>INFO  [18:12:44.690] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 3/10) 
+INFO  [18:12:44.732] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 6/10) 
+INFO  [18:12:44.752] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 4/10) 
+INFO  [18:12:44.771] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 5/10) 
+INFO  [18:12:44.785] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 1/10) 
+INFO  [18:12:44.799] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 10/10) 
+INFO  [18:12:44.816] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 8/10) 
+INFO  [18:12:44.834] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 9/10) 
+INFO  [18:12:44.852] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 7/10) 
+INFO  [18:12:44.870] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 2/10) </code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>rr</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code>&lt;ResampleResult&gt; of 10 iterations
@@ -1870,199 +1770,89 @@ Inf
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-iteration
-</th>
-<th style="text-align:left;">
-task_id
-</th>
-<th style="text-align:left;">
-learner_id
-</th>
-<th style="text-align:left;">
-resampling_id
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> iteration </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+   <th style="text-align:right;"> classif.ce </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.1333333
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.0666667
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.0666667
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.1333333
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.0000000
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.1333333
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.0666667
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.0666667
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.0000000
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:left;">
-iris
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-0.0000000
-</td>
-</tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.1333333 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.0666667 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.0666667 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.1333333 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.1333333 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.0666667 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.0666667 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:left;"> iris </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2073,89 +1863,47 @@ cv
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-row_ids
-</th>
-<th style="text-align:left;">
-truth
-</th>
-<th style="text-align:left;">
-response
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> row_ids </th>
+   <th style="text-align:left;"> truth </th>
+   <th style="text-align:left;"> response </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-25
-</td>
-<td style="text-align:left;">
-setosa
-</td>
-<td style="text-align:left;">
-setosa
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-53
-</td>
-<td style="text-align:left;">
-versicolor
-</td>
-<td style="text-align:left;">
-virginica
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-54
-</td>
-<td style="text-align:left;">
-versicolor
-</td>
-<td style="text-align:left;">
-versicolor
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-59
-</td>
-<td style="text-align:left;">
-versicolor
-</td>
-<td style="text-align:left;">
-versicolor
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-60
-</td>
-<td style="text-align:left;">
-versicolor
-</td>
-<td style="text-align:left;">
-versicolor
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-65
-</td>
-<td style="text-align:left;">
-versicolor
-</td>
-<td style="text-align:left;">
-versicolor
-</td>
-</tr>
+  <tr>
+   <td style="text-align:right;"> 25 </td>
+   <td style="text-align:left;"> setosa </td>
+   <td style="text-align:left;"> setosa </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 53 </td>
+   <td style="text-align:left;"> versicolor </td>
+   <td style="text-align:left;"> virginica </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 54 </td>
+   <td style="text-align:left;"> versicolor </td>
+   <td style="text-align:left;"> versicolor </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 59 </td>
+   <td style="text-align:left;"> versicolor </td>
+   <td style="text-align:left;"> versicolor </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 60 </td>
+   <td style="text-align:left;"> versicolor </td>
+   <td style="text-align:left;"> versicolor </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 65 </td>
+   <td style="text-align:left;"> versicolor </td>
+   <td style="text-align:left;"> versicolor </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2209,7 +1957,42 @@ response     setosa versicolor virginica
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learners</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>learner_1</span>, <span class='va'>learner_2</span>, <span class='fu'><a href='https://rdrr.io/pkg/mlr3extralearners/man/lrn.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.randomForest"</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>grid</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/benchmark_grid.html'>benchmark_grid</a></span><span class='op'>(</span><span class='va'>task</span>, <span class='va'>learners</span>, <span class='va'>cv10</span><span class='op'>)</span>
 <span class='va'>bmr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/benchmark.html'>benchmark</a></span><span class='op'>(</span><span class='va'>grid</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>bmr</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>INFO  [18:12:58.605] [mlr3] Running benchmark with 30 resampling iterations 
+INFO  [18:12:58.610] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 10/10) 
+INFO  [18:12:58.623] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 6/10) 
+INFO  [18:12:58.637] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 10/10) 
+INFO  [18:12:58.651] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 7/10) 
+INFO  [18:12:58.664] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 1/10) 
+INFO  [18:12:58.677] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 9/10) 
+INFO  [18:12:58.689] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 8/10) 
+INFO  [18:12:58.702] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 5/10) 
+INFO  [18:12:58.715] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 5/10) 
+INFO  [18:12:58.757] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 1/10) 
+INFO  [18:12:58.770] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 5/10) 
+INFO  [18:12:58.782] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 4/10) 
+INFO  [18:12:58.795] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 9/10) 
+INFO  [18:12:58.808] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 1/10) 
+INFO  [18:12:58.851] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 3/10) 
+INFO  [18:12:58.864] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 4/10) 
+INFO  [18:12:58.877] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 8/10) 
+INFO  [18:12:58.916] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 8/10) 
+INFO  [18:12:58.930] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 3/10) 
+INFO  [18:12:58.964] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 2/10) 
+INFO  [18:12:58.976] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 9/10) 
+INFO  [18:12:59.015] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 2/10) 
+INFO  [18:12:59.028] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 6/10) 
+INFO  [18:12:59.091] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 3/10) 
+INFO  [18:12:59.110] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 7/10) 
+INFO  [18:12:59.148] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 6/10) 
+INFO  [18:12:59.164] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;iris&#39; (iter 7/10) 
+INFO  [18:12:59.178] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 2/10) 
+INFO  [18:12:59.218] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 10/10) 
+INFO  [18:12:59.255] [mlr3] Applying learner &#39;classif.randomForest&#39; on task &#39;iris&#39; (iter 4/10) 
+INFO  [18:12:59.313] [mlr3] Finished benchmark </code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>bmr</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code>&lt;BenchmarkResult&gt; of 30 rows with 3 resampling runs
@@ -2228,7 +2011,7 @@ response     setosa versicolor virginica
 </div>
 <h2 id="conclusion">Conclusion</h2>
 <p>We left out a lot of details and other features. If you want to know more, read the <a href="https://mlr3book.mlr-org.com/">mlr3book</a> and the documentation of the mentioned packages.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

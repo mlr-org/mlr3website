@@ -23,7 +23,6 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -1439,8 +1438,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--/radix_placeholder_distill-->
   <script src="2020-10-14-threshold-tuning_files/header-attrs-2.11/header-attrs.js"></script>
-  <script src="2020-10-14-threshold-tuning_files/kePrint-0.0.1/kePrint.js"></script>
-  <link href="2020-10-14-threshold-tuning_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="2020-10-14-threshold-tuning_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="2020-10-14-threshold-tuning_files/popper-2.6.0/popper.min.js"></script>
   <link href="2020-10-14-threshold-tuning_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1461,7 +1458,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Threshold Tuning for Classification Tasks","description":"Predicting probabilities in classification tasks allows us to adjust the probability thresholds required for\nassigning an observation to a certain class. This can lead to improved predictive performance.","authors":[{"author":"Florian Pfisterer","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-10-14T00:00:00.000+00:00","citationText":"Pfisterer, 2020"}
+{"title":"Threshold Tuning for Classification Tasks","description":"Predicting probabilities in classification tasks allows us to adjust the probability thresholds required for\nassigning an observation to a certain class. This can lead to improved predictive performance.","authors":[{"author":"Florian Pfisterer","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2020-10-14T00:00:00.000+02:00","citationText":"Pfisterer, 2020"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1619,216 +1616,96 @@ response pos neg
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;">
-id
-</th>
-<th style="text-align:left;">
-class
-</th>
-<th style="text-align:right;">
-lower
-</th>
-<th style="text-align:right;">
-upper
-</th>
-<th style="text-align:right;">
-nlevels
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> id </th>
+   <th style="text-align:left;"> class </th>
+   <th style="text-align:right;"> lower </th>
+   <th style="text-align:right;"> upper </th>
+   <th style="text-align:right;"> nlevels </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-classif.rpart.cp
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.keep_model
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.maxcompete
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.maxdepth
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-30
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.maxsurrogate
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.minbucket
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.minsplit
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.surrogatestyle
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.usesurrogate
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.xval
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-threshold.thresholds
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.cp </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.keep_model </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.maxcompete </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.maxdepth </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 30 </td>
+   <td style="text-align:right;"> 30 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.maxsurrogate </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.minbucket </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.minsplit </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.surrogatestyle </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.usesurrogate </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.xval </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> threshold.thresholds </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <p>We can now tune those thresholds from the outside as follows:</p>
 <p>Before <code>tuning</code>, we have to define which hyperparameters we want to tune over. In this example, we only tune over the <code>thresholds</code> parameter of the <code>threshold</code> <a href="https://mlr3pipelines.mlr-org.com/reference/PipeOp.html"><code>PipeOp</code></a>. you can easily imagine, that we can also jointly tune over additional hyperparameters, i.e. rpart’s <code>cp</code> parameter.</p>
@@ -1908,318 +1785,138 @@ Inf
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;">
-id
-</th>
-<th style="text-align:left;">
-class
-</th>
-<th style="text-align:right;">
-lower
-</th>
-<th style="text-align:right;">
-upper
-</th>
-<th style="text-align:right;">
-nlevels
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> id </th>
+   <th style="text-align:left;"> class </th>
+   <th style="text-align:right;"> lower </th>
+   <th style="text-align:right;"> upper </th>
+   <th style="text-align:right;"> nlevels </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-classif.rpart.resampling.method
-</td>
-<td style="text-align:left;">
-ParamFct
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.resampling.folds
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.resampling.keep_response
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.cp
-</td>
-<td style="text-align:left;">
-ParamDbl
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.keep_model
-</td>
-<td style="text-align:left;">
-ParamLgl
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.maxcompete
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.maxdepth
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-30
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.maxsurrogate
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.minbucket
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.minsplit
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.surrogatestyle
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.usesurrogate
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.xval
-</td>
-<td style="text-align:left;">
-ParamInt
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-classif.rpart.affect_columns
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tunethreshold.measure
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tunethreshold.optimizer
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tunethreshold.log_level
-</td>
-<td style="text-align:left;">
-ParamUty
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-Inf
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.resampling.method </td>
+   <td style="text-align:left;"> ParamFct </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.resampling.folds </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.resampling.keep_response </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.cp </td>
+   <td style="text-align:left;"> ParamDbl </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.keep_model </td>
+   <td style="text-align:left;"> ParamLgl </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.maxcompete </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.maxdepth </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 30 </td>
+   <td style="text-align:right;"> 30 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.maxsurrogate </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.minbucket </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.minsplit </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.surrogatestyle </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.usesurrogate </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.xval </td>
+   <td style="text-align:left;"> ParamInt </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> Inf </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.rpart.affect_columns </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> tunethreshold.measure </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> tunethreshold.optimizer </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> tunethreshold.log_level </td>
+   <td style="text-align:left;"> ParamUty </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> Inf </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <p>If we now use the <a href="https://mlr3pipelines.mlr-org.com/reference/mlr_learners_graph.html"><code>GraphLearner</code></a>, it automatically adjusts the <code>thresholds</code> during prediction.</p>
 <p>Note that we can set <a href="https://mlr3.mlr-org.com/reference/mlr_resamplings_insample.html"><code>ResamplingInsample</code></a> as a resampling strategy for <a href="https://mlr3pipelines.mlr-org.com/reference/mlr_pipeops_learner_cv.html"><code>PipeOpLearnerCV</code></a> in order to evaluate predictions on the “training” data. This is generally not advised, as it might lead to over-fitting on the thresholds but can significantly reduce runtime.</p>
@@ -2242,81 +1939,39 @@ Inf
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-nr
-</th>
-<th style="text-align:left;">
-task_id
-</th>
-<th style="text-align:left;">
-learner_id
-</th>
-<th style="text-align:left;">
-resampling_id
-</th>
-<th style="text-align:right;">
-iters
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-<th style="text-align:right;">
-classif.fnr
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> nr </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+   <th style="text-align:right;"> iters </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:right;"> classif.fnr </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-german_credit
-</td>
-<td style="text-align:left;">
-classif.rpart
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-0.2760095
-</td>
-<td style="text-align:right;">
-0.1272398
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-german_credit
-</td>
-<td style="text-align:left;">
-classif.rpart.tunethreshold
-</td>
-<td style="text-align:left;">
-cv
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-0.2879916
-</td>
-<td style="text-align:right;">
-0.0448533
-</td>
-</tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> german_credit </td>
+   <td style="text-align:left;"> classif.rpart </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 0.2760095 </td>
+   <td style="text-align:right;"> 0.1272398 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> german_credit </td>
+   <td style="text-align:left;"> classif.rpart.tunethreshold </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 0.2879916 </td>
+   <td style="text-align:right;"> 0.0448533 </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

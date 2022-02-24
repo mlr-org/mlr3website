@@ -28,10 +28,8 @@ params:
   R.options = list(width = 120)
 )
 
-library(mlr3book)
-library(kableExtra)
-
-ggplot2::theme_set(ggplot2::theme_light())
+library(mlr3website)
+library(data.table)
 ```
 
 This use case shows how to tune over multiple learners for a single task.
@@ -162,9 +160,7 @@ as.data.table(instance$archive)
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-009, echo = FALSE}
-as.data.table(instance$archive, exclude_columns = c("uhash",  "resample_result")) %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(as.data.table(instance$archive, exclude_columns = c("uhash",  "resample_result")))
 ```
 
 But: Via this approach we can now get unbiased performance results via nested resampling and using the `r ref("AutoTuner")` (which would make much more sense if we would select from 100 models and not 2).
@@ -192,9 +188,7 @@ rr = readRDS("data/rr.rda")
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-013, echo = FALSE}
-extract_inner_tuning_results(rr)[, .(iteration, branch.selection, classif.ce, task_id, learner_id, resampling_id )] %>%
-  kable(format = "html") %>%
-  kable_styling()
+responsive_table(extract_inner_tuning_results(rr)[, c("iteration", "branch.selection", "classif.ce", "task_id", "learner_id", "resampling_id"), with = FALSE])
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-014, results = 'hide'}
@@ -203,9 +197,7 @@ extract_inner_tuning_archives(rr)
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-015, echo = FALSE, layout="l-page"}
-extract_inner_tuning_archives(rr, exclude_columns = c("uhash",  "resample_result")) %>%
-  kable(format = "html") %>%
-  kable_styling()
+responsive_table(extract_inner_tuning_archives(rr, exclude_columns = c("uhash",  "resample_result")))
 ```
 
 # Model-Selection and Tuning with Pipelines
@@ -226,10 +218,7 @@ as.data.table(graph$param_set)
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-017, echo = FALSE}
-as.data.table(graph$param_set)[, .(id, class, lower, upper, nlevels)] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE) %>%
-  scroll_box(height = "400px", extra_css = "border: 0px !important;")
+responsive_table(as.data.table(graph$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
 ```
 
 We decide to tune the `mtry` parameter of the random forest and the `nrounds` parameter of xgboost.
@@ -277,9 +266,7 @@ instance = readRDS("data/instance.rda")
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-022, echo = FALSE, layout="l-page"}
-as.data.table(instance$archive, exclude_columns = c("uhash",  "resample_result")) %>%
-  kable(format = "html") %>%
-  kable_styling()
+responsive_table(as.data.table(instance$archive, exclude_columns = c("uhash",  "resample_result")))
 ```
 
 The following shows a quick way to visualize the tuning results.
@@ -316,7 +303,5 @@ extract_inner_tuning_results(rr)
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-028, echo = FALSE}
-extract_inner_tuning_results(rr) %>%
-  kable(format = "html") %>%
-  kable_styling()
+responsive_table(extract_inner_tuning_results(rr))
 ```

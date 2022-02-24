@@ -23,13 +23,9 @@ output:
   echo = TRUE,
   R.options = list(width = 120)
 )
-
-library(mlr3book)
-library(kableExtra)
-
 set.seed(7832)
-
-ggplot2::theme_set(ggplot2::theme_light())
+library(mlr3website)
+library(data.table)
 ```
 
 ## Goals and Prerequisites
@@ -119,9 +115,7 @@ as.data.table(learner_1$param_set)
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-007, echo = FALSE}
-as.data.table(learner_1$param_set)[, .(id, class, lower, upper, nlevels)] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(as.data.table(learner_1$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-008}
@@ -144,9 +138,7 @@ rr$score(msrs(c("classif.acc", "classif.ce")))
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-011, echo = FALSE}
-rr$score()[, .(iteration, task_id, learner_id, resampling_id, classif.ce)] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(rr$score()[, c("iteration", "task_id", "learner_id", "resampling_id", "classif.ce"), with = FALSE])
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-012, results = 'hide'}
@@ -156,9 +148,7 @@ head(as.data.table(prediction))
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-013, echo = FALSE}
-head(as.data.table(prediction)) %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(head(as.data.table(prediction)))
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-014}

@@ -29,10 +29,8 @@ output:
   R.options = list(width = 120)
 )
 
-library(mlr3book)
-library(kableExtra)
-
-ggplot2::theme_set(ggplot2::theme_light())
+library(mlr3website)
+library(data.table)
 ```
 
 ## Intro
@@ -132,9 +130,7 @@ l$param_set
 ```
 
 ```{r 2020-10-14-threshold-tuning-010, echo = FALSE}
-as.data.table(l$param_set)[, .(id, class, lower, upper, nlevels)] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(as.data.table(l$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
 ```
 
 We can now tune those thresholds from the outside as follows:
@@ -226,9 +222,7 @@ l2$param_set
 ```
 
 ```{r 2020-10-14-threshold-tuning-017, echo = FALSE}
-as.data.table(l2$param_set)[, .(id, class, lower, upper, nlevels)] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(as.data.table(l2$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
 ```
 
 If we now use the `r ref("GraphLearner")`, it automatically adjusts the `thresholds` during prediction.
@@ -254,7 +248,5 @@ bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))
 ```
 
 ```{r 2020-10-14-threshold-tuning-020, echo = FALSE}
-bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))[,.SD, .SDcols = !c("resample_result")] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))[,.SD, .SDcols = !c("resample_result")])
 ```

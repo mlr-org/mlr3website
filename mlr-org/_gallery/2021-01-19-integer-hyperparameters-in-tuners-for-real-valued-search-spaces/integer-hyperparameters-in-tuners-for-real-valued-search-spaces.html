@@ -23,7 +23,6 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -1439,8 +1438,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--/radix_placeholder_distill-->
   <script src="integer-hyperparameters-in-tuners-for-real-valued-search-spaces_files/header-attrs-2.11/header-attrs.js"></script>
-  <script src="integer-hyperparameters-in-tuners-for-real-valued-search-spaces_files/kePrint-0.0.1/kePrint.js"></script>
-  <link href="integer-hyperparameters-in-tuners-for-real-valued-search-spaces_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="integer-hyperparameters-in-tuners-for-real-valued-search-spaces_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="integer-hyperparameters-in-tuners-for-real-valued-search-spaces_files/popper-2.6.0/popper.min.js"></script>
   <link href="integer-hyperparameters-in-tuners-for-real-valued-search-spaces_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1461,7 +1458,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Integer Hyperparameters in Tuners for Real-valued Search Spaces","description":"How to tune integer hyperparameters with tuners that can only propose real numbers.","authors":[{"author":"Marc Becker","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-01-19T00:00:00.000+00:00","citationText":"Becker, 2021"}
+{"title":"Integer Hyperparameters in Tuners for Real-valued Search Spaces","description":"How to tune integer hyperparameters with tuners that can only propose real numbers.","authors":[{"author":"Marc Becker","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-01-19T00:00:00.000+01:00","citationText":"Becker, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1592,243 +1589,117 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-k
-</th>
-<th style="text-align:right;">
-classif.ce
-</th>
-<th style="text-align:right;">
-x_domain_k
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> k </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:right;"> x_domain_k </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-3.826860
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5.996323
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5.941332
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3.826860
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3.826861
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3.826859
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6.566057
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-6
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3.516582
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7.871788
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-7
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4.049171
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6.704470
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-6
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3.941998
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3.945753
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5.737044
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6.661272
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-6
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7.984981
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-7
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3.503817
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4.050002
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7.610021
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-7
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6.116269
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-6
-</td>
-</tr>
+  <tr>
+   <td style="text-align:right;"> 3.826860 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5.996323 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5.941332 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3.826860 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3.826861 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3.826859 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 6.566057 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3.516582 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 7.871788 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4.049171 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 6.704470 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3.941998 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3.945753 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5.737044 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 6.661272 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 7.984981 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3.503817 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4.050002 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 7.610021 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 6.116269 </td>
+   <td style="text-align:right;"> 0.06 </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
 </tbody>
-</table>
+</table></div>
 </div>
 <p>Internally, <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_gensa.html"><code>TunerGenSA</code></a> was given the parameter types of the search space and therefore suggested real numbers for <code>k</code>. Before the performance of the different <code>k</code> values was evaluated, the transformation function of the <code>search_space</code> parameter set was called and <code>k</code> was transformed to an integer value.</p>
 <p>Note that the tuner is not aware of the transformation. This has two problematic consequences: First, the tuner might propose different real valued configurations that after rounding end up to be already evaluated configurations and we end up with re-evaluating the same hyperparameter configuration. This is only problematic, if we only optimze integer parameters. Second, the rounding introduces discontinuities which can be problematic for some tuners.</p>
