@@ -28,10 +28,8 @@ params:
   R.options = list(width = 120)
 )
 
-library(mlr3book)
-library(kableExtra)
-
-ggplot2::theme_set(ggplot2::theme_light())
+library(mlr3website)
+library(data.table)
 ```
 
 ```{r 2020-01-30-house-prices-in-king-county-002, include=FALSE, eval = params$eval_all}

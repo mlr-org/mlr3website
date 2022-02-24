@@ -28,10 +28,8 @@ params:
   R.options = list(width = 120)
 )
 
-library(mlr3book)
-library(kableExtra)
-
-ggplot2::theme_set(ggplot2::theme_light())
+library(mlr3website)
+library(data.table)
 ```
 
 ```{r tuning-a-complex-graph-002, include=FALSE, eval = params$eval_all}
@@ -226,10 +224,7 @@ generate_design_grid(tune_ps1, resolution = 4)
 ```
 
 ```{r tuning-a-complex-graph-014, echo = FALSE, layout="l-page"}
-generate_design_grid(tune_ps1, resolution = 4)$data %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE) %>%
-  kableExtra::scroll_box(height = "400px", extra_css = "border: 0px !important;")
+responsive_table(generate_design_grid(tune_ps1, resolution = 4)$data)
 ```
 
 We trigger the tuning.
@@ -254,10 +249,9 @@ as.data.table(tune1$archive)[order(classif.acc), ]
 ```
 
 ```{r tuning-a-complex-graph-019, echo = FALSE, layout="l-page"}
-as.data.table(tune1$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result"))[order(classif.acc), ] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE) %>%
-  kableExtra::scroll_box(height = "400px", extra_css = "border: 0px !important;")
+tab = as.data.table(tune1$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result"))
+setorderv(tab, "classif.acc")
+responsive_table(tab)
 ```
 
 We achieve very good accuracy using `ranger`, more or less regardless how `mtry` and `num.trees` are set. However, the `LDA` also shows very good accuracy when combined with `PCA` or `ICA` retaining 30 components.

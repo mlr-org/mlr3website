@@ -241,3 +241,24 @@ img[src="images/banner.png"] {
     margin-bottom: -4rem;
   }
 }
+
+/* Scroll container around table*/
+.table-responsive {
+  width: 100%;
+  max-height: 700px;
+  overflow: auto;
+}
+
+/* Tables full width */
+.table {
+  width: 100%;
+}
+
+/* Sticky table header */
+.table > thead {
+  color: white;
+  background-color: #495148;
+  inset-block-start: 0;
+  position: sticky;
+}
+

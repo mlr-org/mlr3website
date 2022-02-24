@@ -33,6 +33,11 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        extra-packages: any::devtools
+
+      - name: Install Packages
+        run: devtools::install()
+        shell: Rscript {0}
 
       - name: Render Gallery
         run: |

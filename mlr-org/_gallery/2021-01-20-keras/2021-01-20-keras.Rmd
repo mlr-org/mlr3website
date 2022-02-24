@@ -24,10 +24,7 @@ output:
   R.options = list(width = 120)
 )
 
-library(mlr3book)
-library(kableExtra)
-
-ggplot2::theme_set(ggplot2::theme_light())
+library(mlr3website)
 ```
 
 The following article describes how to fit a Neural Network learner to the `boston_housing` dataset.

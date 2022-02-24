@@ -24,10 +24,8 @@ output:
   R.options = list(width = 120)
 )
 
-library(mlr3book)
-library(kableExtra)
-
-ggplot2::theme_set(ggplot2::theme_light())
+library(mlr3website)
+library(data.table)
 ```
 
 ## Introduction
@@ -110,9 +108,7 @@ as.data.table(instance$archive)
 ```
 
 ```{r integer-hyperparameters-in-tuners-for-real-valued-search-spaces-011, echo = FALSE}
-as.data.table(instance$archive)[, .(k, classif.ce, x_domain_k)] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(as.data.table(instance$archive)[, c("k", "classif.ce", "x_domain_k"), with = FALSE])
 ```
 
 Internally, `r ref("TunerGenSA")` was given the parameter types of the search space and therefore suggested real numbers for `k`.

@@ -29,10 +29,9 @@ params:
   R.options = list(width = 120)
 )
 
-library(mlr3book)
-library(kableExtra)
-
-ggplot2::theme_set(ggplot2::theme_light())
+library(mlr3website)
+library(data.table)
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode,"rtvs"), "data.table")
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-002, include=FALSE, eval = params$eval_all}
@@ -126,9 +125,7 @@ knn$param_set
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-010, echo = FALSE}
-as.data.table(knn$param_set)[, .(id, class, lower, upper, nlevels)] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(as.data.table(knn$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
 ```
 
 We first tune the `k` parameter (i.e. the number of nearest neighbors), between 3 to 20.
@@ -204,9 +201,7 @@ head(as.data.table(instance_grid$archive))
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-020, echo = FALSE}
-head(as.data.table(instance_grid$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result"))) %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(head(as.data.table(instance_grid$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result"))))
 ```
 
 We plot the performances depending on the sampled `k` and `distance`:
@@ -291,10 +286,7 @@ as.data.table(instance_random$archive)
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-028, echo = FALSE, layout="l-body-outset"}
-as.data.table(instance_random$archive, exclude_columns = c("uhash", "resample_result")) %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE) %>%
-  scroll_box(height = "400px", extra_css = "border: 0px !important;")
+responsive_table(as.data.table(instance_random$archive, exclude_columns = c("uhash", "resample_result")))
 ```
 
 Let's now investigate the performance by parameters.
@@ -372,9 +364,7 @@ extract_inner_tuning_results(rr)
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-037, echo = FALSE, layout="l-body-outset"}
-extract_inner_tuning_results(rr)[, .SD, .SDcols = !c("learner_param_vals", "x_domain")] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(extract_inner_tuning_results(rr)[, .SD, .SDcols = !c("learner_param_vals", "x_domain")])
 ```
 
 Next, we want to compare the predictive performances estimated on the outer resampling to the inner resampling (`extract_inner_tuning_results(rr)`).
@@ -385,9 +375,7 @@ rr$score()
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-039, echo = FALSE}
-rr$score()[, .(iteration, task_id, learner_id, resampling_id, classif.ce)] %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+responsive_table(rr$score()[, c("iteration", "task_id", "learner_id", "resampling_id", "classif.ce"), with = FALSE])
 ```
 
 The archives of the `r ref("AutoTuner")`s allows us to inspect all evaluated hyperparameters configurations with the associated predictive performances.
@@ -397,10 +385,7 @@ extract_inner_tuning_archives(rr)
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-041, echo = FALSE, layout="l-page"}
-extract_inner_tuning_archives(rr, exclude_columns = c("uhash", "resample_result")) %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE) %>%
-  kableExtra::scroll_box(height = "400px", extra_css = "border: 0px !important;")
+responsive_table(extract_inner_tuning_archives(rr, exclude_columns = c("uhash", "resample_result")))
 ```
 
 We aggregate the performances of all resampling iterations:
@@ -442,10 +427,7 @@ perfdata
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-045, echo=FALSE, layout="l-page"}
 perfdata = readRDS("data/randomsearch_3600.rds")
-perfdata %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE) %>%
-  kableExtra::scroll_box(height = "400px", extra_css = "border: 0px !important;")
+responsive_table(perfdata)
 ```
 
 The scale effect is just as visible as before with fewer data:
