@@ -113,6 +113,11 @@ div.grid-icon i {
   font-size: 3rem;
 }
 
+div.grid-icon a {
+  border-bottom: 0px;
+  text-decoration: none;
+}
+
 /* Style buttons */
 .btn-container {
   display: inline-block;
@@ -260,5 +265,10 @@ img[src="images/banner.png"] {
   background-color: #495148;
   inset-block-start: 0;
   position: sticky;
+}
+
+/* Display line breaks */
+.table td {
+  white-space: pre-line;
 }
 

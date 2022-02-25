@@ -224,7 +224,7 @@ generate_design_grid(tune_ps1, resolution = 4)
 ```
 
 ```{r tuning-a-complex-graph-014, echo = FALSE, layout="l-page"}
-responsive_table(generate_design_grid(tune_ps1, resolution = 4)$data)
+table_responsive(generate_design_grid(tune_ps1, resolution = 4)$data)
 ```
 
 We trigger the tuning.
@@ -251,7 +251,7 @@ as.data.table(tune1$archive)[order(classif.acc), ]
 ```{r tuning-a-complex-graph-019, echo = FALSE, layout="l-page"}
 tab = as.data.table(tune1$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result"))
 setorderv(tab, "classif.acc")
-responsive_table(tab)
+table_responsive(tab)
 ```
 
 We achieve very good accuracy using `ranger`, more or less regardless how `mtry` and `num.trees` are set. However, the `LDA` also shows very good accuracy when combined with `PCA` or `ICA` retaining 30 components.

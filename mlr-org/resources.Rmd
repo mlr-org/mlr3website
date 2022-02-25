@@ -52,6 +52,8 @@ content = rowwise_table(
     "video",      "useR2020 tutorial", "youtube",   "https://www.youtube.com/watch?v=T43hO2o_nZw",           "on mlr3, mlr3tuning and mlr3pipelines",
     "video",      "ODSC talk 2021",    "youtube",   "https://av.tib.eu/media/55271",                         "on mlr3spatiotempcv and mlr3spatial",
 
+    "classes",    "Learners",           "pen",      "learners.html",                                         "of the mlr3 ecosystem",
+
     "course",     "I2ML course",       "display",   "https://introduction-to-machine-learning.netlify.app/", "on mlr3book",
     "course",     "mlr-outreach",      "display",   "https://github.com/mlr-org/mlr-outreach",               "on mlr3pipelines and mlr3tuning"
 )
@@ -81,6 +83,12 @@ resource_grid(content[.("cheatsheet")])
 
 ```{r, echo = FALSE}
 resource_grid(content[.("video")])
+```
+
+## Classes
+
+```{r, echo = FALSE}
+resource_grid(content[.("classes")])
 ```
 
 ## Courses/Lectures

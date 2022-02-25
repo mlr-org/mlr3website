@@ -108,7 +108,7 @@ as.data.table(instance$archive)
 ```
 
 ```{r integer-hyperparameters-in-tuners-for-real-valued-search-spaces-011, echo = FALSE}
-responsive_table(as.data.table(instance$archive)[, c("k", "classif.ce", "x_domain_k"), with = FALSE])
+table_responsive(as.data.table(instance$archive)[, c("k", "classif.ce", "x_domain_k"), with = FALSE])
 ```
 
 Internally, `r ref("TunerGenSA")` was given the parameter types of the search space and therefore suggested real numbers for `k`.

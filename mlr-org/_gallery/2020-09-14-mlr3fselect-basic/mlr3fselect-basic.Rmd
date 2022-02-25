@@ -172,7 +172,7 @@ as.data.table(instance$archive)
 ```
 
 ```{r mlr3fselect-basic-014, echo = FALSE}
-responsive_table(as.data.table(instance$archive, exclude_columns = c("runtime_learners", "resample_result", "uhash")))
+table_responsive(as.data.table(instance$archive, exclude_columns = c("runtime_learners", "resample_result", "uhash")))
 ```
 
 The associated resampling iterations can be accessed in the `r ref("BenchmarkResult")` by calling
@@ -239,7 +239,7 @@ as.data.table(instance$archive, exclude_columns = c("runtime_learners", "timesta
 ```
 
 ```{r mlr3fselect-basic-021, echo = FALSE}
-responsive_table(as.data.table(instance$archive, exclude_columns = c("runtime_learners", "timestamp", "batch_nr", "resample_result", "uhash")))
+table_responsive(as.data.table(instance$archive, exclude_columns = c("runtime_learners", "timestamp", "batch_nr", "resample_result", "uhash")))
 ```
 
 ## Nested resampling
@@ -296,7 +296,7 @@ extract_inner_fselect_results(rr)
 ```
 
 ```{r mlr3fselect-basic-028, echo = FALSE, layout="l-body-outset"}
-responsive_table(extract_inner_fselect_results(rr))
+table_responsive(extract_inner_fselect_results(rr))
 ```
 
 Next, we want to compare the predictive performances estimated on the outer resampling to the inner resampling.
@@ -307,7 +307,7 @@ rr$score()
 ```
 
 ```{r mlr3fselect-basic-030, echo = FALSE}
-responsive_table(rr$score()[, c("iteration", "task_id", "learner_id", "resampling_id", "classif.ce"), with = FALSE])
+table_responsive(rr$score()[, c("iteration", "task_id", "learner_id", "resampling_id", "classif.ce"), with = FALSE])
 ```
 
 The archives of the `r ref("AutoFSelector")`s gives us all evaluated feature sets with the associated predictive performances.
@@ -317,7 +317,7 @@ extract_inner_fselect_archives(rr)
 ```
 
 ```{r mlr3fselect-basic-032, echo = FALSE, layout="l-page"}
-responsive_table(extract_inner_fselect_archives(rr))
+table_responsive(extract_inner_fselect_archives(rr))
 ```
 
 ## Shortcuts

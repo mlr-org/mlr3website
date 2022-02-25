@@ -130,7 +130,7 @@ l$param_set
 ```
 
 ```{r 2020-10-14-threshold-tuning-010, echo = FALSE}
-responsive_table(as.data.table(l$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
+table_responsive(as.data.table(l$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
 ```
 
 We can now tune those thresholds from the outside as follows:
@@ -222,7 +222,7 @@ l2$param_set
 ```
 
 ```{r 2020-10-14-threshold-tuning-017, echo = FALSE}
-responsive_table(as.data.table(l2$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
+table_responsive(as.data.table(l2$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
 ```
 
 If we now use the `r ref("GraphLearner")`, it automatically adjusts the `thresholds` during prediction.
@@ -248,5 +248,5 @@ bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))
 ```
 
 ```{r 2020-10-14-threshold-tuning-020, echo = FALSE}
-responsive_table(bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))[,.SD, .SDcols = !c("resample_result")])
+table_responsive(bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))[,.SD, .SDcols = !c("resample_result")])
 ```

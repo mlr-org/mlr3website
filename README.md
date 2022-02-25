@@ -69,18 +69,21 @@ head(as.data.table(bmr))
 ```
 
 
-1. Convert `data.table::data.table()` and `data.frame()` to html tables.
+1. Convert tabular R objects to html tables and apply our default table style with `table_responsive()`.
 
+Only show the code that the user is executing but not the console output.
 
 ````r
 ```{r chunk-name, results = 'hide'}
 as.data.table(bmr)
 ```
+````
 
+The output should be rendered with `table_responsive()`.
+
+````r
 ```{r chunk-name-2, echo = FALSE}
-as.data.table(bmr) %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE)
+table_responsive(as.data.table(bmr))
 ```
 ````
 
@@ -97,18 +100,7 @@ as.data.table(bmr)
 ```
 ````
 
-1. Use a vertical scroll box if the table is too long.
-
-````r
-```{r chunk-name, echo = FALSE}
-as.data.table(bmr) %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE) %>%
-  scroll_box(height = "400px", extra_css = "border: 0px !important;")
-```
-````
-
-You can also use [formattable](https://github.com/renkun-ken/formattable) to spice up the display of tables. 
+You can also use [formattable](https://github.com/renkun-ken/formattable) to spice up the display of tables.
 
 ## How to include figures
 

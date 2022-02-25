@@ -115,7 +115,7 @@ as.data.table(learner_1$param_set)
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-007, echo = FALSE}
-responsive_table(as.data.table(learner_1$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
+table_responsive(as.data.table(learner_1$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-008}
@@ -138,7 +138,7 @@ rr$score(msrs(c("classif.acc", "classif.ce")))
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-011, echo = FALSE}
-responsive_table(rr$score()[, c("iteration", "task_id", "learner_id", "resampling_id", "classif.ce"), with = FALSE])
+table_responsive(rr$score()[, c("iteration", "task_id", "learner_id", "resampling_id", "classif.ce"), with = FALSE])
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-012, results = 'hide'}
@@ -148,7 +148,7 @@ head(as.data.table(prediction))
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-013, echo = FALSE}
-responsive_table(head(as.data.table(prediction)))
+table_responsive(head(as.data.table(prediction)))
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-014}
