@@ -17,21 +17,23 @@ library(htmltools)
 library(data.table)
 
 content = rowwise_table(
-    ~icon,          ~text,
-    "code-square",  "A scientifically designed and easy to learn interface.",
-    "pen",          "More than 100 connected machine learning algorithms.",
-    "box",          "Light on dependencies.",
-    "stack",        "Quick parallelization with the `future` package.",
-    "sliders",      "State-of-the-art optimization algorithms.",
-    "share",        "Dataflow programming with pipelines."
+    ~icon,          ~text,                                                    ~link,
+    "code-square",  "A scientifically designed and easy to learn interface.", "index.html",
+    "pen",          "More than 100 connected machine learning algorithms.",   "learners.html",
+    "box",          "Light on dependencies.",                                 "index.html",
+    "stack",        "Quick parallelization with the `future` package.",       "https://futureverse.org/",
+    "sliders",      "State-of-the-art optimization algorithms.",              "https://mlr3tuning.mlr-org.com/",
+    "share",        "Dataflow programming with pipelines.",                   "https://mlr3pipelines.mlr-org.com/"
 )
 
 div(class = "grid-container",
-  pmap(content, function(icon, text) {
+  pmap(content, function(icon, text, link) {
     div(class = "grid-item",
-      div(class="grid-icon",
-        tags$i(class = sprintf("bi-%s", icon))
-      ),
+        div(class="grid-icon",
+          a(href = link,
+            tags$i(class = sprintf("bi-%s", icon))
+         )
+       ),
       text
     )
   })

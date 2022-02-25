@@ -129,7 +129,7 @@ head(miss_ind$train(list(task_pima))[[1]]$data())
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-010, echo = FALSE}
-responsive_table(head(miss_ind$train(list(task_pima))[[1]]$data()))
+table_responsive(head(miss_ind$train(list(task_pima))[[1]]$data()))
 ```
 
 Obviously, this step can not be applied to the already imputed data as there are no missing values.
@@ -148,7 +148,7 @@ head(impute_missind$train(task_pima)[[1]]$data())
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-013, echo = FALSE, layout="l-page"}
-responsive_table(head(impute_missind$train(task_pima)[[1]]$data()))
+table_responsive(head(impute_missind$train(task_pima)[[1]]$data()))
 ```
 
 
@@ -170,7 +170,7 @@ head(imputer_hist_2$train(task_pima)[[1]]$data())
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-016, echo = FALSE}
-responsive_table(head(imputer_hist_2$train(task_pima)[[1]]$data()))
+table_responsive(head(imputer_hist_2$train(task_pima)[[1]]$data()))
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-017, results = 'hide'}
@@ -182,7 +182,7 @@ head(imputer_median_2$train(task_pima)[[1]]$data())
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-018, echo = FALSE}
-responsive_table(head(imputer_median_2$train(task_pima)[[1]]$data()))
+table_responsive(head(imputer_median_2$train(task_pima)[[1]]$data()))
 ```
 
 To reproduce the result of the fist example (1.), we need to copy the data four times and apply `imputer_hist_2`, `imputer_median_2` and `miss_ind` on each of the three copies.
@@ -207,7 +207,7 @@ head(imputer_missind_2$train(task_pima)[[1]]$data())
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-021, echo = FALSE, layout="l-page"}
-responsive_table(head(imputer_missind_2$train(task_pima)[[1]]$data()))
+table_responsive(head(imputer_missind_2$train(task_pima)[[1]]$data()))
 ```
 
 Note that when there is one input channel, it is automatically copied as many times as needed for the downstream `r ref("PipeOp")`s.
@@ -224,7 +224,7 @@ head(imputer_missind_3$train(task_pima)[[1]]$data())
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-023, echo = FALSE, layout="l-page"}
-responsive_table(head(imputer_missind_3$train(task_pima)[[1]]$data()))
+table_responsive(head(imputer_missind_3$train(task_pima)[[1]]$data()))
 ```
 
 
@@ -267,7 +267,7 @@ as.data.table(graph$param_set)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-027, echo = FALSE}
-responsive_table(as.data.table(graph$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
+table_responsive(as.data.table(graph$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
 ```
 
 We decide to jointly tune the `"branch.selection"`, `"classif.rpart.cp"` and `"classif.rpart.minbucket"` hyperparameters:
@@ -301,7 +301,7 @@ as.data.table(instance$archive)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-030, echo = FALSE}
-responsive_table(as.data.table(instance$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result")))
+table_responsive(as.data.table(instance$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result")))
 ```
 
 The best performance in this short tuned experiment was achieved with:
