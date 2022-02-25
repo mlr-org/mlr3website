@@ -24,8 +24,9 @@ resource_grid = function(content) {
     pmap(content, function(category, name, icon, url, text) {
         div(class = "grid-item-package",
           h3(
-            a(href = url, name),
-            tags$i(class = sprintf("bi-%s", icon))
+            tags$i(class = sprintf("bi-%s", icon)),
+            HTML("&nbsp;"),
+            a(href = url, name)
           ),
           paste0(text, ".")
         )

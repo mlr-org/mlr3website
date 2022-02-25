@@ -43,13 +43,18 @@ library(data.table)
 
 package_grid = function(content) {
   div(class = "grid-container-package",
-    pmap(content, function(category, name, status, url, text) {
+    pmap(content, function(category, name, status, url, text, on_cran, ...) {
         div(class = "grid-item-package",
           h3(
             a(href = url, name),
-            tags$i(class = sprintf("bi-circle-fill status-%s", status))
+            tags$i(class = sprintf("bi-circle-fill status status-%s", status))
           ),
-          paste0(text, ".")
+          p(paste0(text, ".")),
+          div(id = "bottom",
+            if (!startsWith(url, "https://github.com")) a(href = url, tags$i(class = "bi bi-house")),
+            a(href = sprintf("https://github.com/mlr-org/%s", name), tags$i(class = "bi bi-github")),
+            if (on_cran) a(href = sprintf("https://cran.r-project.org/package=%s", name), tags$i(class = "fab fa-r-project"))
+          )
         )
     })
   )
@@ -92,6 +97,9 @@ content = rowwise_table(
     "utils",         "mlr3fairness",      "experimental", "https://mlr3fairness.mlr-org.com/",          "Fairness in Machine Learning",
     "utils",         "mlr3batchmark",     "experimental", "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools"
 )
+
+# add CRAN link
+content[, on_cran := name %in% rownames(available.packages())]
 
 # index by categoty
 # sort by status: stable first, then experimental, then planned

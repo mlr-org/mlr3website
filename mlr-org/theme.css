@@ -189,6 +189,7 @@ h3 {
   text-align: left;
   padding: 10px;
   background-color: #f1f1f1;
+  position: relative;
 }
 
 .grid-item-package:hover {
@@ -206,8 +207,16 @@ div.grid-item-package a {
   text-decoration: none;
 }
 
-div.grid-item-package i {
+#bottom {
+  position: absolute;
+  bottom: 0;
+}
+
+i.status {
   font-size: 0.75rem;
+}
+
+h3 > i.status {
   margin-left: 10px;
 }
 
@@ -222,6 +231,7 @@ i.status-experimental {
 i.status-planned {
   color: #FF856A;
 }
+
 
 /* Banner */
 .banner {
