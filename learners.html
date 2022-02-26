@@ -2597,7 +2597,20 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <div class="nav-right">
 <a href="blog.html">Blog</a>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Overview
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
 <a href="packages.html">Packages</a>
+<a href="tasks.html">Tasks</a>
+<a href="learners.html">Learners</a>
+<a href="resamplings.html">Resamplings</a>
+<a href="measures.html">Measures</a>
+</div>
+</div>
 <a href="resources.html">Resources</a>
 <a href="https://mlr3book.mlr-org.com/">Book</a>
 <a href="gallery.html">Gallery</a>
@@ -2641,7 +2654,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.AdaBoostM1.html">AdaBoostM1</a> </td>
    <td style="text-align:left;"> classif.AdaBoostM1 </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> numeric
@@ -2655,7 +2668,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.bart.html">bart</a> </td>
    <td style="text-align:left;"> classif.bart </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=dbarts">dbarts</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=dbarts">dbarts</a> </td>
    <td style="text-align:left;"> twoclass
 weights </td>
    <td style="text-align:left;"> integer
@@ -2669,7 +2682,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.C50.html">C50</a> </td>
    <td style="text-align:left;"> classif.C50 </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=C50">C50</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=C50">C50</a> </td>
    <td style="text-align:left;"> missings
 multiclass
 twoclass
@@ -2684,7 +2697,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.catboost.html">catboost</a> </td>
    <td style="text-align:left;"> classif.catboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> catboost </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, catboost </td>
    <td style="text-align:left;"> importance
 missings
 multiclass
@@ -2700,9 +2713,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.cforest.html">cforest</a> </td>
    <td style="text-align:left;"> classif.cforest </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=partykit">partykit</a>
-<a href="https://cran.r-project.org/package=sandwich">sandwich</a>
-<a href="https://cran.r-project.org/package=coin">coin</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=partykit">partykit</a>, <a href="https://cran.r-project.org/package=sandwich">sandwich</a>, <a href="https://cran.r-project.org/package=coin">coin</a> </td>
    <td style="text-align:left;"> multiclass
 oob_error
 twoclass
@@ -2718,9 +2729,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.ctree.html">ctree</a> </td>
    <td style="text-align:left;"> classif.ctree </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=partykit">partykit</a>
-<a href="https://cran.r-project.org/package=sandwich">sandwich</a>
-<a href="https://cran.r-project.org/package=coin">coin</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=partykit">partykit</a>, <a href="https://cran.r-project.org/package=sandwich">sandwich</a>, <a href="https://cran.r-project.org/package=coin">coin</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass
 weights </td>
@@ -2735,7 +2744,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.cv_glmnet.html">cv_glmnet</a> </td>
    <td style="text-align:left;"> classif.cv_glmnet </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
    <td style="text-align:left;"> multiclass
 selected_features
 twoclass
@@ -2750,7 +2759,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3.mlr-org.com/reference/mlr_learners_classif.debug.html">debug</a> </td>
    <td style="text-align:left;"> classif.debug </td>
    <td style="text-align:left;"> mlr3 </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a> </td>
    <td style="text-align:left;"> hotstart_forward
 missings
 multiclass
@@ -2768,7 +2777,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.earth.html">earth</a> </td>
    <td style="text-align:left;"> classif.earth </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=earth">earth</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=earth">earth</a> </td>
    <td style="text-align:left;"> twoclass
 weights </td>
    <td style="text-align:left;"> numeric
@@ -2781,7 +2790,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.extratrees.html">extratrees</a> </td>
    <td style="text-align:left;"> classif.extratrees </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=extraTrees">extraTrees</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=extraTrees">extraTrees</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass
 weights </td>
@@ -2794,7 +2803,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3.mlr-org.com/reference/mlr_learners_classif.featureless.html">featureless</a> </td>
    <td style="text-align:left;"> classif.featureless </td>
    <td style="text-align:left;"> mlr3 </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a> </td>
    <td style="text-align:left;"> featureless
 importance
 missings
@@ -2815,7 +2824,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.fnn.html">fnn</a> </td>
    <td style="text-align:left;"> classif.fnn </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=FNN">FNN</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=FNN">FNN</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> integer
@@ -2827,7 +2836,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.gam.html">gam</a> </td>
    <td style="text-align:left;"> classif.gam </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mgcv">mgcv</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mgcv">mgcv</a> </td>
    <td style="text-align:left;"> twoclass
 weights </td>
    <td style="text-align:left;"> logical
@@ -2840,7 +2849,7 @@ response </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.gamboost.html">gamboost</a> </td>
    <td style="text-align:left;"> classif.gamboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
    <td style="text-align:left;"> twoclass
 weights </td>
    <td style="text-align:left;"> integer
@@ -2854,7 +2863,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.gausspr.html">gausspr</a> </td>
    <td style="text-align:left;"> classif.gausspr </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> numeric
@@ -2870,7 +2879,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.gbm.html">gbm</a> </td>
    <td style="text-align:left;"> classif.gbm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=gbm">gbm</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=gbm">gbm</a> </td>
    <td style="text-align:left;"> importance
 missings
 multiclass
@@ -2887,7 +2896,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.glmboost.html">glmboost</a> </td>
    <td style="text-align:left;"> classif.glmboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
    <td style="text-align:left;"> twoclass
 weights </td>
    <td style="text-align:left;"> integer
@@ -2901,7 +2910,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.glmnet.html">glmnet</a> </td>
    <td style="text-align:left;"> classif.glmnet </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass
 weights </td>
@@ -2915,7 +2924,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.IBk.html">IBk</a> </td>
    <td style="text-align:left;"> classif.IBk </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> numeric
@@ -2929,7 +2938,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.J48.html">J48</a> </td>
    <td style="text-align:left;"> classif.J48 </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> missings
 multiclass
 twoclass </td>
@@ -2944,7 +2953,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.JRip.html">JRip</a> </td>
    <td style="text-align:left;"> classif.JRip </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> numeric
@@ -2958,7 +2967,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.kknn.html">kknn</a> </td>
    <td style="text-align:left;"> classif.kknn </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=kknn">kknn</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=kknn">kknn</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> logical
@@ -2973,7 +2982,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.ksvm.html">ksvm</a> </td>
    <td style="text-align:left;"> classif.ksvm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass
 weights </td>
@@ -2990,7 +2999,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.lda.html">lda</a> </td>
    <td style="text-align:left;"> classif.lda </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=MASS">MASS</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=MASS">MASS</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass
 weights </td>
@@ -3006,7 +3015,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.liblinear.html">liblinear</a> </td>
    <td style="text-align:left;"> classif.liblinear </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=LiblineaR">LiblineaR</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=LiblineaR">LiblineaR</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> numeric </td>
@@ -3017,7 +3026,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.lightgbm.html">lightgbm</a> </td>
    <td style="text-align:left;"> classif.lightgbm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=lightgbm">lightgbm</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=lightgbm">lightgbm</a> </td>
    <td style="text-align:left;"> importance
 missings
 multiclass
@@ -3032,7 +3041,7 @@ response </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.LMT.html">LMT</a> </td>
    <td style="text-align:left;"> classif.LMT </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> numeric
@@ -3046,7 +3055,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.log_reg.html">log_reg</a> </td>
    <td style="text-align:left;"> classif.log_reg </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> stats </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, stats </td>
    <td style="text-align:left;"> loglik
 twoclass
 weights </td>
@@ -3063,7 +3072,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.lssvm.html">lssvm</a> </td>
    <td style="text-align:left;"> classif.lssvm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> numeric
@@ -3074,9 +3083,7 @@ integer </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.mob.html">mob</a> </td>
    <td style="text-align:left;"> classif.mob </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=partykit">partykit</a>
-<a href="https://cran.r-project.org/package=sandwich">sandwich</a>
-<a href="https://cran.r-project.org/package=coin">coin</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=partykit">partykit</a>, <a href="https://cran.r-project.org/package=sandwich">sandwich</a>, <a href="https://cran.r-project.org/package=coin">coin</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass
 weights </td>
@@ -3093,7 +3100,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.multinom.html">multinom</a> </td>
    <td style="text-align:left;"> classif.multinom </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=nnet">nnet</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=nnet">nnet</a> </td>
    <td style="text-align:left;"> loglik
 multiclass
 twoclass
@@ -3109,7 +3116,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.naive_bayes.html">naive_bayes</a> </td>
    <td style="text-align:left;"> classif.naive_bayes </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=e1071">e1071</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=e1071">e1071</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> logical
@@ -3123,7 +3130,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.nnet.html">nnet</a> </td>
    <td style="text-align:left;"> classif.nnet </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=nnet">nnet</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=nnet">nnet</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass
 weights </td>
@@ -3137,7 +3144,7 @@ response </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.OneR.html">OneR</a> </td>
    <td style="text-align:left;"> classif.OneR </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> numeric
@@ -3151,7 +3158,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.PART.html">PART</a> </td>
    <td style="text-align:left;"> classif.PART </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> missings
 multiclass
 twoclass </td>
@@ -3166,7 +3173,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.qda.html">qda</a> </td>
    <td style="text-align:left;"> classif.qda </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=MASS">MASS</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=MASS">MASS</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass
 weights </td>
@@ -3182,7 +3189,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.randomForest.html">randomForest</a> </td>
    <td style="text-align:left;"> classif.randomForest </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=randomForest">randomForest</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=randomForest">randomForest</a> </td>
    <td style="text-align:left;"> importance
 multiclass
 oob_error
@@ -3198,7 +3205,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.ranger.html">ranger</a> </td>
    <td style="text-align:left;"> classif.ranger </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=ranger">ranger</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=ranger">ranger</a> </td>
    <td style="text-align:left;"> hotstart_backward
 importance
 multiclass
@@ -3218,7 +3225,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.rfsrc.html">rfsrc</a> </td>
    <td style="text-align:left;"> classif.rfsrc </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> randomForestSRC </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, randomForestSRC </td>
    <td style="text-align:left;"> importance
 missings
 multiclass
@@ -3236,7 +3243,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3.mlr-org.com/reference/mlr_learners_classif.rpart.html">rpart</a> </td>
    <td style="text-align:left;"> classif.rpart </td>
    <td style="text-align:left;"> mlr3 </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=rpart">rpart</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=rpart">rpart</a> </td>
    <td style="text-align:left;"> importance
 missings
 multiclass
@@ -3255,7 +3262,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.svm.html">svm</a> </td>
    <td style="text-align:left;"> classif.svm </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=e1071">e1071</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=e1071">e1071</a> </td>
    <td style="text-align:left;"> multiclass
 twoclass </td>
    <td style="text-align:left;"> logical
@@ -3268,7 +3275,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.xgboost.html">xgboost</a> </td>
    <td style="text-align:left;"> classif.xgboost </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=xgboost">xgboost</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=xgboost">xgboost</a> </td>
    <td style="text-align:left;"> hotstart_forward
 importance
 missings
@@ -3304,7 +3311,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.bart.html">bart</a> </td>
    <td style="text-align:left;"> regr.bart </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=dbarts">dbarts</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=dbarts">dbarts</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric
@@ -3316,7 +3323,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.catboost.html">catboost</a> </td>
    <td style="text-align:left;"> regr.catboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> catboost </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, catboost </td>
    <td style="text-align:left;"> importance
 missings
 weights </td>
@@ -3329,9 +3336,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.cforest.html">cforest</a> </td>
    <td style="text-align:left;"> regr.cforest </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=partykit">partykit</a>
-<a href="https://cran.r-project.org/package=sandwich">sandwich</a>
-<a href="https://cran.r-project.org/package=coin">coin</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=partykit">partykit</a>, <a href="https://cran.r-project.org/package=sandwich">sandwich</a>, <a href="https://cran.r-project.org/package=coin">coin</a> </td>
    <td style="text-align:left;"> oob_error
 weights </td>
    <td style="text-align:left;"> integer
@@ -3344,9 +3349,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.ctree.html">ctree</a> </td>
    <td style="text-align:left;"> regr.ctree </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=partykit">partykit</a>
-<a href="https://cran.r-project.org/package=sandwich">sandwich</a>
-<a href="https://cran.r-project.org/package=coin">coin</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=partykit">partykit</a>, <a href="https://cran.r-project.org/package=sandwich">sandwich</a>, <a href="https://cran.r-project.org/package=coin">coin</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric
@@ -3358,7 +3361,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.cubist.html">cubist</a> </td>
    <td style="text-align:left;"> regr.cubist </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=Cubist">Cubist</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=Cubist">Cubist</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric
@@ -3371,7 +3374,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.cv_glmnet.html">cv_glmnet</a> </td>
    <td style="text-align:left;"> regr.cv_glmnet </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
    <td style="text-align:left;"> selected_features
 weights </td>
    <td style="text-align:left;"> logical
@@ -3383,7 +3386,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3.mlr-org.com/reference/mlr_learners_regr.debug.html">debug</a> </td>
    <td style="text-align:left;"> regr.debug </td>
    <td style="text-align:left;"> mlr3 </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a> </td>
    <td style="text-align:left;"> missings </td>
    <td style="text-align:left;"> logical
 integer
@@ -3398,7 +3401,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.earth.html">earth</a> </td>
    <td style="text-align:left;"> regr.earth </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=earth">earth</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=earth">earth</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> numeric
 factor
@@ -3410,7 +3413,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.extratrees.html">extratrees</a> </td>
    <td style="text-align:left;"> regr.extratrees </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=extraTrees">extraTrees</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=extraTrees">extraTrees</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -3420,7 +3423,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3.mlr-org.com/reference/mlr_learners_regr.featureless.html">featureless</a> </td>
    <td style="text-align:left;"> regr.featureless </td>
    <td style="text-align:left;"> mlr3 </td>
-   <td style="text-align:left;"> stats </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, stats </td>
    <td style="text-align:left;"> featureless
 importance
 missings
@@ -3439,7 +3442,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.fnn.html">fnn</a> </td>
    <td style="text-align:left;"> regr.fnn </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=FNN">FNN</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=FNN">FNN</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -3449,7 +3452,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.gam.html">gam</a> </td>
    <td style="text-align:left;"> regr.gam </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mgcv">mgcv</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mgcv">mgcv</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> logical
 integer
@@ -3461,7 +3464,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.gamboost.html">gamboost</a> </td>
    <td style="text-align:left;"> regr.gamboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric
@@ -3473,7 +3476,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.gausspr.html">gausspr</a> </td>
    <td style="text-align:left;"> regr.gausspr </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> numeric
 integer
@@ -3487,7 +3490,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.gbm.html">gbm</a> </td>
    <td style="text-align:left;"> regr.gbm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=gbm">gbm</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=gbm">gbm</a> </td>
    <td style="text-align:left;"> importance
 missings
 weights </td>
@@ -3501,7 +3504,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.glm.html">glm</a> </td>
    <td style="text-align:left;"> regr.glm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> stats </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, stats </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> logical
 integer
@@ -3516,7 +3519,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.glmboost.html">glmboost</a> </td>
    <td style="text-align:left;"> regr.glmboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric
@@ -3528,7 +3531,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.glmnet.html">glmnet</a> </td>
    <td style="text-align:left;"> regr.glmnet </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> logical
 integer
@@ -3539,7 +3542,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.IBk.html">IBk</a> </td>
    <td style="text-align:left;"> regr.IBk </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> numeric
 factor
@@ -3551,7 +3554,7 @@ integer </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.kknn.html">kknn</a> </td>
    <td style="text-align:left;"> regr.kknn </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=kknn">kknn</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=kknn">kknn</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> logical
 integer
@@ -3564,7 +3567,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.km.html">km</a> </td>
    <td style="text-align:left;"> regr.km </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=DiceKriging">DiceKriging</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=DiceKriging">DiceKriging</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> logical
 integer
@@ -3576,7 +3579,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.ksvm.html">ksvm</a> </td>
    <td style="text-align:left;"> regr.ksvm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> logical
 integer
@@ -3590,7 +3593,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.liblinear.html">liblinear</a> </td>
    <td style="text-align:left;"> regr.liblinear </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=LiblineaR">LiblineaR</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=LiblineaR">LiblineaR</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -3600,7 +3603,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.lightgbm.html">lightgbm</a> </td>
    <td style="text-align:left;"> regr.lightgbm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=lightgbm">lightgbm</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=lightgbm">lightgbm</a> </td>
    <td style="text-align:left;"> importance
 missings
 weights </td>
@@ -3612,7 +3615,7 @@ integer </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.lm.html">lm</a> </td>
    <td style="text-align:left;"> regr.lm </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> stats </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, stats </td>
    <td style="text-align:left;"> loglik
 weights </td>
    <td style="text-align:left;"> logical
@@ -3627,7 +3630,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.M5Rules.html">M5Rules</a> </td>
    <td style="text-align:left;"> regr.M5Rules </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> numeric
 factor
@@ -3639,7 +3642,7 @@ integer </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.mars.html">mars</a> </td>
    <td style="text-align:left;"> regr.mars </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mda">mda</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mda">mda</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -3649,9 +3652,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.mob.html">mob</a> </td>
    <td style="text-align:left;"> regr.mob </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=partykit">partykit</a>
-<a href="https://cran.r-project.org/package=sandwich">sandwich</a>
-<a href="https://cran.r-project.org/package=coin">coin</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=partykit">partykit</a>, <a href="https://cran.r-project.org/package=sandwich">sandwich</a>, <a href="https://cran.r-project.org/package=coin">coin</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> logical
 integer
@@ -3666,7 +3667,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.randomForest.html">randomForest</a> </td>
    <td style="text-align:left;"> regr.randomForest </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=randomForest">randomForest</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=randomForest">randomForest</a> </td>
    <td style="text-align:left;"> importance
 oob_error
 weights </td>
@@ -3680,7 +3681,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.ranger.html">ranger</a> </td>
    <td style="text-align:left;"> regr.ranger </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=ranger">ranger</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=ranger">ranger</a> </td>
    <td style="text-align:left;"> hotstart_backward
 importance
 oob_error
@@ -3698,7 +3699,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.rfsrc.html">rfsrc</a> </td>
    <td style="text-align:left;"> regr.rfsrc </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> randomForestSRC </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, randomForestSRC </td>
    <td style="text-align:left;"> importance
 missings
 oob_error
@@ -3713,7 +3714,7 @@ factor </td>
    <td style="text-align:left;"> <a href="https://mlr3.mlr-org.com/reference/mlr_learners_regr.rpart.html">rpart</a> </td>
    <td style="text-align:left;"> regr.rpart </td>
    <td style="text-align:left;"> mlr3 </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=rpart">rpart</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=rpart">rpart</a> </td>
    <td style="text-align:left;"> importance
 missings
 selected_features
@@ -3729,7 +3730,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.rvm.html">rvm</a> </td>
    <td style="text-align:left;"> regr.rvm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> numeric
 integer
@@ -3743,7 +3744,7 @@ ordered </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.svm.html">svm</a> </td>
    <td style="text-align:left;"> regr.svm </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=e1071">e1071</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=e1071">e1071</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> logical
 integer
@@ -3754,7 +3755,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.xgboost.html">xgboost</a> </td>
    <td style="text-align:left;"> regr.xgboost </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=xgboost">xgboost</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=xgboost">xgboost</a> </td>
    <td style="text-align:left;"> hotstart_forward
 importance
 missings
@@ -3787,7 +3788,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.agnes.html">agnes</a> </td>
    <td style="text-align:left;"> clust.agnes </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=cluster">cluster</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=cluster">cluster</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 hierarchical </td>
@@ -3800,7 +3801,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.ap.html">ap</a> </td>
    <td style="text-align:left;"> clust.ap </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=apcluster">apcluster</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=apcluster">apcluster</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -3813,7 +3814,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.cmeans.html">cmeans</a> </td>
    <td style="text-align:left;"> clust.cmeans </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=e1071">e1071</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=e1071">e1071</a> </td>
    <td style="text-align:left;"> complete
 fuzzy
 partitional </td>
@@ -3827,7 +3828,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.cobweb.html">cobweb</a> </td>
    <td style="text-align:left;"> clust.cobweb </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -3840,7 +3841,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.dbscan.html">dbscan</a> </td>
    <td style="text-align:left;"> clust.dbscan </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=dbscan">dbscan</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=dbscan">dbscan</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -3853,7 +3854,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.diana.html">diana</a> </td>
    <td style="text-align:left;"> clust.diana </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=cluster">cluster</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=cluster">cluster</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 hierarchical </td>
@@ -3866,7 +3867,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.em.html">em</a> </td>
    <td style="text-align:left;"> clust.em </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -3879,7 +3880,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.fanny.html">fanny</a> </td>
    <td style="text-align:left;"> clust.fanny </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=cluster">cluster</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=cluster">cluster</a> </td>
    <td style="text-align:left;"> complete
 fuzzy
 partitional </td>
@@ -3893,7 +3894,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.featureless.html">featureless</a> </td>
    <td style="text-align:left;"> clust.featureless </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 missings
@@ -3907,7 +3908,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.ff.html">ff</a> </td>
    <td style="text-align:left;"> clust.ff </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -3920,7 +3921,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.hclust.html">hclust</a> </td>
    <td style="text-align:left;"> clust.hclust </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 hierarchical </td>
@@ -3933,7 +3934,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.kkmeans.html">kkmeans</a> </td>
    <td style="text-align:left;"> clust.kkmeans </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=kernlab">kernlab</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -3946,8 +3947,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.kmeans.html">kmeans</a> </td>
    <td style="text-align:left;"> clust.kmeans </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> stats
-<a href="https://cran.r-project.org/package=clue">clue</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, stats, <a href="https://cran.r-project.org/package=clue">clue</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -3960,7 +3960,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.MBatchKMeans.html">MBatchKMeans</a> </td>
    <td style="text-align:left;"> clust.MBatchKMeans </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=ClusterR">ClusterR</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=ClusterR">ClusterR</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 fuzzy
@@ -3975,7 +3975,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.meanshift.html">meanshift</a> </td>
    <td style="text-align:left;"> clust.meanshift </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=LPCM">LPCM</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=LPCM">LPCM</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -3988,7 +3988,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.pam.html">pam</a> </td>
    <td style="text-align:left;"> clust.pam </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=cluster">cluster</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=cluster">cluster</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -4001,7 +4001,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.SimpleKMeans.html">SimpleKMeans</a> </td>
    <td style="text-align:left;"> clust.SimpleKMeans </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -4014,7 +4014,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.xmeans.html">xmeans</a> </td>
    <td style="text-align:left;"> clust.xmeans </td>
    <td style="text-align:left;"> mlr3cluster </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=RWeka">RWeka</a> </td>
    <td style="text-align:left;"> complete
 exclusive
 partitional </td>
@@ -4046,8 +4046,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3proba.mlr-org.com/reference/mlr_learners_dens.hist.html">hist</a> </td>
    <td style="text-align:left;"> dens.hist </td>
    <td style="text-align:left;"> mlr3proba </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4059,8 +4058,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3proba.mlr-org.com/reference/mlr_learners_dens.kde.html">kde</a> </td>
    <td style="text-align:left;"> dens.kde </td>
    <td style="text-align:left;"> mlr3proba </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
    <td style="text-align:left;"> missings </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4071,8 +4069,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_dens.kde_kd.html">kde_kd</a> </td>
    <td style="text-align:left;"> dens.kde_kd </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=kerdiest">kerdiest</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=kerdiest">kerdiest</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4082,8 +4079,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_dens.kde_ks.html">kde_ks</a> </td>
    <td style="text-align:left;"> dens.kde_ks </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=ks">ks</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=ks">ks</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4093,8 +4089,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_dens.locfit.html">locfit</a> </td>
    <td style="text-align:left;"> dens.locfit </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=locfit">locfit</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=locfit">locfit</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4104,8 +4099,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_dens.logspline.html">logspline</a> </td>
    <td style="text-align:left;"> dens.logspline </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=logspline">logspline</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=logspline">logspline</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4116,8 +4110,7 @@ cdf </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_dens.mixed.html">mixed</a> </td>
    <td style="text-align:left;"> dens.mixed </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=np">np</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=np">np</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4127,8 +4120,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_dens.nonpar.html">nonpar</a> </td>
    <td style="text-align:left;"> dens.nonpar </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=sm">sm</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=sm">sm</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4138,8 +4130,7 @@ numeric </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_dens.pen.html">pen</a> </td>
    <td style="text-align:left;"> dens.pen </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=pendensity">pendensity</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=pendensity">pendensity</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4150,8 +4141,7 @@ cdf </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_dens.plug.html">plug</a> </td>
    <td style="text-align:left;"> dens.plug </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=plugdensity">plugdensity</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=plugdensity">plugdensity</a> </td>
    <td style="text-align:left;"> missings </td>
    <td style="text-align:left;"> numeric </td>
    <td style="text-align:left;"> pdf </td>
@@ -4160,8 +4150,7 @@ cdf </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_dens.spline.html">spline</a> </td>
    <td style="text-align:left;"> dens.spline </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=gss">gss</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=gss">gss</a> </td>
    <td style="text-align:left;"> missings </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4191,9 +4180,7 @@ cdf </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.akritas.html">akritas</a> </td>
    <td style="text-align:left;"> surv.akritas </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> logical
 integer
@@ -4207,9 +4194,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.blackboost.html">blackboost</a> </td>
    <td style="text-align:left;"> surv.blackboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=mboost">mboost</a>
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mboost">mboost</a>, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric
@@ -4222,10 +4207,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.cforest.html">cforest</a> </td>
    <td style="text-align:left;"> surv.cforest </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=partykit">partykit</a>
-<a href="https://cran.r-project.org/package=sandwich">sandwich</a>
-<a href="https://cran.r-project.org/package=coin">coin</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=partykit">partykit</a>, <a href="https://cran.r-project.org/package=sandwich">sandwich</a>, <a href="https://cran.r-project.org/package=coin">coin</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric
@@ -4238,9 +4220,7 @@ crank </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.coxboost.html">coxboost</a> </td>
    <td style="text-align:left;"> surv.coxboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-CoxBoost
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, CoxBoost, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4252,9 +4232,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3proba.mlr-org.com/reference/mlr_learners_surv.coxph.html">coxph</a> </td>
    <td style="text-align:left;"> surv.coxph </td>
    <td style="text-align:left;"> mlr3proba </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survival">survival</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survival">survival</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> logical
 integer
@@ -4268,10 +4246,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.coxtime.html">coxtime</a> </td>
    <td style="text-align:left;"> surv.coxtime </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a>
-<a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a>, <a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4282,10 +4257,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.ctree.html">ctree</a> </td>
    <td style="text-align:left;"> surv.ctree </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=partykit">partykit</a>
-<a href="https://cran.r-project.org/package=coin">coin</a>
-<a href="https://cran.r-project.org/package=sandwich">sandwich</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=partykit">partykit</a>, <a href="https://cran.r-project.org/package=coin">coin</a>, <a href="https://cran.r-project.org/package=sandwich">sandwich</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric
@@ -4298,9 +4270,7 @@ crank </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.cv_coxboost.html">cv_coxboost</a> </td>
    <td style="text-align:left;"> surv.cv_coxboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-CoxBoost
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, CoxBoost, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4312,8 +4282,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_surv.cv_glmnet.html">cv_glmnet</a> </td>
    <td style="text-align:left;"> surv.cv_glmnet </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
    <td style="text-align:left;"> selected_features
 weights </td>
    <td style="text-align:left;"> logical
@@ -4326,10 +4295,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.deephit.html">deephit</a> </td>
    <td style="text-align:left;"> surv.deephit </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a>
-<a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a>, <a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4340,10 +4306,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.deepsurv.html">deepsurv</a> </td>
    <td style="text-align:left;"> surv.deepsurv </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a>
-<a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a>, <a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4354,12 +4317,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.dnnsurv.html">dnnsurv</a> </td>
    <td style="text-align:left;"> surv.dnnsurv </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>
-<a href="https://cran.r-project.org/package=keras">keras</a>
-<a href="https://cran.r-project.org/package=pseudo">pseudo</a>
-<a href="https://cran.r-project.org/package=tensorflow">tensorflow</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>, <a href="https://cran.r-project.org/package=keras">keras</a>, <a href="https://cran.r-project.org/package=pseudo">pseudo</a>, <a href="https://cran.r-project.org/package=tensorflow">tensorflow</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4370,9 +4328,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.flexible.html">flexible</a> </td>
    <td style="text-align:left;"> surv.flexible </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=flexsurv">flexsurv</a>
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=flexsurv">flexsurv</a>, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> logical
 integer
@@ -4386,9 +4342,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.gamboost.html">gamboost</a> </td>
    <td style="text-align:left;"> surv.gamboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=mboost">mboost</a>
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mboost">mboost</a>, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> importance
 selected_features
 weights </td>
@@ -4404,8 +4358,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.gbm.html">gbm</a> </td>
    <td style="text-align:left;"> surv.gbm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=gbm">gbm</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=gbm">gbm</a> </td>
    <td style="text-align:left;"> importance
 missings
 weights </td>
@@ -4420,9 +4373,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.glmboost.html">glmboost</a> </td>
    <td style="text-align:left;"> surv.glmboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=mboost">mboost</a>
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mboost">mboost</a>, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> integer
 numeric
@@ -4436,8 +4387,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_surv.glmnet.html">glmnet</a> </td>
    <td style="text-align:left;"> surv.glmnet </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=glmnet">glmnet</a> </td>
    <td style="text-align:left;"> selected_features
 weights </td>
    <td style="text-align:left;"> logical
@@ -4450,9 +4400,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3proba.mlr-org.com/reference/mlr_learners_surv.kaplan.html">kaplan</a> </td>
    <td style="text-align:left;"> surv.kaplan </td>
    <td style="text-align:left;"> mlr3proba </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survival">survival</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survival">survival</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
    <td style="text-align:left;"> missings </td>
    <td style="text-align:left;"> logical
 integer
@@ -4467,10 +4415,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.loghaz.html">loghaz</a> </td>
    <td style="text-align:left;"> surv.loghaz </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a>
-<a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a>, <a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4481,8 +4426,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.mboost.html">mboost</a> </td>
    <td style="text-align:left;"> surv.mboost </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=mboost">mboost</a> </td>
    <td style="text-align:left;"> importance
 selected_features
 weights </td>
@@ -4498,9 +4442,7 @@ lp </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.nelson.html">nelson</a> </td>
    <td style="text-align:left;"> surv.nelson </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survival">survival</a>
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survival">survival</a>, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> missings </td>
    <td style="text-align:left;"> logical
 integer
@@ -4515,9 +4457,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.obliqueRSF.html">obliqueRSF</a> </td>
    <td style="text-align:left;"> surv.obliqueRSF </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=obliqueRSF">obliqueRSF</a>
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=obliqueRSF">obliqueRSF</a>, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> missings
 oob_error </td>
    <td style="text-align:left;"> integer
@@ -4531,9 +4471,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.parametric.html">parametric</a> </td>
    <td style="text-align:left;"> surv.parametric </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survival">survival</a>
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survival">survival</a>, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> weights </td>
    <td style="text-align:left;"> logical
 integer
@@ -4547,10 +4485,7 @@ crank </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.pchazard.html">pchazard</a> </td>
    <td style="text-align:left;"> surv.pchazard </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a>
-<a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survivalmodels">survivalmodels</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a>, <a href="https://cran.r-project.org/package=reticulate">reticulate</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric </td>
@@ -4561,9 +4496,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.penalized.html">penalized</a> </td>
    <td style="text-align:left;"> surv.penalized </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=penalized">penalized</a>
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=penalized">penalized</a>, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric
@@ -4576,8 +4509,7 @@ crank </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_surv.ranger.html">ranger</a> </td>
    <td style="text-align:left;"> surv.ranger </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=ranger">ranger</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=ranger">ranger</a> </td>
    <td style="text-align:left;"> importance
 oob_error
 weights </td>
@@ -4594,9 +4526,7 @@ crank </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.rfsrc.html">rfsrc</a> </td>
    <td style="text-align:left;"> surv.rfsrc </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-randomForestSRC
-<a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, randomForestSRC, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> importance
 missings
 oob_error
@@ -4612,10 +4542,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3proba.mlr-org.com/reference/mlr_learners_surv.rpart.html">rpart</a> </td>
    <td style="text-align:left;"> surv.rpart </td>
    <td style="text-align:left;"> mlr3proba </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=rpart">rpart</a>
-<a href="https://cran.r-project.org/package=distr6">distr6</a>
-<a href="https://cran.r-project.org/package=survival">survival</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=rpart">rpart</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a>, <a href="https://cran.r-project.org/package=survival">survival</a> </td>
    <td style="text-align:left;"> importance
 missings
 selected_features
@@ -4633,8 +4560,7 @@ distr </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.svm.html">svm</a> </td>
    <td style="text-align:left;"> surv.svm </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=survivalsvm">survivalsvm</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=survivalsvm">survivalsvm</a> </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;"> integer
 numeric
@@ -4648,8 +4574,7 @@ response </td>
    <td style="text-align:left;"> <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_surv.xgboost.html">xgboost</a> </td>
    <td style="text-align:left;"> surv.xgboost </td>
    <td style="text-align:left;"> mlr3learners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>
-<a href="https://cran.r-project.org/package=xgboost">xgboost</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=mlr3learners">mlr3learners</a>, <a href="https://cran.r-project.org/package=xgboost">xgboost</a> </td>
    <td style="text-align:left;"> importance
 missings
 weights </td>

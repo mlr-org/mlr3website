@@ -87,17 +87,17 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>mlr-org: Learners</title>
+  <title>mlr-org: Measures</title>
 
-  <meta property="description" itemprop="description" content="Learners of the mlr3 ecosystem."/>
+  <meta property="description" itemprop="description" content="Performance Measures of the mlr3 ecosystem."/>
 
   <link rel="icon" type="image/vnd.microsoft.icon" href="images/favicon.ico"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="mlr-org: Learners"/>
+  <meta property="og:title" content="mlr-org: Measures"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Learners of the mlr3 ecosystem."/>
+  <meta property="og:description" content="Performance Measures of the mlr3 ecosystem."/>
   <meta property="og:image" content="https://mlr-org.github.io/mlr-org-website/./images/logo_color.png"/>
   <meta property="og:image:width" content="581"/>
   <meta property="og:image:height" content="296"/>
@@ -106,18 +106,17 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary_large_image"/>
-  <meta property="twitter:title" content="mlr-org: Learners"/>
-  <meta property="twitter:description" content="Learners of the mlr3 ecosystem."/>
+  <meta property="twitter:title" content="mlr-org: Measures"/>
+  <meta property="twitter:description" content="Performance Measures of the mlr3 ecosystem."/>
   <meta property="twitter:image" content="https://mlr-org.github.io/mlr-org-website/./images/logo_color.png"/>
   <meta property="twitter:image:width" content="581"/>
   <meta property="twitter:image:height" content="296"/>
 
   <!--/radix_placeholder_meta_tags-->
-  
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","preview","site","bibliography"]}},"value":[{"type":"character","attributes":{},"value":["Learners"]},{"type":"character","attributes":{},"value":["Learners of the mlr3 ecosystem.\n"]},{"type":"character","attributes":{},"value":["images/logo_color.png"]},{"type":"character","attributes":{},"value":["distill::distill_website"]},{"type":"character","attributes":{},"value":["publications.bib"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","preview","site"]}},"value":[{"type":"character","attributes":{},"value":["Measures"]},{"type":"character","attributes":{},"value":["Performance Measures of the mlr3 ecosystem.\n"]},{"type":"character","attributes":{},"value":["images/logo_color.png"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2581,7 +2580,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Learners","description":"Learners of the mlr3 ecosystem.","authors":[]}
+{"title":"Measures","description":"Performance Measures of the mlr3 ecosystem.","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2623,131 +2622,628 @@ Overview
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Learners</h1>
+<h1>Measures</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Learners of the mlr3 ecosystem.</p></p>
+<p><p>Performance Measures of the mlr3 ecosystem.</p></p>
 </div>
 
 
 <div class="d-article">
-<div class="layout-chunk" data-layout="l-body">
-
-</div>
-<h2 id="tuners">Tuners</h2>
+<h2 id="classification">Classification</h2>
+<p>For classification tasks, the goal is to predict a label with only relatively few distinct values. The following measures are available for for classification problems.</p>
 <div class="layout-chunk" data-layout="l-body-outset">
 <div class="table-responsive"><table class = 'table'>
  <thead>
   <tr>
    <th style="text-align:left;"> Name </th>
-   <th style="text-align:left;"> Classes </th>
    <th style="text-align:left;"> Packages </th>
-   <th style="text-align:left;"> Properties </th>
+   <th style="text-align:left;"> Predict Type </th>
+   <th style="text-align:left;"> Task Properties </th>
   </tr>
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_cmaes.html">cmaes</a> </td>
-   <td style="text-align:left;"> ParamDbl </td>
-   <td style="text-align:left;"> single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-adagio </td>
+   <td style="text-align:left;"> classif.acc </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_design_points.html">design_points</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct
-ParamUty </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning </td>
+   <td style="text-align:left;"> classif.auc </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> prob </td>
+   <td style="text-align:left;"> twoclass </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_gensa.html">gensa</a> </td>
-   <td style="text-align:left;"> ParamDbl </td>
-   <td style="text-align:left;"> single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-GenSA </td>
+   <td style="text-align:left;"> classif.bacc </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_grid_search.html">grid_search</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning </td>
+   <td style="text-align:left;"> classif.bbrier </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> prob </td>
+   <td style="text-align:left;"> twoclass </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <a href="https://NA.mlr-org.com/reference/mlr_tuners_hyperband.html">hyperband</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-mlr3hyperband </td>
+   <td style="text-align:left;"> classif.ce </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_irace.html">irace</a> </td>
-   <td style="text-align:left;"> ParamDbl
-ParamInt
-ParamFct
-ParamLgl </td>
-   <td style="text-align:left;"> dependencies
-single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-irace </td>
+   <td style="text-align:left;"> classif.costs </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <a href="https://NA.mlr-org.com/reference/mlr_tuners_mbo.html">mbo</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-multi-crit
-single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-mlr3mbo </td>
+   <td style="text-align:left;"> classif.dor </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_nloptr.html">nloptr</a> </td>
-   <td style="text-align:left;"> ParamDbl </td>
-   <td style="text-align:left;"> single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-nloptr </td>
+   <td style="text-align:left;"> classif.fbeta </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_random_search.html">random_search</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning </td>
+   <td style="text-align:left;"> classif.fdr </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <a href="https://NA.mlr-org.com/reference/mlr_tuners_successive_halving.html">successive_halving</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-mlr3hyperband
-emoa </td>
+   <td style="text-align:left;"> classif.fn </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.fnr </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.fomr </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.fp </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.fpr </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.logloss </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> prob </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.mbrier </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> prob </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.mcc </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.npv </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.ppv </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.prauc </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> prob </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.precision </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.recall </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.sensitivity </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.specificity </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.tn </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.tnr </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.tp </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> classif.tpr </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;"> twoclass </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<h2 id="regression">Regression</h2>
+<p>For regression tasks, the objective is predict a continuous numeric quantity. The following measures are available for for regression problems.</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Packages </th>
+   <th style="text-align:left;"> Predict Type </th>
+   <th style="text-align:left;"> Task Properties </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> regr.bias </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.ktau </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.mae </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.mape </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.maxae </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.medae </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.medse </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.mse </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.msle </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.pbias </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.rae </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.rmse </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.rmsle </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.rrse </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.rse </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.rsq </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.sae </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.smape </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.srho </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> regr.sse </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<h2 id="cluster">Cluster</h2>
+<p>In cluster analysis the goal is to group data into clusters, where each cluster contains similar observations. The following measures are available for cluster problems.</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Packages </th>
+   <th style="text-align:left;"> Predict Type </th>
+   <th style="text-align:left;"> Task Properties </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> clust.ch </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=clusterCrit">clusterCrit</a> </td>
+   <td style="text-align:left;"> partition </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> clust.db </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=clusterCrit">clusterCrit</a> </td>
+   <td style="text-align:left;"> partition </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> clust.dunn </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=clusterCrit">clusterCrit</a> </td>
+   <td style="text-align:left;"> partition </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> clust.silhouette </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=clusterCrit">clusterCrit</a> </td>
+   <td style="text-align:left;"> partition </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> clust.wss </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=clusterCrit">clusterCrit</a> </td>
+   <td style="text-align:left;"> partition </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<h2 id="density">Density</h2>
+<p>In density estimation the learning task is to find the unknown distribution from which an i.i.d. data set is generated. The following measures are available for density estimation problems.</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Packages </th>
+   <th style="text-align:left;"> Predict Type </th>
+   <th style="text-align:left;"> Task Properties </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> dens.logloss </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> pdf </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<h2 id="survival">Survival</h2>
+<p>In survival analysis the aim is to predict the survival distribution of a given individual. The following measures are available for survival problems.</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Packages </th>
+   <th style="text-align:left;"> Predict Type </th>
+   <th style="text-align:left;"> Task Properties </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> surv.brier </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> distr </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.calib_alpha </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> distr </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.calib_beta </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.chambless_auc </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.cindex </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> crank </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.dcalib </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> distr </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.graf </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> distr </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.hung_auc </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.intlogloss </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
+   <td style="text-align:left;"> distr </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.logloss </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
+   <td style="text-align:left;"> distr </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.mae </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.mse </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.nagelk_r2 </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.oquigley_r2 </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.rmse </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a> </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.schmid </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=distr6">distr6</a> </td>
+   <td style="text-align:left;"> distr </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.song_auc </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.song_tnr </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.song_tpr </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.uno_auc </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.uno_tnr </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.uno_tpr </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> surv.xu_r2 </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, <a href="https://cran.r-project.org/package=survAUC">survAUC</a> </td>
+   <td style="text-align:left;"> lp </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<h2 id="generic-measures">Generic Measures</h2>
+<p>The following measures are independent of the task type.</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Packages </th>
+   <th style="text-align:left;"> Predict Type </th>
+   <th style="text-align:left;"> Task Properties </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> aic </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> bic </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> debug </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> oob_error </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> selected_features </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> sim.jaccard </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> sim.phi </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> time_both </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> time_predict </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> time_train </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> response </td>
+   <td style="text-align:left;">  </td>
   </tr>
 </tbody>
 </table></div>
@@ -2764,10 +3260,7 @@ emoa </td>
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
 <!--radix_placeholder_appendices-->
-<div class="appendix-bottom">
-<h3 id="references">References</h3>
-<div id="references-listing"></div>
-</div>
+<div class="appendix-bottom"></div>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
