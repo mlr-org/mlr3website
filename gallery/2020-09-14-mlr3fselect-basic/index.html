@@ -1,0 +1,4888 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+  <meta name="generator" content="distill" />
+
+  <style type="text/css">
+  /* Hide doc at startup (prevent jankiness while JS renders/transforms) */
+  body {
+    visibility: hidden;
+  }
+  </style>
+
+ <!--radix_placeholder_import_source-->
+ <!--/radix_placeholder_import_source-->
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ad0000; } /* Alert */
+code span.an { color: #5e5e5e; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bn { color: #ad0000; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007ba5; } /* ControlFlow */
+code span.ch { color: #20794d; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #5e5e5e; } /* Comment */
+code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+code span.dt { color: #ad0000; } /* DataType */
+code span.dv { color: #ad0000; } /* DecVal */
+code span.er { color: #ad0000; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #ad0000; } /* Float */
+code span.fu { color: #4758ab; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #5e5e5e; } /* Information */
+code span.kw { color: #007ba5; } /* Keyword */
+code span.op { color: #5e5e5e; } /* Operator */
+code span.ot { color: #007ba5; } /* Other */
+code span.pp { color: #ad0000; } /* Preprocessor */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
+code span.ss { color: #20794d; } /* SpecialString */
+code span.st { color: #20794d; } /* String */
+code span.va { color: #111111; } /* Variable */
+code span.vs { color: #20794d; } /* VerbatimString */
+code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+</style>
+
+
+  <!--radix_placeholder_meta_tags-->
+<title>mlr-org: Feature Selection on the Titanic Data Set</title>
+
+<meta property="description" itemprop="description" content="Short introduction to feature selection with mlr3fselect."/>
+
+<link rel="canonical" href="https://mlr-org.github.io/mlr-org-website/gallery/2020-09-14-mlr3fselect-basic/"/>
+<link rel="icon" type="image/vnd.microsoft.icon" href="../../images/favicon.ico"/>
+
+<!--  https://schema.org/Article -->
+<meta property="article:published" itemprop="datePublished" content="2021-01-08"/>
+<meta property="article:created" itemprop="dateCreated" content="2021-01-08"/>
+<meta name="article:author" content="Marc Becker"/>
+
+<!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
+<meta property="og:title" content="mlr-org: Feature Selection on the Titanic Data Set"/>
+<meta property="og:type" content="article"/>
+<meta property="og:description" content="Short introduction to feature selection with mlr3fselect."/>
+<meta property="og:url" content="https://mlr-org.github.io/mlr-org-website/gallery/2020-09-14-mlr3fselect-basic/"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:site_name" content="mlr-org"/>
+
+<!--  https://dev.twitter.com/cards/types/summary -->
+<meta property="twitter:card" content="summary"/>
+<meta property="twitter:title" content="mlr-org: Feature Selection on the Titanic Data Set"/>
+<meta property="twitter:description" content="Short introduction to feature selection with mlr3fselect."/>
+<meta property="twitter:url" content="https://mlr-org.github.io/mlr-org-website/gallery/2020-09-14-mlr3fselect-basic/"/>
+
+<!--  https://scholar.google.com/intl/en/scholar/inclusion.html#indexing -->
+<meta name="citation_title" content="mlr-org: Feature Selection on the Titanic Data Set"/>
+<meta name="citation_fulltext_html_url" content="https://mlr-org.github.io/mlr-org-website/gallery/2020-09-14-mlr3fselect-basic/"/>
+<meta name="citation_online_date" content="2021/01/08"/>
+<meta name="citation_publication_date" content="2021/01/08"/>
+<meta name="citation_author" content="Marc Becker"/>
+<!--/radix_placeholder_meta_tags-->
+  <!--radix_placeholder_rmarkdown_metadata-->
+
+<script type="text/json" id="radix-rmarkdown-metadata">
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","categories","description","author","date","output","params","citation_url","canonical_url"]}},"value":[{"type":"character","attributes":{},"value":["Feature Selection on the Titanic Data Set"]},{"type":"character","attributes":{},"value":["mlr3fselect","optimization","feature selection","nested resampling","titanic data set","classification"]},{"type":"character","attributes":{},"value":["Short introduction to feature selection with mlr3fselect."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Marc Becker"]}]}]},{"type":"character","attributes":{},"value":["01-08-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","self_contained","highlight_downlit"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[false]},{"type":"logical","attributes":{},"value":[true]}]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["eval_all"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/gallery/2020-09-14-mlr3fselect-basic/"]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/gallery/2020-09-14-mlr3fselect-basic/"]}]}
+</script>
+<!--/radix_placeholder_rmarkdown_metadata-->
+  
+  <script type="text/json" id="radix-resource-manifest">
+  {"type":"character","attributes":{},"value":["data/rr.rda","mlr3fselect-basic_files/anchor-4.2.2/anchor.min.js","mlr3fselect-basic_files/bowser-1.9.3/bowser.min.js","mlr3fselect-basic_files/distill-2.2.21/template.v2.js","mlr3fselect-basic_files/header-attrs-2.11/header-attrs.js","mlr3fselect-basic_files/jquery-3.6.0/jquery-3.6.0.js","mlr3fselect-basic_files/jquery-3.6.0/jquery-3.6.0.min.js","mlr3fselect-basic_files/jquery-3.6.0/jquery-3.6.0.min.map","mlr3fselect-basic_files/kePrint-0.0.1/kePrint.js","mlr3fselect-basic_files/lightable-0.0.1/lightable.css","mlr3fselect-basic_files/popper-2.6.0/popper.min.js","mlr3fselect-basic_files/tippy-6.2.7/tippy-bundle.umd.min.js","mlr3fselect-basic_files/tippy-6.2.7/tippy-light-border.css","mlr3fselect-basic_files/tippy-6.2.7/tippy.css","mlr3fselect-basic_files/tippy-6.2.7/tippy.umd.min.js","mlr3fselect-basic_files/webcomponents-2.0.0/webcomponents.js"]}
+  </script>
+  <!--radix_placeholder_navigation_in_header-->
+<meta name="distill:offset" content="../.."/>
+
+<script type="application/javascript">
+
+  window.headroom_prevent_pin = false;
+
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+
+    // initialize headroom for banner
+    var header = $('header').get(0);
+    var headerHeight = header.offsetHeight;
+    var headroom = new Headroom(header, {
+      tolerance: 5,
+      onPin : function() {
+        if (window.headroom_prevent_pin) {
+          window.headroom_prevent_pin = false;
+          headroom.unpin();
+        }
+      }
+    });
+    headroom.init();
+    if(window.location.hash)
+      headroom.unpin();
+    $(header).addClass('headroom--transition');
+
+    // offset scroll location for banner on hash change
+    // (see: https://github.com/WickyNilliams/headroom.js/issues/38)
+    window.addEventListener("hashchange", function(event) {
+      window.scrollTo(0, window.pageYOffset - (headerHeight + 25));
+    });
+
+    // responsive menu
+    $('.distill-site-header').each(function(i, val) {
+      var topnav = $(this);
+      var toggle = topnav.find('.nav-toggle');
+      toggle.on('click', function() {
+        topnav.toggleClass('responsive');
+      });
+    });
+
+    // nav dropdowns
+    $('.nav-dropbtn').click(function(e) {
+      $(this).next('.nav-dropdown-content').toggleClass('nav-dropdown-active');
+      $(this).parent().siblings('.nav-dropdown')
+         .children('.nav-dropdown-content').removeClass('nav-dropdown-active');
+    });
+    $("body").click(function(e){
+      $('.nav-dropdown-content').removeClass('nav-dropdown-active');
+    });
+    $(".nav-dropdown").click(function(e){
+      e.stopPropagation();
+    });
+  });
+</script>
+
+<style type="text/css">
+
+/* Theme (user-documented overrideables for nav appearance) */
+
+.distill-site-nav {
+  color: rgba(255, 255, 255, 0.8);
+  background-color: #0F2E3D;
+  font-size: 15px;
+  font-weight: 300;
+}
+
+.distill-site-nav a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.distill-site-nav a:hover {
+  color: white;
+}
+
+@media print {
+  .distill-site-nav {
+    display: none;
+  }
+}
+
+.distill-site-header {
+
+}
+
+.distill-site-footer {
+
+}
+
+
+/* Site Header */
+
+.distill-site-header {
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 3;
+}
+
+.distill-site-header .nav-left {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+@media screen and (max-width: 768px) {
+  .distill-site-header .nav-left {
+    margin-left: 0;
+  }
+}
+
+
+.distill-site-header .nav-right {
+  float: right;
+  margin-right: 8px;
+}
+
+.distill-site-header a,
+.distill-site-header .title {
+  display: inline-block;
+  text-align: center;
+  padding: 14px 10px 14px 10px;
+}
+
+.distill-site-header .title {
+  font-size: 18px;
+  min-width: 150px;
+}
+
+.distill-site-header .logo {
+  padding: 0;
+}
+
+.distill-site-header .logo img {
+  display: none;
+  max-height: 20px;
+  width: auto;
+  margin-bottom: -4px;
+}
+
+.distill-site-header .nav-image img {
+  max-height: 18px;
+  width: auto;
+  display: inline-block;
+  margin-bottom: -3px;
+}
+
+
+
+@media screen and (min-width: 1000px) {
+  .distill-site-header .logo img {
+    display: inline-block;
+  }
+  .distill-site-header .nav-left {
+    margin-left: 20px;
+  }
+  .distill-site-header .nav-right {
+    margin-right: 20px;
+  }
+  .distill-site-header .title {
+    padding-left: 12px;
+  }
+}
+
+
+.distill-site-header .nav-toggle {
+  display: none;
+}
+
+.nav-dropdown {
+  display: inline-block;
+  position: relative;
+}
+
+.nav-dropdown .nav-dropbtn {
+  border: none;
+  outline: none;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 16px 10px;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  margin: 0;
+  margin-top: 1px;
+  z-index: 2;
+}
+
+.nav-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 200px;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 4px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+  z-index: 1;
+  margin-top: 2px;
+  white-space: nowrap;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.nav-dropdown-content hr {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.nav-dropdown-active {
+  display: block;
+}
+
+.nav-dropdown-content a, .nav-dropdown-content .nav-dropdown-header {
+  color: black;
+  padding: 6px 24px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.nav-dropdown-content .nav-dropdown-header {
+  display: block;
+  padding: 5px 24px;
+  padding-bottom: 0;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: #999999;
+  white-space: nowrap;
+}
+
+.nav-dropdown:hover .nav-dropbtn {
+  color: white;
+}
+
+.nav-dropdown-content a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.nav-right .nav-dropdown-content {
+  margin-left: -45%;
+  right: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .distill-site-header a, .distill-site-header .nav-dropdown  {display: none;}
+  .distill-site-header a.nav-toggle {
+    float: right;
+    display: block;
+  }
+  .distill-site-header .title {
+    margin-left: 0;
+  }
+  .distill-site-header .nav-right {
+    margin-right: 0;
+  }
+  .distill-site-header {
+    overflow: hidden;
+  }
+  .nav-right .nav-dropdown-content {
+    margin-left: 0;
+  }
+}
+
+
+@media screen and (max-width: 768px) {
+  .distill-site-header.responsive {position: relative; min-height: 500px; }
+  .distill-site-header.responsive a.nav-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .distill-site-header.responsive a,
+  .distill-site-header.responsive .nav-dropdown {
+    display: block;
+    text-align: left;
+  }
+  .distill-site-header.responsive .nav-left,
+  .distill-site-header.responsive .nav-right {
+    width: 100%;
+  }
+  .distill-site-header.responsive .nav-dropdown {float: none;}
+  .distill-site-header.responsive .nav-dropdown-content {position: relative;}
+  .distill-site-header.responsive .nav-dropdown .nav-dropbtn {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+/* Site Footer */
+
+.distill-site-footer {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  z-index: 3;
+  margin-top: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  text-align: center;
+}
+
+/* Headroom */
+
+d-title {
+  padding-top: 6rem;
+}
+
+@media print {
+  d-title {
+    padding-top: 4rem;
+  }
+}
+
+.headroom {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.headroom--transition {
+  transition: all .4s ease-in-out;
+}
+
+.headroom--unpinned {
+  top: -100px;
+}
+
+.headroom--pinned {
+  top: 0;
+}
+
+/* adjust viewport for navbar height */
+/* helps vertically center bootstrap (non-distill) content */
+.min-vh-100 {
+  min-height: calc(100vh - 100px) !important;
+}
+
+</style>
+
+<script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="../../site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
+<link href="../../site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+<script src="../../site_libs/headroom-0.9.4/headroom.min.js"></script>
+<script src="../../site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
+<script src="../../site_libs/fuse-6.4.1/fuse.min.js"></script>
+
+<script type="application/javascript">
+
+function getMeta(metaName) {
+  var metas = document.getElementsByTagName('meta');
+  for (let i = 0; i < metas.length; i++) {
+    if (metas[i].getAttribute('name') === metaName) {
+      return metas[i].getAttribute('content');
+    }
+  }
+  return '';
+}
+
+function offsetURL(url) {
+  var offset = getMeta('distill:offset');
+  return offset ? offset + '/' + url : url;
+}
+
+function createFuseIndex() {
+
+  // create fuse index
+  var options = {
+    keys: [
+      { name: 'title', weight: 20 },
+      { name: 'categories', weight: 15 },
+      { name: 'description', weight: 10 },
+      { name: 'contents', weight: 5 },
+    ],
+    ignoreLocation: true,
+    threshold: 0
+  };
+  var fuse = new window.Fuse([], options);
+
+  // fetch the main search.json
+  return fetch(offsetURL('search.json'))
+    .then(function(response) {
+      if (response.status == 200) {
+        return response.json().then(function(json) {
+          // index main articles
+          json.articles.forEach(function(article) {
+            fuse.add(article);
+          });
+          // download collections and index their articles
+          return Promise.all(json.collections.map(function(collection) {
+            return fetch(offsetURL(collection)).then(function(response) {
+              if (response.status === 200) {
+                return response.json().then(function(articles) {
+                  articles.forEach(function(article) {
+                    fuse.add(article);
+                  });
+                })
+              } else {
+                return Promise.reject(
+                  new Error('Unexpected status from search index request: ' +
+                            response.status)
+                );
+              }
+            });
+          })).then(function() {
+            return fuse;
+          });
+        });
+
+      } else {
+        return Promise.reject(
+          new Error('Unexpected status from search index request: ' +
+                      response.status)
+        );
+      }
+    });
+}
+
+window.document.addEventListener("DOMContentLoaded", function (event) {
+
+  // get search element (bail if we don't have one)
+  var searchEl = window.document.getElementById('distill-search');
+  if (!searchEl)
+    return;
+
+  createFuseIndex()
+    .then(function(fuse) {
+
+      // make search box visible
+      searchEl.classList.remove('hidden');
+
+      // initialize autocomplete
+      var options = {
+        autoselect: true,
+        hint: false,
+        minLength: 2,
+      };
+      window.autocomplete(searchEl, options, [{
+        source: function(query, callback) {
+          const searchOptions = {
+            isCaseSensitive: false,
+            shouldSort: true,
+            minMatchCharLength: 2,
+            limit: 10,
+          };
+          var results = fuse.search(query, searchOptions);
+          callback(results
+            .map(function(result) { return result.item; })
+          );
+        },
+        templates: {
+          suggestion: function(suggestion) {
+            var img = suggestion.preview && Object.keys(suggestion.preview).length > 0
+              ? `<img src="${offsetURL(suggestion.preview)}"</img>`
+              : '';
+            var html = `
+              <div class="search-item">
+                <h3>${suggestion.title}</h3>
+                <div class="search-item-description">
+                  ${suggestion.description || ''}
+                </div>
+                <div class="search-item-preview">
+                  ${img}
+                </div>
+              </div>
+            `;
+            return html;
+          }
+        }
+      }]).on('autocomplete:selected', function(event, suggestion) {
+        window.location.href = offsetURL(suggestion.path);
+      });
+      // remove inline display style on autocompleter (we want to
+      // manage responsive display via css)
+      $('.algolia-autocomplete').css("display", "");
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
+
+});
+
+</script>
+
+<style type="text/css">
+
+.nav-search {
+  font-size: x-small;
+}
+
+/* Algolioa Autocomplete */
+
+.algolia-autocomplete {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: sub;
+  background-color: white;
+  color: black;
+  padding: 6px;
+  padding-top: 8px;
+  padding-bottom: 0;
+  border-radius: 6px;
+  border: 1px #0F2E3D solid;
+  width: 180px;
+}
+
+
+@media screen and (max-width: 768px) {
+  .distill-site-nav .algolia-autocomplete {
+    display: none;
+    visibility: hidden;
+  }
+  .distill-site-nav.responsive .algolia-autocomplete {
+    display: inline-block;
+    visibility: visible;
+  }
+  .distill-site-nav.responsive .algolia-autocomplete .aa-dropdown-menu {
+    margin-left: 0;
+    width: 400px;
+    max-height: 400px;
+  }
+}
+
+.algolia-autocomplete .aa-input, .algolia-autocomplete .aa-hint {
+  width: 90%;
+  outline: none;
+  border: none;
+}
+
+.algolia-autocomplete .aa-hint {
+  color: #999;
+}
+.algolia-autocomplete .aa-dropdown-menu {
+  width: 550px;
+  max-height: 70vh;
+  overflow-x: visible;
+  overflow-y: scroll;
+  padding: 5px;
+  margin-top: 3px;
+  margin-left: -150px;
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid #999;
+  border-top: none;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion {
+  cursor: pointer;
+  padding: 5px 4px;
+  border-bottom: 1px solid #eee;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion:last-of-type {
+  border-bottom: none;
+  margin-bottom: 2px;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item {
+  overflow: hidden;
+  font-size: 0.8em;
+  line-height: 1.4em;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item h3 {
+  font-size: 1rem;
+  margin-block-start: 0;
+  margin-block-end: 5px;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-description {
+  display: inline-block;
+  overflow: hidden;
+  height: 2.8em;
+  width: 80%;
+  margin-right: 4%;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview {
+  display: inline-block;
+  width: 15%;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img {
+  height: 3em;
+  width: auto;
+  display: none;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img[src] {
+  display: initial;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
+  background-color: #eee;
+}
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion em {
+  font-weight: bold;
+  font-style: normal;
+}
+
+</style>
+
+
+<!--/radix_placeholder_navigation_in_header-->
+  <!--radix_placeholder_distill-->
+
+<style type="text/css">
+
+body {
+  background-color: white;
+}
+
+.pandoc-table {
+  width: 100%;
+}
+
+.pandoc-table>caption {
+  margin-bottom: 10px;
+}
+
+.pandoc-table th:not([align]) {
+  text-align: left;
+}
+
+.pagedtable-footer {
+  font-size: 15px;
+}
+
+d-byline .byline {
+  grid-template-columns: 2fr 2fr;
+}
+
+d-byline .byline h3 {
+  margin-block-start: 1.5em;
+}
+
+d-byline .byline .authors-affiliations h3 {
+  margin-block-start: 0.5em;
+}
+
+.authors-affiliations .orcid-id {
+  width: 16px;
+  height:16px;
+  margin-left: 4px;
+  margin-right: 4px;
+  vertical-align: middle;
+  padding-bottom: 2px;
+}
+
+d-title .dt-tags {
+  margin-top: 1em;
+  grid-column: text;
+}
+
+.dt-tags .dt-tag {
+  text-decoration: none;
+  display: inline-block;
+  color: rgba(0,0,0,0.6);
+  padding: 0em 0.4em;
+  margin-right: 0.5em;
+  margin-bottom: 0.4em;
+  font-size: 70%;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+d-article table.gt_table td,
+d-article table.gt_table th {
+  border-bottom: none;
+}
+
+.html-widget {
+  margin-bottom: 2.0em;
+}
+
+.l-screen-inset {
+  padding-right: 16px;
+}
+
+.l-screen .caption {
+  margin-left: 10px;
+}
+
+.shaded {
+  background: rgb(247, 247, 247);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.shaded .html-widget {
+  margin-bottom: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.shaded .shaded-content {
+  background: white;
+}
+
+.text-output {
+  margin-top: 0;
+  line-height: 1.5em;
+}
+
+.hidden {
+  display: none !important;
+}
+
+d-article {
+  padding-top: 2.5rem;
+  padding-bottom: 30px;
+}
+
+d-appendix {
+  padding-top: 30px;
+}
+
+d-article>p>img {
+  width: 100%;
+}
+
+d-article h2 {
+  margin: 1rem 0 1.5rem 0;
+}
+
+d-article h3 {
+  margin-top: 1.5rem;
+}
+
+d-article iframe {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 2.0em;
+  width: 100%;
+}
+
+/* Tweak code blocks */
+
+d-article div.sourceCode code,
+d-article pre code {
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+
+d-article pre,
+d-article div.sourceCode,
+d-article div.sourceCode pre {
+  overflow: auto;
+}
+
+d-article div.sourceCode {
+  background-color: white;
+}
+
+d-article div.sourceCode pre {
+  padding-left: 10px;
+  font-size: 12px;
+  border-left: 2px solid rgba(0,0,0,0.1);
+}
+
+d-article pre {
+  font-size: 12px;
+  color: black;
+  background: none;
+  margin-top: 0;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+d-article pre a {
+  border-bottom: none;
+}
+
+d-article pre a:hover {
+  border-bottom: none;
+  text-decoration: underline;
+}
+
+d-article details {
+  grid-column: text;
+  margin-bottom: 0.8em;
+}
+
+@media(min-width: 768px) {
+
+d-article pre,
+d-article div.sourceCode,
+d-article div.sourceCode pre {
+  overflow: visible !important;
+}
+
+d-article div.sourceCode pre {
+  padding-left: 18px;
+  font-size: 14px;
+}
+
+d-article pre {
+  font-size: 14px;
+}
+
+}
+
+figure img.external {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+/* CSS for d-contents */
+
+.d-contents {
+  grid-column: text;
+  color: rgba(0,0,0,0.8);
+  font-size: 0.9em;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
+  padding-left: 0.25em;
+  justify-self: start;
+}
+
+@media(min-width: 1000px) {
+  .d-contents.d-contents-float {
+    height: 0;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    justify-self: center;
+    padding-right: 3em;
+    padding-left: 2em;
+  }
+}
+
+.d-contents nav h3 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+.d-contents li {
+  list-style-type: none
+}
+
+.d-contents nav > ul {
+  padding-left: 0;
+}
+
+.d-contents ul {
+  padding-left: 1em
+}
+
+.d-contents nav ul li {
+  margin-top: 0.6em;
+  margin-bottom: 0.2em;
+}
+
+.d-contents nav a {
+  font-size: 13px;
+  border-bottom: none;
+  text-decoration: none
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.d-contents nav a:hover {
+  text-decoration: underline solid rgba(0, 0, 0, 0.6)
+}
+
+.d-contents nav > ul > li > a {
+  font-weight: 600;
+}
+
+.d-contents nav > ul > li > ul {
+  font-weight: inherit;
+}
+
+.d-contents nav > ul > li > ul > li {
+  margin-top: 0.2em;
+}
+
+
+.d-contents nav ul {
+  margin-top: 0;
+  margin-bottom: 0.25em;
+}
+
+.d-article-with-toc h2:nth-child(2) {
+  margin-top: 0;
+}
+
+
+/* Figure */
+
+.figure {
+  position: relative;
+  margin-bottom: 2.5em;
+  margin-top: 1.5em;
+}
+
+.figure img {
+  width: 100%;
+}
+
+.figure .caption {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  line-height: 1.5em;
+}
+
+.figure img.external {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+.figure .caption a {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.figure .caption b,
+.figure .caption strong, {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 1.0);
+}
+
+/* Citations */
+
+d-article .citation {
+  color: inherit;
+  cursor: inherit;
+}
+
+div.hanging-indent{
+  margin-left: 1em; text-indent: -1em;
+}
+
+/* Citation hover box */
+
+.tippy-box[data-theme~=light-border] {
+  background-color: rgba(250, 250, 250, 0.95);
+}
+
+.tippy-content > p {
+  margin-bottom: 0;
+  padding: 2px;
+}
+
+
+/* Tweak 1000px media break to show more text */
+
+@media(min-width: 1000px) {
+  .base-grid,
+  distill-header,
+  d-title,
+  d-abstract,
+  d-article,
+  d-appendix,
+  distill-appendix,
+  d-byline,
+  d-footnote-list,
+  d-citation-list,
+  distill-footer {
+    grid-template-columns: [screen-start] 1fr [page-start kicker-start] 80px [middle-start] 50px [text-start kicker-end] 65px 65px 65px 65px 65px 65px 65px 65px [text-end gutter-start] 65px [middle-end] 65px [page-end gutter-end] 1fr [screen-end];
+    grid-column-gap: 16px;
+  }
+
+  .grid {
+    grid-column-gap: 16px;
+  }
+
+  d-article {
+    font-size: 1.06rem;
+    line-height: 1.7em;
+  }
+  figure .caption, .figure .caption, figure figcaption {
+    font-size: 13px;
+  }
+}
+
+@media(min-width: 1180px) {
+  .base-grid,
+  distill-header,
+  d-title,
+  d-abstract,
+  d-article,
+  d-appendix,
+  distill-appendix,
+  d-byline,
+  d-footnote-list,
+  d-citation-list,
+  distill-footer {
+    grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
+    grid-column-gap: 32px;
+  }
+
+  .grid {
+    grid-column-gap: 32px;
+  }
+}
+
+
+/* Get the citation styles for the appendix (not auto-injected on render since
+   we do our own rendering of the citation appendix) */
+
+d-appendix .citation-appendix,
+.d-appendix .citation-appendix {
+  font-size: 11px;
+  line-height: 15px;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  padding-left: 18px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.02);
+  padding: 10px 18px;
+  border-radius: 3px;
+  color: rgba(150, 150, 150, 1);
+  overflow: hidden;
+  margin-top: -12px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Include appendix styles here so they can be overridden */
+
+d-appendix {
+  contain: layout style;
+  font-size: 0.8em;
+  line-height: 1.7em;
+  margin-top: 60px;
+  margin-bottom: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  color: rgba(0,0,0,0.5);
+  padding-top: 60px;
+  padding-bottom: 48px;
+}
+
+d-appendix h3 {
+  grid-column: page-start / text-start;
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 1em;
+  margin-bottom: 0;
+  color: rgba(0,0,0,0.65);
+}
+
+d-appendix h3 + * {
+  margin-top: 1em;
+}
+
+d-appendix ol {
+  padding: 0 0 0 15px;
+}
+
+@media (min-width: 768px) {
+  d-appendix ol {
+    padding: 0 0 0 30px;
+    margin-left: -30px;
+  }
+}
+
+d-appendix li {
+  margin-bottom: 1em;
+}
+
+d-appendix a {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+d-appendix > * {
+  grid-column: text;
+}
+
+d-appendix > d-footnote-list,
+d-appendix > d-citation-list,
+d-appendix > distill-appendix {
+  grid-column: screen;
+}
+
+/* Include footnote styles here so they can be overridden */
+
+d-footnote-list {
+  contain: layout style;
+}
+
+d-footnote-list > * {
+  grid-column: text;
+}
+
+d-footnote-list a.footnote-backlink {
+  color: rgba(0,0,0,0.3);
+  padding-left: 0.5em;
+}
+
+
+
+/* Anchor.js */
+
+.anchorjs-link {
+  /*transition: all .25s linear; */
+  text-decoration: none;
+  border-bottom: none;
+}
+*:hover > .anchorjs-link {
+  margin-left: -1.125em !important;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+/* Social footer */
+
+.social_footer {
+  margin-top: 30px;
+  margin-bottom: 0;
+  color: rgba(0,0,0,0.67);
+}
+
+.disqus-comments {
+  margin-right: 30px;
+}
+
+.disqus-comment-count {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+#disqus_thread {
+  margin-top: 30px;
+}
+
+.article-sharing a {
+  border-bottom: none;
+  margin-right: 8px;
+}
+
+.article-sharing a:hover {
+  border-bottom: none;
+}
+
+.sidebar-section.subscribe {
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+.subscribe p {
+  margin-bottom: 0.5em;
+}
+
+
+.article-footer .subscribe {
+  font-size: 15px;
+  margin-top: 45px;
+}
+
+
+.sidebar-section.custom {
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+.custom p {
+  margin-bottom: 0.5em;
+}
+
+/* Styles for listing layout (hide title) */
+.layout-listing d-title, .layout-listing .d-title {
+  display: none;
+}
+
+/* Styles for posts lists (not auto-injected) */
+
+
+.posts-with-sidebar {
+  padding-left: 45px;
+  padding-right: 45px;
+}
+
+.posts-list .description h2,
+.posts-list .description p {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+.posts-list .description h2 {
+  font-weight: 700;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.posts-list h2.post-tag {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding-bottom: 12px;
+}
+.posts-list {
+  margin-top: 60px;
+  margin-bottom: 24px;
+}
+
+.posts-list .post-preview {
+  text-decoration: none;
+  overflow: hidden;
+  display: block;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 24px 0;
+}
+
+.post-preview-last {
+  border-bottom: none !important;
+}
+
+.posts-list .posts-list-caption {
+  grid-column: screen;
+  font-weight: 400;
+}
+
+.posts-list .post-preview h2 {
+  margin: 0 0 6px 0;
+  line-height: 1.2em;
+  font-style: normal;
+  font-size: 24px;
+}
+
+.posts-list .post-preview p {
+  margin: 0 0 12px 0;
+  line-height: 1.4em;
+  font-size: 16px;
+}
+
+.posts-list .post-preview .thumbnail {
+  box-sizing: border-box;
+  margin-bottom: 24px;
+  position: relative;
+  max-width: 500px;
+}
+.posts-list .post-preview img {
+  width: 100%;
+  display: block;
+}
+
+.posts-list .metadata {
+  font-size: 12px;
+  line-height: 1.4em;
+  margin-bottom: 18px;
+}
+
+.posts-list .metadata > * {
+  display: inline-block;
+}
+
+.posts-list .metadata .publishedDate {
+  margin-right: 2em;
+}
+
+.posts-list .metadata .dt-authors {
+  display: block;
+  margin-top: 0.3em;
+  margin-right: 2em;
+}
+
+.posts-list .dt-tags {
+  display: block;
+  line-height: 1em;
+}
+
+.posts-list .dt-tags .dt-tag {
+  display: inline-block;
+  color: rgba(0,0,0,0.6);
+  padding: 0.3em 0.4em;
+  margin-right: 0.2em;
+  margin-bottom: 0.4em;
+  font-size: 60%;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.posts-list img {
+  opacity: 1;
+}
+
+.posts-list img[data-src] {
+  opacity: 0;
+}
+
+.posts-more {
+  clear: both;
+}
+
+
+.posts-sidebar {
+  font-size: 16px;
+}
+
+.posts-sidebar h3 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.sidebar-section {
+  margin-bottom: 30px;
+}
+
+.categories ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.categories li {
+  color: rgba(0, 0, 0, 0.8);
+  margin-bottom: 0;
+}
+
+.categories li>a {
+  border-bottom: none;
+}
+
+.categories li>a:hover {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.categories .active {
+  font-weight: 600;
+}
+
+.categories .category-count {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+
+@media(min-width: 768px) {
+  .posts-list .post-preview h2 {
+    font-size: 26px;
+  }
+  .posts-list .post-preview .thumbnail {
+    float: right;
+    width: 30%;
+    margin-bottom: 0;
+  }
+  .posts-list .post-preview .description {
+    float: left;
+    width: 45%;
+  }
+  .posts-list .post-preview .metadata {
+    float: left;
+    width: 20%;
+    margin-top: 8px;
+  }
+  .posts-list .post-preview p {
+    margin: 0 0 12px 0;
+    line-height: 1.5em;
+    font-size: 16px;
+  }
+  .posts-with-sidebar .posts-list {
+    float: left;
+    width: 75%;
+  }
+  .posts-with-sidebar .posts-sidebar {
+    float: right;
+    width: 20%;
+    margin-top: 60px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
+
+
+/* Improve display for browsers without grid (IE/Edge <= 15) */
+
+.downlevel {
+  line-height: 1.6em;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+}
+
+.downlevel .d-title {
+  padding-top: 6rem;
+  padding-bottom: 1.5rem;
+}
+
+.downlevel .d-title h1 {
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 1.1em;
+  margin: 0 0 0.5rem;
+}
+
+.downlevel .d-title p {
+  font-weight: 300;
+  font-size: 1.2rem;
+  line-height: 1.55em;
+  margin-top: 0;
+}
+
+.downlevel .d-byline {
+  padding-top: 0.8em;
+  padding-bottom: 0.8em;
+  font-size: 0.8rem;
+  line-height: 1.8em;
+}
+
+.downlevel .section-separator {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.downlevel .d-article {
+  font-size: 1.06rem;
+  line-height: 1.7em;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+
+.downlevel .d-appendix {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: none;
+  font-size: 0.8em;
+  line-height: 1.7em;
+  margin-bottom: 0;
+  color: rgba(0,0,0,0.5);
+  padding-top: 40px;
+  padding-bottom: 48px;
+}
+
+.downlevel .footnotes ol {
+  padding-left: 13px;
+}
+
+.downlevel .base-grid,
+.downlevel .distill-header,
+.downlevel .d-title,
+.downlevel .d-abstract,
+.downlevel .d-article,
+.downlevel .d-appendix,
+.downlevel .distill-appendix,
+.downlevel .d-byline,
+.downlevel .d-footnote-list,
+.downlevel .d-citation-list,
+.downlevel .distill-footer,
+.downlevel .appendix-bottom,
+.downlevel .posts-container {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+@media(min-width: 768px) {
+  .downlevel .base-grid,
+  .downlevel .distill-header,
+  .downlevel .d-title,
+  .downlevel .d-abstract,
+  .downlevel .d-article,
+  .downlevel .d-appendix,
+  .downlevel .distill-appendix,
+  .downlevel .d-byline,
+  .downlevel .d-footnote-list,
+  .downlevel .d-citation-list,
+  .downlevel .distill-footer,
+  .downlevel .appendix-bottom,
+  .downlevel .posts-container {
+  padding-left: 150px;
+  padding-right: 150px;
+  max-width: 900px;
+}
+}
+
+.downlevel pre code {
+  display: block;
+  border-left: 2px solid rgba(0, 0, 0, .1);
+  padding: 0 0 0 20px;
+  font-size: 14px;
+}
+
+.downlevel code, .downlevel pre {
+  color: black;
+  background: none;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+.downlevel .posts-list .post-preview {
+  color: inherit;
+}
+
+
+
+</style>
+
+<script type="application/javascript">
+
+function is_downlevel_browser() {
+  if (bowser.isUnsupportedBrowser({ msie: "12", msedge: "16"},
+                                 window.navigator.userAgent)) {
+    return true;
+  } else {
+    return window.load_distill_framework === undefined;
+  }
+}
+
+// show body when load is complete
+function on_load_complete() {
+
+  // add anchors
+  if (window.anchors) {
+    window.anchors.options.placement = 'left';
+    window.anchors.add('d-article > h2, d-article > h3, d-article > h4, d-article > h5');
+  }
+
+
+  // set body to visible
+  document.body.style.visibility = 'visible';
+
+  // force redraw for leaflet widgets
+  if (window.HTMLWidgets) {
+    var maps = window.HTMLWidgets.findAll(".leaflet");
+    $.each(maps, function(i, el) {
+      var map = this.getMap();
+      map.invalidateSize();
+      map.eachLayer(function(layer) {
+        if (layer instanceof L.TileLayer)
+          layer.redraw();
+      });
+    });
+  }
+
+  // trigger 'shown' so htmlwidgets resize
+  $('d-article').trigger('shown');
+}
+
+function init_distill() {
+
+  init_common();
+
+  // create front matter
+  var front_matter = $('<d-front-matter></d-front-matter>');
+  $('#distill-front-matter').wrap(front_matter);
+
+  // create d-title
+  $('.d-title').changeElementType('d-title');
+
+  // create d-byline
+  var byline = $('<d-byline></d-byline>');
+  $('.d-byline').replaceWith(byline);
+
+  // create d-article
+  var article = $('<d-article></d-article>');
+  $('.d-article').wrap(article).children().unwrap();
+
+  // move posts container into article
+  $('.posts-container').appendTo($('d-article'));
+
+  // create d-appendix
+  $('.d-appendix').changeElementType('d-appendix');
+
+  // flag indicating that we have appendix items
+  var appendix = $('.appendix-bottom').children('h3').length > 0;
+
+  // replace footnotes with <d-footnote>
+  $('.footnote-ref').each(function(i, val) {
+    appendix = true;
+    var href = $(this).attr('href');
+    var id = href.replace('#', '');
+    var fn = $('#' + id);
+    var fn_p = $('#' + id + '>p');
+    fn_p.find('.footnote-back').remove();
+    var text = fn_p.html();
+    var dtfn = $('<d-footnote></d-footnote>');
+    dtfn.html(text);
+    $(this).replaceWith(dtfn);
+  });
+  // remove footnotes
+  $('.footnotes').remove();
+
+  // move refs into #references-listing
+  $('#references-listing').replaceWith($('#refs'));
+
+  $('h1.appendix, h2.appendix').each(function(i, val) {
+    $(this).changeElementType('h3');
+  });
+  $('h3.appendix').each(function(i, val) {
+    var id = $(this).attr('id');
+    $('.d-contents a[href="#' + id + '"]').parent().remove();
+    appendix = true;
+    $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('d-appendix'));
+  });
+
+  // show d-appendix if we have appendix content
+  $("d-appendix").css('display', appendix ? 'grid' : 'none');
+
+  // localize layout chunks to just output
+  $('.layout-chunk').each(function(i, val) {
+
+    // capture layout
+    var layout = $(this).attr('data-layout');
+
+    // apply layout to markdown level block elements
+    var elements = $(this).children().not('details, div.sourceCode, pre, script');
+    elements.each(function(i, el) {
+      var layout_div = $('<div class="' + layout + '"></div>');
+      if (layout_div.hasClass('shaded')) {
+        var shaded_content = $('<div class="shaded-content"></div>');
+        $(this).wrap(shaded_content);
+        $(this).parent().wrap(layout_div);
+      } else {
+        $(this).wrap(layout_div);
+      }
+    });
+
+
+    // unwrap the layout-chunk div
+    $(this).children().unwrap();
+  });
+
+  // remove code block used to force  highlighting css
+  $('.distill-force-highlighting-css').parent().remove();
+
+  // remove empty line numbers inserted by pandoc when using a
+  // custom syntax highlighting theme
+  $('code.sourceCode a:empty').remove();
+
+  // load distill framework
+  load_distill_framework();
+
+  // wait for window.distillRunlevel == 4 to do post processing
+  function distill_post_process() {
+
+    if (!window.distillRunlevel || window.distillRunlevel < 4)
+      return;
+
+    // hide author/affiliations entirely if we have no authors
+    var front_matter = JSON.parse($("#distill-front-matter").html());
+    var have_authors = front_matter.authors && front_matter.authors.length > 0;
+    if (!have_authors)
+      $('d-byline').addClass('hidden');
+
+    // article with toc class
+    $('.d-contents').parent().addClass('d-article-with-toc');
+
+    // strip links that point to #
+    $('.authors-affiliations').find('a[href="#"]').removeAttr('href');
+
+    // add orcid ids
+    $('.authors-affiliations').find('.author').each(function(i, el) {
+      var orcid_id = front_matter.authors[i].orcidID;
+      if (orcid_id) {
+        var a = $('<a></a>');
+        a.attr('href', 'https://orcid.org/' + orcid_id);
+        var img = $('<img></img>');
+        img.addClass('orcid-id');
+        img.attr('alt', 'ORCID ID');
+        img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
+        a.append(img);
+        $(this).append(a);
+      }
+    });
+
+    // hide elements of author/affiliations grid that have no value
+    function hide_byline_column(caption) {
+      $('d-byline').find('h3:contains("' + caption + '")').parent().css('visibility', 'hidden');
+    }
+
+    // affiliations
+    var have_affiliations = false;
+    for (var i = 0; i<front_matter.authors.length; ++i) {
+      var author = front_matter.authors[i];
+      if (author.affiliation !== "&nbsp;") {
+        have_affiliations = true;
+        break;
+      }
+    }
+    if (!have_affiliations)
+      $('d-byline').find('h3:contains("Affiliations")').css('visibility', 'hidden');
+
+    // published date
+    if (!front_matter.publishedDate)
+      hide_byline_column("Published");
+
+    // document object identifier
+    var doi = $('d-byline').find('h3:contains("DOI")');
+    var doi_p = doi.next().empty();
+    if (!front_matter.doi) {
+      // if we have a citation and valid citationText then link to that
+      if ($('#citation').length > 0 && front_matter.citationText) {
+        doi.html('Citation');
+        $('<a href="#citation"></a>')
+          .text(front_matter.citationText)
+          .appendTo(doi_p);
+      } else {
+        hide_byline_column("DOI");
+      }
+    } else {
+      $('<a></a>')
+         .attr('href', "https://doi.org/" + front_matter.doi)
+         .html(front_matter.doi)
+         .appendTo(doi_p);
+    }
+
+     // change plural form of authors/affiliations
+    if (front_matter.authors.length === 1) {
+      var grid = $('.authors-affiliations');
+      grid.children('h3:contains("Authors")').text('Author');
+      grid.children('h3:contains("Affiliations")').text('Affiliation');
+    }
+
+    // remove d-appendix and d-footnote-list local styles
+    $('d-appendix > style:first-child').remove();
+    $('d-footnote-list > style:first-child').remove();
+
+    // move appendix-bottom entries to the bottom
+    $('.appendix-bottom').appendTo('d-appendix').children().unwrap();
+    $('.appendix-bottom').remove();
+
+    // hoverable references
+    $('span.citation[data-cites]').each(function() {
+      var refs = $(this).attr('data-cites').split(" ");
+      var refHtml = refs.map(function(ref) {
+        return "<p>" + $('#ref-' + ref).html() + "</p>";
+      }).join("\n");
+      window.tippy(this, {
+        allowHTML: true,
+        content: refHtml,
+        maxWidth: 500,
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start'
+      });
+    });
+
+    // clear polling timer
+    clearInterval(tid);
+
+    // show body now that everything is ready
+    on_load_complete();
+  }
+
+  var tid = setInterval(distill_post_process, 50);
+  distill_post_process();
+
+}
+
+function init_downlevel() {
+
+  init_common();
+
+   // insert hr after d-title
+  $('.d-title').after($('<hr class="section-separator"/>'));
+
+  // check if we have authors
+  var front_matter = JSON.parse($("#distill-front-matter").html());
+  var have_authors = front_matter.authors && front_matter.authors.length > 0;
+
+  // manage byline/border
+  if (!have_authors)
+    $('.d-byline').remove();
+  $('.d-byline').after($('<hr class="section-separator"/>'));
+  $('.d-byline a').remove();
+
+  // remove toc
+  $('.d-contents').remove();
+
+  // move appendix elements
+  $('h1.appendix, h2.appendix').each(function(i, val) {
+    $(this).changeElementType('h3');
+  });
+  $('h3.appendix').each(function(i, val) {
+    $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('.d-appendix'));
+  });
+
+
+  // inject headers into references and footnotes
+  var refs_header = $('<h3></h3>');
+  refs_header.text('References');
+  $('#refs').prepend(refs_header);
+
+  var footnotes_header = $('<h3></h3');
+  footnotes_header.text('Footnotes');
+  $('.footnotes').children('hr').first().replaceWith(footnotes_header);
+
+  // move appendix-bottom entries to the bottom
+  $('.appendix-bottom').appendTo('.d-appendix').children().unwrap();
+  $('.appendix-bottom').remove();
+
+  // remove appendix if it's empty
+  if ($('.d-appendix').children().length === 0)
+    $('.d-appendix').remove();
+
+  // prepend separator above appendix
+  $('.d-appendix').before($('<hr class="section-separator" style="clear: both"/>'));
+
+  // trim code
+  $('pre>code').each(function(i, val) {
+    $(this).html($.trim($(this).html()));
+  });
+
+  // move posts-container right before article
+  $('.posts-container').insertBefore($('.d-article'));
+
+  $('body').addClass('downlevel');
+
+  on_load_complete();
+}
+
+
+function init_common() {
+
+  // jquery plugin to change element types
+  (function($) {
+    $.fn.changeElementType = function(newType) {
+      var attrs = {};
+
+      $.each(this[0].attributes, function(idx, attr) {
+        attrs[attr.nodeName] = attr.nodeValue;
+      });
+
+      this.replaceWith(function() {
+        return $("<" + newType + "/>", attrs).append($(this).contents());
+      });
+    };
+  })(jQuery);
+
+  // prevent underline for linked images
+  $('a > img').parent().css({'border-bottom' : 'none'});
+
+  // mark non-body figures created by knitr chunks as 100% width
+  $('.layout-chunk').each(function(i, val) {
+    var figures = $(this).find('img, .html-widget');
+    if ($(this).attr('data-layout') !== "l-body") {
+      figures.css('width', '100%');
+    } else {
+      figures.css('max-width', '100%');
+      figures.filter("[width]").each(function(i, val) {
+        var fig = $(this);
+        fig.css('width', fig.attr('width') + 'px');
+      });
+
+    }
+  });
+
+  // auto-append index.html to post-preview links in file: protocol
+  // and in rstudio ide preview
+  $('.post-preview').each(function(i, val) {
+    if (window.location.protocol === "file:")
+      $(this).attr('href', $(this).attr('href') + "index.html");
+  });
+
+  // get rid of index.html references in header
+  if (window.location.protocol !== "file:") {
+    $('.distill-site-header a[href]').each(function(i,val) {
+      $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+    });
+  }
+
+  // add class to pandoc style tables
+  $('tr.header').parent('thead').parent('table').addClass('pandoc-table');
+  $('.kable-table').children('table').addClass('pandoc-table');
+
+  // add figcaption style to table captions
+  $('caption').parent('table').addClass("figcaption");
+
+  // initialize posts list
+  if (window.init_posts_list)
+    window.init_posts_list();
+
+  // implmement disqus comment link
+  $('.disqus-comment-count').click(function() {
+    window.headroom_prevent_pin = true;
+    $('#disqus_thread').toggleClass('hidden');
+    if (!$('#disqus_thread').hasClass('hidden')) {
+      var offset = $(this).offset();
+      $(window).resize();
+      $('html, body').animate({
+        scrollTop: offset.top - 35
+      });
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (is_downlevel_browser())
+    init_downlevel();
+  else
+    window.addEventListener('WebComponentsReady', init_distill);
+});
+
+</script>
+
+<style type="text/css">
+/* base variables */
+
+/* Edit the CSS properties in this file to create a custom
+   Distill theme. Only edit values in the right column
+   for each row; values shown are the CSS defaults.
+   To return any property to the default,
+   you may set its value to: unset
+   All rows must end with a semi-colon.                      */
+
+/* Optional: embed custom fonts here with `@import`          */
+/* This must remain at the top of this file.                 */
+
+
+
+html {
+  /*-- Main font sizes --*/
+  --title-size:      50px;
+  --body-size:       1.06rem;
+  --code-size:       14px;
+  --aside-size:      12px;
+  --fig-cap-size:    13px;
+  /*-- Main font colors --*/
+  --title-color:     #000000;
+  --header-color:    rgba(0, 0, 0, 0.8);
+  --body-color:      rgba(0, 0, 0, 0.8);
+  --aside-color:     rgba(0, 0, 0, 0.6);
+  --fig-cap-color:   rgba(0, 0, 0, 0.6);
+  /*-- Specify custom fonts ~~~ must be imported above   --*/
+  --heading-font:    sans-serif;
+  --mono-font:       monospace;
+  --body-font:       sans-serif;
+  --navbar-font:     sans-serif;  /* websites + blogs only */
+}
+
+/*-- ARTICLE METADATA --*/
+d-byline {
+  --heading-size:    0.6rem;
+  --heading-color:   rgba(0, 0, 0, 0.5);
+  --body-size:       0.8rem;
+  --body-color:      rgba(0, 0, 0, 0.8);
+}
+
+/*-- ARTICLE TABLE OF CONTENTS --*/
+.d-contents {
+  --heading-size:    18px;
+  --contents-size:   13px;
+}
+
+/*-- ARTICLE APPENDIX --*/
+d-appendix {
+  --heading-size:    15px;
+  --heading-color:   rgba(0, 0, 0, 0.65);
+  --text-size:       0.8em;
+  --text-color:      rgba(0, 0, 0, 0.5);
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+/* These properties only apply to Distill sites and blogs  */
+
+.distill-site-header {
+  --title-size:       18px;
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #0F2E3D;
+}
+
+.distill-site-footer {
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #0F2E3D;
+}
+
+/*-- Additional custom styles --*/
+/* Add any additional CSS rules below                      */
+</style>
+<style type="text/css">/* base variables */
+
+/* Edit the CSS properties in this file to create a custom
+   Distill theme. Only edit values in the right column
+   for each row; values shown are the CSS defaults.
+   To return any property to the default,
+   you may set its value to: unset
+   All rows must end with a semi-colon.                      */
+
+/* Optional: embed custom fonts here with `@import`          */
+/* This must remain at the top of this file.                 */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css");
+
+
+html {
+  /*-- Main font sizes --*/
+  --title-size:      50px;
+  --body-size:       1.06rem;
+  --code-size:       13px;
+  --aside-size:      12px;
+  --fig-cap-size:    13px;
+  /*-- Main font colors --*/
+  --title-color:     #000000;
+  --header-color:    rgba(0, 0, 0, 0.8);
+  --body-color:      rgba(0, 0, 0, 0.8);
+  --aside-color:     rgba(0, 0, 0, 0.6);
+  --fig-cap-color:   rgba(0, 0, 0, 0.6);
+  /*-- Specify custom fonts ~~~ must be imported above   --*/
+  --heading-font:    sans-serif;
+  --mono-font:       monospace;
+  --body-font:       sans-serif;
+  --navbar-font:     sans-serif;  /* websites + blogs only */
+}
+
+/*-- ARTICLE METADATA --*/
+d-byline {
+  --heading-size:    0.6rem;
+  --heading-color:   rgba(0, 0, 0, 0.5);
+  --body-size:       0.8rem;
+  --body-color:      rgba(0, 0, 0, 0.8);
+}
+
+/*-- ARTICLE TABLE OF CONTENTS --*/
+.d-contents {
+  --heading-size:    18px;
+  --contents-size:   13px;
+}
+
+/*-- ARTICLE APPENDIX --*/
+d-appendix {
+  --heading-size:    15px;
+  --heading-color:   rgba(0, 0, 0, 0.65);
+  --text-size:       0.8em;
+  --text-color:      rgba(0, 0, 0, 0.5);
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+/* These properties only apply to Distill sites and blogs  */
+
+.distill-site-header {
+  --title-size:       18px;
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #455a64;
+}
+
+.distill-site-footer {
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #455a64;
+}
+
+/*-- Additional custom styles --*/
+/* Add any additional CSS rules below                      */
+
+/* Title left align */
+.distill-site-header .title {
+  text-align:         left;
+}
+
+/* Increase logo size */
+.distill-site-header .logo img {
+  max-height:         30px;
+  margin-bottom:      -6px
+}
+
+/* Feature grid */
+.grid-container {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Feature grid 3 columns on desktop */
+@media only screen and (min-width: 768px) {
+  /* Package grid */
+  .grid-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.grid-item {
+  text-align: center;
+  padding: 30px;
+}
+
+.grid-icon {
+  padding-bottom: 15px;
+}
+
+div.grid-icon i {
+  font-size: 3rem;
+}
+
+div.grid-icon a {
+  border-bottom: 0px;
+  text-decoration: none;
+}
+
+/* Style buttons */
+.btn-container {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+}
+
+.btn {
+  background-color: #455a64;
+  border: none;
+  color: white;
+  padding: 10px 15px 10px 15px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+  background-color: #2a363c;
+}
+
+/* Button icons */
+a.btn i {
+  font-size: 2rem;
+  margin-right: 10px;
+}
+
+/* Headings */
+h1 {
+  font-size: 2.5rem !important;
+}
+
+h2 {
+  font-size: 2rem !important;
+}
+
+h3 {
+  font-size: 1.2rem !important;
+}
+
+
+/* Allow horizontal scroll in citation box */
+.citation {
+  overflow-x: auto !important;
+}
+
+/* Package grid */
+.grid-container-package {
+  display: inline-grid;
+  grid-template-columns: repeat(1, 1fr);
+  column-gap: 10px;
+  row-gap: 10px;
+  margin-bottom: 30px;
+}
+
+/* Package grid 3 columns on desktop */
+@media only screen and (min-width: 768px) {
+  /* Package grid */
+  .grid-container-package {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.grid-item-package {
+  text-align: left;
+  padding: 10px;
+  background-color: #f1f1f1;
+  position: relative;
+}
+
+.grid-item-package:hover {
+  background-color: #cccccc;
+}
+
+div.grid-item-package h3 {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+}
+
+div.grid-item-package a {
+  border-bottom: 0px;
+  text-decoration: none;
+}
+
+#bottom {
+  position: absolute;
+  bottom: 0;
+}
+
+i.status {
+  font-size: 0.75rem;
+}
+
+h3 > i.status {
+  margin-left: 10px;
+}
+
+i.status-stable {
+  color: #B4CFB0;
+}
+
+i.status-experimental {
+  color: #FBC6A4;
+}
+
+i.status-planned {
+  color: #FF856A;
+}
+
+
+/* Banner */
+.banner {
+  width: auto;
+  height: auto;
+}
+
+img[src="images/banner.png"] {
+  width: 100%;
+  max-width: 1000px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 60px;
+  margin-bottom: -6rem;
+}
+
+/* Reduce space between banner and title */
+@media only screen and (min-width: 768px) {
+  /* Package grid */
+  img[src="images/banner.png"] {
+    margin-bottom: -4rem;
+  }
+}
+
+/* Scroll container around table*/
+.table-responsive {
+  width: 100%;
+  max-height: 700px;
+  overflow: auto;
+}
+
+/* Tables full width */
+.table {
+  width: 100%;
+}
+
+/* Sticky table header */
+.table > thead {
+  color: white;
+  background-color: #495148;
+  inset-block-start: 0;
+  position: sticky;
+}
+
+/* Display line breaks */
+.table td {
+  white-space: pre-line;
+}
+</style>
+<style type="text/css">
+/* base style */
+
+/* FONT FAMILIES */
+
+:root {
+  --heading-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono-default: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  --body-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+body,
+.posts-list .post-preview p,
+.posts-list .description p {
+  font-family: var(--body-font), var(--body-default);
+}
+
+h1, h2, h3, h4, h5, h6,
+.posts-list .post-preview h2,
+.posts-list .description h2 {
+  font-family: var(--heading-font), var(--heading-default);
+}
+
+d-article div.sourceCode code,
+d-article pre code {
+  font-family: var(--mono-font), var(--mono-default);
+}
+
+
+/*-- TITLE --*/
+d-title h1,
+.posts-list > h1 {
+  color: var(--title-color, black);
+}
+
+d-title h1 {
+  font-size: var(--title-size, 50px);
+}
+
+/*-- HEADERS --*/
+d-article h1,
+d-article h2,
+d-article h3,
+d-article h4,
+d-article h5,
+d-article h6 {
+  color: var(--header-color, rgba(0, 0, 0, 0.8));
+}
+
+/*-- BODY --*/
+d-article > p,  /* only text inside of <p> tags */
+d-article > ul, /* lists */
+d-article > ol {
+  color: var(--body-color, rgba(0, 0, 0, 0.8));
+  font-size: var(--body-size, 1.06rem);
+}
+
+
+/*-- CODE --*/
+d-article div.sourceCode code,
+d-article pre code {
+  font-size: var(--code-size, 14px);
+}
+
+/*-- ASIDE --*/
+d-article aside {
+  font-size: var(--aside-size, 12px);
+  color: var(--aside-color, rgba(0, 0, 0, 0.6));
+}
+
+/*-- FIGURE CAPTIONS --*/
+figure .caption,
+figure figcaption,
+.figure .caption {
+  font-size: var(--fig-cap-size, 13px);
+  color: var(--fig-cap-color, rgba(0, 0, 0, 0.6));
+}
+
+/*-- METADATA --*/
+d-byline h3 {
+  font-size: var(--heading-size, 0.6rem);
+  color: var(--heading-color, rgba(0, 0, 0, 0.5));
+}
+
+d-byline {
+  font-size: var(--body-size, 0.8rem);
+  color: var(--body-color, rgba(0, 0, 0, 0.8));
+}
+
+d-byline a,
+d-article d-byline a {
+  color: var(--body-color, rgba(0, 0, 0, 0.8));
+}
+
+/*-- TABLE OF CONTENTS --*/
+.d-contents nav h3 {
+  font-size: var(--heading-size, 18px);
+}
+
+.d-contents nav a {
+  font-size: var(--contents-size, 13px);
+}
+
+/*-- APPENDIX --*/
+d-appendix h3 {
+  font-size: var(--heading-size, 15px);
+  color: var(--heading-color, rgba(0, 0, 0, 0.65));
+}
+
+d-appendix {
+  font-size: var(--text-size, 0.8em);
+  color: var(--text-color, rgba(0, 0, 0, 0.5));
+}
+
+d-appendix d-footnote-list a.footnote-backlink {
+  color: var(--text-color, rgba(0, 0, 0, 0.5));
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+.distill-site-header .title {
+  font-size: var(--title-size, 18px);
+  font-family: var(--navbar-font), var(--heading-default);
+}
+
+.distill-site-header a,
+.nav-dropdown .nav-dropbtn {
+  font-family: var(--navbar-font), var(--heading-default);
+}
+
+.nav-dropdown .nav-dropbtn {
+  color: var(--text-color, rgba(255, 255, 255, 0.8));
+  font-size: var(--text-size, 15px);
+}
+
+.distill-site-header a:hover,
+.nav-dropdown:hover .nav-dropbtn {
+  color: var(--hover-color, white);
+}
+
+.distill-site-header {
+  font-size: var(--text-size, 15px);
+  color: var(--text-color, rgba(255, 255, 255, 0.8));
+  background-color: var(--bkgd-color, #0F2E3D);
+}
+
+.distill-site-footer {
+  font-size: var(--text-size, 15px);
+  color: var(--text-color, rgba(255, 255, 255, 0.8));
+  background-color: var(--bkgd-color, #0F2E3D);
+}
+
+.distill-site-footer a:hover {
+  color: var(--hover-color, white);
+}</style>
+<!--/radix_placeholder_distill-->
+  <script src="../../site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+  <script src="../../site_libs/popper-2.6.0/popper.min.js"></script>
+  <link href="../../site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
+  <link href="../../site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
+  <script src="../../site_libs/tippy-6.2.7/tippy.umd.min.js"></script>
+  <script src="../../site_libs/anchor-4.2.2/anchor.min.js"></script>
+  <script src="../../site_libs/bowser-1.9.3/bowser.min.js"></script>
+  <script src="../../site_libs/webcomponents-2.0.0/webcomponents.js"></script>
+  <script src="../../site_libs/distill-2.2.21/template.v2.js"></script>
+  <!--radix_placeholder_site_in_header-->
+<!--/radix_placeholder_site_in_header-->
+
+
+</head>
+
+<body>
+
+<!--radix_placeholder_front_matter-->
+
+<script id="distill-front-matter" type="text/json">
+{"title":"Feature Selection on the Titanic Data Set","description":"Short introduction to feature selection with mlr3fselect.","authors":[{"author":"Marc Becker","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-01-08T00:00:00.000+00:00","citationText":"Becker, 2021"}
+</script>
+
+<!--/radix_placeholder_front_matter-->
+<!--radix_placeholder_navigation_before_body-->
+<header class="header header--fixed" role="banner">
+<nav class="distill-site-nav distill-site-header">
+<div class="nav-left">
+<a class="logo" href="../../index.html">
+<img src="../../images/logo.png" alt="Logo"/>
+</a>
+<a href="../../index.html" class="title">mlr-org</a>
+<input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
+</div>
+<div class="nav-right">
+<a href="../../blog.html">Blog</a>
+<a href="../../packages.html">Packages</a>
+<a href="../../resources.html">Resources</a>
+<a href="https://mlr3book.mlr-org.com/">Book</a>
+<a href="../../gallery.html">Gallery</a>
+<a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
+</div>
+</nav>
+</header>
+<!--/radix_placeholder_navigation_before_body-->
+<!--radix_placeholder_site_before_body-->
+<!--/radix_placeholder_site_before_body-->
+
+<div class="d-title">
+<h1>Feature Selection on the Titanic Data Set</h1>
+<!--radix_placeholder_categories-->
+<div class="dt-tags">
+  <a href="../../gallery.html#category:mlr3fselect" class="dt-tag">mlr3fselect</a>
+  <a href="../../gallery.html#category:optimization" class="dt-tag">optimization</a>
+  <a href="../../gallery.html#category:feature_selection" class="dt-tag">feature selection</a>
+  <a href="../../gallery.html#category:nested_resampling" class="dt-tag">nested resampling</a>
+  <a href="../../gallery.html#category:titanic_data_set" class="dt-tag">titanic data set</a>
+  <a href="../../gallery.html#category:classification" class="dt-tag">classification</a>
+</div>
+<!--/radix_placeholder_categories-->
+<p><p>Short introduction to feature selection with mlr3fselect.</p></p>
+</div>
+
+<div class="d-byline">
+  Marc Becker  
+  
+<br/>01-08-2021
+</div>
+
+<div class="d-article">
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#titanic-data-set">Titanic Data Set</a></li>
+<li><a href="#model">Model</a></li>
+<li><a href="#classes">Classes</a></li>
+<li><a href="#random-search">Random search</a></li>
+<li><a href="#sequential-forward-selection">Sequential forward selection</a></li>
+<li><a href="#recursive-feature-elimination">Recursive feature elimination</a></li>
+<li><a href="#nested-resampling">Nested resampling</a></li>
+<li><a href="#shortcuts">Shortcuts</a></li>
+</ul>
+</nav>
+</div>
+<h2 id="introduction">Introduction</h2>
+<p>In this tutorial, we introduce the <a href="https://mlr3fselect.mlr-org.com">mlr3fselect</a> package by comparing feature selection methods on the Titanic disaster data set. The objective of feature selection is to enhance the interpretability of models, speed up the learning process and increase the predictive performance.</p>
+<p>We load the <a href="https://mlr3verse.mlr-org.com">mlr3verse</a> package which pulls in the most important packages for this example.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3verse.mlr-org.com'>mlr3verse</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3fselect.mlr-org.com'>mlr3fselect</a></span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>7832</span><span class='op'>)</span>
+<span class='fu'>lgr</span><span class='fu'>::</span><span class='fu'><a href='https://s-fleck.github.io/lgr/reference/get_logger.html'>get_logger</a></span><span class='op'>(</span><span class='st'>"mlr3"</span><span class='op'>)</span><span class='op'>$</span><span class='fu'>set_threshold</span><span class='op'>(</span><span class='st'>"warn"</span><span class='op'>)</span>
+<span class='fu'>lgr</span><span class='fu'>::</span><span class='fu'><a href='https://s-fleck.github.io/lgr/reference/get_logger.html'>get_logger</a></span><span class='op'>(</span><span class='st'>"bbotk"</span><span class='op'>)</span><span class='op'>$</span><span class='fu'>set_threshold</span><span class='op'>(</span><span class='st'>"warn"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<h2 id="titanic-data-set">Titanic Data Set</h2>
+<p>The <a href="https://www.kaggle.com/c/titanic/data">Titanic data set</a> contains data for 887 Titanic passengers, including whether they survived when the Titanic sank. Our goal will be to predict the survival of the Titanic passengers.</p>
+<p>After loading the data set from the <a href="https://mlr3data.mlr-org.com">mlr3data</a> package, we impute the missing age values with the median age of the passengers, set missing embarked values to <code>"s"</code> and remove <code>character</code> features. We could use feature engineering to create new features from the <code>character</code> features, however we want to focus on feature selection in this tutorial.</p>
+<p>In addition to the <code>survived</code> column, the reduced data set contains the following attributes for each passenger:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>age</code></td>
+<td>Age</td>
+</tr>
+<tr class="even">
+<td><code>sex</code></td>
+<td>Sex</td>
+</tr>
+<tr class="odd">
+<td><code>sib_sp</code></td>
+<td>Number of siblings / spouses aboard</td>
+</tr>
+<tr class="even">
+<td><code>parch</code></td>
+<td>Number of parents / children aboard</td>
+</tr>
+<tr class="odd">
+<td><code>fare</code></td>
+<td>Amount paid for the ticket</td>
+</tr>
+<tr class="even">
+<td><code>pc_class</code></td>
+<td>Passenger class</td>
+</tr>
+<tr class="odd">
+<td><code>embarked</code></td>
+<td>Port of embarkation</td>
+</tr>
+</tbody>
+</table>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/mlr-org/mlr3data'>mlr3data</a></span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"titanic"</span>, package <span class='op'>=</span> <span class='st'>"mlr3data"</span><span class='op'>)</span>
+<span class='va'>titanic</span><span class='op'>$</span><span class='va'>age</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>titanic</span><span class='op'>$</span><span class='va'>age</span><span class='op'>)</span><span class='op'>]</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/median.html'>median</a></span><span class='op'>(</span><span class='va'>titanic</span><span class='op'>$</span><span class='va'>age</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>titanic</span><span class='op'>$</span><span class='va'>embarked</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>titanic</span><span class='op'>$</span><span class='va'>embarked</span><span class='op'>)</span><span class='op'>]</span> <span class='op'>=</span> <span class='st'>"S"</span>
+<span class='va'>titanic</span><span class='op'>$</span><span class='va'>ticket</span> <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='va'>titanic</span><span class='op'>$</span><span class='va'>name</span> <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='va'>titanic</span><span class='op'>$</span><span class='va'>cabin</span> <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='va'>titanic</span> <span class='op'>=</span> <span class='va'>titanic</span><span class='op'>[</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>titanic</span><span class='op'>$</span><span class='va'>survived</span><span class='op'>)</span>,<span class='op'>]</span>
+</code></pre>
+</div>
+</div>
+<p>We construct a binary classification task.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>task</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/as_task_classif.html'>as_task_classif</a></span><span class='op'>(</span><span class='va'>titanic</span>, target <span class='op'>=</span> <span class='st'>"survived"</span>, positive <span class='op'>=</span> <span class='st'>"yes"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<h2 id="model">Model</h2>
+<p>We use the logistic regression learner provided by the <a href="https://mlr3learners.mlr-org.com">mlr3learners</a> package.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3learners.mlr-org.com'>mlr3learners</a></span><span class='op'>)</span>
+
+<span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.log_reg"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>To evaluate the predictive performance, we choose a 3-fold cross-validation and the classification error as the measure.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>resampling</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+<span class='va'>measure</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msr</a></span><span class='op'>(</span><span class='st'>"classif.ce"</span><span class='op'>)</span>
+
+<span class='va'>resampling</span><span class='op'>$</span><span class='fu'>instantiate</span><span class='op'>(</span><span class='va'>task</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<h2 id="classes">Classes</h2>
+<p>The <a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html"><code>FSelectInstanceSingleCrit</code></a> class specifies a general feature selection scenario. It includes the <a href="https://mlr3fselect.mlr-org.com/reference/ObjectiveFSelect.html"><code>ObjectiveFSelect</code></a> object that encodes the black box objective function which is optimized by a feature selection algorithm. The evaluated feature sets are stored in an <a href="https://mlr3fselect.mlr-org.com/reference/ArchiveFSelect.html"><code>ArchiveFSelect</code></a> object. The archive provides a method for querying the best performing feature set.</p>
+<p>The <a href="https://bbotk.mlr-org.com/reference/Terminator.html"><code>Terminator</code></a> classes determine when to stop the feature selection. In this example we choose a terminator that stops the feature selection after 10 seconds. The sugar functions <a href="https://bbotk.mlr-org.com/reference/trm.html"><code>trm()</code></a> and <a href="https://bbotk.mlr-org.com/reference/trm.html"><code>trms()</code></a> can be used to retrieve terminators from the <a href="https://bbotk.mlr-org.com/reference/mlr_terminators.html"><code>mlr_terminators</code></a> dictionary.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>terminator</span> <span class='op'>=</span> <span class='fu'><a href='https://bbotk.mlr-org.com/reference/trm.html'>trm</a></span><span class='op'>(</span><span class='st'>"run_time"</span>, secs <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
+<span class='va'><a href='https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html'>FSelectInstanceSingleCrit</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
+  task <span class='op'>=</span> <span class='va'>task</span>,
+  learner <span class='op'>=</span> <span class='va'>learner</span>,
+  resampling <span class='op'>=</span> <span class='va'>resampling</span>,
+  measure <span class='op'>=</span> <span class='va'>measure</span>,
+  terminator <span class='op'>=</span> <span class='va'>terminator</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>&lt;FSelectInstanceSingleCrit&gt;
+* State:  Not optimized
+* Objective: &lt;ObjectiveFSelect:classif.log_reg_on_titanic&gt;
+* Search Space:
+&lt;ParamSet&gt;
+         id    class lower upper nlevels        default value
+1:      age ParamLgl    NA    NA       2 &lt;NoDefault[3]&gt;      
+2: embarked ParamLgl    NA    NA       2 &lt;NoDefault[3]&gt;      
+3:     fare ParamLgl    NA    NA       2 &lt;NoDefault[3]&gt;      
+4:    parch ParamLgl    NA    NA       2 &lt;NoDefault[3]&gt;      
+5:   pclass ParamLgl    NA    NA       2 &lt;NoDefault[3]&gt;      
+6:      sex ParamLgl    NA    NA       2 &lt;NoDefault[3]&gt;      
+7:   sib_sp ParamLgl    NA    NA       2 &lt;NoDefault[3]&gt;      
+* Terminator: &lt;TerminatorRunTime&gt;
+* Terminated: FALSE
+* Archive:
+&lt;ArchiveFSelect&gt;
+Null data.table (0 rows and 0 cols)</code></pre>
+</div>
+<p>The <a href="https://mlr3fselect.mlr-org.com/reference/FSelector.html"><code>FSelector</code></a> subclasses describe the feature selection strategy. The sugar function <a href="https://mlr3fselect.mlr-org.com/reference/fs.html"><code>fs()</code></a> can be used to retrieve feature selection algorithms from the <a href="https://mlr3fselect.mlr-org.com/reference/mlr_fselectors.html"><code>mlr_fselectors</code></a> dictionary.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>mlr_fselectors</span>
+</code></pre>
+</div>
+<pre><code>&lt;DictionaryFSelect&gt; with 7 stored values
+Keys: design_points, exhaustive_search, genetic_search, random_search, rfe, sequential,
+  shadow_variable_search</code></pre>
+</div>
+<h2 id="random-search">Random search</h2>
+<p>Random search randomly draws feature sets and evaluates them in batches. We retrieve the <a href="https://mlr3fselect.mlr-org.com/reference/FSelectorRandomSearch.html"><code>FSelectorRandomSearch</code></a> class with the <a href="https://mlr3fselect.mlr-org.com/reference/fs.html"><code>fs()</code></a> sugar function and choose <a href="https://bbotk.mlr-org.com/reference/mlr_terminators_evals.html"><code>TerminatorEvals</code></a>. We set the <code>n_evals</code> parameter to <code>10</code> which means that 10 feature sets are evaluated.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>terminator</span> <span class='op'>=</span> <span class='fu'><a href='https://bbotk.mlr-org.com/reference/trm.html'>trm</a></span><span class='op'>(</span><span class='st'>"evals"</span>, n_evals <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
+<span class='va'>instance</span> <span class='op'>=</span> <span class='va'><a href='https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html'>FSelectInstanceSingleCrit</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
+  task <span class='op'>=</span> <span class='va'>task</span>,
+  learner <span class='op'>=</span> <span class='va'>learner</span>,
+  resampling <span class='op'>=</span> <span class='va'>resampling</span>,
+  measure <span class='op'>=</span> <span class='va'>measure</span>,
+  terminator <span class='op'>=</span> <span class='va'>terminator</span><span class='op'>)</span>
+<span class='va'>fselector</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/fs.html'>fs</a></span><span class='op'>(</span><span class='st'>"random_search"</span>, batch_size <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>The feature selection is started by passing the <a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html"><code>FSelectInstanceSingleCrit</code></a> object to the <code>$optimize()</code> method of <a href="https://mlr3fselect.mlr-org.com/reference/FSelectorRandomSearch.html"><code>FSelectorRandomSearch</code></a> which generates the feature sets. These features set are internally passed to the <code>$eval_batch()</code> method of <a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html"><code>FSelectInstanceSingleCrit</code></a> which evaluates them with the objective function and stores the results in the archive. This general interaction between the objects of <strong>mlr3fselect</strong> stays the same for the different feature selection methods. However, the way how new feature sets are generated differs depending on the chosen <a href="https://mlr3fselect.mlr-org.com/reference/FSelector.html"><code>FSelector</code></a> subclass.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>fselector</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>instance</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>    age embarked fare parch pclass  sex sib_sp                         features classif.ce
+1: TRUE    FALSE TRUE  TRUE   TRUE TRUE   TRUE age,fare,parch,pclass,sex,sib_sp  0.2020202</code></pre>
+</div>
+<p>The <a href="https://mlr3fselect.mlr-org.com/reference/ArchiveFSelect.html"><code>ArchiveFSelect</code></a> stores a <code>data.table::data.table()</code> which consists of the evaluated feature sets and the corresponding estimated predictive performances.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html'>as.data.table</a></span><span class='op'>(</span><span class='va'>instance</span><span class='op'>$</span><span class='va'>archive</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> age </th>
+   <th style="text-align:left;"> embarked </th>
+   <th style="text-align:left;"> fare </th>
+   <th style="text-align:left;"> parch </th>
+   <th style="text-align:left;"> pclass </th>
+   <th style="text-align:left;"> sex </th>
+   <th style="text-align:left;"> sib_sp </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:left;"> timestamp </th>
+   <th style="text-align:right;"> batch_nr </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2031425 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:22 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.3838384 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:22 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.3804714 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:22 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3288440 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:22 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2188552 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:22 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3209877 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:24 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.3838384 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:24 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2020202 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:24 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2031425 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:24 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3389450 </td>
+   <td style="text-align:left;"> 2022-02-25 13:19:24 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<p>The associated resampling iterations can be accessed in the <a href="https://mlr3.mlr-org.com/reference/BenchmarkResult.html"><code>BenchmarkResult</code></a> by calling</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>instance</span><span class='op'>$</span><span class='va'>archive</span><span class='op'>$</span><span class='va'>benchmark_result</span>
+</code></pre>
+</div>
+<pre><code>&lt;BenchmarkResult&gt; of 30 rows with 10 resampling runs
+ nr task_id             learner_id resampling_id iters warnings errors
+  1 titanic select.classif.log_reg            cv     3        0      0
+  2 titanic select.classif.log_reg            cv     3        0      0
+  3 titanic select.classif.log_reg            cv     3        0      0
+  4 titanic select.classif.log_reg            cv     3        0      0
+  5 titanic select.classif.log_reg            cv     3        0      0
+  6 titanic select.classif.log_reg            cv     3        0      0
+  7 titanic select.classif.log_reg            cv     3        0      0
+  8 titanic select.classif.log_reg            cv     3        0      0
+  9 titanic select.classif.log_reg            cv     3        0      0
+ 10 titanic select.classif.log_reg            cv     3        0      0</code></pre>
+</div>
+<p>We retrieve the best performing feature set with</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>instance</span><span class='op'>$</span><span class='va'>result</span>
+</code></pre>
+</div>
+<pre><code>    age embarked fare parch pclass  sex sib_sp                         features classif.ce
+1: TRUE    FALSE TRUE  TRUE   TRUE TRUE   TRUE age,fare,parch,pclass,sex,sib_sp  0.2020202</code></pre>
+</div>
+<h2 id="sequential-forward-selection">Sequential forward selection</h2>
+<p>We try sequential forward selection. We chose <a href="https://bbotk.mlr-org.com/reference/mlr_terminators_stagnation.html"><code>TerminatorStagnation</code></a> that stops the feature selection if the predictive performance does not increase anymore.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>terminator</span> <span class='op'>=</span> <span class='fu'><a href='https://bbotk.mlr-org.com/reference/trm.html'>trm</a></span><span class='op'>(</span><span class='st'>"stagnation"</span>, iters <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>
+<span class='va'>instance</span> <span class='op'>=</span> <span class='va'><a href='https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html'>FSelectInstanceSingleCrit</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
+  task <span class='op'>=</span> <span class='va'>task</span>,
+  learner <span class='op'>=</span> <span class='va'>learner</span>,
+  resampling <span class='op'>=</span> <span class='va'>resampling</span>,
+  measure <span class='op'>=</span> <span class='va'>measure</span>,
+  terminator <span class='op'>=</span> <span class='va'>terminator</span><span class='op'>)</span>
+
+<span class='va'>fselector</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/fs.html'>fs</a></span><span class='op'>(</span><span class='st'>"sequential"</span><span class='op'>)</span>
+<span class='va'>fselector</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>instance</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>     age embarked  fare parch pclass  sex sib_sp                features classif.ce
+1: FALSE    FALSE FALSE  TRUE   TRUE TRUE   TRUE parch,pclass,sex,sib_sp  0.1964085</code></pre>
+</div>
+<p>The <a href="https://mlr3fselect.mlr-org.com/reference/FSelectorSequential.html"><code>FSelectorSequential</code></a> object has a special method for displaying the optimization path of the sequential feature selection.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>fselector</span><span class='op'>$</span><span class='fu'>optimization_path</span><span class='op'>(</span><span class='va'>instance</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>    age embarked  fare parch pclass   sex sib_sp classif.ce batch_nr
+1: TRUE    FALSE FALSE FALSE  FALSE FALSE  FALSE  0.3838384        1
+2: TRUE    FALSE FALSE FALSE  FALSE  TRUE  FALSE  0.2132435        2
+3: TRUE    FALSE FALSE FALSE  FALSE  TRUE   TRUE  0.2087542        3
+4: TRUE    FALSE FALSE FALSE   TRUE  TRUE   TRUE  0.2143659        4
+5: TRUE    FALSE FALSE  TRUE   TRUE  TRUE   TRUE  0.2065095        5
+6: TRUE    FALSE  TRUE  TRUE   TRUE  TRUE   TRUE  0.2020202        6</code></pre>
+</div>
+<h2 id="recursive-feature-elimination">Recursive feature elimination</h2>
+<p>Recursive feature elimination utilizes the <code>$importance()</code> method of learners. In each iteration the feature(s) with the lowest importance score is dropped. We choose the non-recursive algorithm (<code>recursive = FALSE</code>) which calculates the feature importance once on the complete feature set. The recursive version (<code>recursive = TRUE</code>) recomputes the feature importance on the reduced feature set in every iteration.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.ranger"</span>, importance <span class='op'>=</span> <span class='st'>"impurity"</span><span class='op'>)</span>
+<span class='va'>terminator</span> <span class='op'>=</span> <span class='fu'><a href='https://bbotk.mlr-org.com/reference/trm.html'>trm</a></span><span class='op'>(</span><span class='st'>"none"</span><span class='op'>)</span>
+<span class='va'>instance</span> <span class='op'>=</span> <span class='va'><a href='https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html'>FSelectInstanceSingleCrit</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
+  task <span class='op'>=</span> <span class='va'>task</span>,
+  learner <span class='op'>=</span> <span class='va'>learner</span>,
+  resampling <span class='op'>=</span> <span class='va'>resampling</span>,
+  measure <span class='op'>=</span> <span class='va'>measure</span>,
+  terminator <span class='op'>=</span> <span class='va'>terminator</span>,
+  store_models <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+
+<span class='va'>fselector</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/fs.html'>fs</a></span><span class='op'>(</span><span class='st'>"rfe"</span>, recursive <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>fselector</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>instance</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>    age embarked fare parch pclass  sex sib_sp                               features classif.ce
+1: TRUE     TRUE TRUE  TRUE   TRUE TRUE   TRUE age,embarked,fare,parch,pclass,sex,...  0.1694725</code></pre>
+</div>
+<p>We access the results.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html'>as.data.table</a></span><span class='op'>(</span><span class='va'>instance</span><span class='op'>$</span><span class='va'>archive</span>, exclude_columns <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"runtime_learners"</span>, <span class='st'>"timestamp"</span>, <span class='st'>"batch_nr"</span>, <span class='st'>"resample_result"</span>, <span class='st'>"uhash"</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> age </th>
+   <th style="text-align:left;"> embarked </th>
+   <th style="text-align:left;"> fare </th>
+   <th style="text-align:left;"> parch </th>
+   <th style="text-align:left;"> pclass </th>
+   <th style="text-align:left;"> sex </th>
+   <th style="text-align:left;"> sib_sp </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:left;"> importance </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1694725 </td>
+   <td style="text-align:left;"> 68.711046, 45.345443, 37.314977, 22.890378, 11.733529, 9.171937, 8.422415 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2143659 </td>
+   <td style="text-align:left;"> 68.71105, 45.34544, 37.31498 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2132435 </td>
+   <td style="text-align:left;"> 68.71105 </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<h2 id="nested-resampling">Nested resampling</h2>
+<p>It is a common mistake to report the predictive performance estimated on resampling sets during the feature selection as the performance that can be expected from the combined feature selection and model training. The repeated evaluation of the model might leak information about the test sets into the model and thus leads to over-fitting and over-optimistic performance results. <a href="https://mlr3book.mlr-org.com/nested-resampling.html">Nested resampling</a> uses an outer and inner resampling to separate the feature selection from the performance estimation of the model. We can use the <a href="https://mlr3fselect.mlr-org.com/reference/AutoFSelector.html"><code>AutoFSelector</code></a> class for running nested resampling. The <a href="https://mlr3fselect.mlr-org.com/reference/AutoFSelector.html"><code>AutoFSelector</code></a> essentially combines a given <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a> and feature selection method into a <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a> with internal automatic feature selection. The inner resampling loop that is used to determine the best feature set is conducted internally each time the <a href="https://mlr3fselect.mlr-org.com/reference/AutoFSelector.html"><code>AutoFSelector</code></a> <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a> object is trained.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>resampling_inner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>
+<span class='va'>measure</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msr</a></span><span class='op'>(</span><span class='st'>"classif.ce"</span><span class='op'>)</span>
+
+<span class='va'>at</span> <span class='op'>=</span> <span class='va'><a href='https://mlr3fselect.mlr-org.com/reference/AutoFSelector.html'>AutoFSelector</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
+  learner <span class='op'>=</span> <span class='va'>learner</span>,
+  resampling <span class='op'>=</span> <span class='va'>resampling_inner</span>,
+  measure <span class='op'>=</span> <span class='va'>measure</span>,
+  terminator <span class='op'>=</span> <span class='va'>terminator</span>,
+  fselect <span class='op'>=</span> <span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/fs.html'>fs</a></span><span class='op'>(</span><span class='st'>"sequential"</span><span class='op'>)</span>,
+  store_models <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>We put the <a href="https://mlr3fselect.mlr-org.com/reference/AutoFSelector.html"><code>AutoFSelector</code></a> into a <a href="https://mlr3.mlr-org.com/reference/resample.html"><code>resample()</code></a> call to get the outer resampling loop.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>resampling_outer</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+
+<span class='va'>rr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/resample.html'>resample</a></span><span class='op'>(</span><span class='va'>task</span>, <span class='va'>at</span>, <span class='va'>resampling_outer</span>, store_models <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>The aggregated performance of all outer resampling iterations is the unbiased predictive performance we can expected from the logistic regression model with an optimized feature set found by sequential selection.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>rr</span><span class='op'>$</span><span class='fu'>aggregate</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>classif.ce 
+ 0.1840629 </code></pre>
+</div>
+<p>We check whether the feature sets that were selected in the inner resampling are stable. The selected feature sets should not differ too much. We might observe unstable models in this example because the small data set and the low number of resampling iterations might introduces too much randomness. Usually, we aim for the selection of similar feature sets for all outer training sets.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/extract_inner_fselect_results.html'>extract_inner_fselect_results</a></span><span class='op'>(</span><span class='va'>rr</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body-outset">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> iteration </th>
+   <th style="text-align:left;"> age </th>
+   <th style="text-align:left;"> embarked </th>
+   <th style="text-align:left;"> fare </th>
+   <th style="text-align:left;"> parch </th>
+   <th style="text-align:left;"> pclass </th>
+   <th style="text-align:left;"> sex </th>
+   <th style="text-align:left;"> sib_sp </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:left;"> features </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1599202 </td>
+   <td style="text-align:left;"> age     , embarked, fare    , pclass  , sex     , sib_sp </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1497650 </td>
+   <td style="text-align:left;"> age     , embarked, pclass  , sex     , sib_sp </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1902293 </td>
+   <td style="text-align:left;"> age     , embarked, parch   , sex     , sib_sp </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<p>Next, we want to compare the predictive performances estimated on the outer resampling to the inner resampling. Significantly lower predictive performances on the outer resampling indicate that the models with the optimized feature sets overfit the data.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>rr</span><span class='op'>$</span><span class='fu'>score</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> iteration </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+   <th style="text-align:right;"> classif.ce </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.1649832 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.2289562 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+   <td style="text-align:right;"> 0.1582492 </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<p>The archives of the <a href="https://mlr3fselect.mlr-org.com/reference/AutoFSelector.html"><code>AutoFSelector</code></a>s gives us all evaluated feature sets with the associated predictive performances.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/extract_inner_fselect_archives.html'>extract_inner_fselect_archives</a></span><span class='op'>(</span><span class='va'>rr</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-page">
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> iteration </th>
+   <th style="text-align:left;"> age </th>
+   <th style="text-align:left;"> embarked </th>
+   <th style="text-align:left;"> fare </th>
+   <th style="text-align:left;"> parch </th>
+   <th style="text-align:left;"> pclass </th>
+   <th style="text-align:left;"> sex </th>
+   <th style="text-align:left;"> sib_sp </th>
+   <th style="text-align:right;"> classif.ce </th>
+   <th style="text-align:right;"> runtime_learners </th>
+   <th style="text-align:left;"> timestamp </th>
+   <th style="text-align:right;"> batch_nr </th>
+   <th style="text-align:left;"> resample_result </th>
+   <th style="text-align:left;"> task_id </th>
+   <th style="text-align:left;"> learner_id </th>
+   <th style="text-align:left;"> resampling_id </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.4090585 </td>
+   <td style="text-align:right;"> 1.327 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613a37b2690&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3635949 </td>
+   <td style="text-align:right;"> 1.017 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561452e52a80&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3316906 </td>
+   <td style="text-align:right;"> 1.669 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613c4547a40&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3754024 </td>
+   <td style="text-align:right;"> 1.020 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613ab3c4d10&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3114798 </td>
+   <td style="text-align:right;"> 1.001 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613a38045d0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2254949 </td>
+   <td style="text-align:right;"> 0.933 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613bb1eacb0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.3720553 </td>
+   <td style="text-align:right;"> 1.016 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56143af25570&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2170916 </td>
+   <td style="text-align:right;"> 0.849 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613ba738910&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2254949 </td>
+   <td style="text-align:right;"> 0.896 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561444e2f560&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2254949 </td>
+   <td style="text-align:right;"> 0.892 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b65143f0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2238143 </td>
+   <td style="text-align:right;"> 0.797 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613ae0a0cb0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2238428 </td>
+   <td style="text-align:right;"> 0.834 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561437c740a0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2221478 </td>
+   <td style="text-align:right;"> 0.843 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b05350d0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2221336 </td>
+   <td style="text-align:right;"> 0.901 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b9488ed0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2221336 </td>
+   <td style="text-align:right;"> 0.960 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b7b9f390&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2137445 </td>
+   <td style="text-align:right;"> 0.902 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613c6e116c0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2053269 </td>
+   <td style="text-align:right;"> 0.900 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613aea4c840&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2036320 </td>
+   <td style="text-align:right;"> 0.909 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613c56818d0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2087025 </td>
+   <td style="text-align:right;"> 1.105 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56143e0bcc00&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1986469 </td>
+   <td style="text-align:right;"> 1.304 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613bc300ed0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2019798 </td>
+   <td style="text-align:right;"> 1.246 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561444538e80&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2036604 </td>
+   <td style="text-align:right;"> 1.074 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5614552616f0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1952713 </td>
+   <td style="text-align:right;"> 1.408 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:17 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b881d830&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1919100 </td>
+   <td style="text-align:right;"> 1.275 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:17 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561417370d80&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1817690 </td>
+   <td style="text-align:right;"> 1.273 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:17 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56144e0b2360&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1599202 </td>
+   <td style="text-align:right;"> 6.306 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:25 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5614234e4890&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1716565 </td>
+   <td style="text-align:right;"> 1.220 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:25 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561455258a40&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1666287 </td>
+   <td style="text-align:right;"> 1.165 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:26 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56143cb1c060&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3973508 </td>
+   <td style="text-align:right;"> 1.390 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613af9b6ee0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3366614 </td>
+   <td style="text-align:right;"> 1.047 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613bebbde90&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3147557 </td>
+   <td style="text-align:right;"> 1.532 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613c17543d0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3517875 </td>
+   <td style="text-align:right;"> 1.114 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613c66104c0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2963111 </td>
+   <td style="text-align:right;"> 1.084 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613c6532b70&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.1834354 </td>
+   <td style="text-align:right;"> 0.957 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5614429335e0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.3383848 </td>
+   <td style="text-align:right;"> 1.011 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:52 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613be76de40&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.1867968 </td>
+   <td style="text-align:right;"> 0.878 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5614486aae60&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.1834354 </td>
+   <td style="text-align:right;"> 0.793 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561439c5df90&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.1851161 </td>
+   <td style="text-align:right;"> 1.018 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561457b61c60&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.1834354 </td>
+   <td style="text-align:right;"> 0.810 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613ab0b52a0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.1834354 </td>
+   <td style="text-align:right;"> 0.801 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b16098a0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1817690 </td>
+   <td style="text-align:right;"> 0.800 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56145886eb70&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1716565 </td>
+   <td style="text-align:right;"> 0.901 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561450a4e330&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1851303 </td>
+   <td style="text-align:right;"> 0.842 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561457fdaa50&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1851303 </td>
+   <td style="text-align:right;"> 0.922 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b88304b0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1868110 </td>
+   <td style="text-align:right;"> 0.879 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5614546e9ee0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1817690 </td>
+   <td style="text-align:right;"> 0.822 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b995cd30&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1733371 </td>
+   <td style="text-align:right;"> 1.032 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613aea205f0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1700328 </td>
+   <td style="text-align:right;"> 1.240 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613a98218c0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1733514 </td>
+   <td style="text-align:right;"> 1.101 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561453d02590&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1548497 </td>
+   <td style="text-align:right;"> 1.020 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56145350f150&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1497650 </td>
+   <td style="text-align:right;"> 1.055 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:15 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56145e562d90&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1616152 </td>
+   <td style="text-align:right;"> 1.210 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:15 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5614454232a0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1649765 </td>
+   <td style="text-align:right;"> 1.094 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:15 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5614640f1160&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1531833 </td>
+   <td style="text-align:right;"> 1.235 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:23 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561458def700&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1582111 </td>
+   <td style="text-align:right;"> 1.123 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:23 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561464834f50&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1497792 </td>
+   <td style="text-align:right;"> 1.128 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:25 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561465187c40&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.4158809 </td>
+   <td style="text-align:right;"> 1.390 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:51 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b1ad0a40&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3905569 </td>
+   <td style="text-align:right;"> 1.017 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:51 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613a8e5e1e0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3349665 </td>
+   <td style="text-align:right;"> 1.683 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:51 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b564ce00&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3855291 </td>
+   <td style="text-align:right;"> 0.991 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:51 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56143f0e1dc0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.3517875 </td>
+   <td style="text-align:right;"> 1.006 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:51 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613ae4aea30&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2306082 </td>
+   <td style="text-align:right;"> 0.960 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:51 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56144cee0750&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.4241988 </td>
+   <td style="text-align:right;"> 1.004 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:51 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613a50c3c60&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2221906 </td>
+   <td style="text-align:right;"> 0.995 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b611ee20&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2306082 </td>
+   <td style="text-align:right;"> 0.810 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56144fe7b6d0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2306082 </td>
+   <td style="text-align:right;"> 0.894 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561442fec240&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2322888 </td>
+   <td style="text-align:right;"> 0.800 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561455d62670&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:right;"> 0.2356929 </td>
+   <td style="text-align:right;"> 0.808 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613bbd3f1c0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2188292 </td>
+   <td style="text-align:right;"> 0.839 </td>
+   <td style="text-align:left;"> 2022-02-18 10:04:59 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56143f886810&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2087452 </td>
+   <td style="text-align:right;"> 0.869 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56143b12fc40&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2154679 </td>
+   <td style="text-align:right;"> 0.870 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b7e58bd0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2171628 </td>
+   <td style="text-align:right;"> 0.886 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56144e308230&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2171486 </td>
+   <td style="text-align:right;"> 0.847 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613a9531da0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2154821 </td>
+   <td style="text-align:right;"> 0.906 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:05 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561448717d80&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2020225 </td>
+   <td style="text-align:right;"> 1.099 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b78158f0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2221906 </td>
+   <td style="text-align:right;"> 1.360 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561442cb8d30&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1919100 </td>
+   <td style="text-align:right;"> 1.034 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613ab89de20&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1986469 </td>
+   <td style="text-align:right;"> 1.087 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:11 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56142ebd5fd0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1902293 </td>
+   <td style="text-align:right;"> 1.162 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:15 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5614465a0280&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2188720 </td>
+   <td style="text-align:right;"> 1.289 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:15 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613afd55b20&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1936334 </td>
+   <td style="text-align:right;"> 1.087 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:15 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> &lt;environment: 0x56144c254540&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2239140 </td>
+   <td style="text-align:right;"> 5.974 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:23 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> &lt;environment: 0x561450836240&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.1986754 </td>
+   <td style="text-align:right;"> 1.187 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:23 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5614551adf20&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:right;"> 0.2053981 </td>
+   <td style="text-align:right;"> 1.190 </td>
+   <td style="text-align:left;"> 2022-02-18 10:05:25 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:left;"> &lt;environment: 0x5613b2c958d0&gt; </td>
+   <td style="text-align:left;"> titanic </td>
+   <td style="text-align:left;"> classif.ranger.fselector </td>
+   <td style="text-align:left;"> cv </td>
+  </tr>
+</tbody>
+</table></div>
+</div>
+<h2 id="shortcuts">Shortcuts</h2>
+<p>Selecting a feature subset can be shortened by using the <a href="https://mlr3fselect.mlr-org.com/reference/fselect.html"><code>fselect()</code></a>-shortcut.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>instance</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/fselect.html'>fselect</a></span><span class='op'>(</span>
+  method <span class='op'>=</span> <span class='st'>"random_search"</span>,
+  task <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>tsk</a></span><span class='op'>(</span><span class='st'>"iris"</span><span class='op'>)</span>,
+  learner <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.log_reg"</span><span class='op'>)</span>,
+  resampling <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
+  measure <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msr</a></span><span class='op'>(</span><span class='st'>"classif.ce"</span><span class='op'>)</span>,
+  term_evals <span class='op'>=</span> <span class='fl'>10</span>
+<span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>Applying nested resampling can be shortened by using the <a href="https://mlr3fselect.mlr-org.com/reference/fselect_nested.html"><code>fselect_nested()</code></a>-shortcut.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>rr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/fselect_nested.html'>fselect_nested</a></span><span class='op'>(</span>
+  method <span class='op'>=</span> <span class='st'>"random_search"</span>,
+  task <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>tsk</a></span><span class='op'>(</span><span class='st'>"iris"</span><span class='op'>)</span>,
+  learner <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.log_reg"</span><span class='op'>)</span>,
+  inner_resampling <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span> <span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
+  outer_resampling <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
+  measure <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msr</a></span><span class='op'>(</span><span class='st'>"classif.ce"</span><span class='op'>)</span>,
+  term_evals <span class='op'>=</span> <span class='fl'>10</span>
+<span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<!--radix_placeholder_article_footer-->
+<!--/radix_placeholder_article_footer-->
+</div>
+
+<div class="d-appendix">
+</div>
+
+
+<!--radix_placeholder_site_after_body-->
+<!--/radix_placeholder_site_after_body-->
+<!--radix_placeholder_appendices-->
+<div class="appendix-bottom">
+  <h3 id="citation">Citation</h3>
+  <p>For attribution, please cite this work as</p>
+  <pre class="citation-appendix short">Becker (2021, Jan. 8). mlr-org: Feature Selection on the Titanic Data Set. Retrieved from https://mlr-org.github.io/mlr-org-website/gallery/2020-09-14-mlr3fselect-basic/</pre>
+  <p>BibTeX citation</p>
+  <pre class="citation-appendix long">@misc{becker2021feature,
+  author = {Becker, Marc},
+  title = {mlr-org: Feature Selection on the Titanic Data Set},
+  url = {https://mlr-org.github.io/mlr-org-website/gallery/2020-09-14-mlr3fselect-basic/},
+  year = {2021}
+}</pre>
+</div>
+<!--/radix_placeholder_appendices-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!--radix_placeholder_navigation_after_body--><html><body>
+<div class="distill-site-nav distill-site-footer">
+<p>Â© Copyright 2022 mlr-org. Built with <a href="https://rstudio.github.io/distill/">Distill for R Markdown</a>.</p>
+</div>
+<!--/radix_placeholder_navigation_after_body-->
+</body></html>
+
+
+</body>
+
+</html>
