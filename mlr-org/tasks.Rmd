@@ -1,0 +1,24 @@
+---
+title: "Tasks"
+description: |
+  Tasks shipped with the mlr3 ecosystem.
+preview: images/logo_color.png
+site: distill::distill_website
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(mlr3website)
+library(htmltools)
+library(mlr3misc)
+library(data.table)
+requireNamespace("mlr3verse")
+
+content = as.data.table(mlr3::mlr_tasks)[, .(key, task_type, nrow, ncol)]
+setnames(content, c("Name", "Task Type", "# rows", "# cols"))
+```
+
+```{r}
+table_responsive(content, escape = FALSE)
+```

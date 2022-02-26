@@ -22,16 +22,10 @@ content = mlr3extralearners::list_mlr3learners()
 # add link to name and package
 content[, name := pmap_chr(list(name, mlr3_package, id), function(name, mlr3_package, id) as.character(a(href = sprintf("https://%s.mlr-org.com/reference/mlr_learners_%s.html", mlr3_package, id), name)))]
 
-# add link to required_packages
-avail = rownames(available.packages())
-content[, required_packages := map(required_packages, function(pkgs) {
-    pkgs = setdiff(pkgs, c("mlr3", "mlr3learners", "mlr3extralearners"))
-    map_chr(pkgs, function(pkg) if (pkg %in% avail) as.character(a(href = sprintf("https://cran.r-project.org/package=%s", pkg), pkg)) else pkg)
-})]
-
+content$required_packages = link_pkgs(content$required_packages)
 
 # add line breaks to cells
-sdcols = c("required_packages", "properties", "feature_types", "predict_types")
+sdcols = c("properties", "feature_types", "predict_types")
 content[, (sdcols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "\n"))), .SDcols = sdcols]
 
 setkeyv(content, "class")

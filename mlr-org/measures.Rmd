@@ -1,0 +1,85 @@
+---
+title: "Measures"
+description: |
+  Performance Measures of the mlr3 ecosystem.
+preview: images/logo_color.png
+site: distill::distill_website
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(mlr3website)
+library(htmltools)
+library(mlr3misc)
+library(data.table)
+requireNamespace("mlr3verse")
+
+content = as.data.table(mlr3::mlr_measures)
+content$packages = link_pkgs(content$packages, remove = c("mlr3", "mlr3measures"))
+
+# add line breaks to cells
+sdcols = c("task_properties")
+content[, (sdcols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "\n"))), .SDcols = sdcols]
+
+setkeyv(content, "task_type")
+setnames(content,
+    c("key", "packages", "predict_type", "task_properties"),
+    c("Name", "Packages", "Predict Type", "Task Properties")
+)
+```
+
+
+## Classification
+
+For classification tasks, the goal is to predict a label with only relatively few distinct values.
+The following measures are available for for classification problems.
+
+```{r, layout="l-body-outset"}
+table_responsive(content[.("classif"), !"task_type"], escape = FALSE)
+```
+
+## Regression
+
+For regression tasks, the objective is predict a continuous numeric quantity.
+The following measures are available for for regression problems.
+
+```{r, layout="l-body-outset"}
+table_responsive(content[.("regr"), !"task_type"], escape = FALSE)
+```
+
+## Cluster
+
+In cluster analysis the goal is to group data into clusters, where each cluster contains similar observations.
+The following measures are available for cluster problems.
+
+```{r, layout="l-body-outset"}
+table_responsive(content[.("clust"), !"task_type"], escape = FALSE)
+```
+## Density
+
+
+In density estimation the learning task is to find the unknown distribution from which an i.i.d. data set is generated.
+The following measures are available for density estimation problems.
+
+```{r, layout="l-body-outset"}
+table_responsive(content[.("dens"), !"task_type"], escape = FALSE)
+```
+
+## Survival
+
+In survival analysis the aim is to predict the survival distribution of a given individual.
+The following measures are available for survival problems.
+
+```{r, layout="l-body-outset"}
+table_responsive(content[.("surv"), !"task_type"], escape = FALSE)
+```
+
+## Generic Measures
+
+The following measures are independent of the task type.
+
+```{r, layout="l-body-outset"}
+table_responsive(content[.(NA), !"task_type"], escape = FALSE)
+```
+
