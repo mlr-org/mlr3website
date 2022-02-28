@@ -12,6 +12,7 @@ BugReports: https://github.com/mlr-org/mlr3website/issues
 Depends:
     R (>= 3.6.0)
 Imports:
+    checkmate,
     data.table,
     distill (>= 1.3.0),
     htmltools,
@@ -24,7 +25,6 @@ Suggests:
     bestNormalize,
     bst,
     caret,
-    checkmate,
     DataExplorer,
     DiceKriging,
     dplyr,
