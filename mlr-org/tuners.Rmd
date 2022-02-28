@@ -34,7 +34,7 @@ content[, (sdcols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, 
 content[, key := pmap_chr(list(key, base_package), function(key, base_package) as.character(a(href = sprintf("https://%s.mlr-org.com/reference/mlr_tuners_%s.html", base_package, key), key)))]
 
 content[, `:=`(base_package = NULL, man = NULL)]
-col_names = c("Name", "Classes", "Packages", "Properties")
+col_names = c("Name", "Classes", "Properties", "Packages")
 ```
 
 ## Tuners
