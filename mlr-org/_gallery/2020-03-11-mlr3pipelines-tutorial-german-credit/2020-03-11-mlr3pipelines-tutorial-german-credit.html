@@ -1440,8 +1440,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--/radix_placeholder_distill-->
   <script src="2020-03-11-mlr3pipelines-tutorial-german-credit_files/header-attrs-2.11/header-attrs.js"></script>
-  <script src="2020-03-11-mlr3pipelines-tutorial-german-credit_files/kePrint-0.0.1/kePrint.js"></script>
-  <link href="2020-03-11-mlr3pipelines-tutorial-german-credit_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="2020-03-11-mlr3pipelines-tutorial-german-credit_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="2020-03-11-mlr3pipelines-tutorial-german-credit_files/popper-2.6.0/popper.min.js"></script>
   <link href="2020-03-11-mlr3pipelines-tutorial-german-credit_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1622,406 +1620,152 @@ Keys: boxcox, branch, chunk, classbalancing, classifavg, classweights, colapply,
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-page">
-<div style="border: 1px solid #ddd; padding: 0px; border: 0px !important;overflow-y: scroll; height:400px; ">
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-credit_risk
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-credit_history
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-employment_duration
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-foreign_worker
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-housing
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-installment_rate
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-job
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-number_credits
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-other_debtors
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-other_installment_plans
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-people_liable
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-personal_status_sex
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-present_residence
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-property
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-purpose
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-savings
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-status
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-telephone
-</th>
-</tr>
-</thead>
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> credit_risk </th>
+   <th style="text-align:left;"> credit_history </th>
+   <th style="text-align:left;"> employment_duration </th>
+   <th style="text-align:left;"> foreign_worker </th>
+   <th style="text-align:left;"> housing </th>
+   <th style="text-align:left;"> installment_rate </th>
+   <th style="text-align:left;"> job </th>
+   <th style="text-align:left;"> number_credits </th>
+   <th style="text-align:left;"> other_debtors </th>
+   <th style="text-align:left;"> other_installment_plans </th>
+   <th style="text-align:left;"> people_liable </th>
+   <th style="text-align:left;"> personal_status_sex </th>
+   <th style="text-align:left;"> present_residence </th>
+   <th style="text-align:left;"> property </th>
+   <th style="text-align:left;"> purpose </th>
+   <th style="text-align:left;"> savings </th>
+   <th style="text-align:left;"> status </th>
+   <th style="text-align:left;"> telephone </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-good
-</td>
-<td style="text-align:left;">
-all credits at this bank paid back duly
-</td>
-<td style="text-align:left;">
-&gt;= 7 yrs
-</td>
-<td style="text-align:left;">
-.MISSING
-</td>
-<td style="text-align:left;">
-rent
-</td>
-<td style="text-align:left;">
-&lt; 20
-</td>
-<td style="text-align:left;">
-skilled employee/official
-</td>
-<td style="text-align:left;">
-2-3
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-0 to 2
-</td>
-<td style="text-align:left;">
-male : married/widowed
-</td>
-<td style="text-align:left;">
-&gt;= 7 yrs
-</td>
-<td style="text-align:left;">
-unknown / no property
-</td>
-<td style="text-align:left;">
-furniture/equipment
-</td>
-<td style="text-align:left;">
-… &gt;= 1000 DM
-</td>
-<td style="text-align:left;">
-no checking account
-</td>
-<td style="text-align:left;">
-yes (under customer name)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-bad
-</td>
-<td style="text-align:left;">
-no credits taken/all credits paid back duly
-</td>
-<td style="text-align:left;">
-1 &lt;= … &lt; 4 yrs
-</td>
-<td style="text-align:left;">
-no
-</td>
-<td style="text-align:left;">
-rent
-</td>
-<td style="text-align:left;">
-25 &lt;= … &lt; 35
-</td>
-<td style="text-align:left;">
-skilled employee/official
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-0 to 2
-</td>
-<td style="text-align:left;">
-female : non-single or male : single
-</td>
-<td style="text-align:left;">
-1 &lt;= … &lt; 4 yrs
-</td>
-<td style="text-align:left;">
-unknown / no property
-</td>
-<td style="text-align:left;">
-furniture/equipment
-</td>
-<td style="text-align:left;">
-unknown/no savings account
-</td>
-<td style="text-align:left;">
-… &lt; 0 DM
-</td>
-<td style="text-align:left;">
-no
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-good
-</td>
-<td style="text-align:left;">
-all credits at this bank paid back duly
-</td>
-<td style="text-align:left;">
-4 &lt;= … &lt; 7 yrs
-</td>
-<td style="text-align:left;">
-no
-</td>
-<td style="text-align:left;">
-rent
-</td>
-<td style="text-align:left;">
-25 &lt;= … &lt; 35
-</td>
-<td style="text-align:left;">
-unskilled - resident
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-3 or more
-</td>
-<td style="text-align:left;">
-male : married/widowed
-</td>
-<td style="text-align:left;">
-4 &lt;= … &lt; 7 yrs
-</td>
-<td style="text-align:left;">
-unknown / no property
-</td>
-<td style="text-align:left;">
-repairs
-</td>
-<td style="text-align:left;">
-unknown/no savings account
-</td>
-<td style="text-align:left;">
-… &gt;= 200 DM / salary for at least 1 year
-</td>
-<td style="text-align:left;">
-.MISSING
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-good
-</td>
-<td style="text-align:left;">
-no credits taken/all credits paid back duly
-</td>
-<td style="text-align:left;">
-4 &lt;= … &lt; 7 yrs
-</td>
-<td style="text-align:left;">
-no
-</td>
-<td style="text-align:left;">
-own
-</td>
-<td style="text-align:left;">
-25 &lt;= … &lt; 35
-</td>
-<td style="text-align:left;">
-skilled employee/official
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-guarantor
-</td>
-<td style="text-align:left;">
-.MISSING
-</td>
-<td style="text-align:left;">
-3 or more
-</td>
-<td style="text-align:left;">
-male : married/widowed
-</td>
-<td style="text-align:left;">
-&gt;= 7 yrs
-</td>
-<td style="text-align:left;">
-.MISSING
-</td>
-<td style="text-align:left;">
-car (used)
-</td>
-<td style="text-align:left;">
-unknown/no savings account
-</td>
-<td style="text-align:left;">
-no checking account
-</td>
-<td style="text-align:left;">
-no
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-bad
-</td>
-<td style="text-align:left;">
-existing credits paid back duly till now
-</td>
-<td style="text-align:left;">
-1 &lt;= … &lt; 4 yrs
-</td>
-<td style="text-align:left;">
-.MISSING
-</td>
-<td style="text-align:left;">
-own
-</td>
-<td style="text-align:left;">
-20 &lt;= … &lt; 25
-</td>
-<td style="text-align:left;">
-skilled employee/official
-</td>
-<td style="text-align:left;">
-2-3
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-3 or more
-</td>
-<td style="text-align:left;">
-male : married/widowed
-</td>
-<td style="text-align:left;">
-&gt;= 7 yrs
-</td>
-<td style="text-align:left;">
-real estate
-</td>
-<td style="text-align:left;">
-others
-</td>
-<td style="text-align:left;">
-unknown/no savings account
-</td>
-<td style="text-align:left;">
-no checking account
-</td>
-<td style="text-align:left;">
-no
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-good
-</td>
-<td style="text-align:left;">
-.MISSING
-</td>
-<td style="text-align:left;">
-1 &lt;= … &lt; 4 yrs
-</td>
-<td style="text-align:left;">
-no
-</td>
-<td style="text-align:left;">
-own
-</td>
-<td style="text-align:left;">
-25 &lt;= … &lt; 35
-</td>
-<td style="text-align:left;">
-unskilled - resident
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-3 or more
-</td>
-<td style="text-align:left;">
-male : married/widowed
-</td>
-<td style="text-align:left;">
-&gt;= 7 yrs
-</td>
-<td style="text-align:left;">
-real estate
-</td>
-<td style="text-align:left;">
-repairs
-</td>
-<td style="text-align:left;">
-… &gt;= 1000 DM
-</td>
-<td style="text-align:left;">
-… &gt;= 200 DM / salary for at least 1 year
-</td>
-<td style="text-align:left;">
-yes (under customer name)
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> good </td>
+   <td style="text-align:left;"> all credits at this bank paid back duly </td>
+   <td style="text-align:left;"> &gt;= 7 yrs </td>
+   <td style="text-align:left;"> .MISSING </td>
+   <td style="text-align:left;"> rent </td>
+   <td style="text-align:left;"> &lt; 20 </td>
+   <td style="text-align:left;"> skilled employee/official </td>
+   <td style="text-align:left;"> 2-3 </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> 0 to 2 </td>
+   <td style="text-align:left;"> male : married/widowed </td>
+   <td style="text-align:left;"> &gt;= 7 yrs </td>
+   <td style="text-align:left;"> unknown / no property </td>
+   <td style="text-align:left;"> furniture/equipment </td>
+   <td style="text-align:left;"> ... &gt;= 1000 DM </td>
+   <td style="text-align:left;"> no checking account </td>
+   <td style="text-align:left;"> yes (under customer name) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> bad </td>
+   <td style="text-align:left;"> no credits taken/all credits paid back duly </td>
+   <td style="text-align:left;"> 1 &lt;= ... &lt; 4 yrs </td>
+   <td style="text-align:left;"> no </td>
+   <td style="text-align:left;"> rent </td>
+   <td style="text-align:left;"> 25 &lt;= ... &lt; 35 </td>
+   <td style="text-align:left;"> skilled employee/official </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> 0 to 2 </td>
+   <td style="text-align:left;"> female : non-single or male : single </td>
+   <td style="text-align:left;"> 1 &lt;= ... &lt; 4 yrs </td>
+   <td style="text-align:left;"> unknown / no property </td>
+   <td style="text-align:left;"> furniture/equipment </td>
+   <td style="text-align:left;"> unknown/no savings account </td>
+   <td style="text-align:left;"> ... &lt; 0 DM </td>
+   <td style="text-align:left;"> no </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> good </td>
+   <td style="text-align:left;"> all credits at this bank paid back duly </td>
+   <td style="text-align:left;"> 4 &lt;= ... &lt; 7 yrs </td>
+   <td style="text-align:left;"> no </td>
+   <td style="text-align:left;"> rent </td>
+   <td style="text-align:left;"> 25 &lt;= ... &lt; 35 </td>
+   <td style="text-align:left;"> unskilled - resident </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> 3 or more </td>
+   <td style="text-align:left;"> male : married/widowed </td>
+   <td style="text-align:left;"> 4 &lt;= ... &lt; 7 yrs </td>
+   <td style="text-align:left;"> unknown / no property </td>
+   <td style="text-align:left;"> repairs </td>
+   <td style="text-align:left;"> unknown/no savings account </td>
+   <td style="text-align:left;"> ... &gt;= 200 DM / salary for at least 1 year </td>
+   <td style="text-align:left;"> .MISSING </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> good </td>
+   <td style="text-align:left;"> no credits taken/all credits paid back duly </td>
+   <td style="text-align:left;"> 4 &lt;= ... &lt; 7 yrs </td>
+   <td style="text-align:left;"> no </td>
+   <td style="text-align:left;"> own </td>
+   <td style="text-align:left;"> 25 &lt;= ... &lt; 35 </td>
+   <td style="text-align:left;"> skilled employee/official </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> guarantor </td>
+   <td style="text-align:left;"> .MISSING </td>
+   <td style="text-align:left;"> 3 or more </td>
+   <td style="text-align:left;"> male : married/widowed </td>
+   <td style="text-align:left;"> &gt;= 7 yrs </td>
+   <td style="text-align:left;"> .MISSING </td>
+   <td style="text-align:left;"> car (used) </td>
+   <td style="text-align:left;"> unknown/no savings account </td>
+   <td style="text-align:left;"> no checking account </td>
+   <td style="text-align:left;"> no </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> bad </td>
+   <td style="text-align:left;"> existing credits paid back duly till now </td>
+   <td style="text-align:left;"> 1 &lt;= ... &lt; 4 yrs </td>
+   <td style="text-align:left;"> .MISSING </td>
+   <td style="text-align:left;"> own </td>
+   <td style="text-align:left;"> 20 &lt;= ... &lt; 25 </td>
+   <td style="text-align:left;"> skilled employee/official </td>
+   <td style="text-align:left;"> 2-3 </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> 3 or more </td>
+   <td style="text-align:left;"> male : married/widowed </td>
+   <td style="text-align:left;"> &gt;= 7 yrs </td>
+   <td style="text-align:left;"> real estate </td>
+   <td style="text-align:left;"> others </td>
+   <td style="text-align:left;"> unknown/no savings account </td>
+   <td style="text-align:left;"> no checking account </td>
+   <td style="text-align:left;"> no </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> good </td>
+   <td style="text-align:left;"> .MISSING </td>
+   <td style="text-align:left;"> 1 &lt;= ... &lt; 4 yrs </td>
+   <td style="text-align:left;"> no </td>
+   <td style="text-align:left;"> own </td>
+   <td style="text-align:left;"> 25 &lt;= ... &lt; 35 </td>
+   <td style="text-align:left;"> unskilled - resident </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> none </td>
+   <td style="text-align:left;"> 3 or more </td>
+   <td style="text-align:left;"> male : married/widowed </td>
+   <td style="text-align:left;"> &gt;= 7 yrs </td>
+   <td style="text-align:left;"> real estate </td>
+   <td style="text-align:left;"> repairs </td>
+   <td style="text-align:left;"> ... &gt;= 1000 DM </td>
+   <td style="text-align:left;"> ... &gt;= 200 DM / salary for at least 1 year </td>
+   <td style="text-align:left;"> yes (under customer name) </td>
+  </tr>
 </tbody>
-</table>
-</div>
+</table></div>
 </div>
 <p>We do not only need complete data during training but also during prediction. Using the same imputation heuristic for both is the most consistent strategy. This way the imputation strategy can, in fact, be seen as a part of the complete learner (which could be tuned).</p>
 <p>If we used the imputed <a href="https://mlr3.mlr-org.com/reference/Task.html"><code>Task</code></a> for Resampling, we would <em>leak</em> information from the test set into the training set. Therefore, it is mandatory to attach the imputation operator to the <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a> itself, creating a <a href="https://mlr3pipelines.mlr-org.com/reference/mlr_learners_graph.html"><code>GraphLearner</code></a>:</p>
