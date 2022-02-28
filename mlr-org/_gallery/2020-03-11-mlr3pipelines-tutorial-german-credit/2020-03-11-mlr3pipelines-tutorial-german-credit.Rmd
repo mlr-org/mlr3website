@@ -141,10 +141,7 @@ head(task_imputed$data())
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-012, echo = FALSE, layout="l-page"}
-head(task_imputed$data()) %>%
-  kable(format = "html") %>%
-  kable_styling(full_width = TRUE) %>%
-  scroll_box(height = "400px", extra_css = "border: 0px !important;")
+table_responsive(head(task_imputed$data()))
 ```
 
 We do not only need complete data during training but also during prediction.
