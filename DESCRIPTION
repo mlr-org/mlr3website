@@ -12,17 +12,21 @@ BugReports: https://github.com/mlr-org/mlr3website/issues
 Depends:
     R (>= 3.6.0)
 Imports:
+    checkmate,
+    data.table,
+    distill (>= 1.3.0),
+    htmltools,
+    rmarkdown(>= 2.11),
+    rprojroot
+Suggests:
     anytime,
     apcluster,
     bbotk,
     bestNormalize,
     bst,
     caret,
-    checkmate,
-    data.table,
     DataExplorer,
     DiceKriging,
-    distill (>= 1.3.0),
     dplyr,
     e1071,
     farff,
@@ -38,9 +42,7 @@ Imports:
     git2r,
     glmnet,
     gridExtra,
-    htmltools,
     igraph,
-    kableExtra,
     kknn,
     knitr,
     lubridate,
@@ -67,8 +69,6 @@ Imports:
     randomForest,
     ranger,
     rchallenge,
-    rmarkdown(>= 2.11),
-    rprojroot,
     shiny,
     skimr,
     smotefamily,
