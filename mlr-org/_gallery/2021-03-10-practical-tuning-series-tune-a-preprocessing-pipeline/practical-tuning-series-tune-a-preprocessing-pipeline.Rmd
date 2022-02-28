@@ -34,10 +34,7 @@ params:
   R.options = list(width = 120)
 )
 
-library(mlr3book)
-library(kableExtra)
-
-ggplot2::theme_set(ggplot2::theme_light())
+library(mlr3website)
 ```
 
 ```{r practical-tuning-series-tune-a-preprocessing-pipeline-002, include=FALSE, eval = params$eval_all}
