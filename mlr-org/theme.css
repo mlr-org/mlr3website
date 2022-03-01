@@ -232,13 +232,14 @@ i.status-planned {
   color: #FF856A;
 }
 
-
-/* Banner */
+/*-- BANNER --*/
+/* Wrap container */
 .banner {
   width: auto;
   height: auto;
 }
 
+/* Size of banner */
 img[src="images/banner.png"] {
   width: 100%;
   max-width: 1000px;
@@ -257,28 +258,50 @@ img[src="images/banner.png"] {
   }
 }
 
-/* Scroll container around table*/
+/*-- DT TABLES --*/
+/* Fix icons */
+table.dataTable thead .sorting:after {
+ content:"⇵" !important;
+ top: 4px;
+}
+table.dataTable thead .sorting_asc:after {
+ content:"⇵ " !important;
+ top: 4px;
+}
+table.dataTable thead .sorting_desc:after {
+ content:"⇵ " !important;
+ top: 4px;
+}
+
+/*-- RESPONSIVE TABLES --*/
+/* Scroll container */
 .table-responsive {
   width: 100%;
   max-height: 700px;
   overflow: auto;
 }
 
-/* Tables full width */
-.table {
-  width: 100%;
-}
-
-/* Sticky table header */
-.table > thead {
-  color: white;
-  background-color: #495148;
+/* Sticky header */
+.table-responsive thead {
   inset-block-start: 0;
   position: sticky;
 }
 
 /* Display line breaks */
-.table td {
+.table-responsive td {
   white-space: pre-line;
+}
+
+/*-- ALL TABLES --*/
+/* Header background color */
+.table > thead {
+  color: white;
+  background-color: #455a64;
+
+}
+
+/* Table full width */
+.table {
+  width: 100%;
 }
 
