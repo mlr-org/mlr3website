@@ -13,12 +13,18 @@ library(mlr3website)
 library(htmltools)
 library(mlr3misc)
 library(data.table)
+library(DT)
 requireNamespace("mlr3verse")
 
-content = as.data.table(mlr3::mlr_resamplings)[, .(key, iters)]
-setnames(content, c("Name", "Default Iterations"))
+content = as.data.table(mlr3::mlr_resamplings)[, .(label, key, iters)]
+setnames(content, c("Name", "Key", "Default Iterations"))
 ```
 
-```{r}
-table_responsive(content, escape = FALSE)
+```{r, layout="l-page"}
+datatable(
+  content,
+  style = "bootstrap",
+  escape = FALSE,
+  options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
+  rownames= FALSE)
 ```

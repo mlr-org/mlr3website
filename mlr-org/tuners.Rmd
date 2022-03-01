@@ -6,7 +6,7 @@ preview: images/logo_color.png
 site: distill::distill_website
 ---
 
-```{r setup, include=FALSE}
+```{r}
 knitr::opts_chunk$set(echo = FALSE)
 
 library(mlr3website)
@@ -14,9 +14,6 @@ library(htmltools)
 library(mlr3misc)
 library(data.table)
 library(DT)
-```
-
-```{r}
 library(mlr3tuning)
 library(mlr3hyperband)
 library(mlr3mbo)
@@ -24,6 +21,7 @@ library(mlr3mbo)
 content = as.data.table(mlr_tuners, objects = TRUE)
 content[, base_package := map(object, function(x) strsplit(x$man, "::", TRUE)[[1]][1])]
 content[, packages := pmap(list(packages, base_package), function(x, y) setdiff(x, c(y, "bbotk", "mlr3tuning")))]
+content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
 
 # add line breaks to cells
 sdcols = c("param_classes", "properties", "packages")
@@ -35,14 +33,15 @@ content[, key := pmap_chr(list(key, base_package), function(key, base_package) a
 setcolorder(content, c("label", "key", "base_package", "packages", "properties", "param_classes"))
 
 content[, object := NULL]
-colnames = c("Name", "Key", "Base Package", "Packages", "Properties", "Classes")
+setnames(content,
+  c("label", "key", "base_package", "packages", "properties", "param_classes"),
+  c("Name", "Key", "Base Package", "Packages", "Properties", "Classes"))
 ```
 
 ```{r, layout="l-page"}
 datatable(
   content,
   style = "bootstrap",
-  colnames = colnames,
   escape = FALSE,
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
   rownames= FALSE)

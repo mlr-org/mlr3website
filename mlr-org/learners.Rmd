@@ -35,7 +35,9 @@ content[, (sdcols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, 
 
 setcolorder(content, c("label", "key", "base_package", "packages", "feature_types", "predict_types", "properties"))
 content[, `:=`(object = NULL, task_type = NULL)]
-colnames = col.names = c("Name", "ID", "Base Package", "Packages", "Feature Types", "Predict Types", "Properties")
+setnames(content,
+  c("label", "key", "base_package", "packages", "feature_types", "predict_types", "properties"),
+  c("Name", "ID", "Base Package", "Packages", "Feature Types", "Predict Types", "Properties"))
 ```
 
 ```{r, layout="l-page"}

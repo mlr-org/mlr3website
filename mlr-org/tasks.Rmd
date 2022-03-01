@@ -13,12 +13,18 @@ library(mlr3website)
 library(htmltools)
 library(mlr3misc)
 library(data.table)
+library(DT)
 requireNamespace("mlr3verse")
 
-content = as.data.table(mlr3::mlr_tasks)[, .(key, task_type, nrow, ncol)]
-setnames(content, c("Name", "Task Type", "# rows", "# cols"))
+content = as.data.table(mlr3::mlr_tasks)[, .(label, key, task_type, nrow, ncol)]
+setnames(content, c("Name", "Key", "Task Type", "# rows", "# cols"))
 ```
 
-```{r}
-table_responsive(content, escape = FALSE)
+```{r, layout="l-page"}
+datatable(
+  content,
+  style = "bootstrap",
+  escape = FALSE,
+  options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
+  rownames= FALSE)
 ```
