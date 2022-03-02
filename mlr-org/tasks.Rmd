@@ -17,7 +17,11 @@ requireNamespace("mlr3verse")
 
 content = as.data.table(mlr3::mlr_tasks)[, .(key, task_type, nrow, ncol)]
 setnames(content, c("Name", "Task Type", "# rows", "# cols"))
+
 ```
+
+The mlr3 packages also ship with some data sets, readily usable as `r ref("Task")` objects.
+The goal of these tasks is to quickly demonstrate the capabilities of the packages.
 
 ```{r}
 table_responsive(content, escape = FALSE)
