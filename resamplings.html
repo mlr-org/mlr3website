@@ -2616,7 +2616,7 @@ Overview
 </div>
 </div>
 <a href="resources.html">Resources</a>
-<a href="https://mlr3book.mlr-org.com/">Book</a>
+<a href="book.html">Book</a>
 <a href="gallery.html">Gallery</a>
 <a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
 </div>
@@ -2635,49 +2635,71 @@ Overview
 
 
 <div class="d-article">
+<p>Resamplings split the observations multiple times into two sets: training and test. The former is used to fit the model, the latter is used to evaluate the predictions. The <a href="https://mlr3.mlr-org.com/reference/Resampling.html"><code>Resampling</code></a> objects provide an abstraction for this procedure while respecting stratification as well as grouping/blocking if this is required by the <a href="https://mlr3.mlr-org.com/reference/Task.html"><code>Task</code></a>.</p>
+<p>If only a single split is required (i.e., a holdout split), the <a href="https://mlr3.mlr-org.com/reference/partition.html"><code>partition()</code></a> function provides a single split into training and test set.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="table-responsive"><table class = 'table'>
  <thead>
   <tr>
-   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Key </th>
+   <th style="text-align:left;"> Label </th>
+   <th style="text-align:left;"> Parameters </th>
    <th style="text-align:right;"> Default Iterations </th>
   </tr>
  </thead>
 <tbody>
   <tr>
    <td style="text-align:left;"> bootstrap </td>
+   <td style="text-align:left;"> Bootstrap </td>
+   <td style="text-align:left;"> ratio, repeats </td>
    <td style="text-align:right;"> 30 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> custom </td>
+   <td style="text-align:left;"> Custom Splits </td>
+   <td style="text-align:left;">  </td>
    <td style="text-align:right;"> NA </td>
   </tr>
   <tr>
    <td style="text-align:left;"> custom_cv </td>
+   <td style="text-align:left;"> Custom Split Cross-Validation </td>
+   <td style="text-align:left;">  </td>
    <td style="text-align:right;"> NA </td>
   </tr>
   <tr>
    <td style="text-align:left;"> cv </td>
+   <td style="text-align:left;"> Cross-Validation </td>
+   <td style="text-align:left;"> folds </td>
    <td style="text-align:right;"> 10 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> holdout </td>
+   <td style="text-align:left;"> Holdout </td>
+   <td style="text-align:left;"> ratio </td>
    <td style="text-align:right;"> 1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> insample </td>
+   <td style="text-align:left;"> Insample Resampling </td>
+   <td style="text-align:left;">  </td>
    <td style="text-align:right;"> 1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> loo </td>
+   <td style="text-align:left;"> Leave-One-Out </td>
+   <td style="text-align:left;">  </td>
    <td style="text-align:right;"> NA </td>
   </tr>
   <tr>
    <td style="text-align:left;"> repeated_cv </td>
+   <td style="text-align:left;"> Repeated Cross-Validation </td>
+   <td style="text-align:left;"> folds, repeats </td>
    <td style="text-align:right;"> 100 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> subsampling </td>
+   <td style="text-align:left;"> Subsampling </td>
+   <td style="text-align:left;"> ratio, repeats </td>
    <td style="text-align:right;"> 30 </td>
   </tr>
 </tbody>
