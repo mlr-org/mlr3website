@@ -14,15 +14,6 @@ library(htmltools)
 library(mlr3misc)
 library(data.table)
 library(DT)
-```
-
-To keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the `r cran_pkg("rpart")` package and some learners for debugging.
-A subjective selection of implementations for essential ML algorithms can be found in `r mlr_pkg("mlr3learners")` package.
-Survival learners are provided by `r mlr_pkg("mlr3proba")`, cluster learners via `r mlr_pkg("mlr3cluster")`.
-Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the `r mlr_pkg("mlr3extralearners")` package.
-
-
-```{r}
 library(mlr3)
 library(mlr3learners)
 library(mlr3extralearners)
@@ -39,18 +30,22 @@ content[, packages := link_pkgs(packages)]
 sdcols = c("packages", "properties", "feature_types", "predict_types")
 content[, (sdcols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = sdcols]
 
-setcolorder(content, c("label", "key", "base_package", "packages", "feature_types", "predict_types", "properties"))
+setcolorder(content, c("key", "label", "base_package", "packages", "feature_types", "predict_types", "properties"))
 content[, `:=`(object = NULL, task_type = NULL)]
 setnames(content,
   c("label", "key", "base_package", "packages", "feature_types", "predict_types", "properties"),
-  c("Name", "ID", "Base Package", "Packages", "Feature Types", "Predict Types", "Properties"))
+  c("Name", "Key", "Base Package", "Packages", "Feature Types", "Predict Types", "Properties"))
 ```
+
+To keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the `r cran_pkg("rpart")` package and some learners for debugging.
+A subjective selection of implementations for essential ML algorithms can be found in `r mlr_pkg("mlr3learners")` package.
+Survival learners are provided by `r mlr_pkg("mlr3proba")`, cluster learners via `r mlr_pkg("mlr3cluster")`.
+Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the `r mlr_pkg("mlr3extralearners")` package.
 
 ```{r, layout="l-page"}
 datatable(
   content,
   style = "bootstrap",
-  colnames = colnames,
   escape = FALSE,
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
   rownames= FALSE)
