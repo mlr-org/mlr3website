@@ -87,17 +87,17 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>mlr-org: Learners</title>
+  <title>mlr-org: Tuners</title>
 
-  <meta property="description" itemprop="description" content="Learners of the mlr3 ecosystem."/>
+  <meta property="description" itemprop="description" content="Tuners of the mlr3 ecosystem."/>
 
   <link rel="icon" type="image/vnd.microsoft.icon" href="images/favicon.ico"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="mlr-org: Learners"/>
+  <meta property="og:title" content="mlr-org: Tuners"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Learners of the mlr3 ecosystem."/>
+  <meta property="og:description" content="Tuners of the mlr3 ecosystem."/>
   <meta property="og:image" content="https://mlr-org.github.io/mlr-org-website/./images/logo_color.png"/>
   <meta property="og:image:width" content="581"/>
   <meta property="og:image:height" content="296"/>
@@ -106,18 +106,17 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary_large_image"/>
-  <meta property="twitter:title" content="mlr-org: Learners"/>
-  <meta property="twitter:description" content="Learners of the mlr3 ecosystem."/>
+  <meta property="twitter:title" content="mlr-org: Tuners"/>
+  <meta property="twitter:description" content="Tuners of the mlr3 ecosystem."/>
   <meta property="twitter:image" content="https://mlr-org.github.io/mlr-org-website/./images/logo_color.png"/>
   <meta property="twitter:image:width" content="581"/>
   <meta property="twitter:image:height" content="296"/>
 
   <!--/radix_placeholder_meta_tags-->
-  
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","preview","site","bibliography"]}},"value":[{"type":"character","attributes":{},"value":["Learners"]},{"type":"character","attributes":{},"value":["Learners of the mlr3 ecosystem.\n"]},{"type":"character","attributes":{},"value":["images/logo_color.png"]},{"type":"character","attributes":{},"value":["distill::distill_website"]},{"type":"character","attributes":{},"value":["publications.bib"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","preview","site"]}},"value":[{"type":"character","attributes":{},"value":["Tuners"]},{"type":"character","attributes":{},"value":["Tuners of the mlr3 ecosystem.\n"]},{"type":"character","attributes":{},"value":["images/logo_color.png"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2360,13 +2359,14 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: #FF856A;
   }
 
-
-  /* Banner */
+  /*-- BANNER --*/
+  /* Wrap container */
   .banner {
     width: auto;
     height: auto;
   }
 
+  /* Size of banner */
   img[src="images/banner.png"] {
     width: 100%;
     max-width: 1000px;
@@ -2385,29 +2385,51 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     }
   }
 
-  /* Scroll container around table*/
+  /*-- DT TABLES --*/
+  /* Fix icons */
+  table.dataTable thead .sorting:after {
+   content:"⇵" !important;
+   top: 4px;
+  }
+  table.dataTable thead .sorting_asc:after {
+   content:"⇵ " !important;
+   top: 4px;
+  }
+  table.dataTable thead .sorting_desc:after {
+   content:"⇵ " !important;
+   top: 4px;
+  }
+
+  /*-- RESPONSIVE TABLES --*/
+  /* Scroll container */
   .table-responsive {
     width: 100%;
     max-height: 700px;
     overflow: auto;
   }
 
-  /* Tables full width */
-  .table {
-    width: 100%;
-  }
-
-  /* Sticky table header */
-  .table > thead {
-    color: white;
-    background-color: #495148;
+  /* Sticky header */
+  .table-responsive thead {
     inset-block-start: 0;
     position: sticky;
   }
 
   /* Display line breaks */
-  .table td {
+  .table-responsive td {
     white-space: pre-line;
+  }
+
+  /*-- ALL TABLES --*/
+  /* Header background color */
+  .table > thead {
+    color: white;
+    background-color: #455a64;
+
+  }
+
+  /* Table full width */
+  .table {
+    width: 100%;
   }
   </style>
   <style type="text/css">
@@ -2566,6 +2588,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+  <link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+  <script src="site_libs/datatables-binding-0.21/datatables.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+  <link href="site_libs/dt-core-bootstrap-1.11.3/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+  <link href="site_libs/dt-core-bootstrap-1.11.3/css/dataTables.bootstrap.extra.css" rel="stylesheet" />
+  <script src="site_libs/dt-core-bootstrap-1.11.3/js/jquery.dataTables.min.js"></script>
+  <script src="site_libs/dt-core-bootstrap-1.11.3/js/dataTables.bootstrap.min.js"></script>
+  <link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+  <script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2585,7 +2617,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Learners","description":"Learners of the mlr3 ecosystem.","authors":[]}
+{"title":"Tuners","description":"Tuners of the mlr3 ecosystem.","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2614,6 +2646,8 @@ Overview
 <a href="resamplings.html">Resamplings</a>
 <a href="measures.html">Measures</a>
 <a href="tuners.html">Tuners</a>
+<a href="fselectors.html">FSelectors</a>
+<a href="terminators.html">Terminators</a>
 </div>
 </div>
 <a href="resources.html">Resources</a>
@@ -2628,134 +2662,17 @@ Overview
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Learners</h1>
+<h1>Tuners</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Learners of the mlr3 ecosystem.</p></p>
+<p><p>Tuners of the mlr3 ecosystem.</p></p>
 </div>
 
 
 <div class="d-article">
-<div class="layout-chunk" data-layout="l-body">
-
-</div>
-<h2 id="tuners">Tuners</h2>
-<div class="layout-chunk" data-layout="l-body-outset">
-<div class="table-responsive"><table class = 'table'>
- <thead>
-  <tr>
-   <th style="text-align:left;"> Name </th>
-   <th style="text-align:left;"> Classes </th>
-   <th style="text-align:left;"> Properties </th>
-   <th style="text-align:left;"> Packages </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_cmaes.html">cmaes</a> </td>
-   <td style="text-align:left;"> ParamDbl </td>
-   <td style="text-align:left;"> single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-adagio </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_design_points.html">design_points</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct
-ParamUty </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_gensa.html">gensa</a> </td>
-   <td style="text-align:left;"> ParamDbl </td>
-   <td style="text-align:left;"> single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-GenSA </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_grid_search.html">grid_search</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> <a href="https://NA.mlr-org.com/reference/mlr_tuners_hyperband.html">hyperband</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-mlr3hyperband </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_irace.html">irace</a> </td>
-   <td style="text-align:left;"> ParamDbl
-ParamInt
-ParamFct
-ParamLgl </td>
-   <td style="text-align:left;"> dependencies
-single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-irace </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> <a href="https://NA.mlr-org.com/reference/mlr_tuners_mbo.html">mbo</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-multi-crit
-single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-mlr3mbo </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_nloptr.html">nloptr</a> </td>
-   <td style="text-align:left;"> ParamDbl </td>
-   <td style="text-align:left;"> single-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-nloptr </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> <a href="https://mlr3tuning.mlr-org.com/reference/mlr_tuners_random_search.html">random_search</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> <a href="https://NA.mlr-org.com/reference/mlr_tuners_successive_halving.html">successive_halving</a> </td>
-   <td style="text-align:left;"> ParamLgl
-ParamInt
-ParamDbl
-ParamFct </td>
-   <td style="text-align:left;"> dependencies
-single-crit
-multi-crit </td>
-   <td style="text-align:left;"> mlr3tuning
-mlr3hyperband
-emoa </td>
-  </tr>
-</tbody>
-</table></div>
+<div class="layout-chunk" data-layout="l-page">
+<div id="htmlwidget-35d264cd31c2cbfa43d1" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-35d264cd31c2cbfa43d1">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3tuning.mlr-org.com/reference/mlr_tuners_cmaes.html\">cmaes<\/a>","<a href=\"https://mlr3tuning.mlr-org.com/reference/mlr_tuners_design_points.html\">design_points<\/a>","<a href=\"https://mlr3tuning.mlr-org.com/reference/mlr_tuners_gensa.html\">gensa<\/a>","<a href=\"https://mlr3tuning.mlr-org.com/reference/mlr_tuners_grid_search.html\">grid_search<\/a>","<a href=\"https://NA.mlr-org.com/reference/mlr_tuners_hyperband.html\">hyperband<\/a>","<a href=\"https://mlr3tuning.mlr-org.com/reference/mlr_tuners_irace.html\">irace<\/a>","<a href=\"https://NA.mlr-org.com/reference/mlr_tuners_mbo.html\">mbo<\/a>","<a href=\"https://mlr3tuning.mlr-org.com/reference/mlr_tuners_nloptr.html\">nloptr<\/a>","<a href=\"https://mlr3tuning.mlr-org.com/reference/mlr_tuners_random_search.html\">random_search<\/a>","<a href=\"https://NA.mlr-org.com/reference/mlr_tuners_successive_halving.html\">successive_halving<\/a>"],["Covariance Matrix Adaptation Evolution Strategy","Design Points","Generalized Simulated Annealing","Grid Search",null,"Iterated Racing",null,"Non-linear Optimization","Random Search",null],["mlr3tuning","mlr3tuning","mlr3tuning","mlr3tuning",null,"mlr3tuning",null,"mlr3tuning","mlr3tuning",null],["adagio","","GenSA","","mlr3hyperband","irace","mlr3mbo","nloptr","","mlr3hyperband<br/>emoa"],["single-crit","single-crit<br/>multi-crit","single-crit","single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit","multi-crit<br/>single-crit","single-crit","single-crit<br/>multi-crit","single-crit<br/>multi-crit"],["ParamDbl","ParamLgl<br/>ParamInt<br/>ParamDbl<br/>ParamFct<br/>ParamUty","ParamDbl","ParamLgl<br/>ParamInt<br/>ParamDbl<br/>ParamFct","ParamLgl<br/>ParamInt<br/>ParamDbl<br/>ParamFct","ParamDbl<br/>ParamInt<br/>ParamFct<br/>ParamLgl","ParamLgl<br/>ParamInt<br/>ParamDbl<br/>ParamFct","ParamDbl","ParamLgl<br/>ParamInt<br/>ParamDbl<br/>ParamFct","ParamLgl<br/>ParamInt<br/>ParamDbl<br/>ParamFct"]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Base Package<\/th>\n      <th>Packages<\/th>\n      <th>Properties<\/th>\n      <th>Classes<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
@@ -2769,10 +2686,7 @@ emoa </td>
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
 <!--radix_placeholder_appendices-->
-<div class="appendix-bottom">
-<h3 id="references">References</h3>
-<div id="references-listing"></div>
-</div>
+<div class="appendix-bottom"></div>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
