@@ -16,10 +16,10 @@ library(data.table)
 requireNamespace("mlr3verse")
 
 content = as.data.table(mlr3::mlr_measures)[, .(key, label, task_type, packages)]
+content[, key := link_keys(key, prefix = "mlr_measures")]
 content[, packages := link_pkgs(packages, remove = c("mlr3", "mlr3measures"))]
 content[is.na(task_type), task_type := "generic"]
 
-setkeyv(content, "key")
 setnames(content, c("Key", "Label", "Task Type", "Packages"))
 tabs = split(content, content[["Task Type"]], keep.by = FALSE)
 ```
