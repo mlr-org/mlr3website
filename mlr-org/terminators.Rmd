@@ -28,7 +28,7 @@ content[, key := map_chr(key, function(key) as.character(a(href = sprintf("https
 setcolorder(content, c("key", "label", "properties", "unit"))
 setnames(content,
   c("key", "label", "properties", "unit"),
-  c("Key", "Name", "Properties", "Unit"))
+  c("Key", "Label", "Properties", "Unit"))
 ```
 
 ```{r, layout="l-page"}

@@ -35,7 +35,7 @@ setcolorder(content, c("key", "label", "base_package", "packages", "properties",
 content[, object := NULL]
 setnames(content,
   c("label", "key", "base_package", "packages", "properties", "param_classes"),
-  c("Name", "Key", "Base Package", "Packages", "Properties", "Classes"))
+  c("Label", "Key", "Base Package", "Packages", "Properties", "Classes"))
 ```
 
 ```{r, layout="l-page"}
