@@ -16,8 +16,8 @@ library(data.table)
 requireNamespace("mlr3verse")
 
 content = as.data.table(mlr3::mlr_tasks)[, .(key, task_type, nrow, ncol)]
+content[, key := link_keys(key, prefix = "mlr_tasks")]
 setnames(content, c("Name", "Task Type", "# rows", "# cols"))
-
 ```
 
 The mlr3 packages also ship with some data sets, readily usable as `r ref("Task")` objects.
