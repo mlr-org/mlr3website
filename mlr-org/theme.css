@@ -186,14 +186,18 @@ h3 {
 }
 
 .grid-item-package {
+  border-top: #455a64 solid 5px;
+  box-shadow: 2px 2px #00000011;
+  border-radius: 0px 0px 10px 0px;
+  vertical-align: top;
+  max-width: 420px;
   text-align: left;
   padding: 10px;
-  background-color: #f1f1f1;
   position: relative;
 }
 
 .grid-item-package:hover {
-  background-color: #cccccc;
+  background-color: #f1f1f1;
 }
 
 div.grid-item-package h3 {

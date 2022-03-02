@@ -37,24 +37,24 @@ resource_grid = function(content) {
 content = rowwise_table(
     ~category,    ~name,               ~icon,       ~url,                                                    ~text,
     "general",    "Book",              "book",      "https://mlr3book.mlr-org.com/",                         "Central entry point to the mlr3verse",
-    "general",    "Gallery",           "image",     "https://mlr3gallery.mlr-org.com/",                      "The gallery has some case studies and demonstrates how frequently occurring problems can be solved",
+    "general",    "Gallery",           "image",     "https://mlr3gallery.mlr-org.com/",                      "Collection of case studies and demos",
 
     "article",    "mlr3",              "file-text", "https://doi.org/10.21105/joss.01903",                   "A modern object-oriented machine learning framework in R (2019). Journal of Open Source Software 4(44), 1903",
     "article",    "mlr3proba",         "file-text", "https://doi.org/10.1093/bioinformatics/btab039",        "An R Package for Machine Learning in Survival Analysis (2021). Bioinformatics, Volume 37, Issue 17, Pages 2789-2791",
     "article",    "mlr3pipelines",     "file-text", "https://jmlr.org/papers/v22/21-0281.html",              "Journal of Machine Learning Research (2021). Journal of Machine Learning Research 22(184):1-7",
 
-    "cheatsheet", "mlr3",              "file-text", "https://cheatsheets.mlr-org.com/mlr3.pdf",              "Core package cheat sheet",
-    "cheatsheet", "mlr3tuning",        "file-text", "https://cheatsheets.mlr-org.com/mlr3tuning.pdf",        "Tuning cheat sheet",
-    "cheatsheet", "mlr3fselect",       "file-text", "https://cheatsheets.mlr-org.com/mlr3fselect.pdf",       "Feature selection cheat sheet",
-    "cheatsheet", "mlr3pipelines",     "file-text", "https://cheatsheets.mlr-org.com/mlr3pipelines.pdf",     "Pipelines cheat sheet",
+    "cheatsheet", "mlr3",              "file-pdf",  "https://cheatsheets.mlr-org.com/mlr3.pdf",              "Core package cheat sheet",
+    "cheatsheet", "mlr3tuning",        "file-pdf",  "https://cheatsheets.mlr-org.com/mlr3tuning.pdf",        "Tuning cheat sheet",
+    "cheatsheet", "mlr3fselect",       "file-pdf",  "https://cheatsheets.mlr-org.com/mlr3fselect.pdf",       "Feature selection cheat sheet",
+    "cheatsheet", "mlr3pipelines",     "file-pdf",  "https://cheatsheets.mlr-org.com/mlr3pipelines.pdf",     "Pipelines cheat sheet",
 
-    "video",      "useR2019 talk",     "youtube",   "https://www.youtube.com/watch?v=wsP2hiFnDQs",           "on mlr3book",
-    "video",      "useR2019 talk",     "youtube",   "https://www.youtube.com/watch?v=gEW5RxkbQuQ",           "on mlr3pipelines and mlr3tuning",
-    "video",      "useR2020 tutorial", "youtube",   "https://www.youtube.com/watch?v=T43hO2o_nZw",           "on mlr3, mlr3tuning and mlr3pipelines",
-    "video",      "ODSC talk 2021",    "youtube",   "https://av.tib.eu/media/55271",                         "on mlr3spatiotempcv and mlr3spatial",
+    "video",      "useR2019 talk",     "youtube",   "https://www.youtube.com/watch?v=wsP2hiFnDQs",           "Short intro to mlr3",
+    "video",      "useR2019 talk",     "youtube",   "https://www.youtube.com/watch?v=gEW5RxkbQuQ",           "Short intro to mlr3pipelines and mlr3tuning",
+    "video",      "useR2020 tutorial", "youtube",   "https://www.youtube.com/watch?v=T43hO2o_nZw",           "Tutorial on mlr3, mlr3tuning and mlr3pipelines",
+    "video",      "ODSC talk 2021",    "youtube",   "https://av.tib.eu/media/55271",                         "Into to mlr3spatiotempcv and mlr3spatial",
 
-    "course",     "I2ML course",       "display",   "https://introduction-to-machine-learning.netlify.app/", "on mlr3book",
-    "course",     "mlr-outreach",      "display",   "https://github.com/mlr-org/mlr-outreach",               "on mlr3pipelines and mlr3tuning"
+    "course",     "I2ML course",       "display",   "https://introduction-to-machine-learning.netlify.app/", "Introduction to ML course. Free video lectures, slides, quizzes. Exercises use mlr3",
+    "course",     "mlr-outreach",      "display",   "https://github.com/mlr-org/mlr-outreach",               "Slides and other material for teaching mlr3"
 )
 
 setkeyv(content, "category")
@@ -66,16 +66,16 @@ setkeyv(content, "category")
 resource_grid(content[.("general")])
 ```
 
-## Peer-reviewed Articles
-
-```{r, echo = FALSE}
-resource_grid(content[.("article")])
-```
-
 ## Cheat Sheets
 
 ```{r, echo = FALSE}
 resource_grid(content[.("cheatsheet")])
+```
+
+## Peer-reviewed Articles
+
+```{r, echo = FALSE}
+resource_grid(content[.("article")])
 ```
 
 ## Videos

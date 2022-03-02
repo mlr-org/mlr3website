@@ -6,6 +6,12 @@ preview: images/logo_color.png
 site: distill::distill_website
 ---
 
+Resamplings split the observations multiple times into two sets: training and test.
+The former is used to fit the model, the latter is used to evaluate the predictions.
+The `r ref("Resampling")` objects provide an abstraction for this procedure while respecting stratification as well as grouping/blocking if this is required by the `r ref("Task")`.
+
+If only a single split is required (i.e., a holdout split), the `r ref("partition()")` function provides a single split into training and test set.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
@@ -16,8 +22,10 @@ library(data.table)
 library(DT)
 requireNamespace("mlr3verse")
 
-content = as.data.table(mlr3::mlr_resamplings)[, .(label, key, iters)]
-setnames(content, c("Name", "Key", "Default Iterations"))
+content = as.data.table(mlr3::mlr_resamplings)[, .(key, label, params, iters)]
+content[, key := link_keys(key, prefix = "mlr_resamplings")]
+content[, params := map(params, paste0, collapse = ", ")]
+setnames(content, c("Key", "Label", "Parameters", "Default Iterations"))
 ```
 
 ```{r, layout="l-page"}
