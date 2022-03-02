@@ -2636,6 +2636,7 @@ Overview
 
 
 <div class="d-article">
+<p>To keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the <a href="https://cran.r-project.org/package=rpart">rpart</a> package and some learners for debugging. A subjective selection of implementations for essential ML algorithms can be found in <a href="https://mlr3learners.mlr-org.com">mlr3learners</a> package. Survival learners are provided by <a href="https://mlr3proba.mlr-org.com">mlr3proba</a>, cluster learners via <a href="https://mlr3cluster.mlr-org.com">mlr3cluster</a>. Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the <a href="https://mlr3extralearners.mlr-org.com">mlr3extralearners</a> package.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -3230,7 +3231,7 @@ prob </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.rfsrc.html">rfsrc</a> </td>
    <td style="text-align:left;"> classif.rfsrc </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, randomForestSRC </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=randomForestSRC">randomForestSRC</a> </td>
    <td style="text-align:left;"> importance
 missings
 multiclass
@@ -3704,7 +3705,7 @@ se </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.rfsrc.html">rfsrc</a> </td>
    <td style="text-align:left;"> regr.rfsrc </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, randomForestSRC </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=randomForestSRC">randomForestSRC</a> </td>
    <td style="text-align:left;"> importance
 missings
 oob_error
@@ -4531,7 +4532,7 @@ crank </td>
    <td style="text-align:left;"> <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.rfsrc.html">rfsrc</a> </td>
    <td style="text-align:left;"> surv.rfsrc </td>
    <td style="text-align:left;"> mlr3extralearners </td>
-   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, randomForestSRC, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
+   <td style="text-align:left;"> <a href="https://cran.r-project.org/package=mlr3">mlr3</a>, <a href="https://cran.r-project.org/package=mlr3proba">mlr3proba</a>, mlr3extralearners, <a href="https://cran.r-project.org/package=randomForestSRC">randomForestSRC</a>, <a href="https://cran.r-project.org/package=pracma">pracma</a> </td>
    <td style="text-align:left;"> importance
 missings
 oob_error
