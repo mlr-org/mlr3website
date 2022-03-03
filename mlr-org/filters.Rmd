@@ -29,7 +29,7 @@ cols = c("packages", "task_type")
 content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
 
 
-setnames(content, c("Key", "Task Types", "Packages"))
+setnames(content, c("Key", "Label", "Task Types", "Packages"))
 ```
 
 ```{r, layout="l-body-outset"}
