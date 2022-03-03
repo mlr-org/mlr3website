@@ -1,0 +1,36 @@
+---
+title: "Tuning Spaces"
+description: |
+  Tuning Spaces of the mlr3 ecosystem.
+preview: images/logo_color.png
+site: distill::distill_website
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(mlr3website)
+library(htmltools)
+library(mlr3misc)
+library(data.table)
+library(DT)
+library(mlr3tuningspaces)
+
+content = as.data.table(mlr_tuning_spaces, objects = TRUE)[, .(key, label, learner, n_values, object)]
+
+# add links
+content[, collection := map(object, function(x) intersect(x$tags, c("default", "rbv2")))]
+content[, key := pmap_chr(list(key, collection), function(k, c) as.character(a(href = sprintf("https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_%s.html", c), k)))]
+
+content[, `:=`(object = NULL, collection = NULL)]
+setnames(content, c("Key", "Label", "Learner", "# hyperparameters"))
+```
+
+```{r, layout="l-body-outset"}
+datatable(
+  content,
+  style = "bootstrap",
+  escape = FALSE,
+  options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
+  rownames= FALSE)
+```
