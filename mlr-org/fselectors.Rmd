@@ -16,27 +16,25 @@ library(data.table)
 library(DT)
 library(mlr3fselect)
 
-content = as.data.table(mlr_fselectors, objects = TRUE)
-content[, base_package := map(object, function(x) strsplit(x$man, "::", TRUE)[[1]][1])]
-content[, packages := pmap(list(packages, base_package), function(x, y) setdiff(x, c(y, "bbotk", "mlr3tuning")))]
+content = as.data.table(mlr_fselectors, objects = TRUE)[, .(key, label, packages, properties, object)]
+
+# add links
+content[, key := link_keys(key, prefix = "mlr_fselectors")]
+content[, packages := link_pkgs(packages, remove = "bbotk")]
+
+# remove content
 content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
 
 # add line breaks to cells
-sdcols = c("properties", "packages")
-content[, (sdcols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = sdcols]
+cols = c("properties", "packages")
+content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
 
-# add link to name and package
-content[, key := pmap_chr(list(key, base_package), function(key, base_package) as.character(a(href = sprintf("https://%s.mlr-org.com/reference/mlr_tuners_%s.html", base_package, key), key)))]
-
-setcolorder(content, c("key", "label", "base_package", "packages", "properties"))
 
 content[, object := NULL]
-setnames(content,
-  c("label", "key", "base_package", "packages", "properties"),
-  c("Label", "Key", "Base Package", "Packages", "Properties"))
+setnames(content, c("Key", "Label", "Packages", "Properties"))
 ```
 
-```{r, layout="l-page"}
+```{r, layout="l-body-outset"}
 datatable(
   content,
   style = "bootstrap",

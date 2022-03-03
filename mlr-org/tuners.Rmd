@@ -18,27 +18,24 @@ library(mlr3tuning)
 library(mlr3hyperband)
 library(mlr3mbo)
 
-content = as.data.table(mlr_tuners, objects = TRUE)
-content[, base_package := map(object, function(x) strsplit(x$man, "::", TRUE)[[1]][1])]
-content[, packages := pmap(list(packages, base_package), function(x, y) setdiff(x, c(y, "bbotk", "mlr3tuning")))]
+content = as.data.table(mlr_tuners, objects = TRUE)[, .(key, label, packages, properties, param_classes, object)]
+
+# add links
+content[, key := link_keys(key, prefix = "mlr_tuners")]
+content[, packages := link_pkgs(packages, remove = "bbotk")]
+
+# remove content
 content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
 
 # add line breaks to cells
-sdcols = c("param_classes", "properties", "packages")
-content[, (sdcols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = sdcols]
-
-# add link to name and package
-content[, key := pmap_chr(list(key, base_package), function(key, base_package) as.character(a(href = sprintf("https://%s.mlr-org.com/reference/mlr_tuners_%s.html", base_package, key), key)))]
-
-setcolorder(content, c("key", "label", "base_package", "packages", "properties", "param_classes"))
+cols = c("param_classes", "properties", "packages")
+content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
 
 content[, object := NULL]
-setnames(content,
-  c("label", "key", "base_package", "packages", "properties", "param_classes"),
-  c("Label", "Key", "Base Package", "Packages", "Properties", "Classes"))
+setnames(content, c("Key", "Label", "Packages", "Properties", "Classes"))
 ```
 
-```{r, layout="l-page"}
+```{r, layout="l-body-outset"}
 datatable(
   content,
   style = "bootstrap",

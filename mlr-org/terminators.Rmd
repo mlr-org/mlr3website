@@ -16,22 +16,18 @@ library(data.table)
 library(DT)
 library(bbotk)
 
-content = as.data.table(mlr_terminators)
+content = as.data.table(mlr_terminators)[, .(key, label, properties, unit)]
+
+# add links
+content[, key := link_keys(key, prefix = "mlr_terminators")]
 
 # add line breaks to cells
-sdcols = "properties"
-content[, (sdcols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = sdcols]
+content[, properties := map_chr(properties, function(x) paste0(x, collapse = "<br/>"))]
 
-# add link to name and package
-content[, key := map_chr(key, function(key) as.character(a(href = sprintf("https://bbotk.mlr-org.com/reference/mlr_terminators_%s.html", key), key)))]
-
-setcolorder(content, c("key", "label", "properties", "unit"))
-setnames(content,
-  c("key", "label", "properties", "unit"),
-  c("Key", "Label", "Properties", "Unit"))
+setnames(content, c("Key", "Label", "Properties", "Unit"))
 ```
 
-```{r, layout="l-page"}
+```{r, layout="l-body-outset"}
 datatable(
   content,
   style = "bootstrap",
