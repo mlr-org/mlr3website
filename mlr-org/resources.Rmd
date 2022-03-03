@@ -4,9 +4,11 @@ description: |
   Useful resources for learning mlr3
 preview: images/logo_color.png
 site: distill::distill_website
+bibliography: publications.bib
 ---
 
 ```{r setup, include=FALSE}
+library(mlr3website)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -39,10 +41,6 @@ content = rowwise_table(
     "general",    "Book",              "book",      "https://mlr3book.mlr-org.com/",                         "Central entry point to the mlr3verse",
     "general",    "Gallery",           "image",     "https://mlr3gallery.mlr-org.com/",                      "Collection of case studies and demos",
 
-    "article",    "mlr3",              "file-text", "https://doi.org/10.21105/joss.01903",                   "A modern object-oriented machine learning framework in R (2019). Journal of Open Source Software 4(44), 1903",
-    "article",    "mlr3proba",         "file-text", "https://doi.org/10.1093/bioinformatics/btab039",        "An R Package for Machine Learning in Survival Analysis (2021). Bioinformatics, Volume 37, Issue 17, Pages 2789-2791",
-    "article",    "mlr3pipelines",     "file-text", "https://jmlr.org/papers/v22/21-0281.html",              "Journal of Machine Learning Research (2021). Journal of Machine Learning Research 22(184):1-7",
-
     "cheatsheet", "mlr3",              "file-pdf",  "https://cheatsheets.mlr-org.com/mlr3.pdf",              "Core package cheat sheet",
     "cheatsheet", "mlr3tuning",        "file-pdf",  "https://cheatsheets.mlr-org.com/mlr3tuning.pdf",        "Tuning cheat sheet",
     "cheatsheet", "mlr3fselect",       "file-pdf",  "https://cheatsheets.mlr-org.com/mlr3fselect.pdf",       "Feature selection cheat sheet",
@@ -62,23 +60,25 @@ setkeyv(content, "category")
 
 ## General
 
+Probably the best ways to start.
+Sit down and read the [book](book.html) or look at case studies in the [gallery](gallery.html).
+
 ```{r, echo = FALSE}
 resource_grid(content[.("general")])
 ```
 
 ## Cheat Sheets
 
+The essential things neatly summarized.
+Perfectly printed out next to the keyboard or on a second monitor.
+
 ```{r, echo = FALSE}
 resource_grid(content[.("cheatsheet")])
 ```
 
-## Peer-reviewed Articles
-
-```{r, echo = FALSE}
-resource_grid(content[.("article")])
-```
-
 ## Videos
+
+Recorded tutorials and lectures we have given.
 
 ```{r, echo = FALSE}
 resource_grid(content[.("video")])
@@ -86,6 +86,21 @@ resource_grid(content[.("video")])
 
 ## Courses/Lectures
 
+Material from teaching at our universities.
+
 ```{r, echo = FALSE}
 resource_grid(content[.("course")])
 ```
+
+
+## Peer-reviewed Articles
+
+A more scientific view on our the packages and the packages we depend on.
+
+* @mlr3: about the base package `r mlr_pkg("mlr3")`
+* @mlr3pipelines: building machine learning pipelines with `r mlr_pkg("mlr3pipelines")`
+* @mlr3proba: probabilistic regression with `r mlr_pkg("mlr3proba")` (including survival analysis)
+* @future: the parallelization framework package `r cran_pkg("future")` we build upon
+* @checkmate: library for argument checking and defensive programming
+* @batchtools: parallelization framework for high-performance computing clusters, used via `r cran_pkg("future")` or `r gh_pkg("mlr-org/mlr3batchmark")`
+
