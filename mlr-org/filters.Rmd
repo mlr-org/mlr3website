@@ -17,7 +17,7 @@ library(data.table)
 library(DT)
 library(mlr3filters)
 
-content = as.data.table(mlr_filters, objects = TRUE)[, .(key, task_type, packages)]
+content = as.data.table(mlr_filters, objects = TRUE)[, .(key, label, task_type, packages)]
 
 # add links
 content[, key := link_keys(key, prefix = "mlr_filters")]
