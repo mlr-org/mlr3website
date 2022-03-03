@@ -17,9 +17,9 @@ The extensions packages extent mlr3 with functionality for additional task types
 The packages are listed bellow with a short description.
 For more information about the packages, check out their respective homepages.
 The dot next to the package name indicates the [lifecycle stage](https://lifecycle.r-lib.org/articles/stages.html).
-Packages with a green dot <i class="bi-circle-fill status-stable"></i> are stable.
-Experimental packages are marked with an orange dot <i class="bi-circle-fill status-experimental"></i>.
-Planned packages are marked with a red dot <i class="bi-circle-fill status-planned"></i>.
+Packages with a green dot <i class="bi-circle-fill status-stable" title = "[status-stable]"></i> are stable.
+Experimental packages are marked with an orange dot <i class="bi-circle-fill status-experimental" title = "[status-experimental]"></i>.
+Planned packages are marked with a red dot <i class="bi-circle-fill status-planned" title = "[status-planned]"></i>.
 
 ![Graph of Extension Packages](https://raw.githubusercontent.com/mlr-org/mlr3/master/man/figures/mlr3verse.svg?sanitize=true)
 
@@ -47,7 +47,10 @@ package_grid = function(content) {
         div(class = "grid-item-package",
           h3(
             a(href = url, name),
-            tags$i(class = sprintf("bi-circle-fill status status-%s", status))
+            tags$i(
+                class = sprintf("bi-circle-fill status status-%s", status),
+                title = sprintf("[status-%s]", status)
+            )
           ),
           p(paste0(text, ".")),
           div(id = "bottom",
