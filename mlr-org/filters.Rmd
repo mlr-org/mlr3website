@@ -1,10 +1,11 @@
 ---
-title: "Feature Selection Wrapper"
+title: "Feature Selection Filter"
 description: |
-  Feature selection algorithms of the mlr3 ecosystem.
+  Feature Selection Filters.
 preview: images/logo_color.png
 site: distill::distill_website
 ---
+
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -14,24 +15,21 @@ library(htmltools)
 library(mlr3misc)
 library(data.table)
 library(DT)
-library(mlr3fselect)
+library(mlr3filters)
 
-content = as.data.table(mlr_fselectors, objects = TRUE)[, .(key, label, packages, properties, object)]
+content = as.data.table(mlr_filters, objects = TRUE)[, .(key, task_type, packages)]
 
 # add links
-content[, key := link_keys(key, prefix = "mlr_fselectors")]
-content[, packages := link_pkgs(packages, remove = "bbotk")]
-
-# remove content
-content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
+content[, key := link_keys(key, prefix = "mlr_filters")]
+content[, packages := link_pkgs(packages, remove = "mlr3filters")]
+content[, task_type := map(task_type, strsplit, split = ",", fixed = TRUE)]
 
 # add line breaks to cells
-cols = c("properties", "packages")
+cols = c("packages", "task_type")
 content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
 
 
-content[, object := NULL]
-setnames(content, c("Key", "Label", "Packages", "Properties"))
+setnames(content, c("Key", "Task Types", "Packages"))
 ```
 
 ```{r, layout="l-body-outset"}
