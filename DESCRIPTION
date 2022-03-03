@@ -18,8 +18,10 @@ Imports:
     DT,
     mlr3 (>= 0.13.3),
     mlr3extralearners,
-    mlr3mbo,
+    mlr3fselect (>= 0.6.1.9000),
     mlr3misc,
+    mlr3tuning (>= 0.12.1.9000),
+    mlr3tuningspaces (>= 0.1.1.9000),
     mlr3verse,
     htmltools,
     rmarkdown(>= 2.11),
@@ -82,11 +84,10 @@ Suggests:
 Remotes:
     mlr-org/mlr3book,
     mlr-org/mlr3extralearners,
-    mlr-org/mlr3mbo,
     mlr-org/mlr3,
     mlr-org/mlr3tuning,
     mlr-org/mlr3fselect,
-    mlr-org/mlr3mbo@help
+    mlr-org/mlr3tuningspaces
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2

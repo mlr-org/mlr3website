@@ -16,7 +16,6 @@ library(data.table)
 library(DT)
 library(mlr3tuning)
 library(mlr3hyperband)
-library(mlr3mbo)
 
 content = as.data.table(mlr_tuners, objects = TRUE)[, .(key, label, packages, properties, param_classes, object)]
 
