@@ -67,88 +67,40 @@ The mlr3verse meta-package installs mlr3 and some of the most important extensio
 install.packages("mlr3verse")
 ```
 
-### Basic Example
+## Examples
 
-```{r, include=FALSE}
-set.seed(7832)
-lgr::get_logger("mlr3")$set_threshold("warn")
-lgr::get_logger("bbotk")$set_threshold("warn")
-```
+```{r, echo = FALSE}
+library(mlr3misc)
+library(htmltools)
+library(data.table)
 
-Simple resampling:
+resource_grid = function(content) {
+  div(class = "grid-container-application",
+    pmap(content, function(name, image, url, text) {
+        div(class = "grid-item-application",
+          div(class = "grid-item-application-image",
+            img(src = image)
+          ),
+          div(class = "grid-item-application-text",
+            h3(
+              a(href = url, name)
+            ),
+            paste0(text, ".")
+          )
+        )
+    })
+  )
+}
 
-1. Load task and learner. Optionally, set hyperparameter values.
-1. Choose resampling strategy.
-1. Run automatic resampling.
-1. Score with classification accuracy.
-
-```{r, eval=FALSE}
-library(mlr3verse)
-
-task = tsk("penguins")
-learner = lrn("classif.rpart", cp = .01)
-
-resampling = rsmp("cv", folds = 3L)
-
-rr = resample(task, learner, resampling)
-
-rr$score(msr("classif.acc"))
-```
-
-### Tuning Example
-
-Quick tuning of a simple classification tree on the on penguins data set:
-
-1. Choose task.
-1. Load learner and set search space in one go.
-1. Run hyperparameter tuning with random search.
-1. Get best performing hyperparameter configuration.
-
-```{r, eval=FALSE}
-library(mlr3tuningspaces)
-
-task = tsk("penguins")
-
-learner = lts(lrn("classif.rpart"))
-
-instance = tune(
-  method = "random_search",
-  task = task,
-  learner = learner,
-  resampling = rsmp("cv", folds = 3),
-  measure = msr("classif.acc"),
-  term_evals = 10,
-  batch_size = 5
+content = rowwise_table(
+    ~name,                ~image,                 ~url,                              ~text,
+    "Classification",     "images/air.jpg",       "https://mlr3gallery.mlr-org.com/",   "Basic example",
+    "Tuning",             "images/fire.jpg",       "https://mlr3gallery.mlr-org.com/",   "Choosing a set of optimal hyperparameters",
+    "Feature Selection",  "images/wave.jpg",       "https://mlr3gallery.mlr-org.com/",   "Selecting a set of optimal features",
+    "Pipelines",          "images/soil.jpg",       "https://mlr3gallery.mlr-org.com/",   "Dataflow programming"
 )
 
-instance$result
-```
-
-### Pipelines Example
-
-Create a stacked learner:
-
-1. Load task.
-1. Choose list of base learners and super learner.
-1. Convert to graph learner.
-1. Train on german credit task.
-
-```{r, eval=FALSE}
-library(mlr3verse)
-library(mlr3pipelines)
-
-task = tsk("german_credit")
-
-base_learners = list(
-  lrn("classif.rpart", predict_type = "prob"),
-  lrn("classif.kknn", predict_type = "prob")
-)
-super_learner = lrn("classif.log_reg")
-
-graph_stack = pipeline_stacking(base_learners, super_learner)
-graph_learner = as_learner(graph_stack)
-
-graph_learner$train(task)
+resource_grid(content)
 ```
 
 ## Citing mlr3
