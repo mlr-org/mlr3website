@@ -19,16 +19,16 @@ library(mlr3proba)
 
 content = rowwise_table(
   ~ key, ~label,
-  "bagging", "Create a bagging learner",
+  "bagging", "Bagging Learner",
   "branch", "Branch Between Alternative Paths",
-  "greplicate", "Create Disjoint Graph Union of Copies of a Graph",
-  "ovr", "Create A Graph to Perform 'One vs. Rest' classification",
-  "robustify", "Robustify a learner",
-  "stacking", "Create A Graph to Perform Stacking",
+  "greplicate", "Disjoint Graph Union of Copies of a Graph",
+  "ovr", "'One vs. Rest' Classification",
+  "robustify", "Robustify a Learner",
+  "stacking", "Stacking",
   "targettrafo", "Transform and Re-Transform the Target Variable",
   "survaverager", "Survival Prediction Averaging",
   "survbagging", "Survival Prediction Bagging",
-  "survtoregr", "Survival to Regression Reduction Pipeline"
+  "survtoregr", "Survival to Regression Reduction"
 )
 
 
