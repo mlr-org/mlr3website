@@ -90,47 +90,67 @@ d-appendix {
 /* Increase search text size */
 .nav-search {
   font-size: unset;
+  height: 1em;
 }
 
-/* Feature grid */
-.grid-container {
+/*-- HEADINGS --*/
+h1 {
+  font-size: 2.5rem !important;
+}
+
+h2 {
+  font-size: 2rem !important;
+}
+
+h3 {
+  font-size: 1.2rem !important;
+}
+
+/*-- FEATURE GRID --*/
+.grid-container-feature {
   display: inline-grid;
   grid-template-columns: repeat(2, 1fr);
 }
 
-/* Feature grid 3 columns on desktop */
+/* 3 columns on desktop */
 @media only screen and (min-width: 768px) {
   /* Package grid */
-  .grid-container {
+  .grid-container-feature {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.grid-item {
+/* Icon */
+.grid-item-feature {
   text-align: center;
   padding: 30px;
 }
 
-.grid-icon {
+/* Space between icon and text */
+.grid-icon-feature {
   padding-bottom: 15px;
 }
 
-div.grid-icon i {
+/* Icon size */
+div.grid-icon-feature i {
   font-size: 3rem;
 }
 
-div.grid-icon a {
+/* Remove link decoration */
+div.grid-icon-feature a {
   border-bottom: 0px;
   text-decoration: none;
 }
 
-/* Style buttons */
+/*-- Social buttons --*/
+/* Button container */
 .btn-container {
   display: inline-block;
   width: 100%;
   text-align: center;
 }
 
+/* Button style */
 .btn {
   background-color: #455a64;
   border: none;
@@ -144,37 +164,24 @@ div.grid-icon a {
   margin: 10px;
 }
 
-/* Darker background on mouse-over */
+/* Dark background on mouse-over */
 .btn:hover {
   background-color: #2a363c;
 }
 
-/* Button icons */
+/* Icons */
 a.btn i {
   font-size: 2rem;
   margin-right: 10px;
 }
 
-/* Headings */
-h1 {
-  font-size: 2.5rem !important;
-}
-
-h2 {
-  font-size: 2rem !important;
-}
-
-h3 {
-  font-size: 1.2rem !important;
-}
-
-
-/* Allow horizontal scroll in citation box */
+/*-- CITATION BOX --*/
+/* Horizontal scroll in citation box */
 .citation {
   overflow-x: auto !important;
 }
 
-/* Package grid */
+/*-- PACKAGE GRID --*/
 .grid-container-package {
   display: inline-grid;
   grid-template-columns: repeat(1, 1fr);
@@ -183,9 +190,8 @@ h3 {
   margin-bottom: 30px;
 }
 
-/* Package grid 3 columns on desktop */
+/* 3 columns on desktop */
 @media only screen and (min-width: 768px) {
-  /* Package grid */
   .grid-container-package {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -202,16 +208,19 @@ h3 {
   position: relative;
 }
 
+/* Dark background on mouse over */
 .grid-item-package:hover {
   background-color: #f1f1f1;
 }
 
+/* Package name */
 div.grid-item-package h3 {
   margin-top: 0;
   display: flex;
   align-items: center;
 }
 
+/* Remove link decoration */
 div.grid-item-package a {
   border-bottom: 0px;
   text-decoration: none;
@@ -222,22 +231,27 @@ div.grid-item-package a {
   bottom: 0;
 }
 
+/* Status circle */
 i.status {
   font-size: 0.75rem;
 }
 
+/* Increase space between package name and status circle */
 h3 > i.status {
   margin-left: 10px;
 }
 
+/* Stable color */
 i.status-stable {
   color: #B4CFB0;
 }
 
+/* Experimental color */
 i.status-experimental {
   color: #FBC6A4;
 }
 
+/* Planed color */
 i.status-planned {
   color: #FF856A;
 }
@@ -314,5 +328,3 @@ table.dataTable thead .sorting_desc:after {
 .table {
   width: 100%;
 }
-
-

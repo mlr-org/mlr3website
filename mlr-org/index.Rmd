@@ -26,10 +26,10 @@ content = rowwise_table(
     "share",        "Dataflow programming with pipelines.",                   "https://mlr3pipelines.mlr-org.com/"
 )
 
-div(class = "grid-container",
+div(class = "grid-container-feature",
   pmap(content, function(icon, text, link) {
-    div(class = "grid-item",
-        div(class="grid-icon",
+    div(class = "grid-item-feature",
+        div(class="grid-icon-feature",
           a(href = link,
             tags$i(class = sprintf("bi-%s", icon))
          )
