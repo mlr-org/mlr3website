@@ -20,7 +20,6 @@ library(mlr3proba)
 content = rowwise_table(
   ~ key, ~label,
   "bagging", "Bagging Learner",
-  "branch", "Branch Between Alternative Paths",
   "greplicate", "Disjoint Graph Union of Copies of a Graph",
   "ovr", "'One vs. Rest' Classification",
   "robustify", "Robustify a Learner",
@@ -31,9 +30,13 @@ content = rowwise_table(
   "survtoregr", "Survival to Regression Reduction"
 )
 
-
 # add links
 content[, key := link_keys(key, prefix = "mlr_graphs")]
+
+# link_keys fails
+# mlr_graphs_branching is renamed to mlr_graphs_branch
+# remove when label branch is merged to master
+content = rbindlist(list(content, list(key = "branch", label = "Branch Between Alternative Paths")))
 
 setnames(content, c("Key", "Label"))
 ```
