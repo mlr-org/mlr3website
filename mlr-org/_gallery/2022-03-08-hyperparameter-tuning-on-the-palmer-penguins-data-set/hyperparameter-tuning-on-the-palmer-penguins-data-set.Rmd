@@ -1,0 +1,107 @@
+---
+title: "Hyperparameter Tuning on the Palmer Penguins Data Set"
+description: |
+  In this post, we tune the hyperparameters of a XGBoost model on the Palmer Penguins data set with only a few lines of code.
+author:
+  - name: Marc Becker
+date: 2022-03-08
+preview: penguins.png
+bibliography: bibliography.bib
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+ knitr::opts_chunk$set(
+  echo = TRUE,
+  R.options = list(width = 120)
+)
+
+library(mlr3website)
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+
+```{r, layout="l-body-outset", echo=FALSE}
+knitr::include_graphics("penguins.png")
+```
+
+# Scope
+
+In this post, we tune the hyperparameters of a XGBoost model with only a few lines of code.
+
+# Prerequistes
+
+We load the `r mlr_pkg("mlr3verse")` package which pulls the most important packages for this example. Among other packages it loads
+`r mlr_pkg("mlr3tuning")` which adds hyperparameter tuning to the `r mlr_pkg("mlr3")` ecosystem.
+
+```{r}
+library(mlr3verse)
+```
+
+In this example, we use the [Palmer Penguins Data Set](https://mlr3.mlr-org.com/reference/mlr_tasks_penguins.html) which classifies 344 penguins in three species. The data set was collected from 3 islands in the Palmer Archipelago in the Antarctica. It includes the name of the island, the size of the penguin (flipper length, body mass and bill dimension) and the sex.
+
+```{r}
+task = tsk("penguins_simple")
+```
+
+We choose the xgboost learner
+
+```{r}
+learner = lrn("classif.xgboost")
+```
+
+# Tuning Search Space
+
+For tuning, it is important to create a search space that defines the type and range of the hyperparameters. A learner stores all information about its hyperparameters in the slot $param_set. Not all parameters are tunable. We have to choose a subset of the hyperparameters we want to tune.
+
+```{r, eval = FALSE}
+as.data.table(learner$param_set)
+```
+
+```{r, echo = FALSE}
+table_responsive(as.data.table(learner$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
+```
+
+The package `r mlr_pkg("mlr3tuningspaces")` offers a collection of search spaces for hyperparameter tuning from peer-reviewed articles. We use the search space from the @bischl_hyperparameter_2021 article.
+
+```{r}
+lts("classif.xgboost.default")
+```
+
+We can load the learner argumented with the search space in one go.
+
+```{r}
+learner = lts(lrn("classif.xgboost"))
+learner
+```
+
+
+# Tuning
+
+The `tune()`
+
+```{r}
+instance = tune(
+  method = "random_search",
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  term_evals = 15,
+  batch_size = 5
+)
+```
+
+```{r}
+as.data.table(instance$archive, unnest = NULL)
+```
+
+```{r}
+instance$result
+```
+
+
+
+
