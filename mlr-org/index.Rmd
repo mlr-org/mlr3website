@@ -93,11 +93,9 @@ resource_grid = function(content) {
 }
 
 content = rowwise_table(
-    ~name,                ~image,                 ~url,                              ~text,
-    "Classification",     "images/air.jpg",       "https://mlr3gallery.mlr-org.com/",   "Basic example",
-    "Tuning",             "images/fire.jpg",       "https://mlr3gallery.mlr-org.com/",   "Choosing a set of optimal hyperparameters",
-    "Feature Selection",  "images/wave.jpg",       "https://mlr3gallery.mlr-org.com/",   "Selecting a set of optimal features",
-    "Pipelines",          "images/soil.jpg",       "https://mlr3gallery.mlr-org.com/",   "Dataflow programming"
+  ~name,                    ~image,                 ~url,                                   ~text,
+  "Basic Machine Learning", "images/penguins.png",  "https://website.mlr-org.com/gallery/", "Basic machine learning on the Penguins data set",
+  "Hyperparameter Tuning",  "images/svm.png",       "https://website.mlr-org.com/gallery/", "Hyperparameter tuning on the Pima Indian Diabetes data set"
 )
 
 resource_grid(content)
