@@ -41,11 +41,15 @@ content = rbindlist(list(content, list(key = "branch", label = "Branch Between A
 setnames(content, c("Key", "Label"))
 ```
 
+Graphs are predefined arrangements of `r ref("PipeOp")` objects from the `r mlr_pkg("mlr3pipelines")` package.
+The goal is to simplify some popular operations which usually consist of multiple steps.
+
+
 ```{r, layout="l-body-outset"}
 datatable(
   content,
   style = "bootstrap",
   escape = FALSE,
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
-  rownames= FALSE)
+  rownames = FALSE)
 ```

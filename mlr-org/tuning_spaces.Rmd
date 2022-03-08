@@ -17,6 +17,7 @@ library(DT)
 library(mlr3tuningspaces)
 
 content = as.data.table(mlr_tuning_spaces, objects = TRUE)[, .(key, label, learner, n_values, object)]
+content[, learner := link_keys(learner, "mlr_learners")]
 
 # add links
 content[, collection := map(object, function(x) intersect(x$tags, c("default", "rbv2")))]
@@ -26,11 +27,14 @@ content[, `:=`(object = NULL, collection = NULL)]
 setnames(content, c("Key", "Label", "Learner", "# hyperparameters"))
 ```
 
+The package `r mlr_pkg("mlr3tuningspaces")` ships with some predefined tuning spaces for hyperparameter optimization.
+See the respective manual page for the article from which they were extracted.
+
 ```{r, layout="l-body-outset"}
 datatable(
   content,
   style = "bootstrap",
   escape = FALSE,
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
-  rownames= FALSE)
+  rownames = FALSE)
 ```
