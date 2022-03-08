@@ -9,12 +9,12 @@
 #' @export
 link_pkgs = function(x, remove = character()) {
   checkmate::assert_list(x, "character")
-  cran_pkgs = intersect(rownames(available.packages()), unlist(x, use.names = FALSE))
 
-  mlr3misc::map(x, function(pkgs) {
+  mlr3misc::map_chr(x, function(pkgs) {
+    if (checkmate::test_scalar_na(pkgs)) {
+      return("")
+    }
     pkgs = setdiff(pkgs, remove)
-    ii = pkgs %in% cran_pkgs
-    pkgs[ii] = mlr3misc::map_chr(pkgs[ii], function(x) as.character(htmltools::a(href = sprintf("https://cran.r-project.org/package=%s", x), x)))
-    pkgs
+    paste0(mlr3misc::map_chr(pkgs, mlr3book::ref_pkg, format = "html"), collapse = ", ")
   })
 }

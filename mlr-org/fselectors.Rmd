@@ -34,11 +34,16 @@ content[, object := NULL]
 setnames(content, c("Key", "Label", "Packages", "Properties"))
 ```
 
+
+Feature selection wrappers can be found in the `r mlr_pkg("mlr3fselect")` packages.
+The goal is to find the best subset of features w.r.t. a `r ref("Measure", text = "performance measure")` in an iterative fashion.
+
+
 ```{r, layout="l-body-outset"}
 datatable(
   content,
   style = "bootstrap",
   escape = FALSE,
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
-  rownames= FALSE)
+  rownames = FALSE)
 ```

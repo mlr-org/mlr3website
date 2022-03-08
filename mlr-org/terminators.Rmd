@@ -27,11 +27,14 @@ content[, properties := map_chr(properties, function(x) paste0(x, collapse = "<b
 setnames(content, c("Key", "Label", "Properties", "Unit"))
 ```
 
+A `r ref("Terminator")` is an object that determines when to stop the optimization, e.g. after a budget of evaluations is depleted or the optimization stagnates.
+
+
 ```{r, layout="l-body-outset"}
 datatable(
   content,
   style = "bootstrap",
   escape = FALSE,
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
-  rownames= FALSE)
+  rownames = FALSE)
 ```
