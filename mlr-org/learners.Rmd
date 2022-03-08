@@ -42,6 +42,9 @@ A subjective selection of implementations for essential ML algorithms can be fou
 Survival learners are provided by `r mlr_pkg("mlr3proba")`, cluster learners via `r mlr_pkg("mlr3cluster")`.
 Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the `r mlr_pkg("mlr3extralearners")` package.
 
+
+## Table
+
 ```{r, layout="l-page"}
 datatable(
   content,
@@ -50,3 +53,34 @@ datatable(
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
   rownames= FALSE)
 ```
+
+
+## Example Usage
+
+Fit a `r ref("mlr_learners_classif.rpart", text = "classification tree")` on the `r ref("mlr_tasks_penguins", text = "Penguins data set")` and predict on left-out observations.
+
+
+```{r, echo = TRUE}
+library("mlr3verse")
+
+# retrieve the task
+task = tsk("penguins")
+
+# split into two partitions
+split = partition(task)
+
+# retrieve a learner
+learner = lrn("classif.rpart", keep_model = TRUE)
+
+# fit decision tree
+learner$train(task, split$train)
+
+# visualize decision tree
+autoplot(learner)
+
+# predict on left-out observations
+predictions = learner$predict(task, split$test)
+
+autoplot(predictions, type = "roc")
+```
+

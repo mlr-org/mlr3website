@@ -24,6 +24,8 @@ setnames(content, c("Key", "Label", "Task Type", "# rows", "# cols"))
 The mlr3 packages also ship with some data sets, readily usable as `r ref("Task")` objects.
 The goal of these tasks is to quickly demonstrate the capabilities of the packages.
 
+## Table
+
 ```{r, layout="l-page"}
 datatable(
   content,
@@ -33,3 +35,25 @@ datatable(
   rownames= FALSE)
 ```
 
+## Example Usage
+
+Create a classification task from the data set in the `r cran_pkg("palmerpenguins")` package.
+
+```{r, echo = TRUE}
+library("mlr3verse")
+
+data("penguins", package = "palmerpenguins")
+
+# create a task
+task = as_task_classif(penguins, target = "species")
+task
+
+# get the dimensions
+c(task$nrow, task$ncol)
+
+# check for missing values
+task$missings()
+
+# plot class frequencies
+autoplot(task)
+```
