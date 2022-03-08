@@ -44,6 +44,8 @@ library(data.table)
 package_grid = function(content) {
   div(class = "grid-container-package",
     pmap(content, function(category, name, status, url, text, on_cran, ...) {
+        has_homepage = grepl("mlr-org.com", url, ignore.case = TRUE)
+
         div(class = "grid-item-package",
           h3(
             a(href = url, name),
@@ -54,9 +56,11 @@ package_grid = function(content) {
           ),
           p(paste0(text, ".")),
           div(id = "bottom",
-            if (!startsWith(url, "https://github.com")) a(href = url, tags$i(class = "bi bi-house")),
-            a(href = sprintf("https://github.com/mlr-org/%s", name), tags$i(class = "bi bi-github")),
-            if (on_cran) a(href = sprintf("https://cran.r-project.org/package=%s", name), tags$i(class = "fab fa-r-project"))
+            if (has_homepage) a(href = url, tags$i(class = "bi bi-house", title = "Homepage")),
+            if (has_homepage) a(href = paste0(url, "reference/"), tags$i(class = "bi bi-question-circle", title = "Reference Manual")),
+            a(href = sprintf("https://github.com/mlr-org/%s", name), tags$i(class = "bi bi-github", title = "Github Project")),
+            if (on_cran) a(href = sprintf("https://cran.r-project.org/package=%s", name), tags$i(class = "fab fa-r-project", title = "CRAN Website"))
+
           )
         )
     })
