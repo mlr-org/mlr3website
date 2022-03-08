@@ -334,3 +334,71 @@ table.dataTable thead .sorting_desc:after {
 .table {
   width: 100%;
 }
+
+/*-- EXAMPLE GRID --*/
+.grid-container-application {
+  display: inline-grid;
+  grid-template-columns: repeat(1, 1fr);
+  column-gap: 10px;
+  row-gap: 10px;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+/* 3 columns on desktop */
+@media only screen and (min-width: 768px) {
+  .grid-container-application {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid-item-application {
+  border-top: #455a64 solid 5px;
+  box-shadow: 2px 2px #00000011;
+  border-radius: 0px 0px 10px 0px;
+  vertical-align: top;
+  max-width: 420px;
+  text-align: left;
+  position: relative;
+}
+
+/* Dark background on mouse over */
+.grid-item-application:hover {
+  background-color: #f1f1f1;
+}
+
+/* Square image */
+.grid-item-application-image {
+  position: relative;
+}
+
+.grid-item-application-image::after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+.grid-item-application-image img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Example text */
+.grid-item-application-text {
+  padding: 10px;
+}
+
+/* Example name */
+.grid-item-application-text h3 {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Remove link decoration */
+div.grid-item-application a {
+  border-bottom: 0px;
+  text-decoration: none;
+}

@@ -2456,6 +2456,74 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   /* Table full width */
   .table {
     width: 100%;
+  }
+
+  /*-- EXAMPLE GRID --*/
+  .grid-container-application {
+    display: inline-grid;
+    grid-template-columns: repeat(1, 1fr);
+    column-gap: 10px;
+    row-gap: 10px;
+    margin-bottom: 30px;
+    width: 100%;
+  }
+
+  /* 3 columns on desktop */
+  @media only screen and (min-width: 768px) {
+    .grid-container-application {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .grid-item-application {
+    border-top: #455a64 solid 5px;
+    box-shadow: 2px 2px #00000011;
+    border-radius: 0px 0px 10px 0px;
+    vertical-align: top;
+    max-width: 420px;
+    text-align: left;
+    position: relative;
+  }
+
+  /* Dark background on mouse over */
+  .grid-item-application:hover {
+    background-color: #f1f1f1;
+  }
+
+  /* Square image */
+  .grid-item-application-image {
+    position: relative;
+  }
+
+  .grid-item-application-image::after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+  }
+
+  .grid-item-application-image img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Example text */
+  .grid-item-application-text {
+    padding: 10px;
+  }
+
+  /* Example name */
+  .grid-item-application-text h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Remove link decoration */
+  div.grid-item-application a {
+    border-bottom: 0px;
+    text-decoration: none;
   }</style>
   <style type="text/css">
   /* base style */
@@ -2686,6 +2754,16 @@ Overview
 <a href="blog.html">Blog</a>
 <a href="book.html">Book</a>
 <a href="gallery.html">Gallery</a>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+About Us
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="team.html">Developer Team</a>
+</div>
+</div>
 <a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
 </div>
 </nav>
@@ -2706,8 +2784,8 @@ Overview
 <p>Resamplings split the observations multiple times into two sets: training and test. The former is used to fit the model, the latter is used to evaluate the predictions. The <a href="https://mlr3.mlr-org.com/reference/Resampling.html"><code>Resampling</code></a> objects provide an abstraction for this procedure while respecting stratification as well as grouping/blocking if this is required by the <a href="https://mlr3.mlr-org.com/reference/Task.html"><code>Task</code></a>.</p>
 <p>If only a single split is required (i.e., a holdout split), the <a href="https://mlr3.mlr-org.com/reference/partition.html"><code>partition()</code></a> function provides a single split into training and test set.</p>
 <div class="layout-chunk" data-layout="l-page">
-<div id="htmlwidget-6c0c3f2c98e890e46b27" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6c0c3f2c98e890e46b27">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_bootstrap.html\">bootstrap<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_custom.html\">custom<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_custom_cv.html\">custom_cv<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_cv.html\">cv<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_holdout.html\">holdout<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_insample.html\">insample<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_loo.html\">loo<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_repeated_cv.html\">repeated_cv<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_subsampling.html\">subsampling<\/a>"],["Bootstrap","Custom Splits","Custom Split Cross-Validation","Cross-Validation","Holdout","Insample Resampling","Leave-One-Out","Repeated Cross-Validation","Subsampling"],["ratio, repeats","","","folds","ratio","","","folds, repeats","ratio, repeats"],[30,null,null,10,1,1,null,100,30]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Parameters<\/th>\n      <th>Default Iterations<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[{"className":"dt-right","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d368a54ad4b81b6108fd" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d368a54ad4b81b6108fd">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_bootstrap.html\">bootstrap<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_custom.html\">custom<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_custom_cv.html\">custom_cv<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_cv.html\">cv<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_holdout.html\">holdout<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_insample.html\">insample<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_loo.html\">loo<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_repeated_cv.html\">repeated_cv<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_resamplings_subsampling.html\">subsampling<\/a>"],["Bootstrap","Custom Splits","Custom Split Cross-Validation","Cross-Validation","Holdout","Insample Resampling","Leave-One-Out","Repeated Cross-Validation","Subsampling"],["ratio, repeats","","","folds","ratio","","","folds, repeats","ratio, repeats"],[30,null,null,10,1,1,null,100,30]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Parameters<\/th>\n      <th>Default Iterations<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[{"className":"dt-right","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
