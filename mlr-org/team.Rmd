@@ -13,13 +13,13 @@ library(htmltools)
 library(data.table)
 
 team_grid = function(content) {
-  div(class = "grid-container-application",
+  div(class = "grid-container-team",
     pmap(content, function(name, image, url, text) {
-        div(class = "grid-item-application",
-          div(class = "grid-item-application-image",
+        div(class = "grid-item-team",
+          div(class = "grid-image-team",
             img(src = image)
           ),
-          div(class = "grid-item-application-text",
+          div(class = "grid-text-team",
             h3(
               a(href = url, name)
             ),
