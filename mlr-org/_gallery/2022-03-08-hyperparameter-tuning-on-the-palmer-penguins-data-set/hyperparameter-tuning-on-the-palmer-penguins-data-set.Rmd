@@ -10,6 +10,8 @@ bibliography: bibliography.bib
 output:
   distill::distill_article:
     self_contained: false
+params:
+  eval_all: FALSE
 ---
 
 ```{r setup, include=FALSE}
@@ -19,6 +21,7 @@ output:
 )
 
 library(mlr3website)
+set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 ```
@@ -83,7 +86,7 @@ learner
 
 The `tune()`
 
-```{r}
+```{r, eval=params$eval_all}
 instance = tune(
   method = "random_search",
   task = task,
@@ -92,6 +95,14 @@ instance = tune(
   term_evals = 15,
   batch_size = 5
 )
+```
+
+```{r, echo=FALSE, eval=params$eval_all}
+saveRDS(instance, "data/instance_1.rda")
+```
+
+```{r, echo=FALSE}
+instance = readRDS("data/instance_1.rda")
 ```
 
 ```{r}
