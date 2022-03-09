@@ -20,7 +20,7 @@ content = as.data.table(mlr_tuning_spaces, objects = TRUE)[, .(key, label, learn
 content[, learner := link_keys(learner, "mlr_learners")]
 
 # add links
-content[, collection := map(object, function(x) intersect(x$tags, c("default", "rbv2")))]
+content[, collection := map_chr(object, function(x) intersect(x$tags, c("default", "rbv2")))]
 content[, key := pmap_chr(list(key, collection), function(k, c) as.character(a(href = sprintf("https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_%s.html", c), k)))]
 
 content[, `:=`(object = NULL, collection = NULL)]

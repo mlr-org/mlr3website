@@ -28,9 +28,10 @@ resource_grid = function(content) {
           h3(
             tags$i(class = sprintf("bi-%s", icon)),
             HTML("&nbsp;"),
-            a(href = url, name)
+            name
           ),
-          paste0(text, ".")
+          paste0(text, "."),
+          a(href = url, span(class = "grid-package-link"))
         )
     })
   )
