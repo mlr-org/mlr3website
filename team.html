@@ -2313,6 +2313,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     margin-bottom: 30px;
   }
 
+  /* Make div a link */
+  .grid-package-link {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
   /* 3 columns on desktop */
   @media only screen and (min-width: 768px) {
     .grid-container-package {
@@ -2458,8 +2468,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     width: 100%;
   }
 
-  /*-- EXAMPLE GRID --*/
-  .grid-container-application {
+  /*-- TEAM GRID --*/
+  .grid-container-team {
     display: inline-grid;
     grid-template-columns: repeat(1, 1fr);
     column-gap: 10px;
@@ -2470,12 +2480,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   /* 3 columns on desktop */
   @media only screen and (min-width: 768px) {
-    .grid-container-application {
+    .grid-container-team {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  .grid-item-application {
+  .grid-item-team {
     border-top: #455a64 solid 5px;
     box-shadow: 2px 2px #00000011;
     border-radius: 0px 0px 10px 0px;
@@ -2486,44 +2496,106 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }
 
   /* Dark background on mouse over */
-  .grid-item-application:hover {
+  .grid-item-team:hover {
     background-color: #f1f1f1;
   }
 
   /* Square image */
-  .grid-item-application-image {
+  .grid-image-team {
     position: relative;
   }
 
-  .grid-item-application-image::after {
+  .grid-image-team::after {
     content: "";
     display: block;
     padding-bottom: 100%;
   }
 
-  .grid-item-application-image img {
+  .grid-image-team img {
     position: absolute;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  /* Example text */
-  .grid-item-application-text {
+  /* Team text */
+  .grid-text-team {
     padding: 10px;
   }
 
-  /* Example name */
-  .grid-item-application-text h3 {
+  /* Team name */
+  .grid-text-team h3 {
     margin-top: 0;
     display: flex;
     align-items: center;
   }
 
   /* Remove link decoration */
-  div.grid-item-application a {
+  div.grid-text-team a {
     border-bottom: 0px;
     text-decoration: none;
+  }
+
+  /*-- EXAMPLE GRID --*/
+  .grid-container-example {
+    display: inline-grid;
+    grid-template-columns: repeat(1, 1fr);
+    column-gap: 10px;
+    row-gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  /* Make div a link */
+  .grid-link-example{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  /* 3 columns on desktop */
+  @media only screen and (min-width: 768px) {
+    .grid-container-example {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .grid-item-example {
+    border-top: #455a64 solid 5px;
+    box-shadow: 2px 2px #00000011;
+    border-radius: 0px 0px 10px 0px;
+    vertical-align: top;
+    max-width: 420px;
+    text-align: left;
+    padding: 10px;
+    position: relative;
+  }
+
+  /* Dark background on mouse over */
+  .grid-item-example:hover {
+    background-color: #f1f1f1;
+  }
+
+  /* example name */
+  div.grid-item-example h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Space between text and icons */
+  .grid-item-example p {
+    margin-bottom: 1.5em;
+  }
+
+  .grid-item-example ul {
+    margin-top: 10px;
+  }
+
+  .grid-item-example li:not(:last-child) {
+    margin-bottom: 0;
   }</style>
   <style type="text/css">
   /* base style */
@@ -2772,56 +2844,56 @@ About Us
 
 <div class="d-article">
 <div class="layout-chunk" data-layout="l-body">
-<div class="grid-container-application">
-<div class="grid-item-application">
-<div class="grid-item-application-image">
+<div class="grid-container-team">
+<div class="grid-item-team">
+<div class="grid-image-team">
 <img src="images/team/bernd.jpg"/>
 </div>
-<div class="grid-item-application-text">
+<div class="grid-text-team">
 <h3>
 <a href="https://github.com/berndbischl/">Bernd Bischl</a>
 </h3>
 Professor of Statistical Learning and Data Science at the LMU Munich. I created mlr a long time ago at the beginning of my PhD. Nowadays, I mainly spent most of my time in project supervision, code reviews and helping to design new parts of the framework. I was part of the design process of nearly all parts of the new mlr3, but nearly all code has been written by the other developers.
 </div>
 </div>
-<div class="grid-item-application">
-<div class="grid-item-application-image">
+<div class="grid-item-team">
+<div class="grid-image-team">
 <img src="images/team/michel.png"/>
 </div>
-<div class="grid-item-application-text">
+<div class="grid-text-team">
 <h3>
 <a href="https://github.com/mllg/">Michel Lang</a>
 </h3>
 Postdoc at the TU Dortmund and one of the main developers of mlr. I've worked on many internal parts of mlr and started to implement support for survival analysis. Now main developer of mlr3.
 </div>
 </div>
-<div class="grid-item-application">
-<div class="grid-item-application-image">
+<div class="grid-item-team">
+<div class="grid-image-team">
 <img src="images/team/marc.jpg"/>
 </div>
-<div class="grid-item-application-text">
+<div class="grid-text-team">
 <h3>
 <a href="https://github.com/be-marc/">Marc Becker</a>
 </h3>
 Research engineer at the LMU Munich and main developer of the mlr3 optimization packages.
 </div>
 </div>
-<div class="grid-item-application">
-<div class="grid-item-application-image">
+<div class="grid-item-team">
+<div class="grid-image-team">
 <img src="images/team/raphael.png"/>
 </div>
-<div class="grid-item-application-text">
+<div class="grid-text-team">
 <h3>
 <a href="https://github.com/RaphaelS1/">Raphael Sonabend</a>
 </h3>
 Postdoc at Imperial College London. I am the main developer of mlr3proba and also maintain mlr3extralearners.
 </div>
 </div>
-<div class="grid-item-application">
-<div class="grid-item-application-image">
+<div class="grid-item-team">
+<div class="grid-image-team">
 <img src="images/team/patrick.jpg"/>
 </div>
-<div class="grid-item-application-text">
+<div class="grid-text-team">
 <h3>
 <a href="https://github.com/pat-s/">Patrick Schratz</a>
 </h3>

@@ -2313,6 +2313,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     margin-bottom: 30px;
   }
 
+  /* Make div a link */
+  .grid-package-link {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
   /* 3 columns on desktop */
   @media only screen and (min-width: 768px) {
     .grid-container-package {
@@ -2458,8 +2468,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     width: 100%;
   }
 
-  /*-- EXAMPLE GRID --*/
-  .grid-container-application {
+  /*-- TEAM GRID --*/
+  .grid-container-team {
     display: inline-grid;
     grid-template-columns: repeat(1, 1fr);
     column-gap: 10px;
@@ -2470,12 +2480,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   /* 3 columns on desktop */
   @media only screen and (min-width: 768px) {
-    .grid-container-application {
+    .grid-container-team {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  .grid-item-application {
+  .grid-item-team {
     border-top: #455a64 solid 5px;
     box-shadow: 2px 2px #00000011;
     border-radius: 0px 0px 10px 0px;
@@ -2486,44 +2496,106 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }
 
   /* Dark background on mouse over */
-  .grid-item-application:hover {
+  .grid-item-team:hover {
     background-color: #f1f1f1;
   }
 
   /* Square image */
-  .grid-item-application-image {
+  .grid-image-team {
     position: relative;
   }
 
-  .grid-item-application-image::after {
+  .grid-image-team::after {
     content: "";
     display: block;
     padding-bottom: 100%;
   }
 
-  .grid-item-application-image img {
+  .grid-image-team img {
     position: absolute;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  /* Example text */
-  .grid-item-application-text {
+  /* Team text */
+  .grid-text-team {
     padding: 10px;
   }
 
-  /* Example name */
-  .grid-item-application-text h3 {
+  /* Team name */
+  .grid-text-team h3 {
     margin-top: 0;
     display: flex;
     align-items: center;
   }
 
   /* Remove link decoration */
-  div.grid-item-application a {
+  div.grid-text-team a {
     border-bottom: 0px;
     text-decoration: none;
+  }
+
+  /*-- EXAMPLE GRID --*/
+  .grid-container-example {
+    display: inline-grid;
+    grid-template-columns: repeat(1, 1fr);
+    column-gap: 10px;
+    row-gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  /* Make div a link */
+  .grid-link-example{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  /* 3 columns on desktop */
+  @media only screen and (min-width: 768px) {
+    .grid-container-example {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .grid-item-example {
+    border-top: #455a64 solid 5px;
+    box-shadow: 2px 2px #00000011;
+    border-radius: 0px 0px 10px 0px;
+    vertical-align: top;
+    max-width: 420px;
+    text-align: left;
+    padding: 10px;
+    position: relative;
+  }
+
+  /* Dark background on mouse over */
+  .grid-item-example:hover {
+    background-color: #f1f1f1;
+  }
+
+  /* example name */
+  div.grid-item-example h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Space between text and icons */
+  .grid-item-example p {
+    margin-bottom: 1.5em;
+  }
+
+  .grid-item-example ul {
+    margin-top: 10px;
+  }
+
+  .grid-item-example li:not(:last-child) {
+    margin-bottom: 0;
   }</style>
   <style type="text/css">
   /* base style */
@@ -2783,8 +2855,8 @@ About Us
 <div class="d-article">
 <p>Feature selection wrappers can be found in the <a href="https://mlr3fselect.mlr-org.com">mlr3fselect</a> packages. The goal is to find the best subset of features w.r.t. a <a href="https://mlr3.mlr-org.com/reference/Measure.html"><code>performance measure</code></a> in an iterative fashion.</p>
 <div class="layout-chunk" data-layout="l-body-outset">
-<div id="htmlwidget-890800160290559848a3" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-890800160290559848a3">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_design_points.html\">design_points<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_exhaustive_search.html\">exhaustive_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_genetic_search.html\">genetic_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_random_search.html\">random_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_rfe.html\">rfe<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_sequential.html\">sequential<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_shadow_variable_search.html\">shadow_variable_search<\/a>"],["Design Points","Exhaustive Search","Genetic Search","Random Search","Recursive Feature Elimination","Sequential Search","Shadow Variable Search"],["<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>"],["single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit","single-crit<br/>multi-crit","single-crit","single-crit","single-crit"]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Packages<\/th>\n      <th>Properties<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-40eca10c93984749aa47" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-40eca10c93984749aa47">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_design_points.html\">design_points<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_exhaustive_search.html\">exhaustive_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_genetic_search.html\">genetic_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_random_search.html\">random_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_rfe.html\">rfe<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_sequential.html\">sequential<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_shadow_variable_search.html\">shadow_variable_search<\/a>"],["Design Points","Exhaustive Search","Genetic Search","Random Search","Recursive Feature Elimination","Sequential Search","Shadow Variable Search"],["<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>"],["single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit","single-crit<br/>multi-crit","single-crit","single-crit","single-crit"]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Packages<\/th>\n      <th>Properties<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
