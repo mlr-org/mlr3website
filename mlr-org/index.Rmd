@@ -74,31 +74,33 @@ library(mlr3misc)
 library(htmltools)
 library(data.table)
 
-resource_grid = function(content) {
-  div(class = "grid-container-application",
-    pmap(content, function(name, image, url, text) {
-        div(class = "grid-item-application",
-          div(class = "grid-item-application-image",
-            img(src = image)
+example_grid = function(content) {
+  div(class = "grid-container-example",
+    pmap(content, function(name, icon, url, text, objective) {
+        div(class = "grid-item-example",
+          h3(
+            tags$i(class = sprintf("bi-%s", icon)),
+            HTML("&nbsp;"),
+            name
           ),
-          div(class = "grid-item-application-text",
-            h3(
-              a(href = url, name)
-            ),
-            paste0(text, ".")
+          paste0(text, "."),
+          a(href = url, span(class = "grid-link-example")),
+          tags$ul(
+            map(objective, function(x) tags$li(x))
           )
         )
     })
   )
 }
 
+
 content = rowwise_table(
-  ~name,                    ~image,                 ~url,                                   ~text,
-  "Basic Machine Learning", "images/penguins.png",  "https://website.mlr-org.com/gallery/", "Basic machine learning on the Penguins data set",
-  "Hyperparameter Tuning",  "images/svm.png",       "https://website.mlr-org.com/gallery/", "Hyperparameter tuning on the Pima Indian Diabetes data set"
+  ~name,                    ~icon,      ~url,                                   ~text,                                                          ~objective,
+  "Basic Machine Learning", "pen",      "https://website.mlr-org.com/gallery/", "Basic machine learning on the Pima Indians Diabetes data set", list(list("Load a ML algorithm", "Create a task", "Perform resampling")),
+  "Hyperparameter Tuning",  "sliders",  "https://website.mlr-org.com/gallery/", "Hyperparameter tuning on the Palmer Penguins data set",        list(list("Create a tuning space", "Tune an XGBoost model", "Interpret the results"))
 )
 
-resource_grid(content)
+example_grid(content)
 ```
 
 ## Citing mlr3
