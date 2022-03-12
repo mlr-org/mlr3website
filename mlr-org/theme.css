@@ -190,6 +190,16 @@ a.btn i {
   margin-bottom: 30px;
 }
 
+/* Make div a link */
+.grid-package-link {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
 /* 3 columns on desktop */
 @media only screen and (min-width: 768px) {
   .grid-container-package {
@@ -333,4 +343,134 @@ table.dataTable thead .sorting_desc:after {
 /* Table full width */
 .table {
   width: 100%;
+}
+
+/*-- TEAM GRID --*/
+.grid-container-team {
+  display: inline-grid;
+  grid-template-columns: repeat(1, 1fr);
+  column-gap: 10px;
+  row-gap: 10px;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+/* 3 columns on desktop */
+@media only screen and (min-width: 768px) {
+  .grid-container-team {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid-item-team {
+  border-top: #455a64 solid 5px;
+  box-shadow: 2px 2px #00000011;
+  border-radius: 0px 0px 10px 0px;
+  vertical-align: top;
+  max-width: 420px;
+  text-align: left;
+  position: relative;
+}
+
+/* Dark background on mouse over */
+.grid-item-team:hover {
+  background-color: #f1f1f1;
+}
+
+/* Square image */
+.grid-image-team {
+  position: relative;
+}
+
+.grid-image-team::after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+.grid-image-team img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Team text */
+.grid-text-team {
+  padding: 10px;
+}
+
+/* Team name */
+.grid-text-team h3 {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Remove link decoration */
+div.grid-text-team a {
+  border-bottom: 0px;
+  text-decoration: none;
+}
+
+/*-- EXAMPLE GRID --*/
+.grid-container-example {
+  display: inline-grid;
+  grid-template-columns: repeat(1, 1fr);
+  column-gap: 10px;
+  row-gap: 10px;
+  margin-bottom: 30px;
+}
+
+/* Make div a link */
+.grid-link-example{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* 3 columns on desktop */
+@media only screen and (min-width: 768px) {
+  .grid-container-example {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid-item-example {
+  border-top: #455a64 solid 5px;
+  box-shadow: 2px 2px #00000011;
+  border-radius: 0px 0px 10px 0px;
+  vertical-align: top;
+  max-width: 420px;
+  text-align: left;
+  padding: 10px;
+  position: relative;
+}
+
+/* Dark background on mouse over */
+.grid-item-example:hover {
+  background-color: #f1f1f1;
+}
+
+/* example name */
+div.grid-item-example h3 {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Space between text and icons */
+.grid-item-example p {
+  margin-bottom: 1.5em;
+}
+
+.grid-item-example ul {
+  margin-top: 10px;
+}
+
+.grid-item-example li:not(:last-child) {
+  margin-bottom: 0;
 }
