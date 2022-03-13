@@ -36,3 +36,24 @@ datatable(
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
   rownames= FALSE)
 ```
+
+## Example Usage
+
+Fit a `r ref("mlr_learners_classif.ranger", text = "Random Forest")` on the `r ref("mlr_tasks_breast_cancer", text = "Wisconsin Breast Cancer Data Set")` using a `r ref("mlr_resamplings_cv", text = "3-fold cross validation")`.
+
+```{r, echo = TRUE}
+library("mlr3verse")
+
+# retrieve the task
+task = tsk("breast_cancer")
+
+# retrieve a learner
+learner = lrn("classif.ranger")
+
+# retrieve resampling strategy
+resampling = rsmp("cv", folds = 3)
+
+# perform resampling
+rr = resample(task, learner, resampling)
+rr
+```

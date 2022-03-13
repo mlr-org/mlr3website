@@ -15,6 +15,7 @@ library(mlr3misc)
 library(data.table)
 library(DT)
 requireNamespace("mlr3verse")
+lgr::get_logger("mlr3")$set_threshold("warn")
 
 content = as.data.table(mlr3::mlr_tasks)[, .(key, label, task_type, nrow, ncol)]
 content[, key := link_keys(key, prefix = "mlr_tasks")]
@@ -42,10 +43,8 @@ Create a classification task from the data set in the `r cran_pkg("palmerpenguin
 ```{r, echo = TRUE}
 library("mlr3verse")
 
-data("penguins", package = "palmerpenguins")
-
 # create a task
-task = as_task_classif(penguins, target = "species")
+task = tsk("breast_cancer")
 task
 
 # get the dimensions

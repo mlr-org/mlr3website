@@ -57,30 +57,35 @@ datatable(
 
 ## Example Usage
 
-Fit a `r ref("mlr_learners_classif.rpart", text = "classification tree")` on the `r ref("mlr_tasks_penguins", text = "Penguins data set")` and predict on left-out observations.
+Fit a `r ref("mlr_learners_classif.rpart", text = "classification tree")` on the `r ref("mlr_tasks_breast_cancer", text = "Wisconsin Breast Cancer Data Set")` and predict on left-out observations.
 
 
 ```{r, echo = TRUE}
 library("mlr3verse")
 
 # retrieve the task
-task = tsk("penguins")
+task = tsk("breast_cancer")
 
 # split into two partitions
 split = partition(task)
 
 # retrieve a learner
-learner = lrn("classif.rpart", keep_model = TRUE)
+learner = lrn("classif.rpart", keep_model = TRUE, predict_type = "prob")
 
 # fit decision tree
 learner$train(task, split$train)
 
-# visualize decision tree
-autoplot(learner)
+# access learned model
+learner$model
 
-# predict on left-out observations
+# predict on data frame with new data
+predictions = learner$predict_newdata(task$data(split$test))
+
+# predict on subset of the task
 predictions = learner$predict(task, split$test)
 
+# inspect predictions
+predictions
+predictions$score(msr("classif.auc"))
 autoplot(predictions, type = "roc")
 ```
-
