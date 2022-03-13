@@ -1,7 +1,7 @@
 ---
 title: "Hyperparameter Tuning on the Palmer Penguins Data Set"
 description: |
-  In this post, we tune the hyperparameters of a rpart classification tree on the Palmer Penguins data set with only a few lines of code.
+  In this post, we tune the hyperparameters of an rpart classification tree on the Palmer Penguins data set with only a few lines of code.
 author:
   - name: Marc Becker
 date: 2022-03-08
@@ -21,11 +21,11 @@ params:
 )
 
 library(mlr3website)
+library(htmltools)
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 ```
-
 
 ```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-002, layout="l-body-outset", fig.cap="", echo=FALSE}
 knitr::include_graphics("penguins.png")
@@ -33,16 +33,16 @@ knitr::include_graphics("penguins.png")
 
 <div class="l-body-outset">
 <div class="figure">
-<p class="caption">Artwork by [\@allison_horst](https://github.com/allisonhorst)</p>
+<p class="caption">Artwork by @horst_palmer_2022</p>
 </div>
 </div>
 
 # Scope
 
-In this post, we tune the hyperparameters of an `r cran_pkg("rpart")` classification tree on the Palmer Penguins Data Set with only a few lines of code.
+In this post, we tune the hyperparameters of an `r cran_pkg("rpart")` classification tree on the Palmer Penguins data set with only a few lines of code.
 
 First, we introduce tuning spaces and show the importance of transformation functions.
-Next, we execute the tuning and present the basic building blocks of tuning.
+Next, we execute the tuning and present the basic building blocks of tuning in mlr3.
 Finally, we fit a classification tree with optimized hyperparameters on the full data set.
 
 # Prerequistes
@@ -54,15 +54,15 @@ Among other packages it loads `r mlr_pkg("mlr3tuning")` which adds hyperparamete
 library(mlr3verse)
 ```
 
-In this example, we use the [Palmer Penguins Data Set](https://mlr3.mlr-org.com/reference/mlr_tasks_penguins.html) which classifies 344 penguins in three species.
-The data set was collected from 3 islands in the Palmer Archipelago in the Antarctica.
-It includes the name of the island, the size of the penguin (flipper length, body mass and bill dimension) and the sex.
+In this example, we use the [Palmer Penguins data set](https://mlr3.mlr-org.com/reference/mlr_tasks_penguins.html) which classifies 344 penguins in three species.
+The data set was collected from 3 islands in the Palmer Archipelago in Antarctica.
+It includes the name of the island, the size (flipper length, body mass and bill dimension) and the sex of the penguin.
 
 ```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-004}
 task = tsk("penguins_simple")
 ```
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-005, layout="l-body-outset", fig.cap="Flipper and bill length dimensions for Adelie, Chinstrap and Gentoo Penguins at Palmer Station.", echo=FALSE}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-005, layout="l-body-outset", fig.cap="Flipper and bill length dimensions for Adelie, Chinstrap and Gentoo Penguins at Palmer Station [@horst_palmer_2022].", echo=FALSE}
 library(palmerpenguins)
 library(ggplot2)
 
@@ -71,19 +71,14 @@ ggplot(data = penguins, aes(x = flipper_length_mm, y = bill_length_mm)) +
   geom_smooth(method = "lm", se = FALSE, aes(color = species)) +
   theme_minimal() +
   scale_color_manual(values = c("darkorange","purple","cyan4")) +
-  labs(x = "Flipper length (mm)",
-       y = "Bill length (mm)",
-       color = "Penguin species",
-       shape = "Penguin species") +
-  theme(legend.position = c(0.85, 0.15),
-        legend.background = element_rect(fill = "white", color = NA),
-        plot.title.position = "plot",
-        plot.caption = element_text(hjust = 0, face= "italic"),
-        plot.caption.position = "plot",
-        text = element_text(size = 10))
+  labs(x = "Flipper length (mm)", y = "Bill length (mm)",  color = "Penguin species", shape = "Penguin species") +
+  theme(
+    legend.position = c(0.85, 0.15),
+    legend.background = element_rect(fill = "white", color = NA),
+    text = element_text(size = 10))
 ```
 
-# Learner and Tuning Space
+# Learner
 
 We use the `r ref("mlr_learners_classif.rpart", "rpart classification tree")`.
 A learner stores all information about its hyperparameters in the slot `$param_set`.
@@ -100,8 +95,10 @@ learner = lrn("classif.rpart")
 table_responsive(as.data.table(learner$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
 ```
 
+# Tuning Space
+
 The package `r mlr_pkg("mlr3tuningspaces")` offers a collection of search spaces for hyperparameter tuning from peer-reviewed articles.
-We use the search space from the @bischl_hyperparameter_2021 article.
+We use the tuning space from the @bischl_hyperparameter_2021 article.
 
 ```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-008}
 lts("classif.rpart.default")
@@ -119,6 +116,18 @@ We can load the learner argumented with the tuning space in one go.
 learner = lts(lrn("classif.rpart"))
 ```
 
+## Transformations
+
+The column `logscale` indicate that the hyperparameters are tuned on the logarithmic scale.
+The tuning algorithm proposes hyperparameter values that are transformed with the exponential function before they are passed to the learner.
+For example, the `cp` parameter is bounded between 0 and 1.
+The tuning algorithm searches between `log(1e-04)` and `log(1e-01)` but the learner gets the transformed values between `1e-04` and `1e-01`.
+Using the log transformation emphasizes smaller `cp` values but also creates large values.
+
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-010}
+lts("classif.rpart.default")
+```
+
 # Tuning
 
 The `r ref("tune()")` function controls and executes the tuning.
@@ -129,7 +138,7 @@ Our three-dimensional grid consists of $5^3 = 125$ hyperparameter configurations
 The `resampling` strategy and performance `measure` specify how the performance of a model is evaluated.
 We choose a 3-fold cross-validation and use the `r ref("mlr_measures_classif.ce", "classifcation error")`.
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-010, eval=params$eval_all}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-011, eval=params$eval_all}
 instance = tune(
   method = "grid_search",
   task = task,
@@ -140,38 +149,38 @@ instance = tune(
 )
 ```
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-011, echo=FALSE, eval=params$eval_all}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-012, echo=FALSE, eval=params$eval_all}
 saveRDS(instance, "data/instance_1.rda")
 ```
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-012, echo=FALSE}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-013, echo=FALSE}
 instance = readRDS("data/instance_1.rda")
 ```
 
 The `r ref("tune()")` function returns a tuning instance which includes an archive with all evaluated hyperparameter configurations.
 We only show the first 10 configurations in the table.
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-013, eval=FALSE}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-014, eval=FALSE}
 as.data.table(instance$archive)
 ```
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-014, layout="l-body-outset", echo=FALSE}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-015, layout="l-body-outset", echo=FALSE}
 table_responsive(as.data.table(instance$archive, unnest = NULL, exclude_columns = c("x_domain", "timestamp", "resample_result", "uhash"))[1:10, ])
 ```
 
 The best configuration and the corresponding measured performance can be retrieved from the tuning instance.
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-015, eval=FALSE}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-016, eval=FALSE}
 instance$result
 ```
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-016}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-017}
 table_responsive(instance$result)
 ```
 
 The `$learner_param_vals` column contains the best hyperparameter setting on the learner scale.
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-017}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-018}
 instance$result$learner_param_vals
 ```
 
@@ -179,7 +188,7 @@ instance$result$learner_param_vals
 
 We add the optimized hyperparameters to the learner and train the learner on the full dataset.
 
-```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-018, eval=FALSE}
+```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-019, eval=FALSE}
 learner = lrn("classif.rpart")
 learner$param_set$values = instance$result_learner_param_vals
 learner$train(task)
