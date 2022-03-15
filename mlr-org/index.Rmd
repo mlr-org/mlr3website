@@ -96,7 +96,7 @@ example_grid = function(content) {
 
 content = rowwise_table(
   ~name,                    ~icon,      ~url,                                   ~text,                                                          ~objective,
-  "Basic Machine Learning", "pen",      "https://website.mlr-org.com/gallery/", "Basic machine learning on the Pima Indians Diabetes data set", list(list("Load a ML algorithm", "Create a task", "Perform resampling")),
+  "Basic Machine Learning", "pen",      "https://website.mlr-org.com/gallery/", "Basic machine learning on the Pima Indians Diabetes data set", list(list("Load an ML algorithm", "Create a task", "Perform resampling")),
   "Hyperparameter Tuning",  "sliders",  "https://website.mlr-org.com/gallery/", "Hyperparameter tuning on the Palmer Penguins data set",        list(list("Create a tuning space", "Tune an XGBoost model", "Interpret the results"))
 )
 
