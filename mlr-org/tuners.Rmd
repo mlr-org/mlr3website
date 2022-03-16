@@ -8,8 +8,6 @@ site: distill::distill_website
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-lgr::get_logger("mlr3")$set_threshold("warn")
-lgr::get_logger("bbotk")$set_threshold("warn")
 
 library(mlr3website)
 library(htmltools)
@@ -18,6 +16,8 @@ library(data.table)
 library(DT)
 library(mlr3tuning)
 library(mlr3hyperband)
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
 
 content = as.data.table(mlr_tuners, objects = TRUE)[, .(key, label, packages, properties, param_classes, object)]
 
@@ -54,7 +54,7 @@ datatable(
 
 ## Example Usage
 
-Tune the hyperparameters of an `r ref("mlr_learners_classif.rpart", text = "classification tree")` on the `r ref("mlr_tasks_penguins", text = "Palmer Penguins")` data set with `r ref("mlr_tuners_random_search", text = "random search")`.
+Tune the hyperparameters of a `r ref("mlr_learners_classif.rpart", text = "classification tree")` on the `r ref("mlr_tasks_penguins", text = "Palmer Penguins")` data set with `r ref("mlr_tuners_random_search", text = "random search")`.
 
 ```{r, echo=TRUE}
 library(mlr3verse)
