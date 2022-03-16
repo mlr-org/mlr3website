@@ -38,6 +38,9 @@ In a second step, features can be selected by either selecting a fixed absolute 
 The `r ref("mlr_pipeops_filter", text = "Filter PipeOp")` allows to use filters as a preprocessing step.
 
 
+
+## Table
+
 ```{r, layout="l-body-outset"}
 datatable(
   content,
@@ -45,4 +48,32 @@ datatable(
   escape = FALSE,
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
   rownames = FALSE)
+```
+
+
+## Example Usage
+
+Use the $-\log_10()$-transformed $p$-values of a Kruskal-Wallis rank sum test (implemented in `r ref("kruskal.test()")`) for filtering features of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` tasks.
+
+```{r, echo = TRUE}
+library("mlr3verse")
+
+# retrieve a task
+task = tsk("pima")
+
+# retrieve a filter
+filter = flt("kruskal_test")
+
+# calculate scores
+filter$calculate(task)
+
+# access scores
+filter$scores
+
+# plot scores
+autoplot(filter)
+
+# subset task to 3 most important features
+task$select(head(names(filter$scores), 3))
+task$feature_names
 ```
