@@ -2855,10 +2855,46 @@ About Us
 <div class="d-article">
 <p>Feature selection wrappers can be found in the <a href="https://mlr3fselect.mlr-org.com">mlr3fselect</a> packages. The goal is to find the best subset of features w.r.t. a <a href="https://mlr3.mlr-org.com/reference/Measure.html"><code>performance measure</code></a> in an iterative fashion.</p>
 <div class="layout-chunk" data-layout="l-body-outset">
-<div id="htmlwidget-b29add7a404bac461a64" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b29add7a404bac461a64">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_design_points.html\">design_points<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_exhaustive_search.html\">exhaustive_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_genetic_search.html\">genetic_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_random_search.html\">random_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_rfe.html\">rfe<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_sequential.html\">sequential<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_shadow_variable_search.html\">shadow_variable_search<\/a>"],["Design Points","Exhaustive Search","Genetic Search","Random Search","Recursive Feature Elimination","Sequential Search","Shadow Variable Search"],["<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>"],["single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit","single-crit<br/>multi-crit","single-crit","single-crit","single-crit"]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Packages<\/th>\n      <th>Properties<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-66318014e67e840efaab" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-66318014e67e840efaab">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_design_points.html\">design_points<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_exhaustive_search.html\">exhaustive_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_genetic_search.html\">genetic_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_random_search.html\">random_search<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_rfe.html\">rfe<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_sequential.html\">sequential<\/a>","<a href=\"https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_shadow_variable_search.html\">shadow_variable_search<\/a>"],["Design Points","Exhaustive Search","Genetic Search","Random Search","Recursive Feature Elimination","Sequential Search","Shadow Variable Search"],["<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>","<a href = \"https://mlr3fselect.mlr-org.com\">mlr3fselect<\/a>"],["single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit","single-crit<br/>multi-crit","single-crit","single-crit","single-crit"]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Packages<\/th>\n      <th>Properties<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<h2 id="example-usage">Example Usage</h2>
+<p>Run a <a href="https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_sequential.html"><code>sequential feature selection</code></a> on the <a href="https://mlr3.mlr-org.com/reference/mlr_tasks_pima.html"><code>Pima Indian Diabetes</code></a> data set.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3verse.mlr-org.com'>mlr3verse</a></span><span class='op'>)</span>
+
+<span class='co'># retrieve task</span>
+<span class='va'>task</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>tsk</a></span><span class='op'>(</span><span class='st'>"pima"</span><span class='op'>)</span>
+
+<span class='co'># load learner</span>
+<span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.rpart"</span><span class='op'>)</span>
+
+<span class='co'># feature selection on the pima indians diabetes data set</span>
+<span class='va'>instance</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/fselect.html'>fselect</a></span><span class='op'>(</span>
+  method <span class='op'>=</span> <span class='fu'><a href='https://mlr3fselect.mlr-org.com/reference/fs.html'>fs</a></span><span class='op'>(</span><span class='st'>"sequential"</span><span class='op'>)</span>,
+  task <span class='op'>=</span> <span class='va'>task</span>,
+  learner <span class='op'>=</span> <span class='va'>learner</span>,
+  resampling <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"holdout"</span><span class='op'>)</span>,
+  measure <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msr</a></span><span class='op'>(</span><span class='st'>"classif.ce"</span><span class='op'>)</span>
+<span class='op'>)</span>
+
+<span class='co'># best performing feature subset</span>
+<span class='va'>instance</span><span class='op'>$</span><span class='va'>result</span>
+</code></pre>
+</div>
+<pre><code>    age glucose insulin mass pedigree pregnant pressure triceps
+1: TRUE    TRUE    TRUE TRUE    FALSE     TRUE    FALSE   FALSE
+                            features classif.ce
+1: age,glucose,insulin,mass,pregnant   0.234375</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># subset the task and fit the final model</span>
+<span class='va'>task</span><span class='op'>$</span><span class='fu'>select</span><span class='op'>(</span><span class='va'>instance</span><span class='op'>$</span><span class='va'>result_feature_set</span><span class='op'>)</span>
+<span class='va'>learner</span><span class='op'>$</span><span class='fu'>train</span><span class='op'>(</span><span class='va'>task</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

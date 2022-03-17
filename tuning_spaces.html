@@ -85,6 +85,27 @@ code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
 
+<style>
+  div.csl-bib-body { }
+  div.csl-entry {
+    clear: both;
+    }
+  .hanging div.csl-entry {
+    margin-left:2em;
+    text-indent:-2em;
+  }
+  div.csl-left-margin {
+    min-width:2em;
+    float:left;
+  }
+  div.csl-right-inline {
+    margin-left:2em;
+    padding-left:1em;
+  }
+  div.csl-indent {
+    margin-left: 2em;
+  }
+</style>
 
   <!--radix_placeholder_meta_tags-->
   <title>mlr-org: Tuning Spaces</title>
@@ -113,10 +134,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <meta property="twitter:image:height" content="296"/>
 
   <!--/radix_placeholder_meta_tags-->
+  
+  <meta name="citation_reference" content="citation_title=Hyperparameter Optimization: Foundations, Algorithms, Best Practices and Open Challenges;citation_publication_date=2021;citation_author=Bernd Bischl;citation_author=Martin Binder;citation_author=Michel Lang;citation_author=Tobias Pielok;citation_author=Jakob Richter;citation_author=Stefan Coors;citation_author=Janek Thomas;citation_author=Theresa Ullmann;citation_author=Marc Becker;citation_author=Anne-Laure Boulesteix;citation_author=Difan Deng;citation_author=Marius Lindauer"/>
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","preview","site"]}},"value":[{"type":"character","attributes":{},"value":["Tuning Spaces"]},{"type":"character","attributes":{},"value":["Tuning Spaces of the mlr3 ecosystem.\n"]},{"type":"character","attributes":{},"value":["images/logo_color.png"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","preview","site","bibliography"]}},"value":[{"type":"character","attributes":{},"value":["Tuning Spaces"]},{"type":"character","attributes":{},"value":["Tuning Spaces of the mlr3 ecosystem.\n"]},{"type":"character","attributes":{},"value":["images/logo_color.png"]},{"type":"character","attributes":{},"value":["distill::distill_website"]},{"type":"character","attributes":{},"value":["bibliography.bib"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2855,10 +2878,54 @@ About Us
 <div class="d-article">
 <p>The package <a href="https://mlr3tuningspaces.mlr-org.com">mlr3tuningspaces</a> ships with some predefined tuning spaces for hyperparameter optimization. See the respective manual page for the article from which they were extracted.</p>
 <div class="layout-chunk" data-layout="l-body-outset">
-<div id="htmlwidget-5f7634d7124902099ab3" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5f7634d7124902099ab3">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.glmnet.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.glmnet.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.kknn.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.kknn.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.ranger.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.ranger.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.rpart.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.rpart.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.svm.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.svm.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.xgboost.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.xgboost.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.glmnet.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.glmnet.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.kknn.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.kknn.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.ranger.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.ranger.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.rpart.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.rpart.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.svm.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.svm.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.xgboost.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.xgboost.rbv2<\/a>"],["Default GLM with Elastic Net Regularization Classification","RandomBot GLM with Elastic Net Regularization Classification","Default k-Nearest-Neighbor Classification","RandomBot k-Nearest-Neighbor Classification","Default Ranger Classification","RandomBot Ranger Classification","Default Classification Tree","RandomBot Classification Tree","Default Support Vector Machine Classification","RandomBot Support Vector Machine Classification","Default Extreme Gradient Boosting Classification","RandomBot Extreme Gradient Boosting Classification","Default GLM with Elastic Net Regularization Regression","RandomBot GLM with Elastic Net Regularization Regression","Default k-Nearest-Neighbor Regression","RandomBot k-Nearest-Neighbor Regression","Default Ranger Regression","RandomBot Ranger Regression","Default Regression Tree","RandomBot Regression Tree","Default Support Vector Machine Regression","RandomBot Support Vector Machine Regression","Default Extreme Gradient Boosting Regression","RandomBot Extreme Gradient Boosting Regression"],["<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.glmnet.html\">classif.glmnet<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.glmnet.html\">classif.glmnet<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.kknn.html\">classif.kknn<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.kknn.html\">classif.kknn<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.ranger.html\">classif.ranger<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.ranger.html\">classif.ranger<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_learners_classif.rpart.html\">classif.rpart<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_learners_classif.rpart.html\">classif.rpart<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.svm.html\">classif.svm<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.svm.html\">classif.svm<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.xgboost.html\">classif.xgboost<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.xgboost.html\">classif.xgboost<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.glmnet.html\">regr.glmnet<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.glmnet.html\">regr.glmnet<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.kknn.html\">regr.kknn<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.kknn.html\">regr.kknn<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.ranger.html\">regr.ranger<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.ranger.html\">regr.ranger<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_learners_regr.rpart.html\">regr.rpart<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_learners_regr.rpart.html\">regr.rpart<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.svm.html\">regr.svm<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.svm.html\">regr.svm<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.xgboost.html\">regr.xgboost<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.xgboost.html\">regr.xgboost<\/a>"],[2,2,3,1,4,8,3,4,4,5,8,13,2,2,3,1,4,7,3,4,4,5,8,13]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Learner<\/th>\n      <th># hyperparameters<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[{"className":"dt-right","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-23cabd8b67eef641d94a" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-23cabd8b67eef641d94a">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.glmnet.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.glmnet.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.kknn.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.kknn.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.ranger.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.ranger.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.rpart.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.rpart.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.svm.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.svm.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">classif.xgboost.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">classif.xgboost.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.glmnet.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.glmnet.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.kknn.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.kknn.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.ranger.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.ranger.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.rpart.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.rpart.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.svm.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.svm.rbv2<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_default.html\">regr.xgboost.default<\/a>","<a href=\"https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_rbv2.html\">regr.xgboost.rbv2<\/a>"],["Default GLM with Elastic Net Regularization Classification","RandomBot GLM with Elastic Net Regularization Classification","Default k-Nearest-Neighbor Classification","RandomBot k-Nearest-Neighbor Classification","Default Ranger Classification","RandomBot Ranger Classification","Default Classification Tree","RandomBot Classification Tree","Default Support Vector Machine Classification","RandomBot Support Vector Machine Classification","Default Extreme Gradient Boosting Classification","RandomBot Extreme Gradient Boosting Classification","Default GLM with Elastic Net Regularization Regression","RandomBot GLM with Elastic Net Regularization Regression","Default k-Nearest-Neighbor Regression","RandomBot k-Nearest-Neighbor Regression","Default Ranger Regression","RandomBot Ranger Regression","Default Regression Tree","RandomBot Regression Tree","Default Support Vector Machine Regression","RandomBot Support Vector Machine Regression","Default Extreme Gradient Boosting Regression","RandomBot Extreme Gradient Boosting Regression"],["<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.glmnet.html\">classif.glmnet<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.glmnet.html\">classif.glmnet<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.kknn.html\">classif.kknn<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.kknn.html\">classif.kknn<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.ranger.html\">classif.ranger<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.ranger.html\">classif.ranger<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_learners_classif.rpart.html\">classif.rpart<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_learners_classif.rpart.html\">classif.rpart<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.svm.html\">classif.svm<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.svm.html\">classif.svm<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.xgboost.html\">classif.xgboost<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.xgboost.html\">classif.xgboost<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.glmnet.html\">regr.glmnet<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.glmnet.html\">regr.glmnet<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.kknn.html\">regr.kknn<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.kknn.html\">regr.kknn<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.ranger.html\">regr.ranger<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.ranger.html\">regr.ranger<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_learners_regr.rpart.html\">regr.rpart<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_learners_regr.rpart.html\">regr.rpart<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.svm.html\">regr.svm<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.svm.html\">regr.svm<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.xgboost.html\">regr.xgboost<\/a>","<a href=\"https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.xgboost.html\">regr.xgboost<\/a>"],[2,2,3,1,4,8,3,4,4,5,8,13,2,2,3,1,4,7,3,4,4,5,8,13]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Learner<\/th>\n      <th># hyperparameters<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[{"className":"dt-right","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<h2 id="example-usage">Example Usage</h2>
+<p>Load a tuning space for the <a href="https://mlr3.mlr-org.com/reference/mlr_learners_classif.rpart.html"><code>classification tree</code></a> learner from the <span class="citation" data-cites="bischl_hyperparameter_2021">Bischl et al. (<a href="#ref-bischl_hyperparameter_2021" role="doc-biblioref">2021</a>)</span> article.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3verse.mlr-org.com'>mlr3verse</a></span><span class='op'>)</span>
+
+<span class='co'># load learner and set search space</span>
+<span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuningspaces.mlr-org.com/reference/lts.html'>lts</a></span><span class='op'>(</span><span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.rpart"</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='co'># retrieve task</span>
+<span class='va'>task</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>tsk</a></span><span class='op'>(</span><span class='st'>"pima"</span><span class='op'>)</span>
+
+<span class='co'># load tuner and set batch size</span>
+<span class='va'>tuner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuning.mlr-org.com/reference/tnr.html'>tnr</a></span><span class='op'>(</span><span class='st'>"random_search"</span>, batch_size <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
+
+<span class='co'># hyperparameter tuning on the pima data set</span>
+<span class='va'>instance</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuning.mlr-org.com/reference/tune.html'>tune</a></span><span class='op'>(</span>
+  method <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuning.mlr-org.com/reference/tnr.html'>tnr</a></span><span class='op'>(</span><span class='st'>"grid_search"</span>, resolution <span class='op'>=</span> <span class='fl'>5</span>, batch_size <span class='op'>=</span> <span class='fl'>25</span><span class='op'>)</span>,
+  task <span class='op'>=</span> <span class='va'>task</span>,
+  learner <span class='op'>=</span> <span class='va'>learner</span>,
+  resampling <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"holdout"</span><span class='op'>)</span>,
+  measure <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msr</a></span><span class='op'>(</span><span class='st'>"classif.ce"</span><span class='op'>)</span>,
+<span class='op'>)</span>
+
+<span class='co'># best performing hyperparameter configuration</span>
+<span class='va'>instance</span><span class='op'>$</span><span class='va'>result</span>
+</code></pre>
+</div>
+<pre><code>    minsplit minbucket       cp learner_param_vals  x_domain
+1: 0.6931472   3.13079 -9.21034          &lt;list[4]&gt; &lt;list[3]&gt;
+   classif.ce
+1:  0.2421875</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># fit final model on complete data set</span>
+<span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>=</span> <span class='va'>instance</span><span class='op'>$</span><span class='va'>result_learner_param_vals</span>
+<span class='va'>learner</span><span class='op'>$</span><span class='fu'>train</span><span class='op'>(</span><span class='va'>task</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-bischl_hyperparameter_2021" class="csl-entry" role="doc-biblioentry">
+Bischl, Bernd, Martin Binder, Michel Lang, Tobias Pielok, Jakob Richter, Stefan Coors, Janek Thomas, et al. 2021. <span>“Hyperparameter <span>Optimization</span>: <span>Foundations</span>, <span>Algorithms</span>, <span>Best</span> <span>Practices</span> and <span>Open</span> <span>Challenges</span>.”</span> <em>arXiv:2107.05847 [Cs, Stat]</em>, July. <a href="http://arxiv.org/abs/2107.05847">http://arxiv.org/abs/2107.05847</a>.
+</div>
+</div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2870,7 +2937,10 @@ About Us
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
 <!--radix_placeholder_appendices-->
-<div class="appendix-bottom"></div>
+<div class="appendix-bottom">
+<h3 id="references">References</h3>
+<div id="references-listing"></div>
+</div>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
