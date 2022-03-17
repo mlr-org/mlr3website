@@ -95,28 +95,10 @@ example_grid = function(content) {
 
 
 content = rowwise_table(
-  ~name,                    ~icon,      ~url,                                   ~text,                                                          ~objective,
-  "Basic Machine Learning", "pen",      "https://website.mlr-org.com/gallery/", "Basic machine learning on the Pima Indians Diabetes data set", list(list("Load an ML algorithm", "Create a task", "Perform resampling")),
-  "Hyperparameter Tuning",  "sliders",  "https://website.mlr-org.com/gallery/", "Hyperparameter tuning on the Palmer Penguins data set",        list(list("Create a tuning space", "Tune an XGBoost model", "Interpret the results"))
+  ~name,                    ~icon,      ~url,                                                                                    ~text,                                                     ~objective,
+  "Basic Machine Learning", "pen",      "gallery/2020-03-18-iris-mlr3-basics/index.html",                                       "Basic machine learning",                                   list(list("Learner", "Task", "Resampling")),
+  "Hyperparameter Tuning",  "sliders",  "gallery/2021-03-09-practical-tuning-series-tune-a-support-vector-machine/index.html",  "Hyperparameter tuning of a support vector machine",        list(list("Tuning space", "Tuning", "Nested Resampling"))
 )
 
 example_grid(content)
 ```
-
-## Citing mlr3
-
-If you use `mlr3`, please cite our JOSS article:
-
-<div class="citation">
-```
-@Article{mlr3,
-  title = {{mlr3}: A modern object-oriented machine learning framework in {R}},
-  author = {Michel Lang and Martin Binder and Jakob Richter and Patrick Schratz and Florian Pfisterer and Stefan Coors and Quay Au and Giuseppe Casalicchio and Lars Kotthoff and Bernd Bischl},
-  journal = {Journal of Open Source Software},
-  year = {2019},
-  month = {dec},
-  doi = {10.21105/joss.01903},
-  url = {https://joss.theoj.org/papers/10.21105/joss.01903},
-}
-```
-</div>
