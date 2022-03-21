@@ -41,9 +41,12 @@ content = rowwise_table(
     ~category,    ~name,               ~icon,       ~url,                                                    ~text,
     "general",    "Book",              "book",            "https://mlr3book.mlr-org.com/",                         "Central entry point to the mlr3verse",
     "general",    "Gallery",           "image",           "https://mlr3gallery.mlr-org.com/",                      "Collection of case studies and demos",
-    "general",    "Reference Manuals", "question-circle", "packages.html",                                         "Reference manuals (via package overview)",
+    "general",    "Reference",         "question-circle", "packages.html",                                         "Reference manuals (via package overview)",
     "general",    "R6 Introduction",   "dice-6",          "https://r6.r-lib.org/articles/Introduction.html",       "Introduction to R6 classes",
     "general",    "Future Package",    "stack",           "https://futureverse.org/",                              "Homepage of the parallelization framework 'future'",
+
+    "faq",        "FAQ",               "question-square", "https://github.com/mlr-org/mlr3/wiki/FAQ",              "Frequently Asked Questions",
+    "faq",        "Stackoverflow",     "stack-overflow",  "https://stackoverflow.com/questions/tagged/mlr3",       "Questions on StackOverflow tagged with [mlr3]",
 
     "cheatsheet", "mlr3",              "file-pdf",        "https://cheatsheets.mlr-org.com/mlr3.pdf",              "Core package cheat sheet",
     "cheatsheet", "mlr3tuning",        "file-pdf",        "https://cheatsheets.mlr-org.com/mlr3tuning.pdf",        "Tuning cheat sheet",
@@ -68,6 +71,14 @@ Entry points to learn about mlr3.
 
 ```{r, echo = FALSE}
 resource_grid(content[.("general")])
+```
+
+## FAQ
+
+Entry points to learn about mlr3.
+
+```{r, echo = FALSE}
+resource_grid(content[.("faq")])
 ```
 
 
