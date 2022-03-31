@@ -117,7 +117,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["introducing-mlr3cluster-cluster-analysis-package_files/anchor-4.2.2/anchor.min.js","introducing-mlr3cluster-cluster-analysis-package_files/bowser-1.9.3/bowser.min.js","introducing-mlr3cluster-cluster-analysis-package_files/distill-2.2.21/template.v2.js","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-7-1.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-7-2.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-7-3.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-7-4.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-8-1.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-9-1.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-9-2.png","introducing-mlr3cluster-cluster-analysis-package_files/header-attrs-2.11/header-attrs.js","introducing-mlr3cluster-cluster-analysis-package_files/jquery-3.6.0/jquery-3.6.0.js","introducing-mlr3cluster-cluster-analysis-package_files/jquery-3.6.0/jquery-3.6.0.min.js","introducing-mlr3cluster-cluster-analysis-package_files/jquery-3.6.0/jquery-3.6.0.min.map","introducing-mlr3cluster-cluster-analysis-package_files/popper-2.6.0/popper.min.js","introducing-mlr3cluster-cluster-analysis-package_files/tippy-6.2.7/tippy-bundle.umd.min.js","introducing-mlr3cluster-cluster-analysis-package_files/tippy-6.2.7/tippy-light-border.css","introducing-mlr3cluster-cluster-analysis-package_files/tippy-6.2.7/tippy.css","introducing-mlr3cluster-cluster-analysis-package_files/tippy-6.2.7/tippy.umd.min.js","introducing-mlr3cluster-cluster-analysis-package_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["introducing-mlr3cluster-cluster-analysis-package_files/anchor-4.2.2/anchor.min.js","introducing-mlr3cluster-cluster-analysis-package_files/bowser-1.9.3/bowser.min.js","introducing-mlr3cluster-cluster-analysis-package_files/distill-2.2.21/template.v2.js","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-7-1.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-7-2.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-7-3.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-7-4.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-8-1.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-9-1.png","introducing-mlr3cluster-cluster-analysis-package_files/figure-html5/unnamed-chunk-9-2.png","introducing-mlr3cluster-cluster-analysis-package_files/header-attrs-2.11/header-attrs.js","introducing-mlr3cluster-cluster-analysis-package_files/header-attrs-2.13/header-attrs.js","introducing-mlr3cluster-cluster-analysis-package_files/jquery-3.6.0/jquery-3.6.0.js","introducing-mlr3cluster-cluster-analysis-package_files/jquery-3.6.0/jquery-3.6.0.min.js","introducing-mlr3cluster-cluster-analysis-package_files/jquery-3.6.0/jquery-3.6.0.min.map","introducing-mlr3cluster-cluster-analysis-package_files/popper-2.6.0/popper.min.js","introducing-mlr3cluster-cluster-analysis-package_files/tippy-6.2.7/tippy-bundle.umd.min.js","introducing-mlr3cluster-cluster-analysis-package_files/tippy-6.2.7/tippy-light-border.css","introducing-mlr3cluster-cluster-analysis-package_files/tippy-6.2.7/tippy.css","introducing-mlr3cluster-cluster-analysis-package_files/tippy-6.2.7/tippy.umd.min.js","introducing-mlr3cluster-cluster-analysis-package_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1438,7 +1438,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="introducing-mlr3cluster-cluster-analysis-package_files/header-attrs-2.11/header-attrs.js"></script>
+  <script src="introducing-mlr3cluster-cluster-analysis-package_files/header-attrs-2.13/header-attrs.js"></script>
   <script src="introducing-mlr3cluster-cluster-analysis-package_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="introducing-mlr3cluster-cluster-analysis-package_files/popper-2.6.0/popper.min.js"></script>
   <link href="introducing-mlr3cluster-cluster-analysis-package_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1663,12 +1663,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 <pre><code>&lt;ParamSet&gt;
-          id    class lower upper nlevels       default value
-1:   centers ParamUty    NA    NA     Inf             2     2
-2:  iter.max ParamInt     1   Inf     Inf            10      
-3: algorithm ParamFct    NA    NA       4 Hartigan-Wong      
-4:    nstart ParamInt     1   Inf     Inf             1      
-5:     trace ParamInt     0   Inf     Inf             0      </code></pre>
+          id    class lower upper nlevels       default  value
+      &lt;char&gt;   &lt;char&gt; &lt;num&gt; &lt;num&gt;   &lt;num&gt;        &lt;list&gt; &lt;list&gt;
+1:   centers ParamUty    NA    NA     Inf             2      2
+2:  iter.max ParamInt     1   Inf     Inf            10       
+3: algorithm ParamFct    NA    NA       4 Hartigan-Wong       
+4:    nstart ParamInt     1   Inf     Inf             1       
+5:     trace ParamInt     0   Inf     Inf             0       </code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>centers <span class='op'>=</span> <span class='fl'>3L</span>, algorithm <span class='op'>=</span> <span class='st'>"Lloyd"</span>, iter.max <span class='op'>=</span> <span class='fl'>100L</span><span class='op'>)</span>
 </code></pre>
@@ -1693,13 +1694,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <pre><code>&lt;PredictionClust&gt; for 10 observations:
     row_ids partition
-          1         2
-          4         1
-          6         2
+         11         1
+         17         1
+         20         2
 ---                  
-         38         1
-         47         1
-         48         1</code></pre>
+         39         1
+         45         1
+         49         1</code></pre>
 </div>
 <h2 id="benchmarking-and-evaluation">Benchmarking and Evaluation</h2>
 <p>To assess the quality of any machine learning experiment, you need to choose an evaluation metric that makes the most sense. Let’s design an experiment that will allow you to compare the performance of three different clusteres on the same task. The mlr3 library provides benchmarking functionality that lets you create such experiments.</p>
@@ -1717,19 +1718,20 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 <pre><code>              task                  learner              resampling
-1: &lt;TaskClust[45]&gt; &lt;LearnerClustKMeans[37]&gt; &lt;ResamplingHoldout[19]&gt;
-2: &lt;TaskClust[45]&gt;    &lt;LearnerClustPAM[37]&gt; &lt;ResamplingHoldout[19]&gt;
-3: &lt;TaskClust[45]&gt; &lt;LearnerClustCMeans[37]&gt; &lt;ResamplingHoldout[19]&gt;</code></pre>
+            &lt;list&gt;                   &lt;list&gt;                  &lt;list&gt;
+1: &lt;TaskClust[46]&gt; &lt;LearnerClustKMeans[38]&gt; &lt;ResamplingHoldout[20]&gt;
+2: &lt;TaskClust[46]&gt;    &lt;LearnerClustPAM[38]&gt; &lt;ResamplingHoldout[20]&gt;
+3: &lt;TaskClust[46]&gt; &lt;LearnerClustCMeans[38]&gt; &lt;ResamplingHoldout[20]&gt;</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'># execute benchmark</span>
 <span class='va'>bmr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/benchmark.html'>benchmark</a></span><span class='op'>(</span><span class='va'>design</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>INFO  [20:59:47.643] [mlr3] Running benchmark with 3 resampling iterations 
-INFO  [20:59:47.757] [mlr3] Applying learner &#39;clust.pam&#39; on task &#39;usarrests&#39; (iter 1/1) 
-INFO  [20:59:47.950] [mlr3] Applying learner &#39;clust.kmeans&#39; on task &#39;usarrests&#39; (iter 1/1) 
-INFO  [20:59:47.965] [mlr3] Applying learner &#39;clust.cmeans&#39; on task &#39;usarrests&#39; (iter 1/1) 
-INFO  [20:59:48.016] [mlr3] Finished benchmark </code></pre>
+<pre><code>INFO  [00:29:21.189] [mlr3] Running benchmark with 3 resampling iterations 
+INFO  [00:29:21.276] [mlr3] Applying learner &#39;clust.cmeans&#39; on task &#39;usarrests&#39; (iter 1/1) 
+INFO  [00:29:21.405] [mlr3] Applying learner &#39;clust.pam&#39; on task &#39;usarrests&#39; (iter 1/1) 
+INFO  [00:29:21.417] [mlr3] Applying learner &#39;clust.kmeans&#39; on task &#39;usarrests&#39; (iter 1/1) 
+INFO  [00:29:21.431] [mlr3] Finished benchmark </code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'># define measure</span>
 <span class='va'>measures</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msr</a></span><span class='op'>(</span><span class='st'>"clust.silhouette"</span><span class='op'>)</span><span class='op'>)</span>
@@ -1737,14 +1739,16 @@ INFO  [20:59:48.016] [mlr3] Finished benchmark </code></pre>
 <span class='va'>bmr</span><span class='op'>$</span><span class='fu'>aggregate</span><span class='op'>(</span><span class='va'>measures</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>   nr      resample_result   task_id   learner_id resampling_id iters
-1:  1 &lt;ResampleResult[22]&gt; usarrests clust.kmeans       holdout     1
-2:  2 &lt;ResampleResult[22]&gt; usarrests    clust.pam       holdout     1
-3:  3 &lt;ResampleResult[22]&gt; usarrests clust.cmeans       holdout     1
-   clust.silhouette
-1:        0.3638224
-2:        0.5577741
-3:        0.3638224</code></pre>
+<pre><code>      nr      resample_result   task_id   learner_id resampling_id
+   &lt;int&gt;               &lt;list&gt;    &lt;char&gt;       &lt;char&gt;        &lt;char&gt;
+1:     1 &lt;ResampleResult[22]&gt; usarrests clust.kmeans       holdout
+2:     2 &lt;ResampleResult[22]&gt; usarrests    clust.pam       holdout
+3:     3 &lt;ResampleResult[22]&gt; usarrests clust.cmeans       holdout
+   iters clust.silhouette
+   &lt;int&gt;            &lt;num&gt;
+1:     1        0.5682744
+2:     1        0.5682744
+3:     1        0.5682744</code></pre>
 </div>
 <h2 id="visualization">Visualization</h2>
 <p>How do you visualize clustering tasks and results? The <code>mlr3viz</code> package (version &gt;= 0.40) now provides that functionality.</p>

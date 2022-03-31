@@ -3,25 +3,19 @@ title: "2017-03-13-First_release_of_mlrMBO_the_toolbox_for_Bayesian_Black_Box_Op
 description: |
   A short description of the post.
 author:
-  - name: jakob-richter
+  - name: Jakob Richter
     url: {}
-date: 2022-03-29
+date: 2017-03-13
 output:
   distill::distill_article:
     self_contained: false
 ---
 
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(collapse = TRUE)
 ```
 
-Distill is a publication format for scientific and technical writing, native to the web.
-
-Learn more about using Distill at <https://rstudio.github.io/distill>.
-
-
-age=mlrMBO) after a quite long development time.
+We are happy to finally announce the first release of [**mlrMBO** on cran](https://cran.r-project.org/package=mlrMBO) after a quite long development time.
 For the theoretical background and a nearly complete overview of mlrMBOs capabilities you can check our [paper on **mlrMBO** that we presubmitted to arxiv](https://arxiv.org/abs/1703.03373).
 
 The key features of **mlrMBO** are:
@@ -48,7 +42,7 @@ set.seed(1)
 library(mlrMBO)
 fun = makeSingleObjectiveFunction(
   name = "SineMixture",
-  fn = function(x) sin(x[1])*cos(x[2])/2 + 0.04 * sum(x^2),
+  fn = function(x) sin(x[1]) * cos(x[2]) / 2 + 0.04 * sum(x^2),
   par.set = makeNumericParamSet(id = "x", len = 2, lower = -5, upper = 5)
 )
 ```
@@ -66,7 +60,7 @@ Let's start with the configuration of the optimization:
 ```{r makeMBOControl}
 # In this simple example we construct the control object with the defaults:
 ctrl = makeMBOControl()
-# For this numeric optimization we are going to use the Expected 
+# For this numeric optimization we are going to use the Expected
 # Improvement as infill criterion:
 ctrl = setMBOControlInfill(ctrl, crit = crit.ei)
 # We will allow for exactly 25 evaluations of the objective function:
@@ -78,7 +72,7 @@ The optimization has to so start with an initial design.
 
 ```{r design}
 library(ggplot2)
-des = generateDesign(n = 8L, par.set = getParamSet(fun), 
+des = generateDesign(n = 8L, par.set = getParamSet(fun),
   fun = lhs::randomLHS)
 autoplot(fun, render.levels = TRUE) + geom_point(data = des)
 ```
@@ -89,7 +83,7 @@ Therefore we use an *mlr* regression learner.
 In fact, with *mlrMBO* you can use any regression learner integrated in *mlr* as a surrogate allowing for many special optimization applications.
 
 ```{r surrogate}
-sur.lrn = makeLearner("regr.km", predict.type = "se", 
+sur.lrn = makeLearner("regr.km", predict.type = "se",
   config = list(show.learner.output = FALSE))
 ```
 
@@ -99,7 +93,7 @@ For a purely numeric domain it would have chosen *Kriging* as well with some sli
 Finally, we can start the optimization run:
 
 ```{r mboRun}
-res = mbo(fun = fun, design = des, learner = sur.lrn, control = ctrl, 
+res = mbo(fun = fun, design = des, learner = sur.lrn, control = ctrl,
   show.info = TRUE)
 res$x
 res$y
@@ -111,7 +105,7 @@ Therefore we can use the `OptPath` which stores all information about all evalua
 
 ```{r mboPoints}
 opdf = as.data.frame(res$opt.path)
-autoplot(fun, render.levels = TRUE, render.contours = FALSE) + 
+autoplot(fun, render.levels = TRUE, render.contours = FALSE) +
   geom_text(data = opdf, aes(label = dob))
 ```
 
@@ -131,8 +125,8 @@ In reality the grid is usually so sparse that it leaves important areas untouche
 ```{r gridSeach}
 grid.des = generateGridDesign(par.set = getParamSet(fun), resolution = 5)
 grid.des$y = apply(grid.des, 1, fun)
-grid.des[which.min(grid.des$y),]
-autoplot(fun, render.levels = TRUE, render.contours = FALSE) + 
+grid.des[which.min(grid.des$y), ]
+autoplot(fun, render.levels = TRUE, render.contours = FALSE) +
   geom_point(data = grid.des)
 ```
 
@@ -143,8 +137,8 @@ It is no surprise, that the grid search could not cover the search space well en
 ```{r randomSearch}
 random.des = generateRandomDesign(par.set = getParamSet(fun), n = 25L)
 random.des$y = apply(random.des, 1, fun)
-random.des[which.min(random.des$y),]
-autoplot(fun, render.levels = TRUE, render.contours = FALSE) + 
+random.des[which.min(random.des$y), ]
+autoplot(fun, render.levels = TRUE, render.contours = FALSE) +
   geom_point(data = random.des)
 ```
 
@@ -162,7 +156,3 @@ The examples here are just meant to demonstrate the package.
 
 If you want to contribute to [**mlrMBO**](https://github.com/mlr-org/mlrMBO) we ware always open to suggestions and pull requests on github.
 You are also invited to fork the repository and build and extend your own optimizer based on our toolbox.
-
-
-
-

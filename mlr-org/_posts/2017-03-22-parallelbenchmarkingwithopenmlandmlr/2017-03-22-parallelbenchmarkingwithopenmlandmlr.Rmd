@@ -1,14 +1,14 @@
 ---
-title: "2017-03-22-Parallel_benchmarking_with_OpenML_and_mlr"
-description: |
-  A short description of the post.
-author:
-  - name: "jakob Richter"
-    url: {}
-date: 2022-03-29
+title: "Parallel benchmarking with OpenML and mlr"
+authors: ["Heidi Seibold"]
+date: 2017-03-22
+categories: ["R"]
+draft: true
+tags: ["OpenML", "benchmark", "parallelization", "rstats"]
 output:
   distill::distill_article:
     self_contained: false
+description: "Tutorial on parallel benchmarking with OpenML and mlr"
 ---
 
 ```{r setup, include=FALSE}
@@ -57,7 +57,7 @@ unlink("parallel_benchmarking_blogpost", recursive = TRUE)
 ## create the experiment registry
 reg = makeExperimentRegistry(
   file.dir = "parallel_benchmarking_blogpost",
-  packages= c("mlr", "OpenML", "party"),
+  packages = c("mlr", "OpenML", "party"),
   seed = 123)
 names(reg)
 reg$cluster.functions
@@ -93,7 +93,7 @@ As an example here, we will look at the _ctree_ algorithm from the [_party_](htt
 
 ```{r}
 ## add the problem, in our case the tasks from OpenML
-for(task in tasks) {
+for (task in tasks) {
   addProblem(name = paste("omltask", task$task.id, sep = "_"), data = task)
 }
 

@@ -85,7 +85,7 @@ Here is one example how you can use the default search spaces for an easy benchm
 set.seed(3)
 ```
 
-```{r benchmark, message=FALSE, warning=FALSE, eval}
+```{r benchmark, message=FALSE, warning=FALSE, eval = FALSE}
 lrns = c("classif.xgboost", "classif.nnet")
 lrns = makeLearners(lrns)
 tsk = pid.task

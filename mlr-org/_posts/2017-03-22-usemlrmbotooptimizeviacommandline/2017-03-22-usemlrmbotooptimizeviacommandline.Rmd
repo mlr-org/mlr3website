@@ -1,27 +1,20 @@
 ---
-title: "2017-03-22-Use_mlrMBO_to_optimize_via_command_line"
-description: |
-  A short description of the post.
-author:
-  - name: jakob-richter
-    url: {}
-date: 2022-03-29
+title: "Use mlrMBO to optimize via command line"
+authors: ["Jakob Richter"]
+date: 2017-03-22
+categories: ["R", "r-bloggers"]
+tags: ["mlrMBO", "command-line", "rstats"]
 output:
   distill::distill_article:
     self_contained: false
+description: "Tutorial on using mlr3MBO from the command line"
 ---
 
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(collapse = TRUE)
 ```
 
-Distill is a publication format for scientific and technical writing, native to the web.
-
-Learn more about using Distill at <https://rstudio.github.io/distill>.
-
-
-is not implemented in **R** but runs on the command line as a shell script or an executable.
+Many people who want to apply Bayesian optimization want to use it to optimize an algorithm that is not implemented in **R** but runs on the command line as a shell script or an executable.
 
 We recently published [**mlrMBO**](https://mlrMBO.mlr-org.com/) on CRAN.
 As a normal package it normally operates inside of R, but with this post I want to demonstrate how **mlrMBO** can be used to optimize an external application.
@@ -117,7 +110,6 @@ fn = makeSingleObjectiveFunction(
   par.set = par.set,
   has.simple.signature = FALSE
 )
-
 # let's see if the function is working
 des = generateGridDesign(par.set, resolution = 3)
 des$y = apply(des, 1, fn)

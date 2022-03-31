@@ -1,6 +1,6 @@
 ---
 title: "Multilabel Classification with mlr"
-authors: ["quay-au"]
+authors: ["Quay-au"]
 date: 2017-03-28
 categories: ["R"]
 tags: ["classification", "multilabel", "rstats"]
@@ -91,7 +91,7 @@ listMeasures("multilabel")
 Here is how the classifier chains method performed:
 
 ```{r}
-performance(scene.pred.cc, measures = list(multilabel.hamloss, 
+performance(scene.pred.cc, measures = list(multilabel.hamloss,
   multilabel.subset01, multilabel.f1, multilabel.acc))
 ```
 
@@ -105,7 +105,7 @@ lrnbr = makeMultilabelBinaryRelevanceWrapper(binary.learner)
 scene.mod.br = train(lrnbr, scene.task, subset = train.set)
 scene.pred.br = predict(scene.mod.br, task = scene.task, subset = test.set)
 
-performance(scene.pred.br, measures = list(multilabel.hamloss, 
+performance(scene.pred.br, measures = list(multilabel.hamloss,
   multilabel.subset01, multilabel.f1, multilabel.acc))
 ```
 
