@@ -20,28 +20,26 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -50,9 +48,9 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  {  }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+a.sourceLine::before { text-decoration: underline; }
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
@@ -97,7 +95,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--  https://schema.org/Article -->
 <meta property="article:published" itemprop="datePublished" content="2015-07-28"/>
 <meta property="article:created" itemprop="dateCreated" content="2015-07-28"/>
-<meta name="article:author" content="jakob-richter"/>
+<meta name="article:author" content="Jakob Richter"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
 <meta property="og:title" content="mlr-org: Visualization of predictions"/>
@@ -124,17 +122,17 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <meta name="citation_fulltext_html_url" content="https://mlr-org.github.io/mlr-org-website/posts/2015-07-28-visualisation-of-predictions/"/>
 <meta name="citation_online_date" content="2015/07/28"/>
 <meta name="citation_publication_date" content="2015/07/28"/>
-<meta name="citation_author" content="jakob-richter"/>
+<meta name="citation_author" content="Jakob Richter"/>
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","authors","date","categories","tags","output","author","citation_url","canonical_url"]}},"value":[{"type":"character","attributes":{},"value":["Visualization of predictions"]},{"type":"character","attributes":{},"value":["Tutorial on the visualization of predictions using mlr."]},{"type":"character","attributes":{},"value":["jakob-richter"]},{"type":"character","attributes":{},"value":["2015-07-28"]},{"type":"character","attributes":{},"value":["R","r-bloggers"]},{"type":"character","attributes":{},"value":["visualization","prediction","rstats"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["jakob-richter"]}]}]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/posts/2015-07-28-visualisation-of-predictions/"]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/posts/2015-07-28-visualisation-of-predictions/"]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","authors","date","categories","tags","output","author","citation_url","canonical_url"]}},"value":[{"type":"character","attributes":{},"value":["Visualization of predictions"]},{"type":"character","attributes":{},"value":["Tutorial on the visualization of predictions using mlr."]},{"type":"character","attributes":{},"value":["Jakob Richter"]},{"type":"character","attributes":{},"value":["2015-07-28"]},{"type":"character","attributes":{},"value":["R","r-bloggers"]},{"type":"character","attributes":{},"value":["visualization","prediction","rstats"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Jakob Richter"]}]}]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/posts/2015-07-28-visualisation-of-predictions/"]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/posts/2015-07-28-visualisation-of-predictions/"]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["2015-07-28-visualisation-of-predictions_files/anchor-4.2.2/anchor.min.js","2015-07-28-visualisation-of-predictions_files/bowser-1.9.3/bowser.min.js","2015-07-28-visualisation-of-predictions_files/distill-2.2.21/template.v2.js","2015-07-28-visualisation-of-predictions_files/figure-html5/knn-1.png","2015-07-28-visualisation-of-predictions_files/figure-html5/linear-svm-1.png","2015-07-28-visualisation-of-predictions_files/figure-html5/polynomial-radial-svm-1.png","2015-07-28-visualisation-of-predictions_files/figure-html5/polynomial-radial-svm-2.png","2015-07-28-visualisation-of-predictions_files/figure-html5/qda-1.png","2015-07-28-visualisation-of-predictions_files/figure-html5/randomforest-1.png","2015-07-28-visualisation-of-predictions_files/header-attrs-2.11/header-attrs.js","2015-07-28-visualisation-of-predictions_files/jquery-3.6.0/jquery-3.6.0.js","2015-07-28-visualisation-of-predictions_files/jquery-3.6.0/jquery-3.6.0.min.js","2015-07-28-visualisation-of-predictions_files/jquery-3.6.0/jquery-3.6.0.min.map","2015-07-28-visualisation-of-predictions_files/popper-2.6.0/popper.min.js","2015-07-28-visualisation-of-predictions_files/tippy-6.2.7/tippy-bundle.umd.min.js","2015-07-28-visualisation-of-predictions_files/tippy-6.2.7/tippy-light-border.css","2015-07-28-visualisation-of-predictions_files/tippy-6.2.7/tippy.css","2015-07-28-visualisation-of-predictions_files/tippy-6.2.7/tippy.umd.min.js","2015-07-28-visualisation-of-predictions_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["2015-07-28-visualisation-of-predictions_files/anchor-4.2.2/anchor.min.js","2015-07-28-visualisation-of-predictions_files/bowser-1.9.3/bowser.min.js","2015-07-28-visualisation-of-predictions_files/distill-2.2.21/template.v2.js","2015-07-28-visualisation-of-predictions_files/figure-html5/knn-1.png","2015-07-28-visualisation-of-predictions_files/figure-html5/linear-svm-1.png","2015-07-28-visualisation-of-predictions_files/figure-html5/polynomial-radial-svm-1.png","2015-07-28-visualisation-of-predictions_files/figure-html5/polynomial-radial-svm-2.png","2015-07-28-visualisation-of-predictions_files/figure-html5/qda-1.png","2015-07-28-visualisation-of-predictions_files/figure-html5/randomforest-1.png","2015-07-28-visualisation-of-predictions_files/header-attrs-2.11/header-attrs.js","2015-07-28-visualisation-of-predictions_files/header-attrs-2.13/header-attrs.js","2015-07-28-visualisation-of-predictions_files/jquery-3.6.0/jquery-3.6.0.js","2015-07-28-visualisation-of-predictions_files/jquery-3.6.0/jquery-3.6.0.min.js","2015-07-28-visualisation-of-predictions_files/jquery-3.6.0/jquery-3.6.0.min.map","2015-07-28-visualisation-of-predictions_files/popper-2.6.0/popper.min.js","2015-07-28-visualisation-of-predictions_files/tippy-6.2.7/tippy-bundle.umd.min.js","2015-07-28-visualisation-of-predictions_files/tippy-6.2.7/tippy-light-border.css","2015-07-28-visualisation-of-predictions_files/tippy-6.2.7/tippy.css","2015-07-28-visualisation-of-predictions_files/tippy-6.2.7/tippy.umd.min.js","2015-07-28-visualisation-of-predictions_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2769,7 +2767,6 @@ d-appendix d-footnote-list a.footnote-backlink {
   color: var(--hover-color, white);
 }</style>
 <!--/radix_placeholder_distill-->
-  <script src="../../site_libs/header-attrs-2.11/header-attrs.js"></script>
   <script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="../../site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="../../site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -2790,7 +2787,7 @@ d-appendix d-footnote-list a.footnote-backlink {
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Visualization of predictions","description":"Tutorial on the visualization of predictions using mlr.","authors":[{"author":"jakob-richter","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2015-07-28T00:00:00.000+00:00","citationText":"jakob-richter, 2015"}
+{"title":"Visualization of predictions","description":"Tutorial on the visualization of predictions using mlr.","authors":[{"author":"Jakob Richter","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2015-07-28T00:00:00.000+00:00","citationText":"Richter, 2015"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2851,7 +2848,7 @@ Overview
   <a href="../../blog.html#category:r-bloggers" class="dt-tag">r-bloggers</a>
 </div>
 <!--/radix_placeholder_categories-->
-<p><p>Tutorial on the visualization of predictions using mlr.</p></p>
+<p>Tutorial on the visualization of predictions using mlr.</p>
 </div>
 
 
@@ -2940,10 +2937,10 @@ Overview
 <div class="appendix-bottom">
   <h3 id="citation">Citation</h3>
   <p>For attribution, please cite this work as</p>
-  <pre class="citation-appendix short">jakob-richter (2015, July 28). mlr-org: Visualization of predictions. Retrieved from https://mlr-org.github.io/mlr-org-website/posts/2015-07-28-visualisation-of-predictions/</pre>
+  <pre class="citation-appendix short">Richter (2015, July 28). mlr-org: Visualization of predictions. Retrieved from https://mlr-org.github.io/mlr-org-website/posts/2015-07-28-visualisation-of-predictions/</pre>
   <p>BibTeX citation</p>
-  <pre class="citation-appendix long">@misc{jakob-richter2015visualization,
-  author = {jakob-richter, },
+  <pre class="citation-appendix long">@misc{richter2015visualization,
+  author = {Richter, Jakob},
   title = {mlr-org: Visualization of predictions},
   url = {https://mlr-org.github.io/mlr-org-website/posts/2015-07-28-visualisation-of-predictions/},
   year = {2015}
