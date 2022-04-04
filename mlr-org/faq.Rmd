@@ -1,0 +1,38 @@
+---
+title: "FAQ"
+description: |
+  Frequently asked questions.
+preview: images/logo_color.png
+site: distill::distill_website
+output:
+  distill::distill_article:
+    toc: true
+---
+
+**Caching of `knitr`/`rmarkdown` chunks does not work with `mlr3`**
+
+<details>
+<summary>Answer</summary>
+{knitr} per default uses R's lazy-load database to store the results of individual chunks.
+The lazy-load database is an internal feature of R, and has issues handling active bindings (https://github.com/r-lib/R6/issues/152).
+Fortunately, it is possible to disable lazy-loading by setting the chunk option `cache.lazy` to `FALSE`:
+
+```r
+knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE)
+```
+</details>
+
+
+**How to keep all mlr3 packages up-to-date?**
+
+
+<details>
+<summary>Answer</summary>
+Either run R's `update.packages()` to update all installed packages, or run
+
+```r
+devtools::update_packages("mlr3verse", dependencies = TRUE)
+```
+
+to update only packages from the mlr3verse. Note that this also updates recursive dependencies not listed as a direct import.
+</details>

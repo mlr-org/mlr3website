@@ -1,0 +1,204 @@
+---
+title: "Quickstart"
+description: |
+  Basic examples on usage of central mlr3 objects.
+preview: images/logo_color.png
+site: distill::distill_website
+output:
+  distill::distill_article:
+    toc: true
+---
+
+## Basic
+
+
+### Task
+
+Create a classification task from the data set in the `r cran_pkg("palmerpenguins")` package.
+
+```{r, echo = TRUE}
+library("mlr3verse")
+
+# create a task
+task = tsk("breast_cancer")
+task
+
+# get the dimensions
+c(task$nrow, task$ncol)
+
+# check for missing values
+task$missings()
+
+# plot class frequencies
+autoplot(task)
+```
+
+### Learner
+
+Fit a `r ref("mlr_learners_classif.rpart", text = "classification tree")` on the `r ref("mlr_tasks_breast_cancer", text = "Wisconsin Breast Cancer Data Set")` and predict on left-out observations.
+
+
+```{r, echo = TRUE}
+library("mlr3verse")
+
+# retrieve the task
+task = tsk("breast_cancer")
+
+# split into two partitions
+split = partition(task)
+
+# retrieve a learner
+learner = lrn("classif.rpart", keep_model = TRUE, predict_type = "prob")
+
+# fit decision tree
+learner$train(task, split$train)
+
+# access learned model
+learner$model
+
+# predict on data frame with new data
+predictions = learner$predict_newdata(task$data(split$test))
+
+# predict on subset of the task
+predictions = learner$predict(task, split$test)
+
+# inspect predictions
+predictions
+predictions$score(msr("classif.auc"))
+autoplot(predictions, type = "roc")
+```
+
+
+### Resampling
+
+Fit a `r ref("mlr_learners_classif.ranger", text = "Random Forest")` on the `r ref("mlr_tasks_breast_cancer", text = "Wisconsin Breast Cancer Data Set")` using a `r ref("mlr_resamplings_cv", text = "3-fold cross validation")`.
+
+```{r, echo = TRUE}
+library("mlr3verse")
+
+# retrieve the task
+task = tsk("breast_cancer")
+
+# retrieve a learner
+learner = lrn("classif.ranger")
+
+# retrieve resampling strategy
+resampling = rsmp("cv", folds = 3)
+
+# perform resampling
+rr = resample(task, learner, resampling)
+rr
+```
+
+## Model optimization
+
+### Tuning
+
+Tune the hyperparameters of a `r ref("mlr_learners_classif.rpart", text = "classification tree")` on the `r ref("mlr_tasks_penguins", text = "Palmer Penguins")` data set with `r ref("mlr_tuners_random_search", text = "random search")`.
+
+```{r, echo=TRUE}
+library(mlr3verse)
+
+# retrieve task
+task = tsk("penguins")
+
+# load learner and set search space
+learner = lrn("classif.rpart",
+  cp = to_tune(1e-04, 1e-1, logscale = TRUE),
+  minsplit = to_tune(2, 128, logscale = TRUE)
+)
+
+# load tuner and set batch size
+tuner = tnr("random_search", batch_size = 10)
+
+# hyperparameter tuning on the palmer penguins data set
+instance = tune(
+  method = tuner,
+  task = task,
+  learner = learner,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+  term_evals = 50
+)
+
+# best performing hyperparameter configuration
+instance$result
+
+# surface plot
+autoplot(instance, type = "surface")
+
+# fit final model on complete data set
+learner$param_set$values = instance$result_learner_param_vals
+learner$train(task)
+```
+### Tuning Spaces
+
+Load a tuning space for the `r ref("mlr_learners_classif.rpart", text = "classification tree")` learner from the @bischl_hyperparameter_2021 article.
+
+```{r, echo=TRUE}
+library(mlr3verse)
+
+# load learner and set search space
+learner = lts(lrn("classif.rpart"))
+
+# retrieve task
+task = tsk("pima")
+
+# load tuner and set batch size
+tuner = tnr("random_search", batch_size = 10)
+
+# hyperparameter tuning on the pima data set
+instance = tune(
+  method = tnr("grid_search", resolution = 5, batch_size = 25),
+  task = task,
+  learner = learner,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+)
+
+# best performing hyperparameter configuration
+instance$result
+
+# fit final model on complete data set
+learner$param_set$values = instance$result_learner_param_vals
+learner$train(task)
+```
+
+### Terminators
+
+Stop tuning when a `r ref("mlr_terminators_perf_reached", text = "performance level")` is reached.
+
+```{r, echo=TRUE}
+library(mlr3verse)
+
+# load terminator and set performance level
+terminator = trm("perf_reached", level = 0.25)
+
+# load tuner
+tuner = tnr("random_search", batch_size = 10)
+
+# retrieve task
+task = tsk("pima")
+
+# load learner and set search space
+learner = lts(lrn("classif.rpart"))
+
+# set instance
+instance = TuningInstanceSingleCrit$new(
+  task = task,
+  learner = learner,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+  terminator = terminator
+)
+
+# hyperparameter tuning on the pima data set
+tuner$optimize(instance)
+
+# best performing hyperparameter configuration
+instance$result
+
+# fit final model on complete data set
+learner$param_set$values = instance$result_learner_param_vals
+learner$train(task)
+```

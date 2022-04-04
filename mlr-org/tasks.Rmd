@@ -33,26 +33,6 @@ datatable(
   style = "bootstrap",
   escape = FALSE,
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
-  rownames= FALSE)
+  rownames = FALSE)
 ```
 
-## Example Usage
-
-Create a classification task from the data set in the `r cran_pkg("palmerpenguins")` package.
-
-```{r, echo = TRUE}
-library("mlr3verse")
-
-# create a task
-task = tsk("breast_cancer")
-task
-
-# get the dimensions
-c(task$nrow, task$ncol)
-
-# check for missing values
-task$missings()
-
-# plot class frequencies
-autoplot(task)
-```
