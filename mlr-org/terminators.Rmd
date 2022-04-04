@@ -41,3 +41,41 @@ datatable(
   rownames = FALSE)
 ```
 
+### Example Usage
+
+Stop tuning when a `r ref("mlr_terminators_perf_reached", text = "performance level")` is reached.
+
+```{r, echo=TRUE}
+library(mlr3verse)
+
+# load terminator and set performance level
+terminator = trm("perf_reached", level = 0.25)
+
+# load tuner
+tuner = tnr("random_search", batch_size = 10)
+
+# retrieve task
+task = tsk("pima")
+
+# load learner and set search space
+learner = lts(lrn("classif.rpart"))
+
+# set instance
+instance = TuningInstanceSingleCrit$new(
+  task = task,
+  learner = learner,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+  terminator = terminator
+)
+
+# hyperparameter tuning on the pima data set
+tuner$optimize(instance)
+
+# best performing hyperparameter configuration
+instance$result
+
+# fit final model on complete data set
+learner$param_set$values = instance$result_learner_param_vals
+learner$train(task)
+```

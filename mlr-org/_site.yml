@@ -22,9 +22,7 @@ navbar:
     href: index.html
   search: true
   right:
-    - text: "Quickstart"
-      href: quickstart.html
-    - text: "Tables"
+    - text: "Overview"
       menu:
       - text: "Packages"
         href: packages.html
@@ -64,14 +62,16 @@ navbar:
       menu:
       - text: "Support"
         href: support.html
+      - text: "FAQ"
+        href: faq.html
+      - text: "Contributing"
+        href: contributing.html
       - text: "---"
-      - text: "Development"
-        href: development.html
+      - text: "What's new"
+        href: news.html
       - text: "---"
       - text: "About us"
         href: team.html
       - text: "---"
-      - text: "FAQ"
-        href: faq.html
 
 output: distill::distill_article

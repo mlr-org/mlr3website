@@ -9,30 +9,17 @@ output:
     toc: true
 ---
 
-**Caching of `knitr`/`rmarkdown` chunks does not work with `mlr3`**
+## When do I need nested resampling?
 
-<details>
-<summary>Answer</summary>
-{knitr} per default uses R's lazy-load database to store the results of individual chunks.
-The lazy-load database is an internal feature of R, and has issues handling active bindings (https://github.com/r-lib/R6/issues/152).
-Fortunately, it is possible to disable lazy-loading by setting the chunk option `cache.lazy` to `FALSE`:
+The goal of nested resampling is to obtain an unbiased estimator of the performance
+of a tuned model. For further information see the corresponding
+[book chapter](https://mlr3book.mlr-org.com/optimization.html#nested-resampling) or
+[blog post]().
 
-```r
-knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE)
-```
-</details>
+## Something is missing, what now?
 
-
-**How to keep all mlr3 packages up-to-date?**
+There is a designated chapter on how to extend mlr3 in our
+[book](https://mlr3book.mlr-org.com/special-tasks.html). Learner requests / additions can be
+made through the [mlr3extralearners](https://github.com/mlr-org/mlr3extralearners) package.
 
 
-<details>
-<summary>Answer</summary>
-Either run R's `update.packages()` to update all installed packages, or run
-
-```r
-devtools::update_packages("mlr3verse", dependencies = TRUE)
-```
-
-to update only packages from the mlr3verse. Note that this also updates recursive dependencies not listed as a direct import.
-</details>
