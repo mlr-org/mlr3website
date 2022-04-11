@@ -2846,8 +2846,8 @@ Overview
 <div class="d-article">
 <p>A <a href="https://bbotk.mlr-org.com/reference/Terminator.html"><code>Terminator</code></a> is an object that determines when to stop the optimization, e.g. after a budget of evaluations is depleted or the optimization stagnates.</p>
 <div class="layout-chunk" data-layout="l-body-outset">
-<div id="htmlwidget-ba5b10f9c3e7e77df710" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ba5b10f9c3e7e77df710">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_clock_time.html\">clock_time<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_combo.html\">combo<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_evals.html\">evals<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_none.html\">none<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_perf_reached.html\">perf_reached<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_run_time.html\">run_time<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_stagnation.html\">stagnation<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_stagnation_batch.html\">stagnation_batch<\/a>"],["Clock Time","Combination","Number of Evaluation","None","Performance Level","Run Time","Stagnation","Stagnation Batch"],["single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit","single-crit<br/>multi-crit","single-crit","single-crit"],["seconds","percent","evaluations","percent","percent","seconds","percent","percent"]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Properties<\/th>\n      <th>Unit<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-5f277e0235bb8e421770" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5f277e0235bb8e421770">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_clock_time.html\">clock_time<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_combo.html\">combo<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_evals.html\">evals<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_none.html\">none<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_perf_reached.html\">perf_reached<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_run_time.html\">run_time<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_stagnation.html\">stagnation<\/a>","<a href=\"https://bbotk.mlr-org.com/reference/mlr_terminators_stagnation_batch.html\">stagnation_batch<\/a>"],["Clock Time","Combination","Number of Evaluation","None","Performance Level","Run Time","Stagnation","Stagnation Batch"],["single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit<br/>multi-crit","single-crit","single-crit<br/>multi-crit","single-crit","single-crit"],["seconds","percent","evaluations","percent","percent","seconds","percent","percent"]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Properties<\/th>\n      <th>Unit<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <h2 id="example-usage">Example Usage</h2>
 <p>Stop tuning when a <a href="https://bbotk.mlr-org.com/reference/mlr_terminators_perf_reached.html"><code>performance level</code></a> is reached.</p>
@@ -2881,18 +2881,18 @@ Overview
 </code></pre>
 </div>
 <pre><code>   minsplit minbucket        cp learner_param_vals  x_domain
-1: 2.983861  1.236281 -5.118669          &lt;list[4]&gt; &lt;list[3]&gt;
+1: 1.432124  1.068561 -4.722139          &lt;list[4]&gt; &lt;list[3]&gt;
    classif.ce
-1:       0.25</code></pre>
+1:  0.2265625</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'># best performing hyperparameter configuration</span>
 <span class='va'>instance</span><span class='op'>$</span><span class='va'>result</span>
 </code></pre>
 </div>
 <pre><code>   minsplit minbucket        cp learner_param_vals  x_domain
-1: 2.983861  1.236281 -5.118669          &lt;list[4]&gt; &lt;list[3]&gt;
+1: 1.432124  1.068561 -4.722139          &lt;list[4]&gt; &lt;list[3]&gt;
    classif.ce
-1:       0.25</code></pre>
+1:  0.2265625</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'># fit final model on complete data set</span>
 <span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>=</span> <span class='va'>instance</span><span class='op'>$</span><span class='va'>result_learner_param_vals</span>
