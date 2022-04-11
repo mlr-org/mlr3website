@@ -14,7 +14,7 @@ params:
   eval_all: FALSE
 ---
 
-```{r, include=FALSE}
+```{r early-stopping-with-xgboost-001, include=FALSE}
  knitr::opts_chunk$set(
   echo = TRUE,
   R.options = list(width = 120)
@@ -44,7 +44,7 @@ When using early stopping, the performance of the model is monitored on a test s
 
 We load the `r mlr_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
 
-```{r, message=FALSE}
+```{r early-stopping-with-xgboost-002, message=FALSE}
 library(mlr3verse)
 library(mlr3misc)
 ```
@@ -54,7 +54,7 @@ For this, we have to set `early_stopping_set` to `"test"` so that the performanc
 Additionally, we need to define the range in which the performance must increase with `early_stopping_rounds` and the maximum number of boosting rounds with `nrounds`.
 In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.
 
-```{r}
+```{r early-stopping-with-xgboost-003}
 learner = lrn("classif.xgboost",
   nrounds = 1000,
   early_stopping_rounds = 100,
@@ -67,7 +67,7 @@ Before we can train the learner, we have to define the test set,
 The `partition()` function splits the rows ids of the task into a training and test set.
 We use 80% of observations to fit the model and the remaining 20% as the test set.
 
-```{r}
+```{r early-stopping-with-xgboost-004}
 task = tsk("spam")
 split = partition(task, ratio = 0.8)
 task$set_row_roles(split$test, "test")
@@ -75,14 +75,14 @@ task$set_row_roles(split$test, "test")
 
 Finally, we can train the learner with early stopping.
 
-```{r}
+```{r early-stopping-with-xgboost-005}
 learner$train(task)
 ```
 
 The performance scores on the train and test set are stored in the `$evaluation_log` of the model.
 Figure 1 shows that the classification error on the training set decreases continuously whereas the error on the test increases after 20 rounds.
 
-```{r, code_folding=TRUE, fig.cap="Clasification Error"}
+```{r early-stopping-with-xgboost-006, code_folding=TRUE, fig.cap="Clasification Error"}
 library(ggplot2)
 library(data.table)
 
@@ -103,17 +103,17 @@ ggplot(data, aes(x = iter, y = error, group = set)) +
 
 We can check the optimal number of trees by accessing `$best_iteration`.
 
-```{r}
+```{r early-stopping-with-xgboost-007}
 learner$model$best_iteration
 ```
 
 When resampling a learner, the test sets are used for early stopping.
 
-```{r}
+```{r early-stopping-with-xgboost-008}
 rr = resample(task, learner, rsmp("cv", folds = 3))
 ```
 
-```{r, echo=FALSE}
+```{r early-stopping-with-xgboost-009, echo=FALSE}
 rr$score(msr("classif.ce"))[, c("task", "learner", "iteration", "classif.ce"), with = FALSE]
 ```
 
@@ -122,18 +122,18 @@ rr$score(msr("classif.ce"))[, c("task", "learner", "iteration", "classif.ce"), w
 Next we want to tune the hyperparameters of an XGBoost learner and find the optimal number of trees in one go.
 First we load a predefined tuning space from the `r mlr_pkg("mlr3tuningspaces")` package.
 
-```{r, result=FALSE}
+```{r early-stopping-with-xgboost-010, result=FALSE}
 tuning_space = lts("classif.xgboost.default")
 tuning_space
 ```
 
-```{r, echo=FALSE}
+```{r early-stopping-with-xgboost-011, echo=FALSE}
 as.data.table(tuning_space)
 ```
 
 We copy the tuning space to the parameter set of the learner and add the additional early stopping parameters.
 
-```{r}
+```{r early-stopping-with-xgboost-012}
 learner$param_set$values = tuning_space$values
 learner$param_set$values = insert_named(learner$param_set$values, list(
   nrounds = 1000,
@@ -149,7 +149,7 @@ While tuning, the test sets of the `r ref("Resampling")` are used for early stop
 When training the final model, early stopping must be used one last time.
 We define a separate test set for this step.
 
-```{r}
+```{r early-stopping-with-xgboost-013}
 task = tsk("spam")
 split = partition(task, ratio = 0.8)
 task$set_row_roles(split$test, roles = "test")
@@ -157,7 +157,7 @@ task$set_row_roles(split$test, roles = "test")
 
 The `r ref("auto_tuner()")` function constructs the `r ref("AutoTuner")`.
 
-```{r}
+```{r early-stopping-with-xgboost-014}
 at = auto_tuner(
   method = "random_search",
   learner = learner,
@@ -170,30 +170,30 @@ at = auto_tuner(
 
 Finally, we run the `r ref("AutoTuner")`.
 
-```{r, eval=params$eval_all}
+```{r early-stopping-with-xgboost-015, eval=params$eval_all}
 at$train(task)
 ```
 
-```{r, eval=params$eval_all}
+```{r early-stopping-with-xgboost-016, eval=params$eval_all}
 saveRDS(at, "data/at.rda")
 ```
 
-```{r, echo=FALSE}
+```{r early-stopping-with-xgboost-017, echo=FALSE}
 at = readRDS("data/at.rda")
 ```
 
 Lets have a look at the best hyperparameter configuration.
 
-```{r, eval=FALSE}
+```{r early-stopping-with-xgboost-018, eval=FALSE}
 at$tuning_instance$result
 ```
 
-```{r, echo=FALSE, layout="l-page"}
+```{r early-stopping-with-xgboost-019, echo=FALSE, layout="l-page"}
 table_responsive(at$tuning_instance$result[, c(at$tuning_instance$archive$cols_x, at$tuning_instance$archive$cols_y), with = FALSE])
 ```
 
 The corresponding optimal number of trees is stored in the XGBoost model.
 
-```{r}
+```{r early-stopping-with-xgboost-020}
 at$model$learner$model$best_iteration
 ```
