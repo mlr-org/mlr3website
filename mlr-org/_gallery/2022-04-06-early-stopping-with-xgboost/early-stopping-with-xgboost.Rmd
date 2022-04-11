@@ -110,7 +110,7 @@ learner$model$best_iteration
 When resampling a learner, the test sets are used for early stopping.
 
 ```{r}
-resample(task, learner, rsmp("cv", folds = 3))
+rr = resample(task, learner, rsmp("cv", folds = 3))
 ```
 
 ```{r, echo=FALSE}
@@ -119,8 +119,8 @@ rr$score(msr("classif.ce"))[, c("task", "learner", "iteration", "classif.ce"), w
 
 # Tuning
 
-Early stopping tunes the number of trees but the other hyperparameters of XGBoost should be also tuned.
-The `mlr3tuningspaces` package contains a predefined tuning space for XGBoost.
+Next we want to tune the hyperparameters of an XGBoost learner and find the optimal number of trees in one go.
+First we load a predefined tuning space from the `r mlr_pkg("mlr3tuningspaces")` package.
 
 ```{r, result=FALSE}
 tuning_space = lts("classif.xgboost.default")
@@ -143,27 +143,19 @@ learner$param_set$values = insert_named(learner$param_set$values, list(
 ))
 ```
 
-When we need a model to predict on new data, we have to create an `AutoTuner` with the `auto_tune()` function.
+The `r ref("AutoTuner")` tunes the hyperparameters of a learner and fits a final model with the best hyperparameter configuration.
+Early stopping is used in both tuning of the hyperparameters and training of the final model.
+While tuning, the test sets of the `r ref("Resampling")` are used for early stopping.
+When training the final model, early stopping must be used one last time.
+We define a separate test set for this step.
 
 ```{r}
 task = tsk("spam")
 split = partition(task, ratio = 0.8)
-task$set_row_roles(split$test, "test")
+task$set_row_roles(split$test, roles = "test")
 ```
 
-
-
-The `AutoTuner` tunes the hyperparameters of a learner and fits a final model with the best hyperparameter configuration.
-
-While tuning, the test sets of the cross-validation are used to run early stopping.
-For the training of the final
-
-
-early stopping is used for each model fit.
-When the final model is fitted with best hyperparameter configuration, early stopping is used one last time
-
-When fitting the final model with the best hyperparameter configurtion, early stopping is used one last time to find the optimal number of trees.
-
+The `r ref("auto_tuner()")` function constructs the `r ref("AutoTuner")`.
 
 ```{r}
 at = auto_tuner(
@@ -171,72 +163,37 @@ at = auto_tuner(
   learner = learner,
   resampling = rsmp("cv", folds = 3),
   measure = msr("classif.ce"),
-  term_evals = 1,
-  batch_size = 1
+  term_evals = 10,
+  batch_size = 10
 )
-
-
-
-learner = lts(lrn("classif.xgboost",
-  early_stopping_rounds = 100,
-  early_stopping_set = "test",
-  eval_metric = "error"
-))
-
-learner$param_set$values$nrounds = 1000
-
-
-
-rr = resample(tsk("spam"), at, rsmp("holdout", ratio = 0.8))
-
-rr$learners[[1]] # final model
-```
-```{r}
-learner = lts(lrn("classif.xgboost",
-  early_stopping_rounds = 100,
-  early_stopping_set = "test",
-  eval_metric = "error"
-))
-
-learner$param_set$values$nrounds = 1000
-
-instance = tune(
-  method = "random_search",
-  learner = learner,
-  resampling = rsmp("cv", folds = 3),
-  measure = msr("classif.ce"),
-  term_evals = 1,
-  batch_size = 1
-)
-
-learner$param_set$values = instance$result_learner_param_vals
-
-rr = resample(tsk("spam"), learner, rsmp("holdout", ratio = 0.8))
-
-rr$learners[[1]] # final model
 ```
 
-The
+Finally, we run the `r ref("AutoTuner")`.
 
-```{r}
-task = tsk("spam")
-split = partition(task, ratio = 0.9)
-
-# set
-task$row_roles$test = split$test
-
-at = auto_tuner(
-  method = "random_search",
-  learner = learner,
-  resampling = rsmp("cv", folds = 3),
-  measure = msr("classif.ce"),
-  term_evals = 1,
-  batch_size = 1
-)
-
+```{r, eval=params$eval_all}
 at$train(task)
-
-
 ```
 
+```{r, eval=params$eval_all}
+saveRDS(at, "data/at.rda")
+```
 
+```{r, echo=FALSE}
+at = readRDS("data/at.rda")
+```
+
+Lets have a look at the best hyperparameter configuration.
+
+```{r, eval=FALSE}
+at$tuning_instance$result
+```
+
+```{r, echo=FALSE, layout="l-page"}
+table_responsive(at$tuning_instance$result[, c(at$tuning_instance$archive$cols_x, at$tuning_instance$archive$cols_y), with = FALSE])
+```
+
+The corresponding optimal number of trees is stored in the XGBoost model.
+
+```{r}
+at$model$learner$model$best_iteration
+```
