@@ -1,0 +1,242 @@
+---
+title: "Early Stopping with XGBoost"
+description: |
+  We show how to use early stopping to reduce overfitting when training XGBoost models.
+author:
+  - name: Marc Becker
+date: 2022-04-06
+output:
+  distill::distill_article:
+    toc: true
+    self_contained: false
+    highlight_downlit: true
+params:
+  eval_all: FALSE
+---
+
+```{r, include=FALSE}
+ knitr::opts_chunk$set(
+  echo = TRUE,
+  R.options = list(width = 120)
+)
+
+library(mlr3website)
+
+set.seed(7832)
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+# Scope
+
+In this post, we use early stopping to reduce overfitting when training an XGBoost model.
+We start with a short recap on early stopping and overfitting.
+After that, we use the early stopping mechanism of XGBoost and train a model on the spam data set.
+Finally, we tune the hyperparameters of an XGBoost learner and use early stopping at the same time.
+
+# Early Stopping
+
+Early stopping is a technique used to reduce overfitting when fitting a model in an iterative process.
+Overfitting occurs when a model fits increasingly to the training data but the performance on unseen data decreases.
+When using early stopping, the performance of the model is monitored on a test set and the training is stopped when performance is decreasing in a specific number of iterations.
+
+# Resampling
+
+We load the `r mlr_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
+
+```{r, message=FALSE}
+library(mlr3verse)
+library(mlr3misc)
+```
+
+When training an XGBoost learner, we can use early stopping to find the optimal number of trees.
+For this, we have to set `early_stopping_set` to `"test"` so that the performance of the model is monitored on a test set while training.
+Additionally, we need to define the range in which the performance must increase with `early_stopping_rounds` and the maximum number of boosting rounds with `nrounds`.
+In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.
+
+```{r}
+learner = lrn("classif.xgboost",
+  nrounds = 1000,
+  early_stopping_rounds = 100,
+  early_stopping_set = "test",
+  eval_metric = "error"
+)
+```
+
+Before we can train the learner, we have to define the test set,
+The `partition()` function splits the rows ids of the task into a training and test set.
+We use 80% of observations to fit the model and the remaining 20% as the test set.
+
+```{r}
+task = tsk("spam")
+split = partition(task, ratio = 0.8)
+task$set_row_roles(split$test, "test")
+```
+
+Finally, we can train the learner with early stopping.
+
+```{r}
+learner$train(task)
+```
+
+The performance scores on the train and test set are stored in the `$evaluation_log` of the model.
+Figure 1 shows that the classification error on the training set decreases continuously whereas the error on the test increases after 20 rounds.
+
+```{r, code_folding=TRUE, fig.cap="Clasification Error"}
+library(ggplot2)
+library(data.table)
+
+data = melt(
+  learner$model$evaluation_log,
+  id.vars = "iter",
+  variable.name = "set",
+  value.name = "error"
+)
+
+ggplot(data, aes(x = iter, y = error, group = set)) +
+  geom_line(aes(color = set)) +
+  geom_vline(aes(xintercept = learner$model$best_iteration), color = "grey") +
+  scale_colour_manual(values=c("#f8766d", "#00b0f6"), labels = c("Train", "Test")) +
+  labs(x = "Rounds", y = "Classification Error", color = "Set") +
+  theme_minimal()
+```
+
+We can check the optimal number of trees by accessing `$best_iteration`.
+
+```{r}
+learner$model$best_iteration
+```
+
+When resampling a learner, the test sets are used for early stopping.
+
+```{r}
+resample(task, learner, rsmp("cv", folds = 3))
+```
+
+```{r, echo=FALSE}
+rr$score(msr("classif.ce"))[, c("task", "learner", "iteration", "classif.ce"), with = FALSE]
+```
+
+# Tuning
+
+Early stopping tunes the number of trees but the other hyperparameters of XGBoost should be also tuned.
+The `mlr3tuningspaces` package contains a predefined tuning space for XGBoost.
+
+```{r, result=FALSE}
+tuning_space = lts("classif.xgboost.default")
+tuning_space
+```
+
+```{r, echo=FALSE}
+as.data.table(tuning_space)
+```
+
+We copy the tuning space to the parameter set of the learner and add the additional early stopping parameters.
+
+```{r}
+learner$param_set$values = tuning_space$values
+learner$param_set$values = insert_named(learner$param_set$values, list(
+  nrounds = 1000,
+  early_stopping_rounds = 100,
+  early_stopping_set = "test",
+  eval_metric = "error"
+))
+```
+
+When we need a model to predict on new data, we have to create an `AutoTuner` with the `auto_tune()` function.
+
+```{r}
+task = tsk("spam")
+split = partition(task, ratio = 0.8)
+task$set_row_roles(split$test, "test")
+```
+
+
+
+The `AutoTuner` tunes the hyperparameters of a learner and fits a final model with the best hyperparameter configuration.
+
+While tuning, the test sets of the cross-validation are used to run early stopping.
+For the training of the final
+
+
+early stopping is used for each model fit.
+When the final model is fitted with best hyperparameter configuration, early stopping is used one last time
+
+When fitting the final model with the best hyperparameter configurtion, early stopping is used one last time to find the optimal number of trees.
+
+
+```{r}
+at = auto_tuner(
+  method = "random_search",
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.ce"),
+  term_evals = 1,
+  batch_size = 1
+)
+
+
+
+learner = lts(lrn("classif.xgboost",
+  early_stopping_rounds = 100,
+  early_stopping_set = "test",
+  eval_metric = "error"
+))
+
+learner$param_set$values$nrounds = 1000
+
+
+
+rr = resample(tsk("spam"), at, rsmp("holdout", ratio = 0.8))
+
+rr$learners[[1]] # final model
+```
+```{r}
+learner = lts(lrn("classif.xgboost",
+  early_stopping_rounds = 100,
+  early_stopping_set = "test",
+  eval_metric = "error"
+))
+
+learner$param_set$values$nrounds = 1000
+
+instance = tune(
+  method = "random_search",
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.ce"),
+  term_evals = 1,
+  batch_size = 1
+)
+
+learner$param_set$values = instance$result_learner_param_vals
+
+rr = resample(tsk("spam"), learner, rsmp("holdout", ratio = 0.8))
+
+rr$learners[[1]] # final model
+```
+
+The
+
+```{r}
+task = tsk("spam")
+split = partition(task, ratio = 0.9)
+
+# set
+task$row_roles$test = split$test
+
+at = auto_tuner(
+  method = "random_search",
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.ce"),
+  term_evals = 1,
+  batch_size = 1
+)
+
+at$train(task)
+
+
+```
+
+
