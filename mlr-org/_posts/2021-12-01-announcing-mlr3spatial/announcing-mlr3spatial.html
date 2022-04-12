@@ -118,7 +118,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["announcing-mlr3spatial_files/anchor-4.2.2/anchor.min.js","announcing-mlr3spatial_files/bowser-1.9.3/bowser.min.js","announcing-mlr3spatial_files/distill-2.2.21/template.v2.js","announcing-mlr3spatial_files/figure-html5/mlr3spatial-006-1.png","announcing-mlr3spatial_files/header-attrs-2.11/header-attrs.js","announcing-mlr3spatial_files/jquery-3.6.0/jquery-3.6.0.js","announcing-mlr3spatial_files/jquery-3.6.0/jquery-3.6.0.min.js","announcing-mlr3spatial_files/jquery-3.6.0/jquery-3.6.0.min.map","announcing-mlr3spatial_files/popper-2.6.0/popper.min.js","announcing-mlr3spatial_files/tippy-6.2.7/tippy-bundle.umd.min.js","announcing-mlr3spatial_files/tippy-6.2.7/tippy-light-border.css","announcing-mlr3spatial_files/tippy-6.2.7/tippy.css","announcing-mlr3spatial_files/tippy-6.2.7/tippy.umd.min.js","announcing-mlr3spatial_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["announcing-mlr3spatial_files/anchor-4.2.2/anchor.min.js","announcing-mlr3spatial_files/bowser-1.9.3/bowser.min.js","announcing-mlr3spatial_files/distill-2.2.21/template.v2.js","announcing-mlr3spatial_files/figure-html5/announcing-mlr3spatial-007-1.png","announcing-mlr3spatial_files/figure-html5/mlr3spatial-006-1.png","announcing-mlr3spatial_files/header-attrs-2.11/header-attrs.js","announcing-mlr3spatial_files/jquery-3.6.0/jquery-3.6.0.js","announcing-mlr3spatial_files/jquery-3.6.0/jquery-3.6.0.min.js","announcing-mlr3spatial_files/jquery-3.6.0/jquery-3.6.0.min.map","announcing-mlr3spatial_files/popper-2.6.0/popper.min.js","announcing-mlr3spatial_files/tippy-6.2.7/tippy-bundle.umd.min.js","announcing-mlr3spatial_files/tippy-6.2.7/tippy-light-border.css","announcing-mlr3spatial_files/tippy-6.2.7/tippy.css","announcing-mlr3spatial_files/tippy-6.2.7/tippy.umd.min.js","announcing-mlr3spatial_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1439,7 +1439,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="announcing-mlr3spatial_files/header-attrs-2.11/header-attrs.js"></script>
+  <script src="announcing-mlr3spatial_files/header-attrs-2.13/header-attrs.js"></script>
   <script src="announcing-mlr3spatial_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="announcing-mlr3spatial_files/popper-2.6.0/popper.min.js"></script>
   <link href="announcing-mlr3spatial_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1508,9 +1508,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p>For large raster files with millions of values it helps to predict in parallel. To enable this, set <code>learner$parallel_predict = TRUE</code> and initiate a parallel plan via {future}, e.g. via <code>plan("multisession")</code>. Since this is only an example, parallelization is not enabled here. Here we will use a simple regression tree as an example learner. In practice you might want to use a different learner - you can find an overview of available learners <a href="https://mlr3extralearners.mlr-org.com/articles/learners/list_learners.html">here</a>.</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code>INFO  [11:35:06.432] 447 
-INFO  [11:35:06.496] 447 </code></pre>
-<pre><code>&lt;LearnerRegrRpart:regr.rpart&gt;
+<pre><code>INFO  [00:33:09.399] 608 
+INFO  [00:33:09.480] 607 </code></pre>
+<pre><code>&lt;LearnerRegrRpart:regr.rpart&gt;: Regression Tree
 * Model: rpart
 * Parameters: xval=0
 * Packages: mlr3, rpart
@@ -1521,12 +1521,12 @@ INFO  [11:35:06.496] 447 </code></pre>
 <h3 id="prediction">Prediction</h3>
 <p>For prediction <code>predict_spatial()</code> is used. It will return a raster file which contains the predictions. Users can select which R spatial format the returned raster should have. Note that by default <code>mlr3spatial</code> operates with <code>SpatRaster</code> objects from package <code>terra</code>. If a different output format is requested (e.g. <code>"stars"</code>), coercion is happening in the background which might take some time.</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code>INFO  [11:35:06.827] Start raster prediction 
-INFO  [11:35:06.831] Prediction is executed with a chunksize of 200, 1 chunk(s) in total, 122848 values per chunk 
-INFO  [11:35:06.898] 414 
-INFO  [11:35:07.113] 400 
-INFO  [11:35:07.119] Chunk 1 of 1 finished 
-INFO  [11:35:07.132] Finished raster prediction in 0 seconds </code></pre>
+<pre><code>INFO  [00:33:09.842] Start raster prediction 
+INFO  [00:33:09.870] Prediction is executed with a chunksize of 200, 1 chunk(s) in total, 122848 values per chunk 
+INFO  [00:33:10.010] 580 
+INFO  [00:33:10.233] 569 
+INFO  [00:33:10.239] Chunk 1 of 1 finished 
+INFO  [00:33:10.272] Finished raster prediction in 0 seconds </code></pre>
 <pre><code>stars object with 2 dimensions and 1 attribute
 attribute(s):
             Min.  1st Qu.   Median     Mean 3rd Qu.     Max.
@@ -1539,7 +1539,7 @@ y    1 352 9120761 -28.5 SIRGAS 2000 / UTM zone 25S FALSE   NULL [y]</code></pre
 <h3 id="visualization">Visualization</h3>
 <p>Finally we can plot the predictions. The color vector is extracted from the “viridis” color palette via <code>dput(viridis::viridis_pal()(5))</code> and provided to the S3 <code>plot()</code> call, which makes use of the S3 plot method within the <code>stars</code> package in this scenario.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="announcing-mlr3spatial_files/figure-html5/mlr3spatial-006-1.png" width="624" /></p>
+<p><img src="announcing-mlr3spatial_files/figure-html5/announcing-mlr3spatial-007-1.png" width="624" /></p>
 </div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

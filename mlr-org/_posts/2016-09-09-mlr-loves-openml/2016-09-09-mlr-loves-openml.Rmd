@@ -6,6 +6,7 @@ author:
   - name: Heidi Seibold
     url: https://github.com/HeidiSeibold
 date: 2016-09-09
+preview: mlr_loves_openml.png
 categories: ["R", "r-bloggers"]
 tags: ["OpenML", "rstats"]
 output:
@@ -50,7 +51,7 @@ Vector Machines.  The study gets an ID assigned to it, which in our case is 27.
 We use the function ksvm (with different settings of the function argument type)
 from package kernlab, which is integrated in mlr ("classif.ksvm").
 
-![](/openml_screenshot_study.png) 
+![](openml_screenshot_study.png) 
 
 For details on installing and setting up the OpenML R package please see the
 [guide](https://github.com/openml/openml-r) on GitHub.

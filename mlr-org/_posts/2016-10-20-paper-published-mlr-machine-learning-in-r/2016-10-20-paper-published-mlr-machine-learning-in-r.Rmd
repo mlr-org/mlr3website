@@ -1,22 +1,37 @@
 ---
-title: "2016-10-20-Paper-published-mlr-Machine-Learning-in-R"
-description: |
-  A short description of the post.
-author:
-  - name: Sebastian Fischer
-date: 2022-02-22
+title: "Paper published: mlr - Machine Learning in R"
+authors: ["Jakob Richter"]
+date: 2016-10-20
+categories: ["R", "r-bloggers"]
+tags: ["JMLR", "paper", "science", "rstats"]
+description: "Announcing the publication of the mlr paper."
 output:
   distill::distill_article:
     self_contained: false
 ---
 
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(collapse = TRUE)
 ```
 
-Distill is a publication format for scientific and technical writing, native to the web.
+We are happy to announce that we can finally answer the question on how to cite *mlr* properly in publications.
 
-Learn more about using Distill at <https://rstudio.github.io/distill>.
+Our paper on *mlr* has been published in the open-access Journal of Machine Learning Research (JMLR) and can be downloaded on the [journal home page](http://www.jmlr.org/papers/v17/15-066.html).
 
+[![](paper-first-page.png)](http://www.jmlr.org/papers/v17/15-066.html)
+
+The paper gives a brief overview of the features of *mlr* and also includes a comparison with similar toolkits.
+For an in-depth understanding we still recommend our excellent [online mlr tutorial](https://mlr.mlr-org.com/) which is now also available as a [PDF](https://arxiv.org/abs/1609.06146) on arxiv.org or as [zipped HTML files](https://mlr.mlr-org.com/devel/mlr_tutorial.zip) for offline reading.
+
+Once *mlr 2.10* hits CRAN you can retrieve the citation information from within R:
+
+```{r, eval=FALSE}
+citation("mlr")
+```
+
+```{r, echo=FALSE}
+tmp = capture.output(citation("mlr"))
+tmp = stringi::stri_replace_all_fixed(tmp, "{{", "{% raw %}{{{% endraw %}")
+cat(paste0(tmp, "\n"))
+```
 
