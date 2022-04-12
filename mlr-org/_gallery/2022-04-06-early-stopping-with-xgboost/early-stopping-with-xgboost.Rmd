@@ -50,7 +50,7 @@ library(mlr3misc)
 ```
 
 When training an XGBoost learner, we can use early stopping to find the optimal number of trees.
-For this, we have to set `early_stopping_set` to `"test"` so that the performance of the model is monitored on a test set while training.
+For this, we have to define a separate early stopping set so that the performance of the model is monitored while training.
 Additionally, we need to define the range in which the performance must increase with `early_stopping_rounds` and the maximum number of boosting rounds with `nrounds`.
 In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.
 
@@ -58,19 +58,18 @@ In this example, the training is stopped when the classification error is not de
 learner = lrn("classif.xgboost",
   nrounds = 1000,
   early_stopping_rounds = 100,
-  early_stopping_set = "test",
   eval_metric = "error"
 )
 ```
 
-Before we can train the learner, we have to define the test set,
+Before we can train the learner, we have to define the early stopping set,
 The `partition()` function splits the rows ids of the task into a training and test set.
-We use 80% of observations to fit the model and the remaining 20% as the test set.
+We use 80% of observations to fit the model and the remaining 20% as the early stopping set.
 
 ```{r early-stopping-with-xgboost-004}
 task = tsk("spam")
 split = partition(task, ratio = 0.8)
-task$set_row_roles(split$test, "test")
+task$set_row_roles(split$test, "early_stopping")
 ```
 
 Finally, we can train the learner with early stopping.
@@ -79,8 +78,8 @@ Finally, we can train the learner with early stopping.
 learner$train(task)
 ```
 
-The performance scores on the train and test set are stored in the `$evaluation_log` of the model.
-Figure 1 shows that the classification error on the training set decreases continuously whereas the error on the test increases after 20 rounds.
+The performance scores on the train and early stopping set are stored in the `$evaluation_log` of the model.
+Figure 1 shows that the classification error on the training set decreases continuously whereas the error on the early stopping set increases after 20 rounds.
 
 ```{r early-stopping-with-xgboost-006, code_folding=TRUE, fig.cap="Clasification Error"}
 library(ggplot2)
@@ -96,7 +95,7 @@ data = melt(
 ggplot(data, aes(x = iter, y = error, group = set)) +
   geom_line(aes(color = set)) +
   geom_vline(aes(xintercept = learner$model$best_iteration), color = "grey") +
-  scale_colour_manual(values=c("#f8766d", "#00b0f6"), labels = c("Train", "Test")) +
+  scale_colour_manual(values=c("#f8766d", "#00b0f6"), labels = c("Train", "Early Stopping")) +
   labs(x = "Rounds", y = "Classification Error", color = "Set") +
   theme_minimal()
 ```
@@ -105,16 +104,6 @@ We can check the optimal number of trees by accessing `$best_iteration`.
 
 ```{r early-stopping-with-xgboost-007}
 learner$model$best_iteration
-```
-
-When resampling a learner, the test sets are used for early stopping.
-
-```{r early-stopping-with-xgboost-008}
-rr = resample(task, learner, rsmp("cv", folds = 3))
-```
-
-```{r early-stopping-with-xgboost-009, echo=FALSE}
-rr$score(msr("classif.ce"))[, c("task", "learner", "iteration", "classif.ce"), with = FALSE]
 ```
 
 # Tuning
@@ -128,7 +117,7 @@ tuning_space
 ```
 
 ```{r early-stopping-with-xgboost-011, echo=FALSE}
-as.data.table(tuning_space)
+table_responsive(as.data.table(tuning_space))
 ```
 
 We copy the tuning space to the parameter set of the learner and add the additional early stopping parameters.
@@ -138,21 +127,18 @@ learner$param_set$values = tuning_space$values
 learner$param_set$values = insert_named(learner$param_set$values, list(
   nrounds = 1000,
   early_stopping_rounds = 100,
-  early_stopping_set = "test",
   eval_metric = "error"
 ))
 ```
 
 The `r ref("AutoTuner")` tunes the hyperparameters of a learner and fits a final model with the best hyperparameter configuration.
 Early stopping is used in both tuning of the hyperparameters and training of the final model.
-While tuning, the test sets of the `r ref("Resampling")` are used for early stopping.
-When training the final model, early stopping must be used one last time.
-We define a separate test set for this step.
+We the early stopping set.
 
 ```{r early-stopping-with-xgboost-013}
 task = tsk("spam")
 split = partition(task, ratio = 0.8)
-task$set_row_roles(split$test, roles = "test")
+task$set_row_roles(split$test, roles = "early_stopping")
 ```
 
 The `r ref("auto_tuner()")` function constructs the `r ref("AutoTuner")`.
