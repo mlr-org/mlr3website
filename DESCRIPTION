@@ -16,16 +16,16 @@ Imports:
     data.table,
     distill (>= 1.3.0),
     DT,
+    htmltools,
     mlr3 (>= 0.13.3),
     mlr3book,
     mlr3extralearners,
-    mlr3fselect (>= 0.6.1.9000),
+    mlr3fselect (>= 0.7.0),
     mlr3misc,
     mlr3pipelines,
-    mlr3tuning (>= 0.12.1.9000),
+    mlr3tuning (>= 0.13.0),
     mlr3tuningspaces (>= 0.1.1.9000),
     mlr3verse,
-    htmltools,
     rmarkdown(>= 2.11),
     rprojroot
 Suggests:
@@ -85,10 +85,10 @@ Suggests:
 Remotes:
     mlr-org/mlr3book,
     mlr-org/mlr3extralearners,
-    mlr-org/mlr3mbo,
     mlr-org/mlr3filters,
-    mlr-org/mlr3tuningspaces,
-    mlr-org/mlr3pipelines@label
+    mlr-org/mlr3mbo,
+    mlr-org/mlr3pipelines@label,
+    mlr-org/mlr3tuningspaces
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
