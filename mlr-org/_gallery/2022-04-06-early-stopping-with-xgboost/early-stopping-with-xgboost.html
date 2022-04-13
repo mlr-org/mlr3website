@@ -23,7 +23,6 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -117,7 +116,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["data/at.rda","early-stopping-with-xgboost_files/anchor-4.2.2/anchor.min.js","early-stopping-with-xgboost_files/bowser-1.9.3/bowser.min.js","early-stopping-with-xgboost_files/distill-2.2.21/template.v2.js","early-stopping-with-xgboost_files/figure-html5/unnamed-chunk-3-1.png","early-stopping-with-xgboost_files/figure-html5/unnamed-chunk-4-1.png","early-stopping-with-xgboost_files/figure-html5/unnamed-chunk-5-1.png","early-stopping-with-xgboost_files/figure-html5/unnamed-chunk-6-1.png","early-stopping-with-xgboost_files/header-attrs-2.13/header-attrs.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.map","early-stopping-with-xgboost_files/popper-2.6.0/popper.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-bundle.umd.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-light-border.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.umd.min.js","early-stopping-with-xgboost_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["data/at.rda","early-stopping-with-xgboost_files/anchor-4.2.2/anchor.min.js","early-stopping-with-xgboost_files/bowser-1.9.3/bowser.min.js","early-stopping-with-xgboost_files/distill-2.2.21/template.v2.js","early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-006-1.png","early-stopping-with-xgboost_files/figure-html5/unnamed-chunk-3-1.png","early-stopping-with-xgboost_files/figure-html5/unnamed-chunk-4-1.png","early-stopping-with-xgboost_files/figure-html5/unnamed-chunk-5-1.png","early-stopping-with-xgboost_files/figure-html5/unnamed-chunk-6-1.png","early-stopping-with-xgboost_files/header-attrs-2.13/header-attrs.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.map","early-stopping-with-xgboost_files/popper-2.6.0/popper.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-bundle.umd.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-light-border.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.umd.min.js","early-stopping-with-xgboost_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1496,34 +1495,32 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <h1 id="scope">Scope</h1>
 <p>In this post, we use early stopping to reduce overfitting when training an XGBoost model. We start with a short recap on early stopping and overfitting. After that, we use the early stopping mechanism of XGBoost and train a model on the spam data set. Finally, we tune the hyperparameters of an XGBoost learner and use early stopping at the same time.</p>
 <h1 id="early-stopping">Early Stopping</h1>
-<p>Early stopping is a technique used to reduce overfitting when fitting a model in an iterative process. Overfitting occurs when a model fits increasingly to the training data but the performance on unseen data decreases. When using early stopping, the performance of the model is monitored on a test set and the training is stopped when performance is decreasing in a specific number of iterations.</p>
+<p>Early stopping is a technique used to reduce overfitting when fitting a model in an iterative process. Overfitting occurs when a model fits increasingly to the training data but the performance on unseen data decreases. When using early stopping, the performance of the model is monitored on a validation set and the training is stopped when performance is decreasing in a specific number of iterations.</p>
 <h1 id="resampling">Resampling</h1>
 <p>We load the <a href="https://mlr3verse.mlr-org.com">mlr3verse</a> package which pulls in the most important packages for this example.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3verse.mlr-org.com'>mlr3verse</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3misc.mlr-org.com'>mlr3misc</a></span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
-<p>When training an XGBoost learner, we can use early stopping to find the optimal number of trees. For this, we have to set <code>early_stopping_set</code> to <code>"test"</code> so that the performance of the model is monitored on a test set while training. Additionally, we need to define the range in which the performance must increase with <code>early_stopping_rounds</code> and the maximum number of boosting rounds with <code>nrounds</code>. In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.</p>
+<p>When training an XGBoost learner, we can use early stopping to find the optimal number of trees. For this, we have to define a separate early stopping set so that the performance of the model is monitored while training. Additionally, we need to define the range in which the performance must increase with <code>early_stopping_rounds</code> and the maximum number of boosting rounds with <code>nrounds</code>. In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.xgboost"</span>,
   nrounds <span class='op'>=</span> <span class='fl'>1000</span>,
   early_stopping_rounds <span class='op'>=</span> <span class='fl'>100</span>,
-  early_stopping_set <span class='op'>=</span> <span class='st'>"test"</span>,
   eval_metric <span class='op'>=</span> <span class='st'>"error"</span>
 <span class='op'>)</span>
 </code></pre>
 </div>
 </div>
-<p>Before we can train the learner, we have to define the test set, The <code>partition()</code> function splits the rows ids of the task into a training and test set. We use 80% of observations to fit the model and the remaining 20% as the test set.</p>
+<p>Before we can train the learner, we have to define the early stopping set, The <code>partition()</code> function splits the rows ids of the task into two sets. We use 80% of observations to fit the model and the remaining 20% as the early stopping set.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>task</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>tsk</a></span><span class='op'>(</span><span class='st'>"spam"</span><span class='op'>)</span>
 <span class='va'>split</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/partition.html'>partition</a></span><span class='op'>(</span><span class='va'>task</span>, ratio <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span>
-<span class='va'>task</span><span class='op'>$</span><span class='fu'>set_row_roles</span><span class='op'>(</span><span class='va'>split</span><span class='op'>$</span><span class='va'>test</span>, <span class='st'>"test"</span><span class='op'>)</span>
+<span class='va'>task</span><span class='op'>$</span><span class='fu'>set_row_roles</span><span class='op'>(</span><span class='va'>split</span><span class='op'>$</span><span class='va'>test</span>, <span class='st'>"early_stopping"</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
@@ -1534,12 +1531,10 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 </div>
-<p>The performance scores on the train and test set are stored in the <code>$evaluation_log</code> of the model. Figure 1 shows that the classification error on the training set decreases continuously whereas the error on the test increases after 20 rounds.</p>
+<p>The performance scores on the train and early stopping set are stored in the <code>$evaluation_log</code> of the model. Figure 1 shows that the classification error on the training set decreases continuously whereas the error on the early stopping set increases after 20 rounds.</p>
 <div class="layout-chunk" data-layout="l-body">
 <details>
-<summary>
-Show code
-</summary>
+<summary>Show code</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggplot2.tidyverse.org'>ggplot2</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-datatable.com'>data.table</a></span><span class='op'>)</span>
@@ -1554,14 +1549,14 @@ Show code
 <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>data</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>iter</span>, y <span class='op'>=</span> <span class='va'>error</span>, group <span class='op'>=</span> <span class='va'>set</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='va'>set</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>xintercept <span class='op'>=</span> <span class='va'>learner</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>best_iteration</span><span class='op'>)</span>, color <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_manual.html'>scale_colour_manual</a></span><span class='op'>(</span>values<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#f8766d"</span>, <span class='st'>"#00b0f6"</span><span class='op'>)</span>, labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Train"</span>, <span class='st'>"Test"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_manual.html'>scale_colour_manual</a></span><span class='op'>(</span>values<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#f8766d"</span>, <span class='st'>"#00b0f6"</span><span class='op'>)</span>, labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Train"</span>, <span class='st'>"Early Stopping"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Rounds"</span>, y <span class='op'>=</span> <span class='st'>"Classification Error"</span>, color <span class='op'>=</span> <span class='st'>"Set"</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
 </details>
-<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-6"></span>
-<img src="early-stopping-with-xgboost_files/figure-html5/unnamed-chunk-6-1.png" alt="Clasification Error" width="624" />
+<div class="figure"><span style="display:block;" id="fig:early-stopping-with-xgboost-006"></span>
+<img src="early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-006-1.png" alt="Clasification Error" width="624" />
 <p class="caption">
 Figure 1: Clasification Error
 </p>
@@ -1575,60 +1570,95 @@ Figure 1: Clasification Error
 </div>
 <pre><code>[1] 20</code></pre>
 </div>
-<p>When resampling a learner, the test sets are used for early stopping.</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>rr</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/resample.html'>resample</a></span><span class='op'>(</span><span class='va'>task</span>, <span class='va'>learner</span>, <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
-</code></pre>
-</div>
-</div>
-<div class="layout-chunk" data-layout="l-body">
-<pre><code>                task                     learner iteration classif.ce
-1: &lt;TaskClassif[50]&gt; &lt;LearnerClassifXgboost[37]&gt;         1 0.03748981
-2: &lt;TaskClassif[50]&gt; &lt;LearnerClassifXgboost[37]&gt;         2 0.04726976
-3: &lt;TaskClassif[50]&gt; &lt;LearnerClassifXgboost[37]&gt;         3 0.04812398</code></pre>
-</div>
 <h1 id="tuning">Tuning</h1>
 <p>Next we want to tune the hyperparameters of an XGBoost learner and find the optimal number of trees in one go. First we load a predefined tuning space from the <a href="https://mlr3tuningspaces.mlr-org.com">mlr3tuningspaces</a> package.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>tuning_space</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuningspaces.mlr-org.com/reference/lts.html'>lts</a></span><span class='op'>(</span><span class='st'>"classif.xgboost.default"</span><span class='op'>)</span>
-<span class='va'>tuning_space</span>
+<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html'>as.data.table</a></span><span class='op'>(</span><span class='va'>tuning_space</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>&lt;TuningSpace:classif.xgboost.default&gt;: Default Extreme Gradient Boosting Classification
-                  id lower upper levels logscale
-1:               eta 1e-04     1            TRUE
-2:           nrounds 1e+00  5000           FALSE
-3:         max_depth 1e+00    20           FALSE
-4:  colsample_bytree 1e-01     1           FALSE
-5: colsample_bylevel 1e-01     1           FALSE
-6:            lambda 1e-03  1000            TRUE
-7:             alpha 1e-03  1000            TRUE
-8:         subsample 1e-01     1           FALSE</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="table-responsive"><table class = 'table'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> id </th>
+   <th style="text-align:right;"> lower </th>
+   <th style="text-align:right;"> upper </th>
+   <th style="text-align:left;"> logscale </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> eta </td>
+   <td style="text-align:right;"> 1e-04 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> TRUE </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> nrounds </td>
+   <td style="text-align:right;"> 1e+00 </td>
+   <td style="text-align:right;"> 5000 </td>
+   <td style="text-align:left;"> FALSE </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> max_depth </td>
+   <td style="text-align:right;"> 1e+00 </td>
+   <td style="text-align:right;"> 20 </td>
+   <td style="text-align:left;"> FALSE </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> colsample_bytree </td>
+   <td style="text-align:right;"> 1e-01 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> colsample_bylevel </td>
+   <td style="text-align:right;"> 1e-01 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> lambda </td>
+   <td style="text-align:right;"> 1e-03 </td>
+   <td style="text-align:right;"> 1000 </td>
+   <td style="text-align:left;"> TRUE </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> alpha </td>
+   <td style="text-align:right;"> 1e-03 </td>
+   <td style="text-align:right;"> 1000 </td>
+   <td style="text-align:left;"> TRUE </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> subsample </td>
+   <td style="text-align:right;"> 1e-01 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FALSE </td>
+  </tr>
+</tbody>
+</table></div>
 </div>
 <p>We copy the tuning space to the parameter set of the learner and add the additional early stopping parameters.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>=</span> <span class='va'>tuning_space</span><span class='op'>$</span><span class='va'>values</span>
-<span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3misc.mlr-org.com/reference/insert_named.html'>insert_named</a></span><span class='op'>(</span><span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+<span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>=</span> <span class='fu'>mlr3misc</span><span class='fu'>::</span><span class='fu'><a href='https://mlr3misc.mlr-org.com/reference/insert_named.html'>insert_named</a></span><span class='op'>(</span><span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
   nrounds <span class='op'>=</span> <span class='fl'>1000</span>,
   early_stopping_rounds <span class='op'>=</span> <span class='fl'>100</span>,
-  early_stopping_set <span class='op'>=</span> <span class='st'>"test"</span>,
   eval_metric <span class='op'>=</span> <span class='st'>"error"</span>
 <span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
-<p>The <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a> tunes the hyperparameters of a learner and fits a final model with the best hyperparameter configuration. Early stopping is used in both tuning of the hyperparameters and training of the final model. While tuning, the test sets of the <a href="https://mlr3.mlr-org.com/reference/Resampling.html"><code>Resampling</code></a> are used for early stopping. When training the final model, early stopping must be used one last time. We define a separate test set for this step.</p>
+<p>The <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a> tunes the hyperparameters of a learner and fits a final model with the best hyperparameter configuration. Early stopping is used in both tuning of the hyperparameters and training of the final model. We set the early stopping set.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>task</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>tsk</a></span><span class='op'>(</span><span class='st'>"spam"</span><span class='op'>)</span>
 <span class='va'>split</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/partition.html'>partition</a></span><span class='op'>(</span><span class='va'>task</span>, ratio <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span>
-<span class='va'>task</span><span class='op'>$</span><span class='fu'>set_row_roles</span><span class='op'>(</span><span class='va'>split</span><span class='op'>$</span><span class='va'>test</span>, roles <span class='op'>=</span> <span class='st'>"test"</span><span class='op'>)</span>
+<span class='va'>task</span><span class='op'>$</span><span class='fu'>set_row_roles</span><span class='op'>(</span><span class='va'>split</span><span class='op'>$</span><span class='va'>test</span>, roles <span class='op'>=</span> <span class='st'>"early_stopping"</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
@@ -1653,15 +1683,6 @@ Figure 1: Clasification Error
 </code></pre>
 </div>
 </div>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/readRDS.html'>saveRDS</a></span><span class='op'>(</span><span class='va'>at</span>, <span class='st'>"data/at.rda"</span><span class='op'>)</span>
-</code></pre>
-</div>
-</div>
-<div class="layout-chunk" data-layout="l-body">
-
-</div>
 <p>Lets have a look at the best hyperparameter configuration.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -1685,14 +1706,14 @@ Figure 1: Clasification Error
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:right;"> -0.9399154 </td>
+   <td style="text-align:right;"> -1.279944 </td>
    <td style="text-align:right;"> 17 </td>
-   <td style="text-align:right;"> 0.4520681 </td>
-   <td style="text-align:right;"> 0.1411074 </td>
-   <td style="text-align:right;"> 2.294155 </td>
-   <td style="text-align:right;"> -3.390976 </td>
-   <td style="text-align:right;"> 0.7498546 </td>
-   <td style="text-align:right;"> 0.0453818 </td>
+   <td style="text-align:right;"> 0.63275 </td>
+   <td style="text-align:right;"> 0.9069769 </td>
+   <td style="text-align:right;"> -2.087429 </td>
+   <td style="text-align:right;"> -2.464953 </td>
+   <td style="text-align:right;"> 0.3917898 </td>
+   <td style="text-align:right;"> 0.0551649 </td>
   </tr>
 </tbody>
 </table></div>
@@ -1703,9 +1724,9 @@ Figure 1: Clasification Error
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>at</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>learner</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>best_iteration</span>
 </code></pre>
 </div>
-<pre><code>[1] 267</code></pre>
+<pre><code>[1] 143</code></pre>
 </div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
