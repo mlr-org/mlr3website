@@ -85,7 +85,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>mlr3 package updates - q1/2021</title>
+  <title>mlr3 package updates - q1/2022</title>
   
   <meta property="description" itemprop="description" content="Quarterly mlr3 package updates."/>
   
@@ -96,21 +96,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <meta name="article:author" content="Sebastian Fischer"/>
   
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="mlr3 package updates - q1/2021"/>
+  <meta property="og:title" content="mlr3 package updates - q1/2022"/>
   <meta property="og:type" content="article"/>
   <meta property="og:description" content="Quarterly mlr3 package updates."/>
   <meta property="og:locale" content="en_US"/>
   
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="mlr3 package updates - q1/2021"/>
+  <meta property="twitter:title" content="mlr3 package updates - q1/2022"/>
   <meta property="twitter:description" content="Quarterly mlr3 package updates."/>
   
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["mlr3 package updates - q1/2021"]},{"type":"character","attributes":{},"value":["Quarterly mlr3 package updates.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Sebastian Fischer"]},{"type":"character","attributes":{},"value":["https://github.com/sebffischer"]}]}]},{"type":"character","attributes":{},"value":["2022-04-25"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["mlr3 package updates - q1/2022"]},{"type":"character","attributes":{},"value":["Quarterly mlr3 package updates.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Sebastian Fischer"]},{"type":"character","attributes":{},"value":["https://github.com/sebffischer"]}]}]},{"type":"character","attributes":{},"value":["2022-04-25"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -1456,7 +1456,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"mlr3 package updates - q1/2021","description":"Quarterly mlr3 package updates.","authors":[{"author":"Sebastian Fischer","authorURL":"https://github.com/sebffischer","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-04-25T00:00:00.000+02:00","citationText":"Fischer, 2022"}
+{"title":"mlr3 package updates - q1/2022","description":"Quarterly mlr3 package updates.","authors":[{"author":"Sebastian Fischer","authorURL":"https://github.com/sebffischer","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-04-25T00:00:00.000+02:00","citationText":"Fischer, 2022"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1466,7 +1466,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>mlr3 package updates - q1/2021</h1>
+<h1>mlr3 package updates - q1/2022</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 <p>Quarterly mlr3 package updates.</p>
@@ -1479,7 +1479,10 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 
 <div class="d-article">
-<h1 id="bbotk-0.5.2">bbotk 0.5.2</h1>
+<p>Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up with the latest changes across all packages. This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter. Note that only CRAN packages are listed here and the sort order is alphabetically.</p>
+<h1 id="bbotk"><a href="https://github.com/mlr-org/bbotk">bbotk</a></h1>
+<p><strong>Description: Black-Box Optimization Toolkit</strong></p>
+<h2 id="section">0.5.2</h2>
 <ul>
 <li>refactor: The <code>$print()</code> method of <code>OptimInstance</code> omits unnecessary columns now.</li>
 <li>fix: The <code>$clear()</code> method of <code>OptimInstance</code> raised an error.</li>
@@ -1488,14 +1491,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li>feat: <code>as.data.table()</code> functions for objects of class <code>Dictionary</code> have been extended with additional columns.</li>
 <li>feat: Add a <code>as.data.table.DictionaryTerminator()</code> function.</li>
 </ul>
-<h1 id="bbotk-0.5.1">bbotk 0.5.1</h1>
-<ul>
-<li>fix: The return of the <code>$.status()</code> method of <code>TerminatorRunTime</code> and <code>TerminatorClockTime</code> was not in a consistent unit. The return is in seconds from now on.</li>
-<li>fix: The number of evaluations was recorded as 0 in the log messages when the search space was empty.</li>
-<li>feat: Add a <code>as.data.table.DictionaryOptimizer()</code> function.</li>
-<li>feat: New <code>$help()</code> method which opens the manual page of an <code>Optimizer</code>.</li>
-</ul>
-<h1 id="bbotk-0.5.0">bbotk 0.5.0</h1>
+<h1 id="section-1">0.5.1</h1>
+<p>2* fix: The return of the <code>$.status()</code> method of <code>TerminatorRunTime</code> and <code>TerminatorClockTime</code> was not in a consistent unit. The return is in seconds from now on. * fix: The number of evaluations was recorded as 0 in the log messages when the search space was empty. * feat: Add a <code>as.data.table.DictionaryOptimizer()</code> function. * feat: New <code>$help()</code> method which opens the manual page of an <code>Optimizer</code>.</p>
+<h2 id="section-2">0.5.0</h2>
 <ul>
 <li>feat: Add <code>$nds_selection()</code> method to <code>Archive</code>.</li>
 <li>feat: New <code>Codomain</code> class that allows extra parameters.</li>
@@ -1504,36 +1502,38 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li>refactor: The fields <code>$param_classes</code>, <code>$properties</code> and <code>$packages</code> of <code>Optimizer</code> objects are read-only now.</li>
 <li>feat: The <code>branin()</code> function is exported now.</li>
 </ul>
-<h1 id="mlr3-0.13.3">mlr3 0.13.3</h1>
+<h1 id="mlr3"><a href="https://github.com/mlr-org/mlr3">mlr3</a></h1>
+<p><strong>Description: Machine Learning in R - Next Generation</strong></p>
+<h2 id="section-3">0.13.3</h2>
 <ul>
 <li>Most objects now have a new (optional) field <code>label</code>, i.e. <code>Task</code>, <code>TaskGenerator</code>, <code>Learner</code>, <code>Resampling</code>, and <code>Measure</code>.</li>
 <li><code>as.data.table()</code> methods for objects of class <code>Dictonary</code> have been extended with additional columns.</li>
 <li><code>as_task_classif.formula()</code> and <code>as_task_regr.formula()</code> now remove additional atrributes attached to the data which caused some some learners to break.</li>
 <li>Packages are now loaded prior to calling the <code>$train()</code> and <code>$predict()</code> methods of a <code>Learner</code>. This ensures that package loading errors are properly propagated and not affected by encapsulation (#771).</li>
 </ul>
-<h1 id="mlr3-0.13.2">mlr3 0.13.2</h1>
+<h2 id="section-4">0.13.2</h2>
 <ul>
 <li>Setting a fallback learner for a learner with encapsulation in its default settings now automatically sets encapsulation to <code>"evaluate"</code> (#763).</li>
 <li><code>as_task_classif()</code> and <code>as_task_regr()</code> now support the construction of tasks using the formula interface, e.g. <code>as_task_regr(mpg ~ ., data = mtcars)</code> (#761).</li>
 <li>The row role <code>"validation"</code> has been renamed to <code>"holdout"</code>. In the next release, <code>mlr3</code> will start switching to the now more common terms <code>"train"</code>/<code>"validation"</code> instead of <code>"train"</code>/<code>"test"</code> for the sets created during resampling.</li>
 </ul>
-<h1 id="mlr3-0.13.1">mlr3 0.13.1</h1>
+<h2 id="section-5">0.13.1</h2>
 <ul>
 <li>Improved performance for many operations on <code>ResampleResult</code> and <code>BenchmarkResult</code>.</li>
 <li><code>resample()</code> and <code>benchmark()</code> got a new argument <code>clone</code> to control which objects to clone before performing computations.</li>
 <li>Tasks are checked for infinite values during the conversion from <code>data.frame</code> to <code>Task</code> in <code>as_task_classif()</code> and <code>as_task_regr()</code>. A warning is signaled if any column contains infinite values.</li>
 </ul>
-<h1 id="mlr3filters-0.5.0.9000">mlr3filters 0.5.0.9000</h1>
-<ul>
-<li>Add references to benchmark paper and praznik paper #104</li>
-</ul>
-<h1 id="mlr3filters-0.5.0">mlr3filters 0.5.0</h1>
+<h1 id="mlr3filters"><a href="https://github.com/mlr-org/mlr3filters">mlr3filters</a></h1>
+<p><strong>Description: Filter-based feature selection for mlr3</strong></p>
+<h2 id="section-6">0.5.0</h2>
 <ul>
 <li>Add references to benchmark paper and praznik paper (#104)</li>
 <li>New filter <code>FilterSelectedFeatures</code> which makes use of embedded feature selection methods of learners. See the help page for more details (#102)</li>
 <li>Allow <code>NA</code> as task type. This makes it possible to use other tasks than <code>"regr"</code> or <code>"classif"</code> for certain filters, e.g. <code>FilterVariance</code> (#106)</li>
 </ul>
-<h1 id="mlr3fselect-0.7.0">mlr3fselect 0.7.0</h1>
+<h1 id="mlr3fselect"><a href="https://github.com/mlr-org/mlr3fselect">mlr3fselect</a></h1>
+<p><strong>Description: Wrapper feature selection for mlr3</strong></p>
+<h2 id="section-7">0.7.0</h2>
 <ul>
 <li>feat: Allow to pass <code>FSelector</code> objects as <code>method</code> in <code>fselect()</code> and <code>auto_fselector()</code>.</li>
 <li>feat: Added <code>$label</code> to <code>FSelector</code>s.</li>
@@ -1542,53 +1542,57 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li>feat: Added a <code>as.data.table.DictionaryFSelector</code> function.</li>
 <li>feat: Added <code>min_features</code> parameter to <code>FSelectorSequential</code>.</li>
 </ul>
-<h1 id="mlr3fselect-0.6.1">mlr3fselect 0.6.1</h1>
+<h2 id="section-8">0.6.1</h2>
 <ul>
 <li>Add <code>store_models</code> flag to <code>fselect()</code>.</li>
 <li>Remove <code>store_x_domain</code> flag.</li>
 </ul>
-<h1 id="mlr3hyperband-0.4.0">mlr3hyperband 0.4.0</h1>
+<h1 id="mlr3hyperband"><a href="https://github.com/mlr-org/mlr3hyperband">mlr3hyperband</a></h1>
+<p><strong>Description: Hyperband for ‘mlr3’</strong></p>
+<h2 id="section-9">0.4.0</h2>
 <ul>
 <li>feat: New <code>adjust_minimum_budget</code> flag in <code>OptimizerSuccessiveHalving</code>. The minimum budget is adjusted in the base stage to use the maximum budget in last stage.</li>
 <li>feat: New <code>repetitions</code> parameter to specify the exact number of repetitions. Replaced the <code>repeats</code> parameter.</li>
 </ul>
-<h1 id="mlr3hyperband-0.3.0">mlr3hyperband 0.3.0</h1>
+<h2 id="section-10">0.3.0</h2>
 <ul>
 <li>feat: <code>TunerHyperband</code> evaluates configurations of same budget across brackets in parallel now.</li>
 <li>feat: New <code>repeats</code> parameter to repeat runs of successive halving and hyperband until termination.</li>
 <li>fix: Bug where maximization measures were minimized.</li>
 </ul>
-<h1 id="mlr3proba-0.4.9">mlr3proba 0.4.9</h1>
+<h1 id="mlr3proba"><a href="https://github.com/mlr-org/mlr3proba">mlr3proba</a></h1>
+<p><strong>Description: Probabilistic Supervised Learning for ‘mlr3’</strong></p>
+<h2 id="section-11">0.4.9</h2>
 <ul>
 <li>Fixed bug in surv.logloss causing IPCW weighting to not be applied correctly</li>
 </ul>
-<h1 id="mlr3proba-0.4.8">mlr3proba 0.4.8</h1>
+<h2 id="section-12">0.4.8</h2>
 <ul>
 <li>Bug fixes in AUC measures</li>
 </ul>
-<h1 id="mlr3proba-0.4.7">mlr3proba 0.4.7</h1>
+<h2 id="section-13">0.4.7</h2>
 <ul>
 <li>Add right-censored log loss</li>
 <li>Fix bug in {rpart} where model was being discarded when set to be kept. Parameter <code>model</code> now called <code>keep_model</code>.</li>
 </ul>
-<h1 id="mlr3proba-0.4.6">mlr3proba 0.4.6</h1>
+<h2 id="section-14">0.4.6</h2>
 <ul>
 <li>Patch for upstream breakages</li>
 <li>Add <code>TaskSurv$kaplan</code> method</li>
 <li>{survivalmodels} now imported (previously suggested)</li>
 </ul>
-<h1 id="mlr3proba-0.4.5">mlr3proba 0.4.5</h1>
+<h2 id="section-15">0.4.5</h2>
 <ul>
 <li>Improved reduction from survival matrix predictions to ranking predictions</li>
 <li>Fixed cindex bug when all predictions equal</li>
 <li>Fix for valgrind</li>
 </ul>
-<h1 id="mlr3proba-0.4.4">mlr3proba 0.4.4</h1>
+<h2 id="section-16">0.4.4</h2>
 <ul>
 <li>Minor change to how distributions are created to better support improper distributions</li>
 <li>Fixed bug in <code>simsurv</code> task that made it impossible to predict the target</li>
 </ul>
-<h1 id="mlr3proba-0.4.3">mlr3proba 0.4.3</h1>
+<h2 id="section-17">0.4.3</h2>
 <ul>
 <li>Massive speed-up in distrcompositor PipeOp/pipeline</li>
 <li>More informative error given if <code>$distr</code> called for a learner that does not support this return type</li>
@@ -1598,53 +1602,50 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li>Add parameters <code>t_max</code> and <code>p_max</code> to Graf, Schmid and Integrated Log-loss as an alternative to <code>times</code>. <code>t_max</code> is equivalent to <code>times = seq(t_max)</code> and <code>p_max</code> is the proportion of censoring to integrate up to in the dataset.</li>
 <li>Fix bug in Rcpp code that was causing erroneous values for calculating the cindex in datasets greater than 20,000 observations.</li>
 </ul>
-<h1 id="mlr3spatial-0.1.2.9000">mlr3spatial 0.1.2.9000</h1>
-<ul>
-<li>fix: The <code>$data()</code> method of <code>DataBackendRaster</code> sometimes failed when not adjacent cells were read.</li>
-<li>refactor: compatibility to <code>terra</code> update.</li>
-</ul>
-<h1 id="mlr3spatial-0.1.2">mlr3spatial 0.1.2</h1>
+<h1 id="mlr3spatial"><a href="https://github.com/mlr-org/mlr3spatial">mlr3spatial</a></h1>
+<p><strong>Description: Support for Spatial Objects Within the ‘mlr3’ Ecosystem</strong></p>
+<h2 id="section-18">0.1.2.9000</h2>
 <ul>
 <li>refactor: stars objects are directly converted to terra objects now.</li>
 </ul>
-<h1 id="mlr3spatial-0.1.1">mlr3spatial 0.1.1</h1>
+<h2 id="section-19">0.1.1</h2>
 <ul>
 <li>fix: compatibility to <code>terra</code> update.</li>
 </ul>
-<h1 id="mlr3spatiotempcv-1.0.1.9000">mlr3spatiotempcv 1.0.1.9000</h1>
-<ul>
-<li>Same as previous version.</li>
-</ul>
-<h1 id="mlr3spatiotempcv-1.0.1">mlr3spatiotempcv 1.0.1</h1>
+<h1 id="mlr3spatiotempcv"><a href="https://github.com/mlr-org/mlr3spatiotempcv">mlr3spatiotempcv</a></h1>
+<p><strong>Description: Spatiotemporal resampling methods for mlr3</strong></p>
+<h2 id="section-20">1.0.1</h2>
 <ul>
 <li>Fixed a issue which caused coordinates to appear in the feature set when a data.frame was supplied (#166, <span class="citation" data-cites="be-marc">@be-marc</span>)</li>
 <li>Add <code>autoplot()</code> support for <code>"groups"</code> column role in <code>rsmp("cv")</code></li>
 </ul>
-<h1 id="mlr3tuning-0.13.0">mlr3tuning 0.13.0</h1>
+<h1 id="mlr3tuning"><a href="https://github.com/mlr-org/mlr3tuning">mlr3tuning</a></h1>
+<p><strong>Description: Tuning for ‘mlr3’</strong></p>
+<h2 id="section-21">0.13.0</h2>
 <ul>
 <li>feat: Allow to pass <code>Tuner</code> objects as <code>method</code> in <code>tune()</code> and <code>auto_tuner()</code>.</li>
 <li>docs: Link <code>Tuner</code> to help page of <code>bbotk::Optimizer</code>.</li>
 <li>feat: <code>Tuner</code> objects have the optional field <code>$label</code> now.</li>
 <li>feat: <code>as.data.table()</code> functions for objects of class <code>Dictionary</code> have been extended with additional columns.</li>
 </ul>
-<h1 id="mlr3tuning-0.12.1">mlr3tuning 0.12.1</h1>
+<h2 id="section-22">0.12.1</h2>
 <ul>
 <li>feat: Add a <code>as.data.table.DictionaryTuner</code> function.</li>
 <li>feat: New <code>$help()</code> method which opens the manual page of an <code>Tuner</code>.</li>
 </ul>
-<h1 id="mlr3tuning-0.12.0">mlr3tuning 0.12.0</h1>
+<h2 id="section-23">0.12.0</h2>
 <ul>
 <li>feat: <code>as_search_space()</code> function to create search spaces from <code>Learner</code> and <code>ParamSet</code> objects. Allow to pass <code>TuningSpace</code> objects as <code>search_space</code> in <code>TuningInstanceSingleCrit</code> and <code>TuningInstanceMultiCrit</code>.</li>
 <li>feat: The <code>mlr3::HotstartStack</code> can now be removed after tuning with the <code>keep_hotstart_stack</code> flag.</li>
 <li>feat: The <code>Archive</code> stores errors and warnings of the learners.</li>
 <li>feat: When no measure is provided, the default measure is used in <code>auto_tuner()</code> and <code>tune_nested()</code>.</li>
 </ul>
-<h1 id="mlr3tuning-0.11.0">mlr3tuning 0.11.0</h1>
+<h2 id="section-24">0.11.0</h2>
 <ul>
 <li>fix: <code>$assign_result()</code> method in <code>TuningInstanceSingleCrit</code> when search space is empty.</li>
 <li>feat: Default measure is used when no measure is supplied to <code>TuningInstanceSingleCrit</code>.</li>
 </ul>
-<h1 id="mlr3tuning-0.10.0">mlr3tuning 0.10.0</h1>
+<h2 id="section-25">0.10.0</h2>
 <ul>
 <li>Fixes bug in <code>TuningInstanceMultiCrit$assign_result()</code>.</li>
 <li>Hotstarting of learners with previously fitted models.</li>
@@ -1652,7 +1653,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li>Add <code>store_models</code> flag to <code>auto_tuner()</code>.</li>
 <li>Add <code>"noisy"</code> property to <code>ObjectiveTuning</code>.</li>
 </ul>
-<h1 id="mlr3tuningspaces-0.2.0">mlr3tuningspaces 0.2.0</h1>
+<h1 id="mlr3tuningspaces"><a href="https://github.com/mlr-org/mlr3tuningspaces">mlr3tuningspaces</a></h1>
+<p><strong>Description: Search Spaces for Hyperparameter Tuning</strong></p>
+<h2 id="section-26">0.2.0</h2>
 <ul>
 <li>feat: Add a <code>as.data.table.TuningSpace()</code> function.</li>
 <li>feat: <code>TuningSpace</code> objects have the optional field <code>$label</code> now.</li>
@@ -1660,29 +1663,34 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li>feat: Add search space for <code>glmnet</code> and <code>kknn</code> to default collection.</li>
 <li>feat: New <code>as_search_space()</code> function to create search spaces from <code>TuningSpace</code> objects.</li>
 </ul>
-<h1 id="mlr3tuningspaces-0.1.1">mlr3tuningspaces 0.1.1</h1>
+<h2 id="section-27">0.1.1</h2>
 <ul>
 <li>fix: The <code>subsample</code> hyperparameter is tuned on a logarithmic scale now. The lower bound of <code>alpha</code> is reduced from <code>1e-4</code> to <code>1e-3</code>. The tuning range of the <code>lambda</code> hyperparameter was 0.1 to 1. From now on, <code>lambda</code> is tuned from <code>1e-3</code> to <code>1e3</code> on a logarithmic scale.</li>
 </ul>
-<h1 id="mlr3tuningspaces-0.1.0">mlr3tuningspaces 0.1.0</h1>
+<h2 id="section-28">0.1.0</h2>
 <ul>
 <li>refactor: update citations.</li>
 <li>feat: Add <code>mtry.ratio</code> hyperparameter to tuning spaces of the ranger learner.</li>
 <li>feat: Add <code>$print()</code> method to <code>TuningSpace</code> objects.</li>
 </ul>
-<h1 id="mlr3verse-0.2.4">mlr3verse 0.2.4</h1>
+<h1 id="mlr3verse"><a href="https://github.com/mlr-org/mlr3verse">mlr3verse</a></h1>
+<p><strong>Description: Easily Install and Load the ‘mlr3’ Package Family</strong></p>
+<h2 id="section-29">0.2.4</h2>
 <ul>
 <li>Updated reexports.</li>
 </ul>
-<h1 id="mlr3viz-0.5.8">mlr3viz 0.5.8</h1>
+<h1 id="mlr3viz"><a href="https://github.com/mlr-org/mlr3viz">mlr3viz</a></h1>
+<p><strong>Description: Visualizations for ‘mlr3’</strong></p>
+<h2 id="section-30">0.5.8</h2>
 <ul>
 <li>Compatibility fixes.</li>
 </ul>
-<h1 id="paradox-0.9.0">paradox 0.9.0</h1>
+<h1 id="paradox"><a href="https://github.com/mlr-org/paradox">paradox</a></h1>
+<h2 id="section-31">0.9.0</h2>
 <ul>
 <li>Added <code>default_values()</code> function to extract default values from <code>ParamSet</code> objects.</li>
 </ul>
-<h1 id="paradox-0.8.0">paradox 0.8.0</h1>
+<h2 id="section-32">0.8.0</h2>
 <ul>
 <li>Parameters now have a new (optional) field <code>description</code>.</li>
 <li>Improved printing of parameters in documentation (#355).</li>
