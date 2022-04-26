@@ -32,8 +32,13 @@
 &lt;li&gt;feat: &lt;code&gt;as.data.table()&lt;/code&gt; functions for objects of class &lt;code&gt;Dictionary&lt;/code&gt; have been extended with additional columns.&lt;/li&gt;
 &lt;li&gt;feat: Add a &lt;code&gt;as.data.table.DictionaryTerminator()&lt;/code&gt; function.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h1 id="section-1"&gt;0.5.1&lt;/h1&gt;
-&lt;p&gt;2* fix: The return of the &lt;code&gt;$.status()&lt;/code&gt; method of &lt;code&gt;TerminatorRunTime&lt;/code&gt; and &lt;code&gt;TerminatorClockTime&lt;/code&gt; was not in a consistent unit. The return is in seconds from now on. * fix: The number of evaluations was recorded as 0 in the log messages when the search space was empty. * feat: Add a &lt;code&gt;as.data.table.DictionaryOptimizer()&lt;/code&gt; function. * feat: New &lt;code&gt;$help()&lt;/code&gt; method which opens the manual page of an &lt;code&gt;Optimizer&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id="section-1"&gt;0.5.1&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;fix: The return of the &lt;code&gt;$.status()&lt;/code&gt; method of &lt;code&gt;TerminatorRunTime&lt;/code&gt; and &lt;code&gt;TerminatorClockTime&lt;/code&gt; was not in a consistent unit. The return is in seconds from now on.&lt;/li&gt;
+&lt;li&gt;fix: The number of evaluations was recorded as 0 in the log messages when the search space was empty.&lt;/li&gt;
+&lt;li&gt;feat: Add a &lt;code&gt;as.data.table.DictionaryOptimizer()&lt;/code&gt; function.&lt;/li&gt;
+&lt;li&gt;feat: New &lt;code&gt;$help()&lt;/code&gt; method which opens the manual page of an &lt;code&gt;Optimizer&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id="section-2"&gt;0.5.0&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;feat: Add &lt;code&gt;$nds_selection()&lt;/code&gt; method to &lt;code&gt;Archive&lt;/code&gt;.&lt;/li&gt;
