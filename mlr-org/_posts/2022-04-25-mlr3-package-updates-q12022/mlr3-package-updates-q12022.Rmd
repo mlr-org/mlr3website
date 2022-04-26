@@ -31,9 +31,9 @@ Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up 
 * feat: `as.data.table()` functions for objects of class `Dictionary` have been extended with additional columns.
 * feat: Add a `as.data.table.DictionaryTerminator()` function.
 
-# 0.5.1
+## 0.5.1
 
-2* fix: The return of the `$.status()` method of `TerminatorRunTime` and `TerminatorClockTime` was not in a consistent unit.
+* fix: The return of the `$.status()` method of `TerminatorRunTime` and `TerminatorClockTime` was not in a consistent unit.
   The return is in seconds from now on.
 * fix: The number of evaluations was recorded as 0 in the log messages when the search space was empty.
 * feat: Add a `as.data.table.DictionaryOptimizer()` function.

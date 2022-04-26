@@ -117,7 +117,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["mlr3-package-updates-q12022_files/anchor-4.2.2/anchor.min.js","mlr3-package-updates-q12022_files/bowser-1.9.3/bowser.min.js","mlr3-package-updates-q12022_files/distill-2.2.21/template.v2.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.min.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.min.map","mlr3-package-updates-q12022_files/popper-2.6.0/popper.min.js","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy-bundle.umd.min.js","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy-light-border.css","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy.css","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy.umd.min.js","mlr3-package-updates-q12022_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["mlr3-package-updates-q12022_files/anchor-4.2.2/anchor.min.js","mlr3-package-updates-q12022_files/bowser-1.9.3/bowser.min.js","mlr3-package-updates-q12022_files/distill-2.2.21/template.v2.js","mlr3-package-updates-q12022_files/header-attrs-2.13/header-attrs.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.min.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.min.map","mlr3-package-updates-q12022_files/popper-2.6.0/popper.min.js","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy-bundle.umd.min.js","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy-light-border.css","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy.css","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy.umd.min.js","mlr3-package-updates-q12022_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1505,15 +1505,18 @@ have the optional field <code>$label</code> now.</li>
 <li>feat: Add a <code>as.data.table.DictionaryTerminator()</code>
 function.</li>
 </ul>
-<h1 id="section-1">0.5.1</h1>
-<p>2* fix: The return of the <code>$.status()</code> method of
+<h2 id="section-1">0.5.1</h2>
+<ul>
+<li>fix: The return of the <code>$.status()</code> method of
 <code>TerminatorRunTime</code> and <code>TerminatorClockTime</code> was
-not in a consistent unit. The return is in seconds from now on. * fix:
-The number of evaluations was recorded as 0 in the log messages when the
-search space was empty. * feat: Add a
-<code>as.data.table.DictionaryOptimizer()</code> function. * feat: New
-<code>$help()</code> method which opens the manual page of an
-<code>Optimizer</code>.</p>
+not in a consistent unit. The return is in seconds from now on.</li>
+<li>fix: The number of evaluations was recorded as 0 in the log messages
+when the search space was empty.</li>
+<li>feat: Add a <code>as.data.table.DictionaryOptimizer()</code>
+function.</li>
+<li>feat: New <code>$help()</code> method which opens the manual page of
+an <code>Optimizer</code>.</li>
+</ul>
 <h2 id="section-2">0.5.0</h2>
 <ul>
 <li>feat: Add <code>$nds_selection()</code> method to
