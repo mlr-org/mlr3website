@@ -20,26 +20,28 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -48,9 +50,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
@@ -85,7 +87,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-<title>mlr-org: Benchmarking-mlr-learners-on-OpenML</title>
+<title>mlr-org: Benchmarking mlr learners on OpenML</title>
 
 <meta property="description" itemprop="description" content="Benchmarking mlr learners on the OpenML platform."/>
 
@@ -98,7 +100,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <meta name="article:author" content="Florian Pfisterer"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-<meta property="og:title" content="mlr-org: Benchmarking-mlr-learners-on-OpenML"/>
+<meta property="og:title" content="mlr-org: Benchmarking mlr learners on OpenML"/>
 <meta property="og:type" content="article"/>
 <meta property="og:description" content="Benchmarking mlr learners on the OpenML platform."/>
 <meta property="og:url" content="https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/"/>
@@ -107,12 +109,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
-<meta property="twitter:title" content="mlr-org: Benchmarking-mlr-learners-on-OpenML"/>
+<meta property="twitter:title" content="mlr-org: Benchmarking mlr learners on OpenML"/>
 <meta property="twitter:description" content="Benchmarking mlr learners on the OpenML platform."/>
 <meta property="twitter:url" content="https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/"/>
 
 <!--  https://scholar.google.com/intl/en/scholar/inclusion.html#indexing -->
-<meta name="citation_title" content="mlr-org: Benchmarking-mlr-learners-on-OpenML"/>
+<meta name="citation_title" content="mlr-org: Benchmarking mlr learners on OpenML"/>
 <meta name="citation_fulltext_html_url" content="https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/"/>
 <meta name="citation_online_date" content="2016/08/11"/>
 <meta name="citation_publication_date" content="2016/08/11"/>
@@ -121,7 +123,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","citation_url","canonical_url"]}},"value":[{"type":"character","attributes":{},"value":["Benchmarking-mlr-learners-on-OpenML"]},{"type":"character","attributes":{},"value":["Benchmarking mlr learners on the OpenML platform."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Florian Pfisterer"]},{"type":"character","attributes":{},"value":["https://github.com/pfistfl"]}]}]},{"type":"character","attributes":{},"value":["2016-08-11"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/"]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/"]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","citation_url","canonical_url"]}},"value":[{"type":"character","attributes":{},"value":["Benchmarking mlr learners on OpenML"]},{"type":"character","attributes":{},"value":["Benchmarking mlr learners on the OpenML platform."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Florian Pfisterer"]},{"type":"character","attributes":{},"value":["https://github.com/pfistfl"]}]}]},{"type":"character","attributes":{},"value":["2016-08-11"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/"]},{"type":"character","attributes":{},"value":["https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/"]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2761,6 +2763,7 @@ d-appendix d-footnote-list a.footnote-backlink {
   color: var(--hover-color, white);
 }</style>
 <!--/radix_placeholder_distill-->
+  <script src="../../site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="../../site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="../../site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -2781,7 +2784,7 @@ d-appendix d-footnote-list a.footnote-backlink {
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Benchmarking-mlr-learners-on-OpenML","description":"Benchmarking mlr learners on the OpenML platform.","authors":[{"author":"Florian Pfisterer","authorURL":"https://github.com/pfistfl","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2016-08-11T00:00:00.000+00:00","citationText":"Pfisterer, 2016"}
+{"title":"Benchmarking mlr learners on OpenML","description":"Benchmarking mlr learners on the OpenML platform.","authors":[{"author":"Florian Pfisterer","authorURL":"https://github.com/pfistfl","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2016-08-11T00:00:00.000+00:00","citationText":"Pfisterer, 2016"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2821,11 +2824,26 @@ Overview
 <a href="../../fselectors.html">Feature Selection Wrapper</a>
 </div>
 </div>
-<a href="../../learn.html">Learn mlr3</a>
-<a href="../../blog.html">Blog</a>
+<a href="../../resources.html">Resources</a>
 <a href="../../book.html">Book</a>
+<a href="../../blog.html">Blog</a>
 <a href="../../gallery.html">Gallery</a>
-<a href="../../team.html">About Us</a>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+More
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="../../support.html">Support</a>
+<a href="../../contributing.html">Contributing</a>
+<hr/>
+<a href="https://mlr-org.com/posts/2022-01-03-mlr3-package-updates-q42021/">What's new</a>
+<hr/>
+<a href="../../team.html">About us</a>
+<hr/>
+</div>
+</div>
 <a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
 </div>
 </nav>
@@ -2835,10 +2853,10 @@ Overview
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Benchmarking-mlr-learners-on-OpenML</h1>
+<h1>Benchmarking mlr learners on OpenML</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p>Benchmarking mlr learners on the OpenML platform.</p>
+<p><p>Benchmarking mlr learners on the OpenML platform.</p></p>
 </div>
 
 <div class="d-byline">
@@ -2902,11 +2920,11 @@ Overview
 <div class="appendix-bottom">
   <h3 id="citation">Citation</h3>
   <p>For attribution, please cite this work as</p>
-  <pre class="citation-appendix short">Pfisterer (2016, Aug. 11). mlr-org: Benchmarking-mlr-learners-on-OpenML. Retrieved from https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/</pre>
+  <pre class="citation-appendix short">Pfisterer (2016, Aug. 11). mlr-org: Benchmarking mlr learners on OpenML. Retrieved from https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/</pre>
   <p>BibTeX citation</p>
-  <pre class="citation-appendix long">@misc{pfisterer2016benchmarking-mlr-learners-on-openml,
+  <pre class="citation-appendix long">@misc{pfisterer2016benchmarking,
   author = {Pfisterer, Florian},
-  title = {mlr-org: Benchmarking-mlr-learners-on-OpenML},
+  title = {mlr-org: Benchmarking mlr learners on OpenML},
   url = {https://mlr-org.github.io/mlr-org-website/posts/2016-08-11-benchmarking-mlr-learners-on-openml/},
   year = {2016}
 }</pre>
