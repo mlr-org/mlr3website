@@ -42,7 +42,7 @@ datatable(
   rownames = FALSE)
 ```
 
-## Example Usage
+### Example Usage
 
 Load a tuning space for the `r ref("mlr_learners_classif.rpart", text = "classification tree")` learner from the @bischl_hyperparameter_2021 article.
 
@@ -74,3 +74,4 @@ instance$result
 learner$param_set$values = instance$result_learner_param_vals
 learner$train(task)
 ```
+
