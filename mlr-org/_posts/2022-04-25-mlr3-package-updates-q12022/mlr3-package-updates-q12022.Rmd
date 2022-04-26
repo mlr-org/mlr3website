@@ -1,0 +1,297 @@
+---
+title: "mlr3 package updates - q1/2022"
+description: |
+  Quarterly mlr3 package updates.
+author:
+  - name: Sebastian Fischer
+    url: https://github.com/sebffischer
+date: 2022-04-25
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up with the latest changes across all packages. This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter. Note that only CRAN packages are listed here and the sort order is alphabetically.
+
+# [bbotk](https://github.com/mlr-org/bbotk)
+
+**Description: Black-Box Optimization Toolkit**
+
+## 0.5.2
+
+* refactor: The `$print()` method of `OptimInstance` omits unnecessary columns now.
+* fix: The `$clear()` method of `OptimInstance` raised an error.
+* fix: The `$clear()` method of `Archive` missed to reset the `$start_time` field.
+* feat: `Optimizer` and `Terminator` objects have the optional field `$label` now.
+* feat: `as.data.table()` functions for objects of class `Dictionary` have been extended with additional columns.
+* feat: Add a `as.data.table.DictionaryTerminator()` function.
+
+## 0.5.1
+
+* fix: The return of the `$.status()` method of `TerminatorRunTime` and `TerminatorClockTime` was not in a consistent unit.
+  The return is in seconds from now on.
+* fix: The number of evaluations was recorded as 0 in the log messages when the search space was empty.
+* feat: Add a `as.data.table.DictionaryOptimizer()` function.
+* feat: New `$help()` method which opens the manual page of an `Optimizer`.
+
+## 0.5.0
+
+* feat: Add `$nds_selection()` method to `Archive`.
+* feat: New `Codomain` class that allows extra parameters.
+* refactor: Objective values were automatically named.
+  From now on, only unnamed returns of `ObjectiveRFun` are named.
+* fix: `OptimInstance`, `Archive` and `Objective` objects  were not cloned properly.
+* refactor: The fields `$param_classes`, `$properties` and `$packages` of `Optimizer` objects are read-only now.
+* feat: The `branin()` function is exported now.
+
+# [mlr3](https://github.com/mlr-org/mlr3)
+
+**Description: Machine Learning in R - Next Generation**
+
+## 0.13.3
+
+* Most objects now have a new (optional) field `label`, i.e. `Task`,
+  `TaskGenerator`, `Learner`, `Resampling`, and `Measure`.
+* `as.data.table()` methods for objects of class `Dictonary` have been extended
+  with additional columns.
+* `as_task_classif.formula()` and `as_task_regr.formula()` now remove additional
+  atrributes attached to the data which caused some some learners to break.
+* Packages are now loaded prior to calling the `$train()` and `$predict()`
+  methods of a `Learner`. This ensures that package loading errors are properly
+  propagated and not affected by encapsulation (#771).
+
+## 0.13.2
+
+* Setting a fallback learner for a learner with encapsulation in its default
+  settings now automatically sets encapsulation to `"evaluate"` (#763).
+* `as_task_classif()` and `as_task_regr()` now support the construction of tasks
+  using the formula interface, e.g. `as_task_regr(mpg ~ ., data = mtcars)`
+  (#761).
+* The row role `"validation"` has been renamed to `"holdout"`.
+  In the next release, `mlr3` will start switching to the now more common terms
+  `"train"`/`"validation"` instead of `"train"`/`"test"` for the sets created
+  during resampling.
+
+
+## 0.13.1
+
+* Improved performance for many operations on `ResampleResult` and
+  `BenchmarkResult`.
+* `resample()` and `benchmark()` got a new argument `clone` to control which
+  objects to clone before performing computations.
+* Tasks are checked for infinite values during the conversion from `data.frame`
+  to `Task` in `as_task_classif()` and `as_task_regr()`. A warning is signaled
+  if any column contains infinite values.
+
+# [mlr3filters](https://github.com/mlr-org/mlr3filters)
+
+**Description: Filter-based feature selection for mlr3**
+
+## 0.5.0
+
+* Add references to benchmark paper and praznik paper (#104)
+* New filter `FilterSelectedFeatures` which makes use of embedded feature selection methods of learners.
+  See the help page for more details (#102)
+* Allow `NA` as task type.
+  This makes it possible to use other tasks than `"regr"` or `"classif"` for certain filters, e.g. `FilterVariance` (#106)
+
+# [mlr3fselect](https://github.com/mlr-org/mlr3fselect)
+
+**Description: Wrapper feature selection for mlr3**
+
+## 0.7.0
+
+* feat: Allow to pass `FSelector` objects as `method` in `fselect()` and `auto_fselector()`.
+* feat: Added `$label` to `FSelector`s.
+* docs: New examples with `fselect()` function.
+* feat: `$help()` method which opens manual page of a `FSelector`.
+* feat: Added a `as.data.table.DictionaryFSelector` function.
+* feat: Added `min_features` parameter to `FSelectorSequential`.
+
+## 0.6.1
+
+* Add `store_models` flag to `fselect()`.
+* Remove `store_x_domain` flag.
+
+# [mlr3hyperband](https://github.com/mlr-org/mlr3hyperband)
+
+**Description: Hyperband for 'mlr3'**
+
+## 0.4.0
+
+* feat: New `adjust_minimum_budget` flag in  `OptimizerSuccessiveHalving`. The
+  minimum budget is adjusted in the base stage to use the maximum budget in last
+  stage.
+* feat: New `repetitions` parameter to specify the exact number of repetitions.
+  Replaced the `repeats` parameter.
+
+## 0.3.0
+
+* feat: `TunerHyperband` evaluates configurations of same budget across
+  brackets in parallel now.
+* feat: New `repeats` parameter to repeat runs of successive halving and
+  hyperband until termination.
+* fix: Bug where maximization measures were minimized.
+
+# [mlr3proba](https://github.com/mlr-org/mlr3proba)
+
+**Description: Probabilistic Supervised Learning for 'mlr3'**
+
+## 0.4.9
+
+* Fixed bug in surv.logloss causing IPCW weighting to not be applied correctly
+
+## 0.4.8
+
+* Bug fixes in AUC measures
+
+## 0.4.7
+
+* Add right-censored log loss
+* Fix bug in {rpart} where model was being discarded when set to be kept. Parameter `model` now called `keep_model`.
+
+## 0.4.6
+
+* Patch for upstream breakages
+* Add `TaskSurv$kaplan` method
+* {survivalmodels} now imported (previously suggested)
+
+## 0.4.5
+
+* Improved reduction from survival matrix predictions to ranking predictions
+* Fixed cindex bug when all predictions equal
+* Fix for valgrind
+
+## 0.4.4
+
+* Minor change to how distributions are created to better support improper distributions
+* Fixed bug in `simsurv` task that made it impossible to predict the target
+
+## 0.4.3
+
+* Massive speed-up in distrcompositor PipeOp/pipeline
+* More informative error given if `$distr` called for a learner that does not support this return type
+* Fix massive bottleneck in scoring rule measures
+* Add Density coercions `as_task_dens` and `as_prediction_dens`
+* Measures now use parameter sets like learners. This streamlines the interface but unfortunately means ids can no longer be set dynamically.
+* Add parameters `t_max` and `p_max` to Graf, Schmid and Integrated Log-loss as an alternative to `times`. `t_max` is equivalent to `times = seq(t_max)` and `p_max` is the proportion of censoring to integrate up to in the dataset.
+* Fix bug in Rcpp code that was causing erroneous values for calculating the cindex in datasets greater than 20,000 observations.
+
+# [mlr3spatial](https://github.com/mlr-org/mlr3spatial)
+
+**Description: Support for Spatial Objects Within the 'mlr3' Ecosystem**
+
+## 0.1.2
+
+* refactor: stars objects are directly converted to terra objects now.
+
+## 0.1.1
+
+* fix: compatibility to `terra` update.
+
+# [mlr3spatiotempcv](https://github.com/mlr-org/mlr3spatiotempcv)
+
+**Description: Spatiotemporal resampling methods for mlr3**
+
+## 1.0.1
+
+* Fixed a issue which caused coordinates to appear in the feature set when a data.frame was supplied (#166, @be-marc)
+* Add `autoplot()` support for `"groups"` column role in `rsmp("cv")`
+
+# [mlr3tuning](https://github.com/mlr-org/mlr3tuning)
+
+**Description: Tuning for 'mlr3'**
+
+## 0.13.0
+
+* feat: Allow to pass `Tuner` objects as `method` in `tune()` and `auto_tuner()`.
+* docs: Link `Tuner` to help page of `bbotk::Optimizer`.
+* feat: `Tuner` objects have the optional field `$label` now.
+* feat: `as.data.table()` functions for objects of class `Dictionary` have been extended with additional columns.
+
+## 0.12.1
+
+* feat: Add a `as.data.table.DictionaryTuner` function.
+* feat: New `$help()` method which opens the manual page of an `Tuner`.
+
+##  0.12.0
+
+* feat: `as_search_space()` function to create search spaces from `Learner` and `ParamSet` objects.
+  Allow to pass `TuningSpace` objects as `search_space` in `TuningInstanceSingleCrit` and `TuningInstanceMultiCrit`.
+* feat: The `mlr3::HotstartStack` can now be removed after tuning with the `keep_hotstart_stack` flag.
+* feat: The `Archive` stores errors and warnings of the learners.
+* feat: When no measure is provided, the default measure is used in `auto_tuner()` and `tune_nested()`.
+
+##  0.11.0
+
+* fix: `$assign_result()` method in `TuningInstanceSingleCrit` when search space is empty.
+* feat: Default measure is used when no measure is supplied to `TuningInstanceSingleCrit`.
+
+##  0.10.0
+
+* Fixes bug in `TuningInstanceMultiCrit$assign_result()`.
+* Hotstarting of learners with previously fitted models.
+* Remove deep clones to speed up tuning.
+* Add `store_models` flag to `auto_tuner()`.
+* Add `"noisy"` property to `ObjectiveTuning`.
+
+# [mlr3tuningspaces](https://github.com/mlr-org/mlr3tuningspaces)
+
+**Description: Search Spaces for Hyperparameter Tuning**
+
+## 0.2.0
+
+* feat: Add a `as.data.table.TuningSpace()` function.
+* feat: `TuningSpace` objects have the optional field `$label` now.
+* feat: New `$help()` method which opens the manual page of a `TuningSpace`.
+* feat: Add search space for `glmnet` and `kknn` to default collection.
+* feat: New `as_search_space()` function to create search spaces from `TuningSpace` objects.
+
+## 0.1.1
+
+* fix: The `subsample` hyperparameter is tuned on a logarithmic scale now.
+  The lower bound of `alpha` is reduced from `1e-4` to `1e-3`.
+  The tuning range of the `lambda` hyperparameter was 0.1 to 1.
+  From now on, `lambda` is tuned from `1e-3` to `1e3` on a logarithmic scale.
+
+## 0.1.0
+
+* refactor: update citations.
+* feat: Add `mtry.ratio` hyperparameter to tuning spaces of the ranger learner.
+* feat: Add `$print()` method to `TuningSpace` objects.
+
+# [mlr3verse](https://github.com/mlr-org/mlr3verse)
+
+**Description: Easily Install and Load the 'mlr3' Package Family**
+
+## 0.2.4
+
+* Updated reexports.
+
+# [mlr3viz](https://github.com/mlr-org/mlr3viz)
+
+**Description: Visualizations for 'mlr3'**
+
+## 0.5.8
+
+* Compatibility fixes.
+
+# [paradox](https://github.com/mlr-org/paradox)
+
+## 0.9.0
+
+* Added `default_values()` function to extract default values from `ParamSet`
+  objects.
+
+## 0.8.0
+
+* Parameters now have a new (optional) field `description`.
+* Improved printing of parameters in documentation (#355).
+* A warning is now signaled if the package `ParamHelpers` is also loaded.
+* Fixed some links.
+
