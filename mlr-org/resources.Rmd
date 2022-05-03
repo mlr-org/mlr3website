@@ -31,7 +31,7 @@ resource_grid = function(content) {
           name
         ),
         paste0(text, "."),
-        a(href = url, span(class = "grid-package-link"))
+        a(href = url, "aria-label" = sprintf("Go to %s", name), span(class = "grid-package-link"))
       )
     })
   )
