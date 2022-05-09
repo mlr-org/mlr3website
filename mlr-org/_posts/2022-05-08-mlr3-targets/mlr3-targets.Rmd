@@ -1,0 +1,55 @@
+---
+title: "mlr3-targets: how to use {mlr3} and {targets}"
+description: |
+  The repository `mlr3targets` presents a skeleton that shows how to conduct a benchmark in {mlr3} using the workflow package {targets}.
+author:
+  - name: Patrick Schratz
+date: 2022-05-08
+categories:
+    - R
+    - tutorial
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+The [mlr3-learndrake](https://github.com/mlr-org/mlr3-learndrake) repository has been deprecated and (finally) been ported to it's successor {targets}.
+
+The new [mlr3-targets](https://github.com/mlr-org/mlr3-targets) repository shows exemplary how {mlr3} and {targets} can be used jointly.
+The example implements a benchmark of two learners across two (example) tasks by making use of "dynamic branching" in {targets}.
+It also showcases the use of an opinionated project structure for {targets} projects and demonstrates how custom functions can be used within {targets} projects.
+
+The SVM learner in the project makes use of a custom "trafo" function to transform the hyperparameter search space.
+
+The power of {targets} gets visible once changes are applied to the project.
+For example, adding an additional task to the project (e.g. `sonar` via `tidyr::crossing(task = c("iris", "spam", "sonar")))` in `06-benchmark.R`) and invoking `tar_make()` again will only build the models for the newly added task and skip already existing ones.
+
+Here's the output from `tar_make()` for the described scenario.
+Existing branches of the `bm_*` targets are skipped (e.g. `bm_6f2e35d0`) while missing ones are built (`bm_be2cba98`) and merged into the main target `bm` at the end.
+
+```r
+✔ skip branch bm_8067dbd2
+• start branch bm_ad7f3ff3
+• built branch bm_ad7f3ff3
+✔ skip branch bm_0f8f184b
+✔ skip branch bm_16624f9e
+• start branch bm_d1764c21
+• built branch bm_d1764c21
+✔ skip branch bm_6f2e35d0
+✔ skip branch bm_335412b5
+• start branch bm_5b82da98
+• built branch bm_5b82da98
+✔ skip branch bm_5fdc62fd
+✔ skip branch bm_c02dd27e
+• start branch bm_be2cba98
+• built branch bm_be2cba98
+✔ skip branch bm_da5f38fa
+• built pattern bm
+```
+
+For more examples related to {targets}, consult its excellent online documentation at https://books.ropensci.org/targets.
