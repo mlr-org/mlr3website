@@ -139,3 +139,9 @@ Does not render blog or gallery posts again.
 Only runs when a gallery post is added or changed.
 Renders all gallery post and builds website.
 Website is pushed to `gh-pages` branch.
+
+## RSS
+
+The main RSS feed for our blog is https://mlr-org.com/blog.xml.
+
+An example for category specific feed (e.g. the one submitted to R-bloggers) is https://mlr-org.com/blog.xml#category:r-bloggers.
