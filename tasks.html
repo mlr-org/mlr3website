@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -1037,10 +1038,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     margin-top: 1.5em;
   }
 
-  .figure img {
-    width: 100%;
-  }
-
   .figure .caption {
     color: rgba(0, 0, 0, 0.6);
     font-size: 12px;
@@ -1870,6 +1867,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
           return "<p>" + $('#ref-' + ref).html() + "</p>";
@@ -1884,6 +1887,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1983,6 +2011,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2005,7 +2035,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2861,8 +2891,8 @@ More
 <p>The mlr3 packages also ship with some data sets, readily usable as <a href="https://mlr3.mlr-org.com/reference/Task.html"><code>Task</code></a> objects. The goal of these tasks is to quickly demonstrate the capabilities of the packages.</p>
 <h2 id="table">Table</h2>
 <div class="layout-chunk" data-layout="l-page">
-<div id="htmlwidget-ac69941ec26d58243e34" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ac69941ec26d58243e34">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_actg.html\">actg<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/bike_sharing.html\">bike_sharing<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_boston_housing.html\">boston_housing<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_breast_cancer.html\">breast_cancer<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_faithful.html\">faithful<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_gbcs.html\">gbcs<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_german_credit.html\">german_credit<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_grace.html\">grace<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/ilpd.html\">ilpd<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_iris.html\">iris<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/kc_housing.html\">kc_housing<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_lung.html\">lung<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/moneyball.html\">moneyball<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_mtcars.html\">mtcars<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/optdigits.html\">optdigits<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_penguins.html\">penguins<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/penguins_simple.html\">penguins_simple<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_pima.html\">pima<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_precip.html\">precip<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_rats.html\">rats<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_sonar.html\">sonar<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_spam.html\">spam<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/titanic.html\">titanic<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_unemployment.html\">unemployment<\/a>","<a href=\"https://mlr3cluster.mlr-org.com/reference/mlr_tasks_usarrests.html\">usarrests<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_whas.html\">whas<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_wine.html\">wine<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_zoo.html\">zoo<\/a>"],["ACTG 320","Bike Sharing Demand","Boston Housing Prices","Wisconsin Breast Cancer","Old Faithful Eruptions","German Breast Cancer","German Credit","GRACE 1000","Indian Liver Patient Data","Iris Flowers","King County House Sales","Lung Cancer","Major League Baseball Statistics","Motor Trends","Optical Recognition of Handwritten Digits","Palmer Penguins","Simplified Palmer Penguins","Pima Indian Diabetes","Annual Precipitation","Rats","Sonar: Mines vs. Rocks","HP Spam Detection","Titanic","Unemployment Duration","US Arrests","Worcester Heart Attack","Wine Regions","Zoo Animals"],["surv","regr","regr","classif","dens","surv","classif","surv","classif","classif","regr","surv","regr","regr","classif","classif","classif","classif","dens","surv","classif","classif","classif","surv","clust","surv","classif","classif"],[1151,17379,506,683,272,686,1000,1000,583,150,21613,228,1232,32,5620,344,333,768,70,300,208,4601,1309,3343,50,481,178,101],[13,14,19,10,1,10,21,8,11,5,20,10,15,11,65,8,11,9,1,5,61,58,11,6,4,11,14,17]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Task Type<\/th>\n      <th># rows<\/th>\n      <th># cols<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[{"className":"dt-right","targets":[3,4]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-15c79e628bbf0a000f1c" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-15c79e628bbf0a000f1c">{"x":{"style":"bootstrap","filter":"none","vertical":false,"data":[["<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_actg.html\">actg<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/bike_sharing.html\">bike_sharing<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_boston_housing.html\">boston_housing<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_breast_cancer.html\">breast_cancer<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_faithful.html\">faithful<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_gbcs.html\">gbcs<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_german_credit.html\">german_credit<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_grace.html\">grace<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/ilpd.html\">ilpd<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_iris.html\">iris<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/kc_housing.html\">kc_housing<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_lung.html\">lung<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/moneyball.html\">moneyball<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_mtcars.html\">mtcars<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/optdigits.html\">optdigits<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_penguins.html\">penguins<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/penguins_simple.html\">penguins_simple<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_pima.html\">pima<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_precip.html\">precip<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_rats.html\">rats<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_sonar.html\">sonar<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_spam.html\">spam<\/a>","<a href=\"https://mlr3data.mlr-org.com/reference/titanic.html\">titanic<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_unemployment.html\">unemployment<\/a>","<a href=\"https://mlr3cluster.mlr-org.com/reference/mlr_tasks_usarrests.html\">usarrests<\/a>","<a href=\"https://mlr3proba.mlr-org.com/reference/mlr_tasks_whas.html\">whas<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_wine.html\">wine<\/a>","<a href=\"https://mlr3.mlr-org.com/reference/mlr_tasks_zoo.html\">zoo<\/a>"],["ACTG 320","Bike Sharing Demand","Boston Housing Prices","Wisconsin Breast Cancer","Old Faithful Eruptions","German Breast Cancer","German Credit","GRACE 1000","Indian Liver Patient Data","Iris Flowers","King County House Sales","Lung Cancer","Major League Baseball Statistics","Motor Trends","Optical Recognition of Handwritten Digits","Palmer Penguins","Simplified Palmer Penguins","Pima Indian Diabetes","Annual Precipitation","Rats","Sonar: Mines vs. Rocks","HP Spam Detection","Titanic","Unemployment Duration","US Arrests","Worcester Heart Attack","Wine Regions","Zoo Animals"],["surv","regr","regr","classif","dens","surv","classif","surv","classif","classif","regr","surv","regr","regr","classif","classif","classif","classif","dens","surv","classif","classif","classif","surv","clust","surv","classif","classif"],[1151,17379,506,683,272,686,1000,1000,583,150,21613,228,1232,32,5620,344,333,768,70,300,208,4601,1309,3343,50,481,178,101],[13,14,19,10,1,10,21,8,11,5,20,10,15,11,65,8,11,9,1,5,61,58,11,6,4,11,14,17]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>Key<\/th>\n      <th>Label<\/th>\n      <th>Task Type<\/th>\n      <th># rows<\/th>\n      <th># cols<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"scrollY":"60vh","scrollX":true,"info":false,"columnDefs":[{"className":"dt-right","targets":[3,4]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <h2 id="example-usage">Example Usage</h2>
 <p>Create a classification task from the data set in the <a href="https://cran.r-project.org/package=palmerpenguins">palmerpenguins</a> package.</p>
