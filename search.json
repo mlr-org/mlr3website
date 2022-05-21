@@ -6,14 +6,14 @@
       "description": "Blog of the mlr-org\n",
       "author": [],
       "contents": "\n\n\n\n",
-      "last_modified": "2022-05-21T11:18:58+00:00"
+      "last_modified": "2022-05-21T11:35:41+00:00"
     },
     {
       "path": "blogroll.html",
       "title": "Blogroll",
       "author": [],
       "contents": "\nhttps://www.r-bloggers.com/\n\n\n\n",
-      "last_modified": "2022-05-21T11:18:59+00:00"
+      "last_modified": "2022-05-21T11:35:41+00:00"
     },
     {
       "path": "book.html",
@@ -21,7 +21,7 @@
       "description": "Book about mlr3 and its ecosystem\n",
       "author": [],
       "contents": "\nWe have a freely available book about mlr3 and its ecosystem:\nhtml version\npdf version\nWe plan to publish a printed version of the book in the future.\n\n\n\n",
-      "last_modified": "2022-05-21T11:18:59+00:00"
+      "last_modified": "2022-05-21T11:35:41+00:00"
     },
     {
       "path": "contributing.html",
@@ -29,7 +29,7 @@
       "description": "Information on how to contribute to the mlr3 project.\n",
       "author": [],
       "contents": "\nContributing\nFor one-time contributions you can simply open a Pull Request on GitHub. Before you do so, you should read our PR Guidelines.\nIf you want to add a new Learner, PipeOp or Measure you can check out the chapter extending of the mlr3 book.\nIf you want to add a new R package to the mlr3 ecosystem or collaborate on an existing one, you can contact us on mattermost.\nYou can also contribute by sponsoring us.\nInformation for Developers\nInformation for developers is summarized in our Wiki.\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:00+00:00"
+      "last_modified": "2022-05-21T11:35:42+00:00"
     },
     {
       "path": "development.html",
@@ -37,7 +37,7 @@
       "description": "Information for mlr3 developers.\n",
       "author": [],
       "contents": "\nInformation for developers can be found on our Wiki page.\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:00+00:00"
+      "last_modified": "2022-05-21T11:35:42+00:00"
     },
     {
       "path": "filters.html",
@@ -45,15 +45,15 @@
       "description": "Feature Selection Filters.\n",
       "author": [],
       "contents": "\nFeature Filters quantify the importance of each feature of a Task by assigning them a numerical score. In a second step, features can be selected by either selecting a fixed absolute or relative frequency of the best features, or by thresholding on the score value.\nThe Filter PipeOp allows to use filters as a preprocessing step.\nTable\n\n\n\nExample Usage\nUse the \\(-\\log_10()\\)-transformed \\(p\\)-values of a Kruskal-Wallis rank sum test (implemented in kruskal.test()) for filtering features of the Pima Indian Diabetes tasks.\n\n\nlibrary(\"mlr3verse\")\n\n# retrieve a task\ntask = tsk(\"pima\")\n\n# retrieve a filter\nfilter = flt(\"kruskal_test\")\n\n# calculate scores\nfilter$calculate(task)\n\n# access scores\nfilter$scores\n\n\n  glucose       age      mass   insulin   triceps  pregnant  pedigree \n39.885381 16.942901 16.740864 13.127828  9.158113  7.426955  5.922431 \n pressure \n 5.788607 \n\n# plot scores\nautoplot(filter)\n\n\n\n# subset task to 3 most important features\ntask$select(head(names(filter$scores), 3))\ntask$feature_names\n\n\n[1] \"age\"     \"glucose\" \"mass\"   \n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:06+00:00"
+      "last_modified": "2022-05-21T11:35:48+00:00"
     },
     {
       "path": "fselectors.html",
       "title": "Feature Selection Wrapper",
       "description": "Feature selection algorithms of the mlr3 ecosystem.\n",
       "author": [],
-      "contents": "\nFeature selection wrappers can be found in the mlr3fselect packages. The goal is to find the best subset of features w.r.t. a performance measure in an iterative fashion.\n\n\n\nExample Usage\nRun a sequential feature selection on the Pima Indian Diabetes data set.\n\n\nlibrary(mlr3verse)\n\n# retrieve task\ntask = tsk(\"pima\")\n\n# load learner\nlearner = lrn(\"classif.rpart\")\n\n# feature selection on the pima indians diabetes data set\ninstance = fselect(\n  method = fs(\"sequential\"),\n  task = task,\n  learner = learner,\n  resampling = rsmp(\"holdout\"),\n  measure = msr(\"classif.ce\")\n)\n\n# best performing feature subset\ninstance$result\n\n\n     age glucose insulin mass pedigree pregnant pressure triceps\n1: FALSE    TRUE   FALSE TRUE    FALSE     TRUE     TRUE    TRUE\n                                 features classif.ce\n1: glucose,mass,pregnant,pressure,triceps  0.2539062\n\n# subset the task and fit the final model\ntask$select(instance$result_feature_set)\nlearner$train(task)\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:13+00:00"
+      "contents": "\nFeature selection wrappers can be found in the mlr3fselect packages. The goal is to find the best subset of features w.r.t. a performance measure in an iterative fashion.\n\n\n\nExample Usage\nRun a sequential feature selection on the Pima Indian Diabetes data set.\n\n\nlibrary(mlr3verse)\n\n# retrieve task\ntask = tsk(\"pima\")\n\n# load learner\nlearner = lrn(\"classif.rpart\")\n\n# feature selection on the pima indians diabetes data set\ninstance = fselect(\n  method = fs(\"sequential\"),\n  task = task,\n  learner = learner,\n  resampling = rsmp(\"holdout\"),\n  measure = msr(\"classif.ce\")\n)\n\n# best performing feature subset\ninstance$result\n\n\n     age glucose insulin  mass pedigree pregnant pressure triceps\n1: FALSE    TRUE   FALSE FALSE     TRUE     TRUE    FALSE   FALSE\n                    features classif.ce\n1: glucose,pedigree,pregnant  0.2382812\n\n# subset the task and fit the final model\ntask$select(instance$result_feature_set)\nlearner$train(task)\n\n\n\n\n\n\n",
+      "last_modified": "2022-05-21T11:35:55+00:00"
     },
     {
       "path": "gallery.html",
@@ -61,7 +61,7 @@
       "description": "Case studies\n",
       "author": [],
       "contents": "\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:14+00:00"
+      "last_modified": "2022-05-21T11:35:56+00:00"
     },
     {
       "path": "graphs.html",
@@ -69,7 +69,7 @@
       "description": "Graphs of the mlr3 ecosystem.\n",
       "author": [],
       "contents": "\nGraphs are predefined arrangements of PipeOp objects from the mlr3pipelines package. The goal is to simplify some popular operations which usually consist of multiple steps.\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:16+00:00"
+      "last_modified": "2022-05-21T11:35:58+00:00"
     },
     {
       "path": "index.html",
@@ -77,15 +77,15 @@
       "description": "An open-source collection of R packages providing a unified interface for machine learning in the R language.\n",
       "author": [],
       "contents": "\n\n\n\n\n\n\n\n\nA scientifically designed and easy to learn interface.\n\n\n\n\n\n\n\nMore than 100 connected machine learning algorithms.\n\n\n\n\n\n\n\nLight on dependencies.\n\n\n\n\n\n\n\nConvenient parallelization with the future package.\n\n\n\n\n\n\n\nState-of-the-art optimization algorithms.\n\n\n\n\n\n\n\nDataflow programming with pipelines.\n\n\n\n\n\n\n\nGitHub\n\n\n\nMattermost\n\n\n\nBook\n\n\n\nStackOverflow\n\n\n\nQuick Start\nThe mlr3verse meta-package installs mlr3 and some of the most important extension packages:\n\n\ninstall.packages(\"mlr3verse\")\n\n\n\nExamples\n\n\n\n\n\n \nBasic Machine Learning\n\nBasic machine learning.\n\n\n\nLearner\nTask\nResampling\n\n\n\n\n \nHyperparameter Tuning\n\nHyperparameter tuning of a support vector machine.\n\n\n\nTuning space\nTuning\nNested Resampling\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:17+00:00"
+      "last_modified": "2022-05-21T11:35:59+00:00"
     },
     {
       "path": "learners.html",
       "title": "Learners",
       "description": "Learners of the mlr3 ecosystem.\n",
       "author": [],
-      "contents": "\nTo keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the rpart package and some learners for debugging. A subjective selection of implementations for essential ML algorithms can be found in mlr3learners package. Survival learners are provided by mlr3proba, cluster learners via mlr3cluster. Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the mlr3extralearners package.\nTable\n\n\n\nExample Usage\nFit a classification tree on the Wisconsin Breast Cancer Data Set and predict on left-out observations.\n\n\nlibrary(\"mlr3verse\")\n\n# retrieve the task\ntask = tsk(\"breast_cancer\")\n\n# split into two partitions\nsplit = partition(task)\n\n# retrieve a learner\nlearner = lrn(\"classif.rpart\", keep_model = TRUE, predict_type = \"prob\")\n\n# fit decision tree\nlearner$train(task, split$train)\n\n# access learned model\nlearner$model\n\n\nn= 457 \n\nnode), split, n, loss, yval, (yprob)\n      * denotes terminal node\n\n 1) root 457 160 benign (0.350109409 0.649890591)  \n   2) cell_size=4,5,6,7,8,9,10 152  11 malignant (0.927631579 0.072368421) *\n   3) cell_size=1,2,3 305  19 benign (0.062295082 0.937704918)  \n     6) bare_nuclei=6,7,8,9,10 12   1 malignant (0.916666667 0.083333333) *\n     7) bare_nuclei=1,2,3,4,5 293   8 benign (0.027303754 0.972696246)  \n      14) cell_shape=4,5,6,7,8,9,10 9   3 malignant (0.666666667 0.333333333) *\n      15) cell_shape=1,2,3 284   2 benign (0.007042254 0.992957746) *\n\n# predict on data frame with new data\npredictions = learner$predict_newdata(task$data(split$test))\n\n# predict on subset of the task\npredictions = learner$predict(task, split$test)\n\n# inspect predictions\npredictions\n\n\n<PredictionClassif> for 226 observations:\n    row_ids     truth  response prob.malignant prob.benign\n          1    benign    benign    0.007042254  0.99295775\n          5    benign    benign    0.007042254  0.99295775\n         11    benign    benign    0.007042254  0.99295775\n---                                                       \n        665 malignant malignant    0.927631579  0.07236842\n        681 malignant malignant    0.927631579  0.07236842\n        682 malignant malignant    0.927631579  0.07236842\n\npredictions$score(msr(\"classif.auc\"))\n\n\nclassif.auc \n   0.965685 \n\nautoplot(predictions, type = \"roc\")\n\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:25+00:00"
+      "contents": "\nTo keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the rpart package and some learners for debugging. A subjective selection of implementations for essential ML algorithms can be found in mlr3learners package. Survival learners are provided by mlr3proba, cluster learners via mlr3cluster. Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the mlr3extralearners package.\nTable\n\n\n\nExample Usage\nFit a classification tree on the Wisconsin Breast Cancer Data Set and predict on left-out observations.\n\n\nlibrary(\"mlr3verse\")\n\n# retrieve the task\ntask = tsk(\"breast_cancer\")\n\n# split into two partitions\nsplit = partition(task)\n\n# retrieve a learner\nlearner = lrn(\"classif.rpart\", keep_model = TRUE, predict_type = \"prob\")\n\n# fit decision tree\nlearner$train(task, split$train)\n\n# access learned model\nlearner$model\n\n\nn= 457 \n\nnode), split, n, loss, yval, (yprob)\n      * denotes terminal node\n\n 1) root 457 160 benign (0.35010941 0.64989059)  \n   2) cell_size=4,5,6,7,8,9,10 143   8 malignant (0.94405594 0.05594406) *\n   3) cell_size=1,2,3 314  25 benign (0.07961783 0.92038217)  \n     6) bare_nuclei=7,8,9,10 16   1 malignant (0.93750000 0.06250000) *\n     7) bare_nuclei=1,2,3,4,5,6 298  10 benign (0.03355705 0.96644295)  \n      14) normal_nucleoli=4,5,6,7,8,9,10 8   3 malignant (0.62500000 0.37500000) *\n      15) normal_nucleoli=1,2,3 290   5 benign (0.01724138 0.98275862) *\n\n# predict on data frame with new data\npredictions = learner$predict_newdata(task$data(split$test))\n\n# predict on subset of the task\npredictions = learner$predict(task, split$test)\n\n# inspect predictions\npredictions\n\n\n<PredictionClassif> for 226 observations:\n    row_ids     truth  response prob.malignant prob.benign\n          2    benign malignant     0.94405594  0.05594406\n          7    benign malignant     0.93750000  0.06250000\n          9    benign    benign     0.01724138  0.98275862\n---                                                       \n        643 malignant malignant     0.94405594  0.05594406\n        655 malignant malignant     0.94405594  0.05594406\n        666 malignant malignant     0.94405594  0.05594406\n\npredictions$score(msr(\"classif.auc\"))\n\n\nclassif.auc \n  0.9743822 \n\nautoplot(predictions, type = \"roc\")\n\n\n\n\n\n\n\n",
+      "last_modified": "2022-05-21T11:36:07+00:00"
     },
     {
       "path": "measures.html",
@@ -93,7 +93,7 @@
       "description": "Performance Measures of the mlr3 ecosystem.\n",
       "author": [],
       "contents": "\nMeasures operate on Prediction objects generated by learners. They quantify the prediction by comparing prediction with ground truth. The Measure objects provide an abstraction for a plethora of performance measures.\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:26+00:00"
+      "last_modified": "2022-05-21T11:36:08+00:00"
     },
     {
       "path": "packages.html",
@@ -101,7 +101,7 @@
       "description": "Package collection of the mlr3 ecosystem.\n",
       "author": [],
       "contents": "\nThe mlr3 ecosystem is a collection of R packages for machine learning. The base package mlr3 only provides the basic building blocks for machine learning. The extensions packages extent mlr3 with functionality for additional task types, learning algorithms, tuning algorithms, feature selection strategies, visualizations or preprocessing capabilities. The packages are listed bellow with a short description. For more information about the packages, check out their respective homepages. The dot next to the package name indicates the lifecycle stage. Packages with a green dot  are stable. Experimental packages are marked with an orange dot . Planned packages are marked with a red dot .\nGraph of Extension PackagesIf you use our packages in your research, please cite our articles on mlr3 (Lang et al. 2019), mlr3proba (Sonabend et al. 2021) or mlr3pipelines (Binder et al. 2021). To get the citation information of other packages, call\n\n\ncitation(\"[package]\")\n\n\n\n Core\n\n\n\n\nmlr3\n\n\nBasic building blocks for machine learning.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3verse\n\n\nMeta-package intended to simplify both installation and loading of packages from the mlr3 ecosystem.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Optimization\n\n\n\n\nmlr3tuning\n\n\nHyperparameter tuning for mlr3 learners.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3tuningspaces\n\n\nCollection of search spaces for hyperparameter tuning.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3hyperband\n\n\nSuccessive halving and hyperband tuner for mlr3tuning.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3mbo\n\n\nModel-based optimization for mlr3tuning.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmiesmuschel\n\n\nFlexible mixed integer evolutionary strategies.\n\n\n\n\n\n\n\n\nmlr3automl\n\n\nAutomated machine learning.\n\n\n\n\n\n\n\n\n Feature Selection\n\n\n\n\nmlr3filters\n\n\nFilter Feature Selection.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3fselect\n\n\nWrapper Feature Selection.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Data\n\n\n\n\nmlr3db\n\n\nData backend to transparently work with databases.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3oml\n\n\nConnector to OpenML.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3data\n\n\nData sets and tasks.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Learners\n\n\n\n\nmlr3learners\n\n\nEssential learners for mlr3, maintained by the mlr-org team.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3extralearners\n\n\nExtra learners for mlr3, implemented by the community.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3keras\n\n\nDeep learning with Keras.\n\n\n\n\n\n\n\n\n Visualization\n\n\n\n\nmlr3viz\n\n\nVisualizations for tasks, predictions, resample results and benchmarks.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Pipelines\n\n\n\n\nmlr3pipelines\n\n\nDataflow programming toolkit.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Tasks\n\n\n\n\nmlr3spatiotempcv\n\n\nSpatiotemporal resampling and visualization methods.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3cluster\n\n\nCluster analysis.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3proba\n\n\nProbabilistic predictions.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3spatial\n\n\nSpatial data backends and prediction functions.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3ordinal\n\n\nOrdinal regression.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3multioutput\n\n\nStoring and working with multi-output tasks.\n\n\n\n\n\n\n\n\nmlr3temporal\n\n\nTime series analysis.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3multilabel\n\n\nMulti-Label Classification.\n\n\n\n\n\n\n\n\nmlr3fda\n\n\nFunctional Data Analysis.\n\n\n\n\n\n\n\n\n Utilities\n\n\n\n\nbbotk\n\n\nBlack-box optimization toolkit.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nparadox\n\n\nUniversal parameter space description and tools.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3misc\n\n\nMiscellaneous helper functions for mlr3.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3measures\n\n\nPerformance measures for supervised learning.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3benchmark\n\n\nAnalysis and tools for benchmarking.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3fairness\n\n\nFairness in Machine Learning.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmlr3batchmark\n\n\nConnector between mlr3 and batchtools.\n\n\n\n\n\n\n\n\n\n\n\nBinder, Martin, Florian Pfisterer, Michel Lang, Lennart Schneider, Lars Kotthoff, and Bernd Bischl. 2021. “mlr3pipelines - Flexible Machine Learning Pipelines in R.” Journal of Machine Learning Research 22 (184): 1–7. https://jmlr.org/papers/v22/21-0281.html.\n\n\nLang, Michel, Martin Binder, Jakob Richter, Patrick Schratz, Florian Pfisterer, Stefan Coors, Quay Au, Giuseppe Casalicchio, Lars Kotthoff, and Bernd Bischl. 2019. “mlr3: A Modern Object-Oriented Machine Learning Framework in R.” Journal of Open Source Software, December. https://doi.org/10.21105/joss.01903.\n\n\nSonabend, Raphael, Franz J Király, Andreas Bender, Bernd Bischl, and Michel Lang. 2021. “mlr3proba: An R Package for Machine Learning in Survival Analysis.” Bioinformatics, February. https://doi.org/10.1093/bioinformatics/btab039.\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:46+00:00"
+      "last_modified": "2022-05-21T11:36:28+00:00"
     },
     {
       "path": "pipeops.html",
@@ -109,7 +109,7 @@
       "description": "Pipeline Operators to build Machine Learning Pipelines\n",
       "author": [],
       "contents": "\nObjects of class PipeOp are the building blocks to compose linear machine learning pipelines and non-linear Graphs. The base objects are implemented in mlr3pipelines.\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:48+00:00"
+      "last_modified": "2022-05-21T11:36:30+00:00"
     },
     {
       "path": "resamplings.html",
@@ -117,7 +117,7 @@
       "description": "Resampling Strategies of the mlr3 ecosystem.\n",
       "author": [],
       "contents": "\nResamplings split the observations multiple times into two sets: training and test. The former is used to fit the model, the latter is used to evaluate the predictions. The Resampling objects provide an abstraction for this procedure while respecting stratification as well as grouping/blocking if this is required by the Task.\nIf only a single split is required (i.e., a holdout split), the partition() function provides a single split into training and test set.\n\n\n\nExample Usage\nFit a Random Forest on the Wisconsin Breast Cancer Data Set using a 3-fold cross validation.\n\n\nlibrary(\"mlr3verse\")\n\n# retrieve the task\ntask = tsk(\"breast_cancer\")\n\n# retrieve a learner\nlearner = lrn(\"classif.ranger\")\n\n# retrieve resampling strategy\nresampling = rsmp(\"cv\", folds = 3)\n\n# perform resampling\nrr = resample(task, learner, resampling)\nrr\n\n\n<ResampleResult> of 3 iterations\n* Task: breast_cancer\n* Learner: classif.ranger\n* Warnings: 0 in 0 iterations\n* Errors: 0 in 0 iterations\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:49+00:00"
+      "last_modified": "2022-05-21T11:36:31+00:00"
     },
     {
       "path": "resources.html",
@@ -125,7 +125,7 @@
       "description": "Useful resources for learning mlr3\n",
       "author": [],
       "contents": "\nDocumentation\nEntry points to learn about mlr3.\n\n\n\n\n\n \nBook\n\nCentral entry point to the mlr3verse.\n\n\n\n\n\n\n\n \nGallery\n\nCollection of case studies and demos.\n\n\n\n\n\n\n\n \nReference Manuals\n\nReference manuals (via package overview).\n\n\n\n\n\n\n\n \nR6 Introduction\n\nIntroduction to R6 classes.\n\n\n\n\n\n\n\n \nFuture Package\n\nHomepage of the parallelization framework 'future'.\n\n\n\n\n\n\nCheat Sheets\nThe essential things neatly summarized. Perfectly printed out next to the keyboard or on a second monitor.\n\n\n\n\n\n \nmlr3\n\nCore package cheat sheet.\n\n\n\n\n\n\n\n \nmlr3tuning\n\nTuning cheat sheet.\n\n\n\n\n\n\n\n \nmlr3fselect\n\nFeature selection cheat sheet.\n\n\n\n\n\n\n\n \nmlr3pipelines\n\nPipelines cheat sheet.\n\n\n\n\n\n\nVideos\nRecorded tutorials and lectures we have given.\n\n\n\n\n\n \nuseR2019 talk\n\nShort intro to mlr3.\n\n\n\n\n\n\n\n \nuseR2019 talk\n\nShort intro to mlr3pipelines and mlr3tuning.\n\n\n\n\n\n\n\n \nuseR2020 tutorial\n\nTutorial on mlr3, mlr3tuning and mlr3pipelines.\n\n\n\n\n\n\n\n \nODSC talk 2021\n\nInto to mlr3spatiotempcv and mlr3spatial.\n\n\n\n\n\n\nCourses/Lectures\nMaterial from teaching at our universities.\n\n\n\n\n\n \nI2ML course\n\nIntroduction to ML course. Free video lectures, slides, quizzes. Exercises use mlr3.\n\n\n\n\n\n\n\n \nmlr-outreach\n\nSlides and other material for teaching mlr3.\n\n\n\n\n\n\nPeer-reviewed Articles\nA more scientific view on our the packages and the packages we depend on.\nLang et al. (2019): about the base package mlr3\nBinder et al. (2021): building machine learning pipelines with mlr3pipelines\nSonabend et al. (2021): probabilistic regression with mlr3proba (including survival analysis)\nBengtsson (2021): the parallelization framework package future we build upon\nLang (2017): package checkmate for argument checking and defensive programming\nLang, Bischl, and Surmann (2017): parallelization framework batchtools for high-performance computing clusters, used via future or mlr3batchmark\n\n\n\nBengtsson, Henrik. 2021. “A Unifying Framework for Parallel and Distributed Processing in R Using Futures.” The R Journal 13 (2): 208–27. https://doi.org/10.32614/RJ-2021-048.\n\n\nBinder, Martin, Florian Pfisterer, Michel Lang, Lennart Schneider, Lars Kotthoff, and Bernd Bischl. 2021. “mlr3pipelines - Flexible Machine Learning Pipelines in R.” Journal of Machine Learning Research 22 (184): 1–7. https://jmlr.org/papers/v22/21-0281.html.\n\n\nLang, Michel. 2017. “checkmate: Fast Argument Checks for Defensive R Programming.” The R Journal 9 (1): 437–45. https://doi.org/10.32614/RJ-2017-028.\n\n\nLang, Michel, Martin Binder, Jakob Richter, Patrick Schratz, Florian Pfisterer, Stefan Coors, Quay Au, Giuseppe Casalicchio, Lars Kotthoff, and Bernd Bischl. 2019. “mlr3: A Modern Object-Oriented Machine Learning Framework in R.” Journal of Open Source Software, December. https://doi.org/10.21105/joss.01903.\n\n\nLang, Michel, Bernd Bischl, and Dirk Surmann. 2017. “Batchtools: Tools for R to Work on Batch Systems.” The Journal of Open Source Software, no. 10 (February). https://doi.org/10.21105/joss.00135.\n\n\nSonabend, Raphael, Franz J Király, Andreas Bender, Bernd Bischl, and Michel Lang. 2021. “mlr3proba: An R Package for Machine Learning in Survival Analysis.” Bioinformatics, February. https://doi.org/10.1093/bioinformatics/btab039.\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:50+00:00"
+      "last_modified": "2022-05-21T11:36:32+00:00"
     },
     {
       "path": "support.html",
@@ -133,7 +133,7 @@
       "description": "How to get help.\n",
       "author": [],
       "contents": "\nMattermost\nYou can join our public mattermost channel here.\nStackOverflow\nQuestions regarding the software can be asked on Stack Overflow, where you can use the mlr3 tag.\nGitHub\nFor bug reports, suggestions, or feature requests please raise an issue in the corresponding GitHub repository. Your issue will be addressed sooner if you provide a reproducible example - e.g. using the reprex R package - and if you raise it in the correct repository.\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:50+00:00"
+      "last_modified": "2022-05-21T11:36:32+00:00"
     },
     {
       "path": "tasks.html",
@@ -141,7 +141,7 @@
       "description": "Tasks shipped with the mlr3 ecosystem.\n",
       "author": [],
       "contents": "\nThe mlr3 packages also ship with some data sets, readily usable as Task objects. The goal of these tasks is to quickly demonstrate the capabilities of the packages.\nTable\n\n\n\nExample Usage\nCreate a classification task from the data set in the palmerpenguins package.\n\n\nlibrary(\"mlr3verse\")\n\n# create a task\ntask = tsk(\"breast_cancer\")\ntask\n\n\n<TaskClassif:breast_cancer> (683 x 10): Wisconsin Breast Cancer\n* Target: class\n* Properties: twoclass\n* Features (9):\n  - ord (9): bare_nuclei, bl_cromatin, cell_shape, cell_size,\n    cl_thickness, epith_c_size, marg_adhesion, mitoses,\n    normal_nucleoli\n\n# get the dimensions\nc(task$nrow, task$ncol)\n\n\n[1] 683  10\n\n# check for missing values\ntask$missings()\n\n\n          class     bare_nuclei     bl_cromatin      cell_shape \n              0               0               0               0 \n      cell_size    cl_thickness    epith_c_size   marg_adhesion \n              0               0               0               0 \n        mitoses normal_nucleoli \n              0               0 \n\n# plot class frequencies\nautoplot(task)\n\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:51+00:00"
+      "last_modified": "2022-05-21T11:36:34+00:00"
     },
     {
       "path": "team.html",
@@ -149,31 +149,31 @@
       "description": "The mlr3 developer team.\n",
       "author": [],
       "contents": "\n\n\n\n\n\n\n\nBernd Bischl\n\nProfessor of Statistical Learning and Data Science at the LMU Munich. I created mlr a long time ago at the beginning of my PhD. Nowadays, I spend most of my time in project supervision, code reviews and helping to design new parts of the framework. I was part of the design process of nearly all parts of the new mlr3, but nearly all code has been written by the other developers.\n\n\n\n\n\n\n\nMichel Lang\n\nPostdoc at the TU Dortmund and one of the main developers of mlr. I've worked on many internal parts of mlr and started to implement support for survival analysis. Now main developer of mlr3.\n\n\n\n\n\n\n\nMarc Becker\n\nResearch engineer at the LMU Munich and main developer of the mlr3 optimization packages.\n\n\n\n\n\n\n\nRaphael Sonabend\n\nPostdoc at Imperial College London. I am the main developer of mlr3proba and also the previous maintainer of mlr3extralearners.\n\n\n\n\n\n\n\nPatrick Schratz\n\nR consultant in Zurich, Switzerland. PhD Candidate in environmental modeling. Mainly contributing to spatiotemporal packages. Maintainer of the old mlr package.\n\n\n\n\n\n\n\nSebastian Fischer\n\nResearch Engineer at LMU Munich. Is working on mlr3torch, mlr3oml and maintains mlr3extralearners.\n\n\n\n\n\n\n\nLars Kotthoff\n\nComputer Science Professor at University of Wyoming, contributes small pieces here and there.\n\n\n\n\n\n\n\nFlorian Pfisterer\n\nPhD Student at LMU Munich. I am interested in projects on the intersection of Meta-Learning, AutoML and Algorithmic Fairness. Mainly working on mlr3pipelines and mlr3keras/mlr3torch\n\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:52+00:00"
+      "last_modified": "2022-05-21T11:36:34+00:00"
     },
     {
       "path": "terminators.html",
       "title": "Terminators",
       "description": "Terminators of the mlr3 ecosystem.\n",
       "author": [],
-      "contents": "\nA Terminator is an object that determines when to stop the optimization, e.g. after a budget of evaluations is depleted or the optimization stagnates.\n\n\n\nExample Usage\nStop tuning when a performance level is reached.\n\n\nlibrary(mlr3verse)\n\n# load terminator and set performance level\nterminator = trm(\"perf_reached\", level = 0.25)\n\n# load tuner\ntuner = tnr(\"random_search\", batch_size = 10)\n\n# retrieve task\ntask = tsk(\"pima\")\n\n# load learner and set search space\nlearner = lts(lrn(\"classif.rpart\"))\n\n\nCalled from: lts.Learner(lrn(\"classif.rpart\"))\ndebug: x$param_set$values = insert_named(x$param_set$values, tuning_space$values)\ndebug: x\n\n# set instance\ninstance = TuningInstanceSingleCrit$new(\n  task = task,\n  learner = learner,\n  resampling = rsmp(\"holdout\"),\n  measure = msr(\"classif.ce\"),\n  terminator = terminator\n)\n\n# hyperparameter tuning on the pima data set\ntuner$optimize(instance)\n\n\n   minsplit minbucket        cp learner_param_vals  x_domain\n1: 2.395345  2.101708 -4.262068          <list[4]> <list[3]>\n   classif.ce\n1:  0.2421875\n\n# best performing hyperparameter configuration\ninstance$result\n\n\n   minsplit minbucket        cp learner_param_vals  x_domain\n1: 2.395345  2.101708 -4.262068          <list[4]> <list[3]>\n   classif.ce\n1:  0.2421875\n\n# fit final model on complete data set\nlearner$param_set$values = instance$result_learner_param_vals\nlearner$train(task)\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:54+00:00"
+      "contents": "\nA Terminator is an object that determines when to stop the optimization, e.g. after a budget of evaluations is depleted or the optimization stagnates.\n\n\n\nExample Usage\nStop tuning when a performance level is reached.\n\n\nlibrary(mlr3verse)\n\n# load terminator and set performance level\nterminator = trm(\"perf_reached\", level = 0.25)\n\n# load tuner\ntuner = tnr(\"random_search\", batch_size = 10)\n\n# retrieve task\ntask = tsk(\"pima\")\n\n# load learner and set search space\nlearner = lts(lrn(\"classif.rpart\"))\n\n\nCalled from: lts.Learner(lrn(\"classif.rpart\"))\ndebug: x$param_set$values = insert_named(x$param_set$values, tuning_space$values)\ndebug: x\n\n# set instance\ninstance = TuningInstanceSingleCrit$new(\n  task = task,\n  learner = learner,\n  resampling = rsmp(\"holdout\"),\n  measure = msr(\"classif.ce\"),\n  terminator = terminator\n)\n\n# hyperparameter tuning on the pima data set\ntuner$optimize(instance)\n\n\n   minsplit minbucket        cp learner_param_vals  x_domain\n1: 2.818948  2.504467 -9.041859          <list[4]> <list[3]>\n   classif.ce\n1:       0.25\n\n# best performing hyperparameter configuration\ninstance$result\n\n\n   minsplit minbucket        cp learner_param_vals  x_domain\n1: 2.818948  2.504467 -9.041859          <list[4]> <list[3]>\n   classif.ce\n1:       0.25\n\n# fit final model on complete data set\nlearner$param_set$values = instance$result_learner_param_vals\nlearner$train(task)\n\n\n\n\n\n\n",
+      "last_modified": "2022-05-21T11:36:37+00:00"
     },
     {
       "path": "tuners.html",
       "title": "Tuners",
       "description": "Tuners of the mlr3 ecosystem.\n",
       "author": [],
-      "contents": "\nPopular black-box optimization techniques are implemented in the bbotk package. The corresponding connectors to for tuning hyperparameters of learners or pipelines reside as Tuner objects in package mlr3tuning. Additionally, packages mlr3hyperband and mlr3mbo provide some modern and sophisticated approaches.\nAll tuners operator on box-constrained tuning spaces which have to be defined by the user. Some popular spaces from literature are readily available as tuning spaces.\n\n\n\nExample Usage\nTune the hyperparameters of a classification tree on the Palmer Penguins data set with random search.\n\n\nlibrary(mlr3verse)\n\n# retrieve task\ntask = tsk(\"penguins\")\n\n# load learner and set search space\nlearner = lrn(\"classif.rpart\",\n  cp = to_tune(1e-04, 1e-1, logscale = TRUE),\n  minsplit = to_tune(2, 128, logscale = TRUE)\n)\n\n# load tuner and set batch size\ntuner = tnr(\"random_search\", batch_size = 10)\n\n# hyperparameter tuning on the palmer penguins data set\ninstance = tune(\n  method = tuner,\n  task = task,\n  learner = learner,\n  resampling = rsmp(\"holdout\"),\n  measure = msr(\"classif.ce\"),\n  term_evals = 50\n)\n\n# best performing hyperparameter configuration\ninstance$result\n\n\n          cp minsplit learner_param_vals  x_domain classif.ce\n1: -7.075535  1.40482          <list[3]> <list[2]> 0.02608696\n\n# surface plot\nautoplot(instance, type = \"surface\")\n\n\n\n# fit final model on complete data set\nlearner$param_set$values = instance$result_learner_param_vals\nlearner$train(task)\n\n\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:19:58+00:00"
+      "contents": "\nPopular black-box optimization techniques are implemented in the bbotk package. The corresponding connectors to for tuning hyperparameters of learners or pipelines reside as Tuner objects in package mlr3tuning. Additionally, packages mlr3hyperband and mlr3mbo provide some modern and sophisticated approaches.\nAll tuners operator on box-constrained tuning spaces which have to be defined by the user. Some popular spaces from literature are readily available as tuning spaces.\n\n\n\nExample Usage\nTune the hyperparameters of a classification tree on the Palmer Penguins data set with random search.\n\n\nlibrary(mlr3verse)\n\n# retrieve task\ntask = tsk(\"penguins\")\n\n# load learner and set search space\nlearner = lrn(\"classif.rpart\",\n  cp = to_tune(1e-04, 1e-1, logscale = TRUE),\n  minsplit = to_tune(2, 128, logscale = TRUE)\n)\n\n# load tuner and set batch size\ntuner = tnr(\"random_search\", batch_size = 10)\n\n# hyperparameter tuning on the palmer penguins data set\ninstance = tune(\n  method = tuner,\n  task = task,\n  learner = learner,\n  resampling = rsmp(\"holdout\"),\n  measure = msr(\"classif.ce\"),\n  term_evals = 50\n)\n\n# best performing hyperparameter configuration\ninstance$result\n\n\n         cp minsplit learner_param_vals  x_domain classif.ce\n1: -6.25492 1.046982          <list[3]> <list[2]> 0.02608696\n\n# surface plot\nautoplot(instance, type = \"surface\")\n\n\n\n# fit final model on complete data set\nlearner$param_set$values = instance$result_learner_param_vals\nlearner$train(task)\n\n\n\n\n\n\n",
+      "last_modified": "2022-05-21T11:36:41+00:00"
     },
     {
       "path": "tuning_spaces.html",
       "title": "Tuning Spaces",
       "description": "Tuning Spaces of the mlr3 ecosystem.\n",
       "author": [],
-      "contents": "\nThe package mlr3tuningspaces ships with some predefined tuning spaces for hyperparameter optimization. See the respective manual page for the article from which they were extracted.\n\n\n\nExample Usage\nLoad a tuning space for the classification tree learner from the Bischl et al. (2021) article.\n\n\nlibrary(mlr3verse)\n\n# load learner and set search space\nlearner = lts(lrn(\"classif.rpart\"))\n\n\nCalled from: lts.Learner(lrn(\"classif.rpart\"))\ndebug: x$param_set$values = insert_named(x$param_set$values, tuning_space$values)\ndebug: x\n\n# retrieve task\ntask = tsk(\"pima\")\n\n# load tuner and set batch size\ntuner = tnr(\"random_search\", batch_size = 10)\n\n# hyperparameter tuning on the pima data set\ninstance = tune(\n  method = tnr(\"grid_search\", resolution = 5, batch_size = 25),\n  task = task,\n  learner = learner,\n  resampling = rsmp(\"holdout\"),\n  measure = msr(\"classif.ce\"),\n)\n\n# best performing hyperparameter configuration\ninstance$result\n\n\n   minsplit minbucket        cp learner_param_vals  x_domain\n1: 3.818146         0 -4.029524          <list[4]> <list[3]>\n   classif.ce\n1:  0.2617188\n\n# fit final model on complete data set\nlearner$param_set$values = instance$result_learner_param_vals\nlearner$train(task)\n\n\n\n\n\n\nBischl, Bernd, Martin Binder, Michel Lang, Tobias Pielok, Jakob Richter, Stefan Coors, Janek Thomas, et al. 2021. “Hyperparameter Optimization: Foundations, Algorithms, Best Practices and Open Challenges.” arXiv:2107.05847 [Cs, Stat], July. http://arxiv.org/abs/2107.05847.\n\n\n\n\n",
-      "last_modified": "2022-05-21T11:20:05+00:00"
+      "contents": "\nThe package mlr3tuningspaces ships with some predefined tuning spaces for hyperparameter optimization. See the respective manual page for the article from which they were extracted.\n\n\n\nExample Usage\nLoad a tuning space for the classification tree learner from the Bischl et al. (2021) article.\n\n\nlibrary(mlr3verse)\n\n# load learner and set search space\nlearner = lts(lrn(\"classif.rpart\"))\n\n\nCalled from: lts.Learner(lrn(\"classif.rpart\"))\ndebug: x$param_set$values = insert_named(x$param_set$values, tuning_space$values)\ndebug: x\n\n# retrieve task\ntask = tsk(\"pima\")\n\n# load tuner and set batch size\ntuner = tnr(\"random_search\", batch_size = 10)\n\n# hyperparameter tuning on the pima data set\ninstance = tune(\n  method = tnr(\"grid_search\", resolution = 5, batch_size = 25),\n  task = task,\n  learner = learner,\n  resampling = rsmp(\"holdout\"),\n  measure = msr(\"classif.ce\"),\n)\n\n# best performing hyperparameter configuration\ninstance$result\n\n\n    minsplit minbucket        cp learner_param_vals  x_domain\n1: 0.6931472  2.087194 -4.029524          <list[4]> <list[3]>\n   classif.ce\n1:    0.21875\n\n# fit final model on complete data set\nlearner$param_set$values = instance$result_learner_param_vals\nlearner$train(task)\n\n\n\n\n\n\nBischl, Bernd, Martin Binder, Michel Lang, Tobias Pielok, Jakob Richter, Stefan Coors, Janek Thomas, et al. 2021. “Hyperparameter Optimization: Foundations, Algorithms, Best Practices and Open Challenges.” arXiv:2107.05847 [Cs, Stat], July. http://arxiv.org/abs/2107.05847.\n\n\n\n\n",
+      "last_modified": "2022-05-21T11:36:47+00:00"
     }
   ],
   "collections": ["posts/posts.json", "gallery/gallery.json"]
