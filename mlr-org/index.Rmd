@@ -95,9 +95,9 @@ example_grid = function(content) {
 
 
 content = rowwise_table(
-  ~name,                    ~icon,      ~url,                                                                                    ~text,                                                     ~objective,
-  "Basic Machine Learning", "pen",      "gallery/2020-03-18-iris-mlr3-basics/index.html",                                       "Basic machine learning",                                   list(list("Learner", "Task", "Resampling")),
-  "Hyperparameter Tuning",  "sliders",  "gallery/2021-03-09-practical-tuning-series-tune-a-support-vector-machine/index.html",  "Hyperparameter tuning of a support vector machine",        list(list("Tuning space", "Tuning", "Nested Resampling"))
+  ~name,                    ~icon,      ~url,                                                                                  ~text,                                                          ~objective,
+  "Basic Machine Learning", "pen",      "gallery/2020-03-18-iris-mlr3-basics/index.html",                                      "Basic machine learning on the Pima Indians Diabetes data set", list(list("Learner", "Task", "Resampling")),
+  "Hyperparameter Tuning",  "sliders",  "gallery/2022-03-08-hyperparameter-tuning-on-the-palmer-penguins-data-set/index.html", "Hyperparameter tuning on the Palmer Penguins data set",        list(list("Tuning space", "Transformations", "Tuning"))
 )
 
 example_grid(content)
