@@ -1,20 +1,26 @@
 ---
 title: "mlr3 package updates - q1/2022"
 description: |
-  Quarterly mlr3 package updates.
+  This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter.
 author:
   - name: Sebastian Fischer
     url: https://github.com/sebffischer
 date: 2022-04-25
+preview: logo.png
+categories:
+    - R
+    - News
 output:
   distill::distill_article:
     self_contained: false
 ---
 
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+
 
 Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up with the latest changes across all packages. This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter. Note that only CRAN packages are listed here and the sort order is alphabetically.
 
@@ -200,7 +206,7 @@ Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up 
 
 ## 1.0.1
 
-* Fixed a issue which caused coordinates to appear in the feature set when a data.frame was supplied (#166, @be-marc)
+* Fixed a issue which caused coordinates to appear in the feature set when a data.frame was supplied (#166, be-marc)
 * Add `autoplot()` support for `"groups"` column role in `rsmp("cv")`
 
 # [mlr3tuning](https://github.com/mlr-org/mlr3tuning)
@@ -226,6 +232,7 @@ Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up 
 * feat: The `mlr3::HotstartStack` can now be removed after tuning with the `keep_hotstart_stack` flag.
 * feat: The `Archive` stores errors and warnings of the learners.
 * feat: When no measure is provided, the default measure is used in `auto_tuner()` and `tune_nested()`.
+
 
 ##  0.11.0
 
@@ -294,4 +301,3 @@ Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up 
 * Improved printing of parameters in documentation (#355).
 * A warning is now signaled if the package `ParamHelpers` is also loaded.
 * Fixed some links.
-
