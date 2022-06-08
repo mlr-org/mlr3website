@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -89,7 +90,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_meta_tags-->
   <title>mlr3 package updates - q1/2022</title>
 
-  <meta property="description" itemprop="description" content="Quarterly mlr3 package updates."/>
+  <meta property="description" itemprop="description" content="This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter."/>
 
 
   <!--  https://schema.org/Article -->
@@ -100,24 +101,24 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="mlr3 package updates - q1/2022"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Quarterly mlr3 package updates."/>
+  <meta property="og:description" content="This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter."/>
   <meta property="og:locale" content="en_US"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
   <meta property="twitter:title" content="mlr3 package updates - q1/2022"/>
-  <meta property="twitter:description" content="Quarterly mlr3 package updates."/>
+  <meta property="twitter:description" content="This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter."/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["mlr3 package updates - q1/2022"]},{"type":"character","attributes":{},"value":["Quarterly mlr3 package updates.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Sebastian Fischer"]},{"type":"character","attributes":{},"value":["https://github.com/sebffischer"]}]}]},{"type":"character","attributes":{},"value":["2022-04-25"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","preview","categories","output"]}},"value":[{"type":"character","attributes":{},"value":["mlr3 package updates - q1/2022"]},{"type":"character","attributes":{},"value":["This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Sebastian Fischer"]},{"type":"character","attributes":{},"value":["https://github.com/sebffischer"]}]}]},{"type":"character","attributes":{},"value":["2022-04-25"]},{"type":"character","attributes":{},"value":["logo.png"]},{"type":"character","attributes":{},"value":["R","News"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["mlr3-package-updates-q12022_files/anchor-4.2.2/anchor.min.js","mlr3-package-updates-q12022_files/bowser-1.9.3/bowser.min.js","mlr3-package-updates-q12022_files/distill-2.2.21/template.v2.js","mlr3-package-updates-q12022_files/header-attrs-2.13/header-attrs.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.min.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.min.map","mlr3-package-updates-q12022_files/popper-2.6.0/popper.min.js","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy-bundle.umd.min.js","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy-light-border.css","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy.css","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy.umd.min.js","mlr3-package-updates-q12022_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["logo.png","mlr3-package-updates-q12022_files/anchor-4.2.2/anchor.min.js","mlr3-package-updates-q12022_files/bowser-1.9.3/bowser.min.js","mlr3-package-updates-q12022_files/distill-2.2.21/template.v2.js","mlr3-package-updates-q12022_files/header-attrs-2.14/header-attrs.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.min.js","mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.min.map","mlr3-package-updates-q12022_files/popper-2.6.0/popper.min.js","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy-bundle.umd.min.js","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy-light-border.css","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy.css","mlr3-package-updates-q12022_files/tippy-6.2.7/tippy.umd.min.js","mlr3-package-updates-q12022_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -429,10 +430,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1264,6 +1261,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
           return "<p>" + $('#ref-' + ref).html() + "</p>";
@@ -1278,6 +1281,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1377,6 +1405,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1399,7 +1429,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -1438,7 +1468,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="mlr3-package-updates-q12022_files/header-attrs-2.13/header-attrs.js"></script>
+  <script src="mlr3-package-updates-q12022_files/header-attrs-2.14/header-attrs.js"></script>
   <script src="mlr3-package-updates-q12022_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="mlr3-package-updates-q12022_files/popper-2.6.0/popper.min.js"></script>
   <link href="mlr3-package-updates-q12022_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1459,7 +1489,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"mlr3 package updates - q1/2022","description":"Quarterly mlr3 package updates.","authors":[{"author":"Sebastian Fischer","authorURL":"https://github.com/sebffischer","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-04-25T00:00:00.000+02:00","citationText":"Fischer, 2022"}
+{"title":"mlr3 package updates - q1/2022","description":"This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter.","authors":[{"author":"Sebastian Fischer","authorURL":"https://github.com/sebffischer","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-04-25T00:00:00.000+02:00","citationText":"Fischer, 2022"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1471,8 +1501,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="d-title">
 <h1>mlr3 package updates - q1/2022</h1>
 <!--radix_placeholder_categories-->
+<div class="dt-tags">
+<div class="dt-tag">R</div>
+<div class="dt-tag">News</div>
+</div>
 <!--/radix_placeholder_categories-->
-<p><p>Quarterly mlr3 package updates.</p></p>
+<p><p>This posts gives an overview by listing the recent release notes
+of mlr3 packages from the last quarter.</p></p>
 </div>
 
 <div class="d-byline">
