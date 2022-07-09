@@ -1,0 +1,161 @@
+---
+title: "mlr3 Package Updates - Q3/2021"
+description: |
+  This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter.
+author:
+  - name: Patrick Schratz
+    url: https://github.com/pat-s
+date: 2021-09-29
+preview: logo.png
+categories:
+    - R
+    - News
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r mlr3-package-updates-q32021-001, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up with the latest changes across all packages.
+This post tries to tackle this issue by listing all release notes of the packages most recent releases **in the last quarter**.
+Note that only CRAN packages are listed here and the sort order is alphabetically.
+
+Interval: 2021-07-01 - 2021-10-01
+
+# bbotk 0.4.0 - https://github.com/mlr-org/bbotk
+
+**Description: Black-Box Optimization Toolkit**
+
+* Adds non dominated sorting with hypervolume contribution to `Archive`.
+* Allows empty search space and domain.
+* Extended `TerminatorEvals` with an additional hyperparameter `k` to define the
+  budget depending on the dimension of the search space.
+* Adds `bb_optimize()` function for quick optimization.
+* Adds `OptimizerIrace` from irace package.
+
+# mlr3 0.12.0 - https://github.com/mlr-org/mlr3
+
+**Description: Machine Learning in R - Next Generation**
+
+* New method to assign labels to columns in tasks: `Task$label()`.
+  These will be used in visualizations in the future.
+* New method to add stratification variables: `Task$add_strata()`.
+* New helper function `partition()` to split a task into a training and test
+  set.
+* New standardized getter `loglik()` for class `Learner`.
+* New measures `"aic"` and `"bic"` to compute the Akaike Information Criterion
+  or the Bayesian Information Criterion, respectively.
+* New Resampling method: `ResamplingCustomCV`. Creates a custom resampling split
+  based on the levels of a user-provided factor variable.
+* New argument `encapsulate` for `resample()` and `benchmark()` to conveniently
+  enable encapsulation and also set the fallback learner to the
+  featureless learner. This is simply for convenience, configuring each learner
+  individually is still possible and allows a more fine-grained control (#634,
+  #642).
+* New field `parallel_predict` for `Learner` to enable parallel predictions via
+  the future backend. This currently is only enabled while calling the
+  `$predict()` or `$predict_newdata` methods and is disabled during `resample()`
+  and `benchmark()` where you have other means to parallelize.
+* Deprecated public (and already documented as internal) field `$data` in
+  `ResampleResult` and `BenchmarkResult` to simplify the API and avoid
+  confusion. The converter `as.data.table()` can be used instead to access the
+  internal data.
+* Measures now have formal hyperparameters. A popular example where this is
+  required is the F1 score, now implemented with customizable `beta`.
+* Changed default of argument `ordered` in `Task$data()` from `TRUE` to `FALSE`.
+
+# mlr3cluster 0.1.2 - https://github.com/mlr-org/mlr3cluster
+
+**Description: Cluster Extension for 'mlr3'**
+
+* Add Hclust
+* test and doc hclust
+* Add within sum of squares measure
+* add doc wss
+* code factor adaptions
+
+# mlr3filters 0.4.2 - https://github.com/mlr-org/mlr3filters
+
+**Description: Filter Based Feature Selection for 'mlr3'**
+
+- Fixes an issue where argument `nfeat` was not passed down to {praznik} filters (#97)
+
+
+# mlr3learners 0.5.1 - https://github.com/mlr-org/mlr3learners
+
+**Description: Recommended Learners for 'mlr3'**
+
+- Improved how the added hyperparameter `mtry.ratio` is converted to `mtry` to
+  simplify tuning.
+
+
+# mlr3pipelines 0.3.4 - https://github.com/mlr-org/mlr3pipelines
+
+**Description: Preprocessing Operators and Pipelines for 'mlr3'**
+
+* Stability: PipeOps don't crash when they have python/reticulate hyperparameter values.
+* Documentation: Titles of PipeOp documentation articles reworked.
+
+
+# mlr3spatiotempcv 1.0.0 - https://github.com/mlr-org/mlr3spatiotempcv
+
+**Description: Spatiotemporal Resampling Methods for 'mlr3'**
+
+## Breaking
+
+- `autoplot()`: removed argument `crs`.
+  The CRS is now inferred from the supplied Task.
+  Setting a different CRS than the task might lead to spurious issues and the initial idea of changing the CRS for plotting to have proper axes labeling does not apply (anymore) (#144)
+
+## Features
+
+- Added `autoplot()` support for `ResamplingCustomCV` (#140)
+
+## Bug fixes
+
+- `"spcv_block"`: Assert error if folds > 2 when `selection = "checkerboard"` (#150)
+- Fixed row duplication when creating `TaskRegrST` tasks from `sf` objects (#152)
+
+## Miscellaneous
+
+- Upgrade tests to {vdiffr} 1.0.0
+- Add {rgdal} to suggests and required it in `"spcv_block"` since it is required in {blockCV} >= 2.1.4 and {sf} >= 1.0
+
+
+# mlr3tuning 0.9.0 - https://github.com/mlr-org/mlr3tuning
+
+**Description: Tuning for 'mlr3'**
+
+- Adds `AutoTuner$base_learner()` method to extract the base learner from
+  nested learner objects.
+- `tune()` supports multi-criteria tuning.
+- Allows empty search space.
+- Adds `TunerIrace` from `irace` package.
+- `extract_inner_tuning_archives()` helper function to extract inner tuning
+  archives.
+- Removes `ArchiveTuning$extended_archive()` method. The `mlr3::ResampleResults` are
+  joined automatically by `as.data.table.TuningArchive()` and
+  `extract_inner_tuning_archives()`.
+
+
+# mlr3verse 0.2.3 - https://github.com/mlr-org/mlr3verse
+
+**Description: Easily Install and Load the 'mlr3' Package Family**
+
+- Updated reexports.
+
+
+# mlr3viz 0.5.6 - https://github.com/mlr-org/mlr3viz
+
+**Description: Visualizations for 'mlr3'**
+
+- Compatibility fix for mlr3tuning.
+- Fixed position of labels in barplot for `PredictionClassif`.
+
+# mlr3viz 0.5.5
+
+- Fixed another bug for ROC- and Precision-recall-curves (#79).

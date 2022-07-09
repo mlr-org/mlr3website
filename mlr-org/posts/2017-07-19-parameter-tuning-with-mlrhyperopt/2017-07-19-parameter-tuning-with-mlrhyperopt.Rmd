@@ -1,0 +1,124 @@
+---
+title: "Parameter tuning with mlrHyperopt"
+authors: ["Jakob Richter"]
+date: 2017-07-19
+categories: ["R", "r-bloggers"]
+tags: ["tuning", "hyperparameter", "optimization", "mlrHyperopt", "rstats"]
+description: "Tutorial on mlrHyperopt"
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+set.seed(123)
+library(mlr)
+mlr::configureMlr(show.info = FALSE, show.learner.output = FALSE)
+```
+
+Hyperparameter tuning with [**mlr**](https://github.com/mlr-org/mlr#-machine-learning-in-r) is rich in options as they are multiple tuning methods:
+
+* Simple Random Search
+* Grid Search
+* Iterated F-Racing (via [**irace**](http://iridia.ulb.ac.be/irace/))
+* Sequential Model-Based Optimization (via [**mlrMBO**](https://mlrMBO.mlr-org.com/))
+
+Also the search space is easily definable and customizable for each of the [60+ learners of mlr](https://mlr.mlr-org.com/articles/tutorial/devel/integrated_learners.html) using the ParamSets from the [**ParamHelpers**](https://github.com/berndbischl/ParamHelpers) Package.
+
+The only drawback and shortcoming of **mlr** in comparison to [**caret**](http://topepo.github.io/caret/index.html) in this regard is that **mlr** itself does not have defaults for the search spaces.
+This is where [**mlrHyperopt**](https://github.com/jakob-r/mlrHyperopt) comes into play.
+
+**mlrHyperopt** offers
+
+* default search spaces for the most important learners in **mlr**,
+* parameter tuning in one line of code,
+* and an API to add and access custom search spaces from the **mlrHyperopt Database**
+
+### Installation
+
+```{r installation, eval = FALSE}
+# version >= 1.11 needed.
+devtools::install_github("berndbischl/ParamHelpers") 
+devtools::install_github("jakob-r/mlrHyperopt", dependencies = TRUE)
+```
+
+### Tuning in one line
+
+Tuning can be done in one line relying on the defaults.
+The default will automatically minimize the _missclassification rate_.
+
+```{r objectiveFunction, warning=FALSE, message=FALSE}
+library(mlrHyperopt)
+res = hyperopt(iris.task, learner = "classif.svm")
+res
+```
+
+We can find out what `hyperopt` did by inspecting the `res` object.
+
+Depending on the parameter space **mlrHyperopt** will automatically decide for a suitable tuning method:
+
+```{r resObjectControl}
+res$opt.path$par.set
+res$control
+```
+
+As the search space defined in the ParamSet is only numeric, sequential Bayesian optimization was chosen.
+We can look into the evaluated parameter configurations and we can visualize the optimization run.
+
+```{r resObjectOptPath, message=FALSE}
+tail(as.data.frame(res$opt.path))
+plotOptPath(res$opt.path)
+```
+
+The upper left plot shows the distribution of the tried settings in the search space and contour lines indicate where regions of good configurations are located.
+The lower right plot shows the value of the objective (the miss-classification rate) and how it decreases over the time. 
+This also shows nicely that wrong settings can lead to bad results.
+
+### Using the mlrHyperopt API with mlr
+
+If you just want to use **mlrHyperopt** to access the default parameter search spaces from the 
+Often you don't want to rely on the default procedures of **mlrHyperopt** and just incorporate it into your **mlr**-workflow.
+Here is one example how you can use the default search spaces for an easy benchmark:
+
+```{r seed4benchmark, include=FALSE}
+set.seed(3)
+```
+
+```{r benchmark, message=FALSE, warning=FALSE, eval = FALSE}
+lrns = c("classif.xgboost", "classif.nnet")
+lrns = makeLearners(lrns)
+tsk = pid.task
+rr = makeResampleDesc('CV', stratify = TRUE, iters = 10)
+lrns.tuned = lapply(lrns, function(lrn) {
+  if (getLearnerName(lrn) == "xgboost") {
+    # for xgboost we download a custom ParConfig from the Database
+    pcs = downloadParConfigs(learner.name = getLearnerName(lrn))
+    pc = pcs[[1]]
+  } else {
+    pc = getDefaultParConfig(learner = lrn)
+  }
+  ps = getParConfigParSet(pc)
+  # some parameters are dependend on the data (eg. the number of columns)
+  ps = evaluateParamExpressions(ps, 
+    dict = mlrHyperopt::getTaskDictionary(task = tsk))
+  lrn = setHyperPars(lrn, par.vals = getParConfigParVals(pc))
+  ctrl = makeTuneControlRandom(maxit = 20)
+  makeTuneWrapper(learner = lrn, resampling = rr, par.set = ps, 
+                  control = ctrl)
+})
+res = benchmark(learners = c(lrns, lrns.tuned), tasks = tsk, 
+                resamplings = cv10)
+plotBMRBoxplots(res) 
+```
+
+As we can see we were able to improve the performance of xgboost and the nnet without any additional knowledge on what parameters we should tune.
+Especially for nnet improved performance is noticable.
+
+### Additional Information
+
+Some recommended additional reads
+
+* [Vignette](http://jakob-r.de/mlrHyperopt/articles/mlrHyperopt.html) on getting started and also how to contribute by uploading alternative or additional ParConfigs.
+* [How to work with ParamSets](http://jakob-r.de/mlrHyperopt/articles/working_with_parconfigs_and_paramsets.html#the-basics-of-a-paramset) as part of the [Vignette](http://jakob-r.de/mlrHyperopt/articles/working_with_parconfigs_and_paramsets.html).
+* The [slides of the useR 2017 Talk](https://github.com/jakob-r/mlrHyperopt/raw/master/meta/useR2017/beamer/jakob_richter_mlrHyperopt.pdf) on **mlrHyperopt**.
