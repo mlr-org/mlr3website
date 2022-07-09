@@ -1,0 +1,44 @@
+---
+title: "Google Summer of Code and mlr3"
+description: |
+  Our Org is currently thinking about participating in GSOC 2022 again.
+author:
+  - name: Florian Pfisterer
+    url: https://github.com/pfistfl
+date: 2022-02-03
+preview: GSoC-Vertical.png
+categories:
+    - R
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r google-summer-of-code-and-mlr3-001, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Our Org is currently thinking about participating in [GSOC 2022](https://summerofcode.withgoogle.com/) again.
+We are considering which projects to propose and would also like to collect input.
+This year's Google Summer of Code is not only directed at students but at a broader audience of people new to FOSS.
+
+We have thought about the following projects:
+
+* [mlr3multioutput](https://github.com/mlr-org/mlr3multioutput)
+We would like for mlr3multioutput to include multi-label and general
+multi-output techniques, such as learners and prediction post-processing methods.
+Furthermore, some work on the evaluation of multi-output methods could drastically improve the package's utility.
+
+* [mlr3fairness](https://github.com/mlr-org/mlr3fairness)
+by now contains the basic infrastructure to audit algorithms for some notions of fairness.
+We'd like to augment mlr3fairness with several bias mitigation techniques, as well as other notions of fairness.
+
+* Queue-based asynchronous parallelization for R
+mlr3 currently heavily relies on [future](https://github.com/HenrikBengtsson/future) for parallelization.
+Some tuning methods would profit from a different take on parallelization, where task queues are cleanly orchestrated on a central server.
+The goal of this project would be to develop a general-purpose parallelization package (maybe extending the future framework) for asynchronous parallelization and parallel programming.
+
+If you feel like one of the projects sparks your interest, feel free to get in contact with us (mlr-org@stat.uni-muenchen.de)!
+Similarly, if you would like to **propose your own idea/project** also get in contact with us, and we will figure out if this is a fit for our organization!
+
+

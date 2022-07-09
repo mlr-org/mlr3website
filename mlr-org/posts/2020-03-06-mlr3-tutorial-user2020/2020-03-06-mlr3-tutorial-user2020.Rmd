@@ -1,0 +1,50 @@
+---
+title: mlr3 tutorial on useR!2020muc
+authors: ["Michel Lang"]
+date: '2020-03-06'
+slug: mlr3 tutorial user2020muc
+categories:
+  - R
+  - r-bloggers
+tags:
+  - mlr3
+  - mlr3pipelines
+  - mlr3tuning
+  - tutorial
+  - user2020
+  - user2020muc
+output:
+  distill::distill_article:
+    self_contained: false
+description: "Announcing a mlr3 tutorial at userR!2020"
+---
+
+# mlr3 tutorial at the useR!2020 European hub
+
+We are thrilled that we got accepted for a tutorial at the [useR!2020 satellite event in Munich](https://user2020muc.r-project.org/) on July 7th.
+[Bernd Bischl](https://twitter.com/BBischl) and [Michel Lang](https://twitter.com/michellangts) will give an introduction to [mlr3](https://mlr3.mlr-org.com), the successor of the [mlr](https://mlr3.mlr-org.com) package for machine learning in R.
+
+
+The main objective of the tutorial is to introduce and familiarize users with mlr3 and its ecosystem of extension packages.
+This will allow participants to take advantage of its functionality for their own projects, in particular:
+
+* how to benchmark and compare different machine learning approaches in a statistically sound manner,
+* how to build complex machine learning workflows with [mlr3pipelines](https://mlr3pipelines.mlr-org.com/), including preprocessing and stacked ensembles,
+* automatic hyperparameter tuning and pipeline optimization (AutoML) with [mlr3tuning](https://mlr3tuning.mlr-org.com/),
+* how to get the technical "nitty-gritties" for machine learning experiments right, e.g., speed up by parallelization, encapsulation of experiments in external processes or working on databases.
+
+After the tutorial, participants will be able to implement complex solutions to real-world machine learning problems, and to evaluate the different design decisions necessary for such implementations, in particular the choice between different modelling and preprocessing techniques.
+
+
+# About the useR!2020 satellite event in Munich
+
+The conference is a satellite event of the "official" [useR!2020 in St. Louis](https://user2020.r-project.org/), USA.
+It is actively supported by the [R Foundation](https://www.r-project.org/foundation/), and there will be streamed keynote talks from the US to Europe and vice versa.
+The following speakers will give a keynote in Munich (you can find the tentative programme [here](https://user2020muc.r-project.org/programme/)):
+
+* Kurt Hornik and Uwe Ligges about the future of [CRAN](https://cran.r-project.org/)
+* Anna Krystalli about computational reproducibility
+* Przemysław Biecek about explorable and explainable machine learning models
+
+Note that there is still time to [submit an abstract](https://user2020muc.r-project.org/participation/) for a talk, a lightning talk or a poster.
+Registration is also open now!

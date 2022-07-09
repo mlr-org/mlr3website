@@ -1,0 +1,29 @@
+---
+title: "OpenML Workshop 2017"
+authors: ["Giuseppe Casalicchio"]
+date: 2017-09-01
+categories: ["R"]
+tags: ["workshop", "tutorial", "mlr", "rstats"]
+output:
+  distill::distill_article:
+    self_contained: false
+description: "Announcing the OpenML workshop"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+## What is OpenML?
+
+The field of Machine Learning has grown tremendously over the last years, and is a key component of data-driven science. Data analysis algorithms are being invented and used every day, but their results and experiments are published almost exclusively in journals or separated repositories. However, data by itself has no value. It’s the ever-changing ecosystem surrounding data that gives it meaning.
+
+OpenML is a networked science platform that aims to connect and organize all this knowledge online, linking data, algorithms, results and people into a coherent whole so that scientists and practitioners can easy build on prior work and collaborate in real time online.
+
+OpenML has an online interface on openml.org, and is integrated in the most popular machine learning tools and statistical environments such as R, Python, WEKA, MOA and RapidMiner. This allows researchers and students to easily import and export data from these tools and share them with others online, fully integrated into the context of the state of the art. On OpenML, researchers can connect to each other, start projects, and build on the results of others. It automatically keeps track of how often shared work is reused so that researchers can follow the wider impact of their work and become more visible.
+
+## When and Where?
+
+The OpenML workshop is organized as a hackathon, an event where participants from many scientific domains present their goals and ideas, and then work on them in small teams for many hours or days at a time. Participants bring their laptops, learn how to use OpenML in tutorials, and build upon that to create something great to push their research forward. The complete OpenML development team will be available to get them started, answer questions, and implement new features on the fly.
+
+The next OpenML Workshop will run from 9 October to 13 Oktober 2017, see also [here](http://hackathon.openml.org). 

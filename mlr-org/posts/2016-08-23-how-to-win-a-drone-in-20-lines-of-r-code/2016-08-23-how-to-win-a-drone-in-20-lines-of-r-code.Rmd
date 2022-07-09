@@ -1,0 +1,138 @@
+---
+title: "How to win a drone in 20 lines of R code"
+description: |
+  Showcasing model tuning using mlr.
+author: 
+  - name: Janek Thomas
+    url: https://github.com/ja-thomas
+date: 2016-08-23
+categories: ["R", "r-bloggers"]
+tags: ["kaggle", "xgboost", "rstats"]
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = F)
+```
+
+Or a less clickbaity title: __Model based optimization of machine learning models with [mlr](https://github.com/mlr-org/mlr) and [mlrMBO](https://github.com/mlr-org/mlrMBO)__.
+
+I recently participated in the [#TEFDataChallenge](http://www.tefdatachallenge.com/) a _datathon_ organized by Wayra. 
+The first price was a drone for every team member, which is a pretty awesome price.
+
+So what exactly is a datathon?
+
+> At a datathon multiple teams consisting out of computer engineers, data scientists and experts from other fields come together to work on a case for 24 hours straight, where the purpose is to study and analyze data related to the case. Methods well known in AI will be used. A datathon is derived from a so-called hackathon, where in this case the focus is more on data rather than on innovation. Although with the upcoming field of big data bigger and more complicated problems can be solved, there is still a lack of real data scientists. Therefore a datathon is the solution: In a fun and challenging way people are triggered to come up with the best ideas! The Team with the most outstanding patterns or the best predictive models will win the datathon!
+
+[Source](http://datathon.xomnia.com/what-is-a-datathon)
+
+I already took part in some hackathons, but never in a datathon so this was a bit new for me. But
+only 24 hours to create a prediction model as well as an interesting visualization seems quite hard.
+
+Since I signed a NDA, I won't talk about the data used in the challenge. Only so much (that's the information you can find on their website): 
+
+> The aim is to build a prediction model for customer churn, a model to predict if a customer will or will not cancel a mobile contract. 
+
+This is a typical binary classification problem. Fortunately the data was already nicely preprocessed.
+No missing values or data garbage, they even aggregated the data set already so that only one observation per costumer remained.
+This makes the problem a bit easier: _find the best prediction model in a short amount of time_, but
+most importantly: We don't want to spend hours coding it, so that we can use most of our time to 
+create an awesome visualization and create/scrape additional features.
+
+Typically in these kind of challenges [stacking](https://en.wikipedia.org/wiki/Ensemble_learning#Stacking) results in the winning model. But this problematic in this case because
+
+a) Stacking multiple models takes an extremely long time and/or huge computation power. We only had one
+EC2 instance.
+
+b) The judges wanted to have simple models, the simpler the model the better, while still having extremely good prediction accuracy.
+
+So what to do when we cannot stack a hugely complected model ensemble? We use gradient boosting with trees.
+This has multiple advantages, we have a (rather) simple model with good prediction accuracy, we can handle
+categorical variables with large number of classes and we get variable importance measures which can be
+used in the visualization of the model. (We can also create [partial dependence plots](https://mlr-org.github.io/exploring-learner-predictions-with-partial-dependence/) to gain even more insights in the effects). We use [xgboost](https://github.com/dmlc/xgboost) which is currently the fastest implementation for gradient boosting with trees.
+
+Here is our learner definition with the param-set we want to optimize.   
+```{r, eval=FALSE}
+library(mlr)
+lrn = makeLearner("classif.xgboost", eval_metric = "auc", 
+  predict.type = "prob")
+
+ps = makeParamSet(
+  makeIntegerParam("nrounds", lower = 200, upper = 2500, default = 200),
+  makeNumericParam("eta", lower = -7, upper = -5, default = -6, 
+    trafo = function(x) 2^x),
+  makeIntegerParam("max_depth", lower = 3, upper = 15, default = 3),
+  makeNumericParam("colsample_bytree", lower = 0.3, upper = 1, 
+   default = 0.6),
+  makeNumericParam("subsample", lower = 0.3, upper = 1, default = 0.6)
+)
+```
+
+Overall we have 5 parameters (number of trees, learning rate, tree depth, bagging fraction and sub-sampling fraction) that we vary to find our optimal model.
+For standard optimization techniques like grid search this is already a real problem because the numbers of points to search increases exponentially with every additional hyper-parameter.
+
+Since all hyper-parameter are numeric it would be possible to use evolutionary algorithms like [cmaes](https://en.wikipedia.org/wiki/CMA-ES).
+The problem with that is, that these methods generally take a large number of function evaluation to find the optimal model, but we don't have too much time and (cross-validated) model fits are quite expensive.
+
+This is basically the perfect situation for model based optimization. We fit a surrogate model over
+the space of hyper-parameters and search promising points. Having only numeric hyper-parameter makes the optimization 
+even nicer because we can use a Gaussian process as our surrogate model. In the figure you can see an example of model based optimization in 1 dimension. The upper figure shows evaluated points, the estimated model (dashed line) and its variance (gray area). The lower picture shows how interesting every possible point is for future exploration of the space. 
+For an in-depth introduction to model-based optimization you can read [Jones(1998)](http://www.ressources-actuarielles.net/EXT/ISFA/1226.nsf/0/f84f7ac703bf5862c12576d8002f5259/$FILE/Jones98.pdf).
+
+```{r, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+library(smoof)
+library(mlr)
+library(mlrMBO)
+library(ParamHelpers)
+obj.fun = makeAckleyFunction(1)
+learner = makeLearner("regr.km", predict.type = "se", covtype = "matern5_2", control = list(trace = FALSE))
+control = makeMBOControl()
+control = setMBOControlTermination(control, iters = 10)
+control = setMBOControlInfill(control, crit = crit.ei)
+set.seed(12)
+ex = exampleRun(obj.fun, control = control, show.info = FALSE, learner = learner)
+```
+
+```{r, eval=TRUE, echo=FALSE, fig.align="center", message=FALSE}
+plotExampleRun(ex, 1L)
+```
+
+We use [mlrMBO](https://github.com/mlr-org/mlrMBO) as a general black-box optimization toolkit with is already nicely connected to mlr. The optimization definition looks like this:
+
+```{r, eval=FALSE}
+library(mlrMBO)
+library(parallelMap)
+task = makeClassifTask(data = data, target = "churn")
+mbo.ctrl = makeMBOControl(save.on.disk.at = c(0, 5, 10, 20, 50, 75, 85, 95))
+mbo.ctrl = setMBOControlTermination(mbo.ctrl, iters = 100)
+surrogate.lrn = makeLearner("regr.km", predict.type = "se")
+ctrl = mlr:::makeTuneControlMBO(learner = surrogate.lrn, 
+                                mbo.control = mbo.ctrl)
+
+parallelStartMulticore(cpus = 10L)
+res.mbo = tuneParams(lrn, task, cv10, par.set = ps, control = ctrl, 
+  show.info = TRUE, measures = auc)
+parallelStop()
+```
+
+Some notes on this:
+
+- We save our model (actually the optimization path) at different iterations of the process, which is quite useful if anything crashes.
+- We do 100 sequential iterations after the initial design (for which we used the default setting).
+- We use kriging as our surrogate model. Actually we don't even need to specify this, since it is the default surrogate model of [mlrMBO](https://github.com/mlr-org/mlrMBO).
+- [parallelMap](https://github.com/berndbischl/parallelMap) is used to parallelize the cross-validation over all 10 available cores on the EC2 instance.
+
+The resulting model was in the end the best model on the hidden test set and even beat a large stacking ensemble of
+multiple boosting models, random forests and deep neural networks.
+
+One other team used a quite similar approach, but instead of model based optimization they used [irace](http://iridia.ulb.ac.be/irace/) to tune a gradient boosting model. This can also be done in mlr quite easily:
+
+```{r, eval=FALSE}
+ctrl = makeTuneControlIrace(n.instances = 200L)
+parallelStartMulticore(cpus = 10L)
+res.irace = tuneParams(lrn, task, cv10, par.set = ps, control = ctrl, 
+  show.info = TRUE, measures = auc)
+parallelStop()
+```
