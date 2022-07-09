@@ -1,0 +1,37 @@
+```{r, echo = FALSE}
+library(mlr3misc)
+library(htmltools)
+library(data.table)
+
+team_grid = function(content) {
+  div(class = "grid-container-team",
+    pmap(content, function(name, image, url, text) {
+      div(class = "grid-item-team",
+        div(class = "grid-image-team",
+          img(src = image)
+        ),
+        div(class = "grid-text-team",
+          h3(
+            a(href = url, name)
+          ),
+          text
+        )
+      )
+    })
+  )
+}
+
+content = rowwise_table(
+  ~name, ~image, ~url, ~text,
+  "Bernd Bischl", "images/team/bernd.jpg", "https://github.com/berndbischl/", "Professor of Statistical Learning and Data Science at the LMU Munich. I created mlr a long time ago at the beginning of my PhD. Nowadays, I spend most of my time in project supervision, code reviews and helping to design new parts of the framework. I was part of the design process of nearly all parts of the new mlr3, but nearly all code has been written by the other developers.",
+  "Michel Lang", "images/team/michel.png", "https://github.com/mllg/", "Postdoc at the TU Dortmund and one of the main developers of mlr. I've worked on many internal parts of mlr and started to implement support for survival analysis. Now main developer of mlr3.",
+  "Marc Becker", "images/team/marc.jpg", "https://github.com/be-marc/", "Research engineer at the LMU Munich and main developer of the mlr3 optimization packages.",
+  "Raphael Sonabend", "images/team/raphael.png", "https://github.com/RaphaelS1/", "Postdoc at Imperial College London. I am the main developer of mlr3proba and also the previous maintainer of mlr3extralearners.",
+  "Patrick Schratz", "images/team/patrick.jpg", "https://github.com/pat-s/", "R consultant in Zurich, Switzerland. PhD Candidate in environmental modeling. Mainly contributing to spatiotemporal packages. Maintainer of the old mlr package.",
+  "Sebastian Fischer", "images/team/sebastian.jpg", "https://github.com/sebffischer", "Research Engineer at LMU Munich. Is working on mlr3torch, mlr3oml and maintains mlr3extralearners.",
+  "Lars Kotthoff", "images/team/larsko.jpg", "https://github.com/larskotthoff", "Computer Science Professor at University of Wyoming, contributes small pieces here and there.",
+  "Florian Pfisterer", "images/team/florian.jpg", "https://github.com/pfistfl", "PhD Student at LMU Munich. I am interested in projects on the intersection of Meta-Learning, AutoML and Algorithmic Fairness. Mainly working on mlr3pipelines and mlr3keras/mlr3torch"
+)
+
+team_grid(content)
+```

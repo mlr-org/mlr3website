@@ -1,0 +1,166 @@
+---
+sidebar: false
+title: "Packages"
+---
+
+The mlr3 ecosystem is a collection of R packages for machine learning.
+The base package mlr3 only provides the basic building blocks for machine learning.
+The extensions packages extent mlr3 with functionality for additional task types, learning algorithms, tuning algorithms, feature selection strategies, visualizations or preprocessing capabilities.
+The packages are listed bellow with a short description.
+For more information about the packages, check out their respective homepages.
+The dot next to the package name indicates the [lifecycle stage](https://lifecycle.r-lib.org/articles/stages.html).
+Packages with a green dot <i class="bi-circle-fill status-stable" title = "[status-stable]"></i> are stable.
+Experimental packages are marked with an orange dot <i class="bi-circle-fill status-experimental" title = "[status-experimental]"></i>.
+Planned packages are marked with a red dot <i class="bi-circle-fill status-planned" title = "[status-planned]"></i>.
+
+sss
+
+![Graph of Extension Packages](https://raw.githubusercontent.com/mlr-org/mlr3/master/man/figures/mlr3verse.svg?sanitize=true)
+
+If you use our packages in your research, please cite our articles on mlr3 [@mlr3], mlr3proba [@mlr3proba] or mlr3pipelines [@mlr3pipelines].
+To get the citation information of other packages, call
+
+```{r eval = FALSE, echo = TRUE}
+citation("[package]")
+```
+
+```{r, include = FALSE}
+# Collection of mlr3 ecosystem packages
+# Packages are rendered in a 3 columns grid.
+# Text description should be one sentence
+
+library(mlr3misc)
+library(htmltools)
+library(data.table)
+
+package_grid = function(content) {
+  div(class = "grid-container-package",
+    pmap(content, function(category, name, status, url, text, on_cran, ...) {
+        has_homepage = grepl("mlr-org.com", url, ignore.case = TRUE)
+
+        div(class = "grid-item-package",
+          h3(
+            a(href = url, name),
+            tags$i(
+                class = sprintf("bi-circle-fill status status-%s", status),
+                title = sprintf("[status-%s]", status)
+            )
+          ),
+          p(paste0(text, ".")),
+          div(id = "bottom",
+            if (has_homepage) a(href = url, "aria-label" = "Go to homepage", tags$i(class = "bi bi-house", title = "Homepage")),
+            if (has_homepage) a(href = paste0(url, "reference/"), "aria-label" = "Go to Reference Manual", tags$i(class = "bi bi-question-circle", title = "Reference Manual")),
+            a(href = sprintf("https://github.com/mlr-org/%s", name), "aria-label" = "Go to Project Page", tags$i(class = "bi bi-github", title = "Github Project")),
+            if (on_cran) a(href = sprintf("https://cran.r-project.org/package=%s", name), "aria-label" = "Go to CRAN page", tags$i(class = "fab fa-r-project", title = "CRAN Website"))
+          )
+        )
+    })
+  )
+}
+
+content = rowwise_table(
+    ~category,       ~name,               ~status,        ~url,                                         ~text,
+    "core",          "mlr3",              "stable",       "https://mlr3.mlr-org.com/",                  "Basic building blocks for machine learning",
+    "core",          "mlr3verse",         "stable",       "https://mlr3verse.mlr-org.com/",             "Meta-package intended to simplify both installation and loading of packages from the mlr3 ecosystem",
+    "optimization",  "mlr3tuning",        "stable",       "https://mlr3tuning.mlr-org.com/",            "Hyperparameter tuning for mlr3 learners",
+    "optimization",  "mlr3tuningspaces",  "stable",       "https://mlr3tuningspaces.mlr-org.com/",      "Collection of search spaces for hyperparameter tuning",
+    "optimization",  "mlr3hyperband",     "stable",       "https://mlr3hyperband.mlr-org.com/",         "Successive halving and hyperband tuner for mlr3tuning",
+    "optimization",  "mlr3mbo",           "experimental", "https://mlr3mbo.mlr-org.com/",               "Model-based optimization for mlr3tuning",
+    "optimization",  "miesmuschel",       "experimental", "https://github.com/mlr-org/miesmuschel/",    "Flexible mixed integer evolutionary strategies",
+    "optimization",  "mlr3automl",        "experimental", "https://github.com/mlr-org/mlr3automl/",     "Automated machine learning",
+    "featsel",       "mlr3filters",       "stable",       "https://mlr3filters.mlr-org.com/",           "Filter Feature Selection",
+    "featsel",       "mlr3fselect",       "stable",       "https://mlr3fselect.mlr-org.com/",           "Wrapper Feature Selection",
+    "data",          "mlr3db",            "stable",       "https://mlr3db.mlr-org.com/",                "Data backend to transparently work with databases",
+    "data",          "mlr3oml",           "stable",       "https://mlr3oml.mlr-org.com/",               "Connector to OpenML",
+    "data",          "mlr3data",          "stable",       "https://mlr3data.mlr-org.com/",              "Data sets and tasks",
+    "learners",      "mlr3learners",      "stable",       "https://mlr3learners.mlr-org.com/",          "Essential learners for mlr3, maintained by the mlr-org team",
+    "learners",      "mlr3extralearners", "stable",       "https://mlr3extralearners.mlr-org.com/",     "Extra learners for mlr3, implemented by the community",
+    "learners",      "mlr3keras",         "experimental", "https://github.com/mlr-org/mlr3keras/",      "Deep learning with Keras",
+    "visualization", "mlr3viz",           "stable",       "https://mlr3viz.mlr-org.com/",               "Visualizations for tasks, predictions, resample results and benchmarks",
+    "pipelines",     "mlr3pipelines",     "stable",       "https://mlr3pipelines.mlr-org.com/",         "Dataflow programming toolkit",
+    "tasks",         "mlr3spatiotempcv",  "stable",       "https://mlr3spatiotempcv.mlr-org.com/",      "Spatiotemporal resampling and visualization methods",
+    "tasks",         "mlr3cluster",       "stable",       "https://mlr3cluster.mlr-org.com/",           "Cluster analysis",
+    "tasks",         "mlr3proba",         "stable",       "https://mlr3proba.mlr-org.com/",             "Probabilistic predictions",
+    "tasks",         "mlr3ordinal",       "experimental", "https://mlr3ordinal.mlr-org.com/",           "Ordinal regression",
+    "tasks",         "mlr3multioutput",   "experimental", "https://github.com/mlr-org/mlr3multioutput", "Storing and working with multi-output tasks",
+    "tasks",         "mlr3temporal",      "experimental", "https://mlr3temporal.mlr-org.com/",          "Time series analysis",
+    "tasks",         "mlr3spatial",       "stable",       "https://mlr3spatial.mlr-org.com/",           "Spatial data backends and prediction functions",
+    "tasks",         "mlr3multilabel",    "planned",      "https://github.com/mlr-org/mlr3multilabel",  "Multi-Label Classification",
+    "tasks",         "mlr3fda",           "planned",      "https://github.com/mlr-org/mlr3fda",         "Functional Data Analysis",
+    "utils",         "bbotk",             "stable",       "https://bbotk.mlr-org.com/",                 "Black-box optimization toolkit",
+    "utils",         "paradox",           "stable",       "https://paradox.mlr-org.com/",               "Universal parameter space description and tools",
+    "utils",         "mlr3misc",          "stable",       "https://mlr3misc.mlr-org.com/",              "Miscellaneous helper functions for mlr3",
+    "utils",         "mlr3measures",      "stable",       "https://mlr3measures.mlr-org.com/",          "Performance measures for supervised learning",
+    "utils",         "mlr3benchmark",     "stable",       "https://mlr3benchmark.mlr-org.com/",         "Analysis and tools for benchmarking",
+    "utils",         "mlr3fairness",      "experimental", "https://mlr3fairness.mlr-org.com/",          "Fairness in Machine Learning",
+    "utils",         "mlr3batchmark",     "experimental", "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools"
+)
+
+# add CRAN link
+content[, on_cran := name %in% rownames(available.packages(repos = "https://cloud.r-project.org"))]
+
+# index by categoty
+# sort by status: stable first, then experimental, then planned
+content[, status := factor(status, levels = c("stable", "experimental", "planned"), ordered = TRUE)]
+
+# sort by status, keep order of table
+setkeyv(content, c("category", "status"))
+
+# sort by name
+# setkeyv(content, c("category", "name"))
+```
+
+## <i class="bi-house-heart"></i> Core
+
+```{r}
+package_grid(content[.("core")])
+```
+
+
+## <i class="bi-sliders"></i> Optimization
+
+```{r}
+package_grid(content[.("optimization")])
+```
+
+## <i class="bi-funnel"></i> Feature Selection
+
+```{r}
+package_grid(content[.("featsel")])
+```
+
+## <i class="bi-hdd"></i> Data
+
+```{r}
+package_grid(content[.("data")])
+```
+
+## <i class="bi-pen"></i> Learners
+
+```{r}
+package_grid(content[.("learners")])
+```
+
+## <i class="bi-bar-chart-line"></i> Visualization
+
+```{r}
+package_grid(content[.("visualization")])
+```
+
+## <i class="bi-share"></i> Pipelines
+
+```{r}
+package_grid(content[.("pipelines")])
+```
+
+## <i class="bi-list-task"></i> Tasks
+
+```{r}
+package_grid(content[.("tasks")])
+```
+
+## <i class="bi-balloon"></i> Utilities
+
+```{r}
+package_grid(content[.("utils")])
+```

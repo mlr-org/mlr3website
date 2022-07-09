@@ -1,0 +1,41 @@
+---
+bibliography: bibliography.bib
+page-layout: full
+title: Resources
+sidebar: false
+toc: false
+listing:
+  - id: listings
+    # contents: documentation-listings/*.qmd
+    template: listings.ejs
+    contents: listings.yml
+  - id: listings2
+    # contents: documentation-listings/*.qmd
+    template: listings2.ejs
+    contents: listings2.yml
+---
+```{r setup, include=FALSE}
+library(mlr3website)
+```
+
+::: {#listings}
+:::
+
+ssssss
+
+::: {#listings2}
+:::
+
+## Peer-reviewed Articles
+
+A more scientific view on our the packages and the packages we depend on.
+
+* @mlr3: about the base package `r mlr_pkg("mlr3")`
+* @mlr3pipelines: building machine learning pipelines with `r mlr_pkg("mlr3pipelines")`
+* @mlr3proba: probabilistic regression with `r mlr_pkg("mlr3proba")` (including survival analysis)
+* @future: the parallelization framework package `r cran_pkg("future")` we build upon
+* @checkmate: package `r cran_pkg("checkmate")` for argument checking and defensive programming
+* @batchtools: parallelization framework `r cran_pkg("batchtools")` for high-performance computing clusters, used via `r cran_pkg("future")` or `r gh_pkg("mlr-org/mlr3batchmark")`
+
+
+
