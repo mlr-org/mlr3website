@@ -445,11 +445,11 @@ bmr = benchmark(design, store_models = FALSE)
 ```
 
 ```{r 2020-09-11-liver-patient-classification-021, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, "data/bmr.rda")
+saveRDS(bmr, here::here("data/bmr.rda"))
 ```
 
 ```{r 2020-09-11-liver-patient-classification-022, echo = FALSE}
-bmr = readRDS("data/bmr.rda")
+bmr = readRDS(here::here("data/bmr.rda"))
 ```
 
 As mentioned above, stratified 5-fold cross-validation was chosen.
@@ -476,7 +476,7 @@ Furthermore, oversampling leaves AUC performance almost untouched for all learne
 
 The boxplots below graphically summarize AUC performance of all learners, with the blue dots indicating mean AUC performance.
 
-```{r 2020-09-11-liver-patient-classification-024, echo=FALSE, fig.height = 6, fig.width = 12, layout="l-body-outset"}
+```{r 2020-09-11-liver-patient-classification-024, echo=FALSE, fig.height = 6, fig.width = 12}
 # Boxplots to compare learners by AUC
 compare_df = as.data.frame(bmr$score(list(
   msr("classif.auc"),
@@ -510,8 +510,9 @@ As a first step towards "AUC decomposition", we consider the ROC curve, which pr
 
 ```{r 2020-09-11-liver-patient-classification-025, echo=FALSE, out.width='85%', fig.align="center"}
 # Plotting ROC curves
-autoplot(bmr, type = "roc", show_cb = FALSE) +
-  theme_minimal()
+# FIXME:
+# autoplot(bmr, type = "roc", show_cb = FALSE) +
+#   theme_minimal()
 ```
 
 Subsequently, sensitivity, specificity, false negative rate (FNR), and false positive rate (FPR) for each learner are shown explicitly in the output below, next to AUC.
@@ -539,7 +540,8 @@ By definition, high sensitivity (specificity) results from a low false negative 
 
 With oversampling, specificity increases at the cost of sensitivity for all learners (even for those which already had high specificity), as can be seen in the two graphs below.
 
-```{r 2020-09-11-liver-patient-classification-027, echo=FALSE, fig.width = 10, fig.height = 10}
+```{r 2020-09-11-liver-patient-classification-027, echo=FALSE, fig.width = 10, fig.height = 10, eval=FALSE}
+# FIXME:
 # Creating dataframe with the performance measures for the barplots
 compare_df2 = as.data.frame(bmr$aggregate(list(
   msr("classif.auc"),
@@ -596,7 +598,8 @@ grid.arrange(arrangeGrob(plot1 + theme(legend.position = "none"),
 
 For a given learner, say random forest, the different performance metrics and their dependence upon target variable balance are shown in the following graph.
 
-```{r 2020-09-11-liver-patient-classification-028, echo=FALSE, fig.width = 10, fig.height = 10}
+```{r 2020-09-11-liver-patient-classification-028, echo=FALSE, fig.width = 10, fig.height = 10, eval=FALSE}
+# FIXME:
 compare_df3 = gather(compare_df2, "measure", "value", 2:6)
 
 # Plotting all measures for random forest, comparing original and oversampled dataset
@@ -616,7 +619,8 @@ ggplot(compare_df3[which(compare_df3$learner_id_wo == "classif.ranger.tuned"), ]
 To get a look at performance from yet another angle, we next considered the confusion matrix for each learner, which simply contrasts the absolute numbers of predictions and true values by category, with and without oversampling.
 You can have a look at all the confusion matrices, if you run the script.
 
-```{r 2020-09-11-liver-patient-classification-029, echo=FALSE, out.extra=''}
+```{r 2020-09-11-liver-patient-classification-029, echo=FALSE, out.extra='', eval=FALSE}
+# FIXME:
 names = sapply(1:14, function(x) bmr$resample_result(x)$learner$id)
 for (x in 1:14) {
   print(names[x])

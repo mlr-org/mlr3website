@@ -253,11 +253,11 @@ bmr = benchmark(design, store_models = TRUE)
 ```
 
 ```{r 2020-04-27-tuning-stacking-019, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, "data/bmr.rda")
+saveRDS(bmr, here::here("data/bmr.rda"))
 ```
 
 ```{r 2020-04-27-tuning-stacking-020, echo = FALSE}
-bmr = readRDS("data/bmr.rda")
+bmr = readRDS(here::here("data/bmr.rda"))
 ```
 
 ```{r 2020-04-27-tuning-stacking-021, eval = FALSE}

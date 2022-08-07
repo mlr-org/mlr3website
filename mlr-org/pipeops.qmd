@@ -14,12 +14,12 @@ library(mlr3misc)
 library(data.table)
 library(mlr3verse)
 
-content = as.data.table(mlr_pipeops, objects = TRUE)[, .(key, label, packages, tags)]
+content = as.data.table(mlr_pipeops, objects = TRUE)[, .(key, packages, tags)]
 content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
 
 content[, key := link_keys(key, "mlr_pipeops", format = "html")]
-content[, packages := link_pkgs(packages, remove = "mlr3pipelines", format = "html")]
-setnames(content, c("Key", "Label", "Packages", "Tags"))
+content[, packages := link_pkgs(packages, remove = "mlr3pipelines")]
+setnames(content, c("Key", "Packages", "Tags"))
 ```
 
 Objects of class `r ref("PipeOp")` are the building blocks to compose linear machine learning pipelines and non-linear `r ref("Graph", text = "Graphs")`.

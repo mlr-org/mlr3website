@@ -19,7 +19,7 @@ output:
     self_contained: false
     highlight_downlit: true
 params:
-  eval_all: FALSE
+  eval_all: TRUE
 ---
 
 
@@ -140,8 +140,9 @@ task_imputed$missings()
 head(task_imputed$data())
 ```
 
-```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-012, echo = FALSE, layout="l-page"}
-table_responsive(head(task_imputed$data()))
+```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-012, echo = FALSE}
+#| column: page
+DT::datatable(task_imputed$data())
 ```
 
 We do not only need complete data during training but also during prediction.
@@ -217,11 +218,12 @@ instance = tune(
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-020, echo = FALSE, eval = params$eval_all}
-saveRDS(instance, "data/instance.rda")
+dir.create(here::here("data"))
+saveRDS(instance, here::here("data/instance.rda"))
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-021, echo = FALSE}
-instance = readRDS("data/instance.rda")
+instance = readRDS(here::here("data/instance.rda"))
 ```
 
 We can plot the performance against the number of features.
@@ -270,11 +272,11 @@ bmr = benchmark(grid)
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-026, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, "data/bmr.rda")
+saveRDS(bmr, here::here("data/bmr.rda"))
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-027, echo = FALSE}
-bmr = readRDS("data/bmr.rda")
+bmr = readRDS(here::here("data/bmr.rda"))
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-028, echo = FALSE}

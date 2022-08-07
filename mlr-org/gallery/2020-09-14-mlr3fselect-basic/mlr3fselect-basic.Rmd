@@ -273,11 +273,11 @@ rr = resample(task, at, resampling_outer, store_models = TRUE)
 ```
 
 ```{r mlr3fselect-basic-024, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, "data/rr.rda")
+saveRDS(rr, here::here("data/rr.rda"))
 ```
 
 ```{r mlr3fselect-basic-025, echo = FALSE}
-rr = readRDS("data/rr.rda")
+rr = readRDS(here::here("data/rr.rda"))
 ```
 
 The aggregated performance of all outer resampling iterations is the unbiased predictive performance we can expected from the logistic regression model with an optimized feature set found by sequential selection.
@@ -295,8 +295,9 @@ Usually, we aim for the selection of similar feature sets for all outer training
 extract_inner_fselect_results(rr)
 ```
 
-```{r mlr3fselect-basic-028, echo = FALSE, layout="l-body-outset"}
-table_responsive(extract_inner_fselect_results(rr))
+```{r mlr3fselect-basic-028, echo = FALSE}
+#| column: page
+DT::datatable(extract_inner_fselect_results(rr))
 ```
 
 Next, we want to compare the predictive performances estimated on the outer resampling to the inner resampling.
@@ -316,8 +317,9 @@ The archives of the `r ref("AutoFSelector")`s gives us all evaluated feature set
 extract_inner_fselect_archives(rr)
 ```
 
-```{r mlr3fselect-basic-032, echo = FALSE, layout="l-page"}
-table_responsive(extract_inner_fselect_archives(rr))
+```{r mlr3fselect-basic-032, echo = FALSE}
+#| column: page
+DT::datatable((extract_inner_fselect_archives(rr)))
 ```
 
 ## Shortcuts

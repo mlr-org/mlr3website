@@ -15,7 +15,7 @@ output:
     toc: true
     self_contained: false
 params:
-  eval_all: FALSE
+  eval_all: TRUE
 ---
 
 ```{r feature-engineering-of-date-time-variables-001, include=FALSE}
@@ -150,11 +150,11 @@ rr_ranger$score(msr("regr.mse"))
 ```
 
 ```{r feature-engineering-of-date-time-variables-013, echo = FALSE, eval = params$eval_all}
-saveRDS(rr_ranger, "data/rr_ranger.rda")
+saveRDS(rr_ranger, here::here("data/rr_ranger.rda"))
 ```
 
 ```{r feature-engineering-of-date-time-variables-014, echo = FALSE}
-rr_ranger = readRDS("data/rr_ranger.rda")
+rr_ranger = readRDS(here::here("data/rr_ranger.rda"))
 ```
 
 ```{r feature-engineering-of-date-time-variables-015, echo = FALSE}
@@ -221,11 +221,11 @@ rr_graph_learner$score(msr("regr.mse"))
 ```
 
 ```{r feature-engineering-of-date-time-variables-021, echo = FALSE, eval = params$eval_all}
-saveRDS(rr_graph_learner, "data/rr_graph_learner.rda")
+saveRDS(rr_graph_learner, here::here("data/rr_graph_learner.rda"))
 ```
 
 ```{r feature-engineering-of-date-time-variables-022, echo = FALSE}
-rr_graph_learner = readRDS("data/rr_graph_learner.rda")
+rr_graph_learner = readRDS(here::here("data/rr_graph_learner.rda"))
 ```
 
 ```{r feature-engineering-of-date-time-variables-023, echo = FALSE}

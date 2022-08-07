@@ -147,8 +147,9 @@ impute_missind$plot()
 head(impute_missind$train(task_pima)[[1]]$data())
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-013, echo = FALSE, layout="l-page"}
-table_responsive(head(impute_missind$train(task_pima)[[1]]$data()))
+```{r 2020-04-23-pipelines-selectors-branches-013, echo = FALSE}
+#| column: page
+DT::datatable(impute_missind$train(task_pima)[[1]]$data())
 ```
 
 
@@ -206,8 +207,9 @@ imputer_missind_2$plot()
 head(imputer_missind_2$train(task_pima)[[1]]$data())
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-021, echo = FALSE, layout="l-page"}
-table_responsive(head(imputer_missind_2$train(task_pima)[[1]]$data()))
+```{r 2020-04-23-pipelines-selectors-branches-021, echo = FALSE}
+#| column: page
+DT::datatable(imputer_missind_2$train(task_pima)[[1]]$data())
 ```
 
 Note that when there is one input channel, it is automatically copied as many times as needed for the downstream `r ref("PipeOp")`s.
@@ -223,8 +225,9 @@ imputer_missind_3 = gunion(list(imputer_hist_2,
 head(imputer_missind_3$train(task_pima)[[1]]$data())
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-023, echo = FALSE, layout="l-page"}
-table_responsive(head(imputer_missind_3$train(task_pima)[[1]]$data()))
+```{r 2020-04-23-pipelines-selectors-branches-023, echo = FALSE}
+#| column: page
+DT::datatable(imputer_missind_3$train(task_pima)[[1]]$data())
 ```
 
 

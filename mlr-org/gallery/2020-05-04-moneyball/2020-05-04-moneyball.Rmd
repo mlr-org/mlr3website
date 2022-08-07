@@ -74,8 +74,9 @@ The description indicates that the data set is associated with baseball or more 
 head(as.data.table(oml_data))
 ```
 
-```{r 2020-05-04-moneyball-006, layout="l-page", echo = FALSE}
-table_responsive(head(as.data.table(oml_data)))
+```{r 2020-05-04-moneyball-006, echo = FALSE}
+#| column: page
+DT::datatable(as.data.table(oml_data))
 ```
 
 However, the description within the `r cran_pkg("OpenML")` object is not very detailed.
@@ -288,8 +289,8 @@ We choose the `r ref("mlr_measures_regr.mae", "mean absolute error")` and the `r
 rr$score(msrs(c("regr.mae", "regr.mse")))
 ```
 
-```{r 2020-05-04-moneyball-023, echo = FALSE, layout="l-body-outset"}
-table_responsive(rr$score(msrs(c("regr.mae", "regr.mse")))[, .(iteration, task_id, learner_id, resampling_id, regr.mae, regr.mse)])
+```{r 2020-05-04-moneyball-023, echo = FALSE}
+DT::datatable(rr$score(msrs(c("regr.mae", "regr.mse")))[, .(iteration, task_id, learner_id, resampling_id, regr.mae, regr.mse)])
 ```
 
 We can also compute now by how much our model was on average wrong when predicting the runs scored.
@@ -347,8 +348,9 @@ sort(graph_learner$model$regr.ranger$model$variable.importance, decreasing = TRU
 ```
 
 
-```{r 2020-05-04-moneyball-030, echo = FALSE, layout="l-body-outset"}
-table_responsive(data.table(t(sort(graph_learner$model$regr.ranger$model$variable.importance, decreasing = TRUE))))
+```{r 2020-05-04-moneyball-030, echo = FALSE}
+#| column: page
+DT::datatable(data.table(t(sort(graph_learner$model$regr.ranger$model$variable.importance, decreasing = TRUE))))
 ```
 
 We see that according to this the left out `oobp` and `oslg` seem to have solely rudimentary explanatory power.

@@ -26,7 +26,7 @@ output:
     self_contained: false
     highlight_downlit: true
 params:
-  eval_all: FALSE
+  eval_all: TRUE
 ---
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-001, include=FALSE}
@@ -206,16 +206,17 @@ instance = tune(
 ```
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-016, echo = FALSE, eval = params$eval_all}
-saveRDS(instance, "data/instance_1.rda")
+saveRDS(instance, here::here("data/instance_1.rda"))
 ```
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-017, echo = FALSE}
-instance = readRDS("data/instance_1.rda")
+instance = readRDS(here::here("data/instance_1.rda"))
 ```
 
 The following shows a quick way to visualize the tuning results.
 
-```{r practical-tuning-series-build-an-automated-machine-learning-system-018, fig.width=12, fig.height=4, layout="l-page"}
+```{r practical-tuning-series-build-an-automated-machine-learning-system-018, fig.width=12, fig.height=4}
+#| column: page
 autoplot(instance, type = "marginal",
   cols_x = c("x_domain_kknn.k","x_domain_svm.cost", "ranger.mtry"))
 ```
@@ -264,12 +265,12 @@ rr = resample(task, at, outer_resampling, store_models = TRUE)
 ```
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-021, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, "data/rr_1.rda")
+saveRDS(rr, here::here("data/rr_1.rda"))
 ```
 
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-022, echo = FALSE}
-rr = readRDS("data/rr_1.rda")
+rr = readRDS(here::here("data/rr_1.rda"))
 ```
 
 We check the inner tuning results for stable hyperparameters.
@@ -281,8 +282,9 @@ Usually, we aim for the selection of stable hyperparameters for all outer traini
 extract_inner_tuning_results(rr)
 ```
 
-```{r practical-tuning-series-build-an-automated-machine-learning-system-024, echo = FALSE, layout="l-body-outset"}
-table_responsive(extract_inner_tuning_results(rr)[, .SD, .SDcols = !c("learner_param_vals", "x_domain")])
+```{r practical-tuning-series-build-an-automated-machine-learning-system-024, echo = FALSE}
+#| column: page
+DT::datatable(extract_inner_tuning_results(rr)[, .SD, .SDcols = !c("learner_param_vals", "x_domain")])
 ```
 
 Next, we want to compare the predictive performances estimated on the outer resampling to the inner resampling.

@@ -15,7 +15,7 @@ categories:
   - german credit data set
   - classification
 params:
-  eval_all: FALSE
+  eval_all: TRUE
 ---
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-001, include=FALSE}
@@ -176,11 +176,11 @@ tuner_grid$optimize(instance_grid)
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-016, echo = FALSE, eval = params$eval_all}
-saveRDS(instance_grid, "data/instance_grid.rda")
+saveRDS(instance_grid, here::here("data/instance_grid.rda"))
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-017, echo = FALSE}
-instance_grid = readRDS("data/instance_grid.rda")
+instance_grid = readRDS(here::here("data/instance_grid.rda"))
 ```
 
 The result is returned by `$optimize()` together with its performance. It can be also accessed with the  `$result` slot:
@@ -256,7 +256,7 @@ instance_random = TuningInstanceSingleCrit$new(
   resampling = cv10,
   measure = msr("classif.ce"),
   terminator = trm("evals", n_evals = 36),
-  search_space = search_space_large,
+  search_space = search_space_large
 )
 ```
 
@@ -265,11 +265,11 @@ tuner_random$optimize(instance_random)
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-025, echo = FALSE, eval = params$eval_all}
-saveRDS(instance_random, "data/instance_random.rda")
+saveRDS(instance_random, here::here("data/instance_random.rda"))
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-026, echo = FALSE}
-instance_random = readRDS("data/instance_random.rda")
+instance_random = readRDS(here::here("data/instance_random.rda"))
 ```
 
 Like before, we can review the `Archive`.
@@ -345,11 +345,11 @@ rr = resample(task, at_grid, cv10, store_models = TRUE)
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-034, echo = FALSE, eval = params$eval_all}
-saveRDS(rr , "data/resample_result.rda")
+saveRDS(rr , here::here("data/resample_result.rda"))
 ```
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-035, echo=FALSE}
-rr = readRDS("data/resample_result.rda")
+rr = readRDS(here::here("data/resample_result.rda"))
 ```
 
 We check the inner tuning results for stable hyperparameters.
@@ -431,7 +431,7 @@ perfdata
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-045, echo=FALSE}
 #| column: page
-perfdata = readRDS("data/randomsearch_3600.rds")
+perfdata = readRDS(here::here("data/randomsearch_3600.rds"))
 DT::datatable(perfdata)
 ```
 
@@ -470,5 +470,5 @@ ggplot(perfdata[x_domain_k > 10 & x_domain_k < 20 & scale == TRUE],
 In sum our observations are:
 The `scale` parameter is very influential, and scaling is beneficial.
 The `distance` type seems to be the least influential.
-Their seems to be an interaction between 'k' and 'kernel'.
+There seems to be an interaction between 'k' and 'kernel'.
 

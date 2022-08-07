@@ -19,7 +19,7 @@ output:
     highlight_downlit: true
 bibliography: bibliography.bib
 params:
-  eval_all: FALSE
+  eval_all: TRUE
 ---
 
 ```{r tuning-a-complex-graph-001, include=FALSE}
@@ -223,8 +223,9 @@ The grid being used will look like the following (note that the dependencies we 
 generate_design_grid(tune_ps1, resolution = 4)
 ```
 
-```{r tuning-a-complex-graph-014, echo = FALSE, layout="l-page"}
-table_responsive(generate_design_grid(tune_ps1, resolution = 4)$data)
+```{r tuning-a-complex-graph-014, echo = FALSE}
+#| column: page
+DT::datatable(generate_design_grid(tune_ps1, resolution = 4)$data)
 ```
 
 We trigger the tuning.
@@ -235,11 +236,11 @@ tuner_gs$optimize(tune1)
 ```
 
 ```{r tuning-a-complex-graph-016, echo = FALSE, eval = params$eval_all}
-saveRDS(tune1, "data/tune1.rda")
+saveRDS(tune1, here::here("data/tune1.rda"))
 ```
 
 ```{r tuning-a-complex-graph-017, echo = FALSE}
-tune1 = readRDS("data/tune1.rda")
+tune1 = readRDS(here::here("data/tune1.rda"))
 ```
 
 Now, we can inspect the results ordered by the `classification accuracy`:
@@ -248,10 +249,11 @@ Now, we can inspect the results ordered by the `classification accuracy`:
 as.data.table(tune1$archive)[order(classif.acc), ]
 ```
 
-```{r tuning-a-complex-graph-019, echo = FALSE, layout="l-page"}
+```{r tuning-a-complex-graph-019, echo = FALSE}
+#| column: page
 tab = as.data.table(tune1$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result"))
 setorderv(tab, "classif.acc")
-table_responsive(tab)
+DT::datatable(tab)
 ```
 
 We achieve very good accuracy using `ranger`, more or less regardless how `mtry` and `num.trees` are set. However, the `LDA` also shows very good accuracy when combined with `PCA` or `ICA` retaining 30 components.
