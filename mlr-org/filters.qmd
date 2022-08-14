@@ -14,7 +14,7 @@ library(mlr3misc)
 library(data.table)
 library(mlr3filters)
 
-content = as.data.table(mlr_filters, objects = TRUE)[, .(key, label, task_type, packages)]
+content = as.data.table(mlr_filters, objects = TRUE)[, .(key, task_type, packages)]
 
 # add links
 content[, key := link_keys(key, prefix = "mlr_filters", format = "html")]
@@ -25,7 +25,7 @@ content[, task_type := map(task_type, strsplit, split = ",", fixed = TRUE)]
 cols = c("packages", "task_type")
 content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
 
-setnames(content, c("Key", "Label", "Task Types", "Packages"))
+setnames(content, c("Key", "Task Types", "Packages"))
 ```
 
 `r ref("Filter", text = "Feature Filters")` quantify the importance of each feature of a `r ref("Task")` by assigning them a numerical score.
