@@ -12,13 +12,8 @@ description: |
 author:
   - name: Marc Becker
 date: 01-08-2021
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
 params:
-  eval_all: FALSE
+  eval_all: TRUE
 ---
 
 ```{r mlr3fselect-basic-001, include=FALSE}
@@ -29,6 +24,7 @@ params:
 
 library(mlr3website)
 library(data.table)
+dir.create("data")
 ```
 
 ```{r mlr3fselect-basic-002, include=FALSE, eval = params$eval_all}
@@ -319,7 +315,7 @@ extract_inner_fselect_archives(rr)
 
 ```{r mlr3fselect-basic-032, echo = FALSE}
 #| column: page
-DT::datatable((extract_inner_fselect_archives(rr)))
+DT::datatable(extract_inner_fselect_archives(rr)[, - "resample_result"])
 ```
 
 ## Shortcuts
