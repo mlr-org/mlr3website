@@ -14,19 +14,19 @@ output:
     self_contained: false
 ---
 
-Tired of learning to use multiple packages to access clustering algorithms? 
+Tired of learning to use multiple packages to access clustering algorithms?
 
 Using different packages makes it difficult to compare the performance of clusterers?
 
-It would be great to have just one package that makes interfacing all things clustering easy? 
+It would be great to have just one package that makes interfacing all things clustering easy?
 
 [mlr3cluster](https://github.com/mlr-org/mlr3cluster) to the rescue!
 
 mlr3cluster is a cluster analysis extention package within the mlr3 ecosystem.
-It is a successsor of mlr's cluster capabilities in spirit and functionality. 
+It is a successsor of mlr's cluster capabilities in spirit and functionality.
 
-In order to understand the following introduction and tutorial you need to be familiar with R6 and mlr3 basics. 
-See chapters 1-2 of the [mlr3book](https://mlr3book.mlr-org.com/) if you need a refresher. 
+In order to understand the following introduction and tutorial you need to be familiar with R6 and mlr3 basics.
+See chapters 1-2 of the [mlr3book](https://mlr3book.mlr-org.com/) if you need a refresher.
 
 ## Installation
 To install the package, run the following code chunk:
@@ -60,7 +60,7 @@ Here is a list of integrated learners:
 mlr_learners$keys("clust")
 ```
 
-The library contains all the basic types of clusterers: partitional, hierarchial, density-based and fuzzy. 
+The library contains all the basic types of clusterers: partitional, hierarchial, density-based and fuzzy.
 Below is a detailed list of all the learners.
 
 | ID | Learner | Package |
@@ -71,14 +71,14 @@ Below is a detailed list of all the learners.
 | [clust.diana](https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.diana.html) | Divisive Hierarchical Clustering | [cluster](https://CRAN.R-project.org/package=cluster) |
 | [clust.fanny](https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.fanny.html) | Fuzzy Clustering | [cluster](https://CRAN.R-project.org/package=cluster) |
 | [clust.featureless](https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.featureless.html) | Simple Featureless Clustering | [mlr3cluster](https://github.com/mlr-org/mlr3cluster) |
-| [clust.kmeans](https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.kmeans.html) | K-Means Clustering | [stats](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/stats-package.html) | 
+| [clust.kmeans](https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.kmeans.html) | K-Means Clustering | [stats](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/stats-package.html) |
 | [clust.pam](https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.pam.html) | Clustering Around Medoids | [cluster](https://CRAN.R-project.org/package=cluster) |
 | [clust.xmeans](https://mlr3cluster.mlr-org.com/reference/mlr_learners_clust.xmeans.html) | K-Means with Automatic Determination of k | [RWeka](https://CRAN.R-project.org/package=RWeka) |
 
 
 ## Integrated Measures
 
-List of integrated cluster measures: 
+List of integrated cluster measures:
 
 ```{r}
 mlr_measures$keys("clust")
@@ -102,12 +102,12 @@ There is only one built-in Task in the package:
 mlr_tasks$get("usarrests")
 ```
 
-As you can see, the biggest difference in clustering tasks as compared to the rest of the tasks in mlr3 is the absense of the Target column. 
+As you can see, the biggest difference in clustering tasks as compared to the rest of the tasks in mlr3 is the absense of the Target column.
 
 
 ## Hyperparameters
 
-Setting hyperparameters for clusterers is as easy as setting parameters for any other mlr3 learner: 
+Setting hyperparameters for clusterers is as easy as setting parameters for any other mlr3 learner:
 
 ```{r hyperparam}
 task = mlr_tasks$get("usarrests")
@@ -118,10 +118,10 @@ learner$param_set$values = list(centers = 3L, algorithm = "Lloyd", iter.max = 10
 
 
 ## Train and Predict
-The "train" method is simply creating a model with cluster assignments for data, while the "predict" method's functionality varies depending on the clusterer in question. 
-Read the each learner's documentation for details. 
+The "train" method is simply creating a model with cluster assignments for data, while the "predict" method's functionality varies depending on the clusterer in question.
+Read the each learner's documentation for details.
 
-For example, the `kmeans` learner's predict method uses `clue::cl_predict` which performs cluster assignments for new data by looking at the "closest" neighbors of the new observations. 
+For example, the `kmeans` learner's predict method uses `clue::cl_predict` which performs cluster assignments for new data by looking at the "closest" neighbors of the new observations.
 
 Following the example from the previous section:
 
@@ -139,9 +139,9 @@ preds
 
 ## Benchmarking and Evaluation
 
-To assess the quality of any machine learning experiment, you need to choose an evaluation metric that makes the most sense. 
-Let's design an experiment that will allow you to compare the performance of three different clusteres on the same task. 
-The mlr3 library provides benchmarking functionality that lets you create such experiments.  
+To assess the quality of any machine learning experiment, you need to choose an evaluation metric that makes the most sense.
+Let's design an experiment that will allow you to compare the performance of three different clusteres on the same task.
+The mlr3 library provides benchmarking functionality that lets you create such experiments.
 
 ```{r}
 # design an experiment by specifying task(s), learner(s), resampling method(s)
@@ -163,11 +163,11 @@ measures = list(msr("clust.silhouette"))
 bmr$aggregate(measures)
 ```
 
-  
+
 ## Visualization
 
-How do you visualize clustering tasks and results? 
-The `mlr3viz` package (version >= 0.40) now provides that functionality.   
+How do you visualize clustering tasks and results?
+The `mlr3viz` package (version >= 0.40) now provides that functionality.
 
 ```{r echo = TRUE, results = FALSE, message = FALSE, warning = FALSE, eval = FALSE}
 install.packages("mlr3viz")
@@ -196,14 +196,14 @@ autoplot(preds, task, type = "sil")
 autoplot(preds, task, type = "pca")
 ```
 
-Keep in mind that `mlr3viz::autoplot` also provides more options depending on the kind of plots you're interested in. 
-For example, to draw borders around clusters, provide appropriate parameters from `ggfortify::autoplot.kmeans`: 
+Keep in mind that `mlr3viz::autoplot` also provides more options depending on the kind of plots you're interested in.
+For example, to draw borders around clusters, provide appropriate parameters from `ggfortify::autoplot.kmeans`:
 
 ```{r echo = TRUE, results = FALSE, message = FALSE, warning = FALSE}
 autoplot(preds, task, type = "pca", frame = TRUE)
 ```
 
-You can also easily visualize dendrograms: 
+You can also easily visualize dendrograms:
 
 ```{r echo = TRUE, results = FALSE, message = FALSE, warning = FALSE}
 task = mlr_tasks$get("usarrests")
@@ -216,11 +216,11 @@ autoplot(learner)
 # More advanced options from `factoextra::fviz_dend`
 autoplot(learner,
   k = learner$param_set$values$k, rect_fill = TRUE,
-  rect = TRUE, rect_border = c("red", "cyan"))
+  rect = TRUE)
 ```
 
 ## Further Development
-If you have any issues with the package or would like to request a new feature, feel free to open an issue [here](https://github.com/mlr-org/mlr3cluster/issues). 
+If you have any issues with the package or would like to request a new feature, feel free to open an issue [here](https://github.com/mlr-org/mlr3cluster/issues).
 
 ## Acknowledgements
-I would like to thank the following people for their help and guidance: Michel Lang, Lars Kotthoff, Martin Binder, Patrick Schratz, Bernd Bischl. 
+I would like to thank the following people for their help and guidance: Michel Lang, Lars Kotthoff, Martin Binder, Patrick Schratz, Bernd Bischl.
