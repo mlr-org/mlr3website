@@ -214,9 +214,8 @@ learner$train(task)
 autoplot(learner)
 
 # More advanced options from `factoextra::fviz_dend`
-autoplot(learner,
-  k = learner$param_set$values$k, rect=TRUE, 
-  rect_border=c("blue")
+autoplot(learner, k = learner$param_set$values$k,
+  rect=TRUE, rect_border=c("blue")
 )
 ```
 
