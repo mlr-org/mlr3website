@@ -17,7 +17,7 @@ library(mlr3verse)
 content = as.data.table(mlr_pipeops, objects = TRUE)[, .(key, packages, tags)]
 content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
 
-content[, key := link_keys(key, "mlr_pipeops", format = "html")]
+content[, key := link_keys(key, "mlr_pipeops")]
 content[, packages := link_pkgs(packages, remove = "mlr3pipelines")]
 setnames(content, c("Key", "Packages", "Tags"))
 ```

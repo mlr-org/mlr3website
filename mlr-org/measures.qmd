@@ -15,8 +15,8 @@ library(data.table)
 requireNamespace("mlr3verse")
 
 content = as.data.table(mlr3::mlr_measures)[, .(key, label, task_type, packages)]
-content[, key := link_keys(key, prefix = "mlr_measures", format = "html")]
-content[, packages := link_pkgs(packages, remove = c("mlr3", "mlr3measures"), format = "html")]
+content[, key := link_keys(key, prefix = "mlr_measures")]
+content[, packages := link_pkgs(packages, remove = c("mlr3", "mlr3measures"))]
 content[is.na(task_type), task_type := "generic"]
 
 setnames(content, c("Key", "Label", "Task Type", "Packages"))

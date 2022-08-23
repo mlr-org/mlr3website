@@ -16,7 +16,7 @@ library(mlr3spatiotempcv)
 requireNamespace("mlr3verse")
 
 content = as.data.table(mlr3::mlr_resamplings)[, .(key, label, params, iters)]
-content[, key := link_keys(key, prefix = "mlr_resamplings", format = "html")]
+content[, key := link_keys(key, prefix = "mlr_resamplings")]
 content[, params := map(params, paste0, collapse = ", ")]
 setnames(content, c("Key", "Label", "Parameters", "Default Iterations"))
 ```

@@ -17,7 +17,7 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 
 content = as.data.table(mlr_tuning_spaces, objects = TRUE)[, .(key, label, learner, n_values, object)]
-content[, learner := link_keys(learner, "mlr_learners", format = "html")]
+content[, learner := link_keys(learner, "mlr_learners")]
 
 # add links
 content[, collection := map_chr(object, function(x) intersect(x$tags, c("default", "rbv2")))]

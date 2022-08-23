@@ -19,7 +19,7 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 content = as.data.table(mlr_terminators)[, .(key, label, properties, unit)]
 
 # add links
-content[, key := link_keys(key, prefix = "mlr_terminators", format = "html")]
+content[, key := link_keys(key, prefix = "mlr_terminators")]
 
 # add line breaks to cells
 # content[, properties := map_chr(properties, function(x) paste0(x, collapse = "<br/>"))]

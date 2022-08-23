@@ -14,7 +14,7 @@ requireNamespace("mlr3verse")
 lgr::get_logger("mlr3")$set_threshold("warn")
 
 content = as.data.table(mlr3::mlr_tasks)[, .(key, label, task_type, nrow, ncol)]
-content[, key := link_keys(key, prefix = "mlr_tasks", format = "html")]
+content[, key := link_keys(key, prefix = "mlr_tasks")]
 setnames(content, c("Key", "Label", "Task Type", "# rows", "# cols"))
 ```
 

@@ -17,8 +17,8 @@ library(mlr3filters)
 content = as.data.table(mlr_filters, objects = TRUE)[, .(key, task_type, packages)]
 
 # add links
-content[, key := link_keys(key, prefix = "mlr_filters", format = "html")]
-content[, packages := link_pkgs(packages, remove = c("mlr3", "mlr3filters"), format = "html")]
+content[, key := link_keys(key, prefix = "mlr_filters")]
+content[, packages := link_pkgs(packages, remove = c("mlr3", "mlr3filters"))]
 content[, task_type := map(task_type, strsplit, split = ",", fixed = TRUE)]
 
 # add line breaks to cells

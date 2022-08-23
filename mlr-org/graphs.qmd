@@ -29,7 +29,7 @@ content = rowwise_table(
 )
 
 # add links
-content[, key := link_keys(key, prefix = "mlr_graphs", format = "html")]
+content[, key := link_keys(key, prefix = "mlr_graphs")]
 
 # link_keys fails
 # mlr_graphs_branching is renamed to mlr_graphs_branch

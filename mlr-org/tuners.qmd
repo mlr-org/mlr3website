@@ -20,8 +20,8 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 content = as.data.table(mlr_tuners, objects = TRUE)[, .(key, label, packages, properties, param_classes, object)]
 
 # add links
-content[, key := link_keys(key, prefix = "mlr_tuners", format = "html")]
-content[, packages := link_pkgs(packages, format = "html")]
+content[, key := link_keys(key, prefix = "mlr_tuners")]
+content[, packages := link_pkgs(packages)]
 
 # remove content
 content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
