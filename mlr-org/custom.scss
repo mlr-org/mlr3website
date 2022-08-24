@@ -104,7 +104,8 @@ div.csl-entry {
 //         color: black;
 // }
 
-.listings4.bi::before, [class*="bi-sliders"]::before {
+.listings4.bi::before,
+[class*="bi-sliders"]::before {
         color: black;
         padding-right: 10px;
         font-style: normal !important;
@@ -125,20 +126,24 @@ div.csl-entry {
         margin-left: auto;
         margin-right: auto;
         text-align: center;
-
-    }
+}
 
 /* Stable color */
 i.status-stable {
-        color: #B4CFB0;
-      }
+        color: #b4cfb0;
+}
 
-      /* Experimental color */
-      i.status-experimental {
-        color: #FBC6A4;
-      }
+/* Experimental color */
+i.status-experimental {
+        color: #fbc6a4;
+}
 
-      /* Planed color */
-      i.status-planned {
-        color: #FF856A !important;
-      }
+/* Planed color */
+i.status-planned {
+        color: #ff856a !important;
+}
+
+// force date cell to not break
+.listing-date {
+        width: 100px;
+}
