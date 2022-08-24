@@ -328,6 +328,14 @@
       "Hash": "2042cd9759cc89a453c4aefef0ce9aae",
       "Requirements": []
     },
+    "TeachingDemos": {
+      "Package": "TeachingDemos",
+      "Version": "2.12",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "41e566d7eab7307a31b3dee3b203c7e0",
+      "Requirements": []
+    },
     "UpSetR": {
       "Package": "UpSetR",
       "Version": "1.4.0",
@@ -1079,6 +1087,18 @@
         "proxy"
       ]
     },
+    "earth": {
+      "Package": "earth",
+      "Version": "5.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fccdc89d741234c23abeaa20f33c5c1e",
+      "Requirements": [
+        "Formula",
+        "TeachingDemos",
+        "plotmo"
+      ]
+    },
     "ellipsis": {
       "Package": "ellipsis",
       "Version": "0.3.2",
@@ -1699,6 +1719,14 @@
         "webshot",
         "xml2"
       ]
+    },
+    "kernlab": {
+      "Package": "kernlab",
+      "Version": "0.9-31",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2d7ade74e80201ce89460955cea68408",
+      "Requirements": []
     },
     "kknn": {
       "Package": "kknn",
@@ -2828,6 +2856,26 @@
         "vctrs",
         "viridisLite"
       ]
+    },
+    "plotmo": {
+      "Package": "plotmo",
+      "Version": "3.6.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ec6e3b80a43a169b3a81e426e697b84a",
+      "Requirements": [
+        "Formula",
+        "TeachingDemos",
+        "plotrix"
+      ]
+    },
+    "plotrix": {
+      "Package": "plotrix",
+      "Version": "3.8-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2ebe8c2ec200da649738b0fc35a9b1a1",
+      "Requirements": []
     },
     "plyr": {
       "Package": "plyr",
