@@ -21,12 +21,12 @@ setnames(content, c("Key", "Label", "Task Type", "# rows", "# cols"))
 The mlr3 packages also ship with some data sets, readily usable as `r ref("Task")` objects.
 The goal of these tasks is to quickly demonstrate the capabilities of the packages.
 
-```{r }
+```{r echo=FALSE}
 #| column: page
 DT::datatable(content,
   style = "bootstrap",
   escape = FALSE,
-  options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
+  options = list(paging = FALSE, info = FALSE),
   rownames = FALSE)
 ```
 
