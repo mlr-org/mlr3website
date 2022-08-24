@@ -4,9 +4,7 @@ authors: ["Christoph Molnar"]
 date: 2018-02-28
 categories: ["R", "r-bloggers"]
 tags: ["iml", "interpretable", "machine-learning", "mlr", "rstats"]
-output:
-  distill::distill_article:
-    self_contained: false
+
 description: "Tutorial on the iml R package"
 ---
 
@@ -16,10 +14,10 @@ options(tibble.print_min = 4L, tibble.print_max = 4L)
 set.seed(1014)
 ```
 
-Machine learning models repeatedly outperform interpretable, parametric models like the linear regression model. 
+Machine learning models repeatedly outperform interpretable, parametric models like the linear regression model.
 The gains in performance have a price: The models operate as black boxes which are not interpretable.
 
-Fortunately, there are many methods that can make machine learning models interpretable. 
+Fortunately, there are many methods that can make machine learning models interpretable.
 The R package `iml` provides tools for analysing any black box machine learning model:
 
 * Feature importance: Which were the most important features?
@@ -28,7 +26,7 @@ The R package `iml` provides tools for analysing any black box machine learning 
 * Surrogate trees: Can we approximate the underlying black box model with a short decision tree?
 * The iml package works for any classification and regression machine learning model: random forests, linear models, neural networks, xgboost, etc.
 
-This blog post shows you how to use the `iml` package to analyse machine learning models. 
+This blog post shows you how to use the `iml` package to analyse machine learning models.
 While the `mlr` package makes it super easy to train machine learning models, the `iml` package makes it easy to extract insights about the learned black box machine learning models.
 
 If you want to learn more about the technical details of all the methods, read the [Interpretable Machine Learning book]( https://christophm.github.io/interpretable-ml-book/agnostic.html).
@@ -39,7 +37,7 @@ Let's explore the `iml`-toolbox for interpreting an `mlr` machine learning model
 
 ## Data: Boston Housing
 
-We'll use the `MASS::Boston` dataset to demonstrate the abilities of the iml package. This dataset contains median house values from Boston neighbourhoods. 
+We'll use the `MASS::Boston` dataset to demonstrate the abilities of the iml package. This dataset contains median house values from Boston neighbourhoods.
 
 ```{r}
 data("Boston", package  = "MASS")
@@ -76,7 +74,7 @@ predictor = Predictor$new(mod, data = X, y = Boston$medv)
 We can measure how important each feature was for the predictions with `FeatureImp`. The feature importance measure works by shuffling each feature and measuring how much the performance drops. For this regression task we choose to measure the loss in performance with the mean absolute error ('mae'); another choice would be the  mean squared error ('mse').
 
 
-Once we created a new object of `FeatureImp`, the importance is automatically computed. 
+Once we created a new object of `FeatureImp`, the importance is automatically computed.
 We can call the `plot()` function of the object or look at the results in a data.frame.
 
 ```{r}
@@ -87,4 +85,4 @@ imp$results
 
 ## Partial dependence
 
-Besides learning which features were important, we are interested in how the features influence the predicted outcome. The `Partial` class implements partial dependence plots and individual conditional expectation curves. Each individual line represents the predictions 
+Besides learning which features were important, we are interested in how the features influence the predicted outcome. The `Partial` class implements partial dependence plots and individual conditional expectation curves. Each individual line represents the predictions

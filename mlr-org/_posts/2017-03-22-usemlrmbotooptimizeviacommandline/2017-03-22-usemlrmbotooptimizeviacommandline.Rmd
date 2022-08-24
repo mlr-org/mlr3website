@@ -4,9 +4,7 @@ authors: ["Jakob Richter"]
 date: 2017-03-22
 categories: ["R", "r-bloggers"]
 tags: ["mlrMBO", "command-line", "rstats"]
-output:
-  distill::distill_article:
-    self_contained: false
+
 description: "Tutorial on using mlrMBO from the command line"
 ---
 
@@ -61,7 +59,7 @@ runScript = function(x) {
   result = readLines("result.txt")
   # the pattern matches 12 as well as 12.34 and .34
   # the ?: makes the decimals a non-capturing group.
-  result = stri_match_first_regex(result, 
+  result = stri_match_first_regex(result,
     pattern = "\\d*(?:\\.\\d+)?(?=\\!)")
   as.numeric(result)
 }
@@ -105,7 +103,7 @@ par.set = makeParamSet(
 )
 # Wrapping everything in a smoof function:
 fn = makeSingleObjectiveFunction(
-  id = "fun.sh", 
+  id = "fun.sh",
   fn = runScript,
   par.set = par.set,
   has.simple.signature = FALSE
@@ -128,7 +126,7 @@ We can simply achieve that by replacing the `command` in the function `runScript
 
 ```{r redirectOutput, eval = FALSE}
   # console output file output_1490030005_1.1_2.4.txt
-  output_file = sprintf("output_%i_%.1f_%.1f.txt", 
+  output_file = sprintf("output_%i_%.1f_%.1f.txt",
     as.integer(Sys.time()), x[['x1']], x[['x2']])
   # redirect output with ./fun.sh 1.1 2.4 > output.txt
   # alternative: ./fun.sh 1.1 2.4 > /dev/null to drop it
@@ -137,13 +135,13 @@ We can simply achieve that by replacing the `command` in the function `runScript
 
 ```{r smoof_redirectOutput, include=FALSE}
 fn = makeSingleObjectiveFunction(
-  id = "fun.sh", 
+  id = "fun.sh",
   fn = runScript,
   par.set = par.set,
   has.simple.signature = FALSE
 )
 ```
- 
+
 ### Start the Optimization
 
 Now everything is set so we can proceed with the usual MBO setup:
@@ -174,7 +172,7 @@ Let's assume we saved all of that above as an R-script under the name [`runMBO.R
 Then you can simply run it from the command line:
 
 ```{bash, eval = FALSE}
-Rscript runMBO.R 
+Rscript runMBO.R
 ```
 
 As an extra the script in the gist also contains a simple handler for command line arguments.

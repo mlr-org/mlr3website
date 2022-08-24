@@ -5,9 +5,7 @@ date: 2017-07-19
 categories: ["R", "r-bloggers"]
 tags: ["tuning", "hyperparameter", "optimization", "mlrHyperopt", "rstats"]
 description: "Tutorial on mlrHyperopt"
-output:
-  distill::distill_article:
-    self_contained: false
+
 ---
 
 ```{r setup, include=FALSE}
@@ -39,7 +37,7 @@ This is where [**mlrHyperopt**](https://github.com/jakob-r/mlrHyperopt) comes in
 
 ```{r installation, eval = FALSE}
 # version >= 1.11 needed.
-devtools::install_github("berndbischl/ParamHelpers") 
+devtools::install_github("berndbischl/ParamHelpers")
 devtools::install_github("jakob-r/mlrHyperopt", dependencies = TRUE)
 ```
 
@@ -72,12 +70,12 @@ plotOptPath(res$opt.path)
 ```
 
 The upper left plot shows the distribution of the tried settings in the search space and contour lines indicate where regions of good configurations are located.
-The lower right plot shows the value of the objective (the miss-classification rate) and how it decreases over the time. 
+The lower right plot shows the value of the objective (the miss-classification rate) and how it decreases over the time.
 This also shows nicely that wrong settings can lead to bad results.
 
 ### Using the mlrHyperopt API with mlr
 
-If you just want to use **mlrHyperopt** to access the default parameter search spaces from the 
+If you just want to use **mlrHyperopt** to access the default parameter search spaces from the
 Often you don't want to rely on the default procedures of **mlrHyperopt** and just incorporate it into your **mlr**-workflow.
 Here is one example how you can use the default search spaces for an easy benchmark:
 
@@ -100,16 +98,16 @@ lrns.tuned = lapply(lrns, function(lrn) {
   }
   ps = getParConfigParSet(pc)
   # some parameters are dependend on the data (eg. the number of columns)
-  ps = evaluateParamExpressions(ps, 
+  ps = evaluateParamExpressions(ps,
     dict = mlrHyperopt::getTaskDictionary(task = tsk))
   lrn = setHyperPars(lrn, par.vals = getParConfigParVals(pc))
   ctrl = makeTuneControlRandom(maxit = 20)
-  makeTuneWrapper(learner = lrn, resampling = rr, par.set = ps, 
+  makeTuneWrapper(learner = lrn, resampling = rr, par.set = ps,
                   control = ctrl)
 })
-res = benchmark(learners = c(lrns, lrns.tuned), tasks = tsk, 
+res = benchmark(learners = c(lrns, lrns.tuned), tasks = tsk,
                 resamplings = cv10)
-plotBMRBoxplots(res) 
+plotBMRBoxplots(res)
 ```
 
 As we can see we were able to improve the performance of xgboost and the nnet without any additional knowledge on what parameters we should tune.

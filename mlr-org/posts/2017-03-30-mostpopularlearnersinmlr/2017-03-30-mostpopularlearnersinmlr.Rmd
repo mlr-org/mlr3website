@@ -5,9 +5,7 @@ date: 2017-03-30
 categories: ["R", "r-bloggers"]
 tags: ["learner", "algorithm", "popular", "machine-learning", "rstats"]
 description: "An attempt to asses the popularity of mlr learners"
-output:
-  distill::distill_article:
-    self_contained: false
+
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +18,7 @@ library(ggplot2)
 ```
 
 For the development of [mlr](https://github.com/mlr-org/mlr) as well as for an "machine learning expert" it can be handy to know what are the most popular learners used.
-Not necessarily to see, what are the top notch performing methods but to see what is used "out there" in the real world. 
+Not necessarily to see, what are the top notch performing methods but to see what is used "out there" in the real world.
 Thanks to the nice little package [cranlogs](https://github.com/metacran/cranlogs) from [metacran](https://www.r-pkg.org/) you can at least get a slight estimate as I will show in the following...
 
 First we need to install the `cranlogs` package using `devtools`:
@@ -53,7 +51,7 @@ Now we can obtain the download counts from the _rstudio cran mirror_, i.e. from 
 We use `data.table` to easily sum up the download counts of each day.
 
 ```{r downloadCounts}
-all.downloads = cran_downloads(packages = unique(unlist(all.pkgs)), 
+all.downloads = cran_downloads(packages = unique(unlist(all.pkgs)),
                                when = "last-month")
 all.downloads = as.data.table(all.downloads)
 monthly.downloads = all.downloads[, list(monthly = sum(count)), by = package]
@@ -120,9 +118,9 @@ library(forcats)
 lrns.pgks$learners = factor(lrns.pgks$learners, lrns.pgks$learners)
 g = ggplot(lrns.pgks[20:1], aes(x = fct_inorder(stri_sub(
   paste0(package,": ",learners), 0, 64)), y = downloads, fill = downloads))
-g + geom_bar(stat = "identity") + 
-  coord_flip() + 
-  xlab("") + 
+g + geom_bar(stat = "identity") +
+  coord_flip() +
+  xlab("") +
   scale_fill_continuous(guide=FALSE)
 ```
 

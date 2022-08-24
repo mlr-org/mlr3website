@@ -5,9 +5,7 @@ date: 2018-07-25
 categories: ["R", "r-bloggers"]
 tags: ["spatial", "resampling", "spatial-CV", "rstats", "performance estimation"]
 description: "Visualizing spatial cross-validation in mlr"
-output:
-  distill::distill_article:
-    self_contained: false
+
 ---
 
 ```{r, echo = FALSE, message = FALSE}
@@ -28,7 +26,7 @@ See also [this](https://www.r-spatial.org/r/2018/03/03/spatial-modeling-mlr.html
 When using random partitiong in a normal cross-validation, one is usually not interested in the random pattern of the datasets train/test split
 However, for spatial data this information is important since it can help identifying problematic folds (ones that did not converge or showed a bad performance) and also proves that the k-means clustering algorithm did a good job on partitioning the dataset.
 
-The new function to visualize these partitions in `mlr` is called `createSpatialResamplingPlots()`. 
+The new function to visualize these partitions in `mlr` is called `createSpatialResamplingPlots()`.
 It uses `ggplot2` and its new `geom_sf()` function to create spatial plots based on the resampling indices of a `resample()` object.
 In this post we will use the examples of the function to demonstrate its use.
 
@@ -60,7 +58,7 @@ plots = createSpatialResamplingPlots(spatial.task, resamp, crs = 32717,
 
 To avoid overlapping axis breaks you might want to set the axis breaks on your own as we did here.
 
-Now we got a list of 2L back from `createSpatialResamplingPlots()`. 
+Now we got a list of 2L back from `createSpatialResamplingPlots()`.
 In the first list we got all the plots, one for each fold.
 Since we used two repetitions and five folds, we have a total of ten instances in it.
 
@@ -100,7 +98,7 @@ rdesc2 = makeResampleDesc("RepCV", folds = 5, reps = 4)
 r2 = resample(makeLearner("classif.qda"), spatial.task, rdesc2)
 ```
 
-Now we can hand over both objects using a named list. 
+Now we can hand over both objects using a named list.
 This way the list names will also directly be used as a prefix in the resulting plot labels.
 
 ```{r, fig.align='center', fig.width=10}

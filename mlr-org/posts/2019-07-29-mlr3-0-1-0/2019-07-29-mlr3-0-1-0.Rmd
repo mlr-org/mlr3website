@@ -12,9 +12,7 @@ tags:
   - release
   - framework
   - R
-output:
-  distill::distill_article:
-    self_contained: false
+
 description: "Initial release of mlr3"
 ---
 
@@ -30,7 +28,7 @@ While [_mlr_](https://github.com/mlr-org/mlr) was one big package that included 
 
 # Background - why a rewrite?
 
-The addition of many features to [_mlr_](https://github.com/mlr-org/mlr) has led to a "feature creep" which makes it hard to maintain and extend.  
+The addition of many features to [_mlr_](https://github.com/mlr-org/mlr) has led to a "feature creep" which makes it hard to maintain and extend.
 
 Due to the many tests in [_mlr_](https://github.com/mlr-org/mlr), a full CI run of the package on Travis CI takes more than 30 minutes.
 This does not include the installation of dependencies, running _R CMD check_ or building the pkgdown site (which includes more than 20 vignettes with executable code).

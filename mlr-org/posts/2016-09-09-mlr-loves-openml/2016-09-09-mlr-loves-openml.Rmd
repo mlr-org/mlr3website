@@ -2,16 +2,14 @@
 title: "mlr loves OpenML"
 description: |
   Connecting mlr with OpenML
-author: 
+author:
   - name: Heidi Seibold
     url: https://github.com/HeidiSeibold
 date: 2016-09-09
-preview: mlr_loves_openml.png
+image: mlr_loves_openml.png
 categories: ["R", "r-bloggers"]
 tags: ["OpenML", "rstats"]
-output:
-  distill::distill_article:
-    self_contained: false
+
 ---
 
 ```{r setup, include=FALSE}
@@ -29,7 +27,7 @@ meet to work on improving the project. Some of these people are R users and they
 are developing an [R package](https://github.com/openml/openml-r) that
 communicates with the OpenML platform.
 
-![](mlr_loves_openml.png) 
+![](mlr_loves_openml.png)
 
 ## OpenML in R
 
@@ -51,7 +49,7 @@ Vector Machines.  The study gets an ID assigned to it, which in our case is 27.
 We use the function ksvm (with different settings of the function argument type)
 from package kernlab, which is integrated in mlr ("classif.ksvm").
 
-![](openml_screenshot_study.png) 
+![](openml_screenshot_study.png)
 
 For details on installing and setting up the OpenML R package please see the
 [guide](https://github.com/openml/openml-r) on GitHub.
@@ -59,8 +57,8 @@ For details on installing and setting up the OpenML R package please see the
 Let's start conducting the study:
 
 - Load the packages and list all tasks which have between 100 and 500
-  observations. 
-  
+  observations.
+
 ```{r, eval=TRUE, message=FALSE}
 library("OpenML")
 library("mlr")
@@ -74,11 +72,11 @@ taskinfo_all = listOMLTasks(number.of.instances = dsize)
 ```
 
 - Select all supervised classification tasks that do 10-fold cross-validation
-  and choose only one task per data set. To keep the study simple and fast to compute, 
+  and choose only one task per data set. To keep the study simple and fast to compute,
   select only the first three tasks.
-  
+
 ```{r, eval=FALSE}
-taskinfo_10cv = subset(taskinfo_all, task.type == "Supervised Classification" & 
+taskinfo_10cv = subset(taskinfo_all, task.type == "Supervised Classification" &
                     estimation.procedure == "10-fold Crossvalidation" &
                     evaluation.measures == "predictive_accuracy" &
                     number.of.missing.values == 0 &
@@ -99,7 +97,7 @@ lrn.list = list(
 - Run the learners on the three tasks.
 
 ```{r, eval=FALSE}
-grid = expand.grid(task.id = taskinfo$task.id, 
+grid = expand.grid(task.id = taskinfo$task.id,
                    lrn.ind = seq_along(lrn.list))
 
 runs = lapply(seq_row(grid), function(i) {
@@ -124,15 +122,15 @@ run.id = lapply(runs, uploadOMLRun, tags = "study_27")
 
 To show the results of our study, list the run evaluations and make a nice plot.
 
-```{r, eval=FALSE} 
+```{r, eval=FALSE}
 evals = listOMLRunEvaluations(tag = "study_27")
 
 evals$task.id = as.factor(evals$task.id)
 evals$setup.id = as.factor(evals$setup.id)
 
 library("ggplot2")
-ggplot(evals, aes(x = setup.id, y = predictive.accuracy, 
-                  color = data.name, group = task.id)) + 
+ggplot(evals, aes(x = setup.id, y = predictive.accuracy,
+                  color = data.name, group = task.id)) +
   geom_point() + geom_line()
 ```
 

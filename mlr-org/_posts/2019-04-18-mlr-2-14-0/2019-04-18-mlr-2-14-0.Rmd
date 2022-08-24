@@ -8,9 +8,7 @@ categories:
 tags:
   - release
 description: "The new mlr-2.14.0 and announcement of mlr3"
-output:
-  distill::distill_article:
-    self_contained: false
+
 ---
 
 The last _mlr_ release was in August 2018 - so it was definitely time for a new release after around 9 months of development!
@@ -42,7 +40,7 @@ However, since it is just a naming change we think the burden of updating your c
 
 Two new learners were added:
 
-- classif.liquidSVM 
+- classif.liquidSVM
 - regr.liquidSVM
 
 Learner `regr.h2o.gbm` now uses `h2o.use.data.table = TRUE` by default which should result in a runtime performance increase.
@@ -52,7 +50,7 @@ It is also possible to retrieve the feature importance of h2O learners now.
 ## Resampling
 
 You can now provide fully predefined indices for resampling.
-This is useful for datasets that have a certain grouping structure (e.g. spatial data) that is difficult to specify otherwise. 
+This is useful for datasets that have a certain grouping structure (e.g. spatial data) that is difficult to specify otherwise.
 
 ## mlr-org NEWS
 
@@ -79,4 +77,4 @@ Right now, we have over 400 issues and 30 pull requests so there is a still a lo
 We are will publish new releases every three months from now on, regardless of the changes that have come in.
 _mlr_ will continue to exist next to _mlr3_.
 If users start contributing new features to _mlr_, we are also happy to include those in the package.
-As announced already, we will clean up the _mlr_ repo issue and pull request in the coming months to be able to fully concentrate on _mlr3_ after its initial release. 
+As announced already, we will clean up the _mlr_ repo issue and pull request in the coming months to be able to fully concentrate on _mlr3_ after its initial release.

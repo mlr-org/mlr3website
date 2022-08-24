@@ -5,9 +5,7 @@ date: 2018-01-10
 categories: ["R", "r-bloggers"]
 tags: ["mlrMBO", "Bayesian", "optimization", "tuning", "stepwise"]
 description: "Tutorial on stepwise Bayesian Optimization with mlrMBO"
-output:
-  distill::distill_article:
-    self_contained: false
+
 ---
 
 ```{r setup, include=FALSE}
@@ -17,7 +15,7 @@ library(mlrMBO)
 library(ggplot2)
 library(rgenoud)
 ```
-  
+
 With the release of the new version of [mlrMBO](https://mlrMBO.mlr-org.com/) we added some minor fixes and added a practical feature called *[Human-in-the-loop MBO](https://mlrMBO.mlr-org.com/articles/supplementary/human_in_the_loop_MBO.html)*.
 It enables you to sequentially
 
@@ -65,10 +63,10 @@ With these values we can initialize our sequential MBO object.
 ctrl = makeMBOControl()
 ctrl = setMBOControlInfill(ctrl, crit = crit.ei)
 opt.state = initSMBO(
-  par.set = ps, 
-  design = des, 
-  control = ctrl, 
-  minimize = TRUE, 
+  par.set = ps,
+  design = des,
+  control = ctrl,
+  minimize = TRUE,
   noisy = FALSE)
 ```
 
