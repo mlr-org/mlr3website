@@ -31,7 +31,6 @@ jobs:
         with:
           extra-packages: |
             any::devtools
-            mlr-org/mlr3proba
 
       - name: Install Packages
         run: devtools::install()
