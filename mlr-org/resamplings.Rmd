@@ -14,6 +14,7 @@ library(htmltools)
 library(mlr3misc)
 library(data.table)
 library(DT)
+library(mlr3spatiotempcv)
 requireNamespace("mlr3verse")
 
 content = as.data.table(mlr3::mlr_resamplings)[, .(key, label, params, iters)]
