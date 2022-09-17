@@ -3,11 +3,8 @@ title: Practical Tuning Series - Tune a Support Vector Machine
 description: |
   We demonstrate how to optimize the hyperparameters of a support vector machine (SVM).
 categories:
-  - mlr3tuning
   - tuning
-  - optimization
-  - nested resampling
-  - iris data set
+  - resampling
   - classification
   - practical tuning series
 author:
@@ -17,8 +14,12 @@ author:
   - name: Bernd Bischl
   - name: Jakob Richter
   - name: Martin Binder
-date: 03-09-2021
+date: 2021-03-09
 bibliography: bibliography.bib
+knitr:
+  opts_chunk:
+    fig.align: center
+image: thumbnail.png
 ---
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-001, include=FALSE}
@@ -175,7 +176,7 @@ instance = readRDS(here::here("data/instance_1.rda"))
 
 We plot the performances depending on the evaluated `cost` and `gamma` values.
 
-```{r practical-tuning-series-tune-a-support-vector-machine-018, eval = FALSE}
+```{r preview-image, eval = FALSE}
 autoplot(instance, type = "surface", cols_x = c("cost", "gamma"),
   learner = lrn("regr.km"))
 ```
@@ -479,3 +480,10 @@ The [mlr3book](https://mlr3book.mlr-org.com/) includes chapters on [tuning space
 The [mlr3cheatsheets](https://cheatsheets.mlr-org.com/) contain frequently used commands and workflows of mlr3.
 
 
+```{r}
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2021-03-09-practical-tuning-series-tune-a-support-vector-machine/practical-tuning-series-tune-a-support-vector-machine_files/figure-html5/practical-tuning-series-tune-a-support-vector-machine-019-1.png",
+  destfile = "thumbnail.png"
+)
+```

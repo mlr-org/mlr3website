@@ -5,18 +5,15 @@ categories:
   - classification
   - mlr3pipelines
   - feature engineering
-  - titanic data set
-  - classification
 author:
   - name: Florian Pfisterer
 description: |
   This post shows how to build a Graph using the mlr3pipelines package on the "titanic" dataset.
 date: 03-12-2020
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
+image: ../../images/logo_color.png
 ---
 
 ```{r 2020-03-12-mlr3pipelines-titanic-Basics-001, include=FALSE}
@@ -35,7 +32,7 @@ We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important p
 The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 The data is part of the `r mlr_pkg("mlr3data")`  package.
 
-```{r 2020-03-12-mlr3pipelines-titanic-Basics-002}
+```{r 2020-03-12-mlr3pipelines-titanic-Basics-002, message=FALSE}
 library(mlr3verse)
 library(mlr3learners)
 ```

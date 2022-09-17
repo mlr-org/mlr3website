@@ -4,19 +4,15 @@ categories:
   - classification
   - imputation
   - mlr3pipelines
-  - pima data set
-  - boston housing data set
-  - classification
 author:
   - name: Florian Pfisterer
 date: 01-31-2020
 description: |
   We show how to use mlr3pipelines to augment the ranger learner with automatic imputation.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
+image: thumbnail.png
 ---
 
 ```{r 2020-01-30-impute-missing-levels-001, include=FALSE}
@@ -170,7 +166,7 @@ graph = graph %>>% po(learner)
 We can now visualize the resulting graph:
 
 ```{r 2020-01-30-impute-missing-levels-016, fig.width=6, fig.height=8}
-# graph$plot()
+graph$plot()
 ```
 
 ## Resampling
@@ -249,3 +245,12 @@ graph_learner$predict(task_bh_2)
 ```
 
 Success! We learned how to deal with missing values in less than 10 minutes.
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-01-30-impute-missing-levels/2020-01-30-impute-missing-levels_files/figure-html5/2020-01-30-impute-missing-levels-008-1.png",
+  destfile = "thumbnail.png"
+)
+```

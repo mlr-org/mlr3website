@@ -3,19 +3,18 @@ title: Feature Engineering of Date-Time Variables
 categories:
   - feature engineering
   - mlr3pipelines
-  - bike sharing data set
   - regression
 author:
   - name: Lennart Schneider
 date: 05-02-2020
 description: |
  We show how to engineer features using date-time variables.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
+knitr:
+  opts_chunk:
+    fig.align: center
 params:
   eval_all: TRUE
+image: thumbnail.png
 ---
 
 ```{r feature-engineering-of-date-time-variables-001, include=FALSE}
@@ -64,7 +63,7 @@ This is useful as most learners naturally cannot handle dates and `POSIXct` vari
 We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
-```{r feature-engineering-of-date-time-variables-003}
+```{r feature-engineering-of-date-time-variables-003, message=FALSE}
 library(mlr3verse)
 library(mlr3learners)
 ```
@@ -205,7 +204,7 @@ graph = po("datefeatures", cyclic = TRUE, minute = FALSE, second = FALSE) %>>%
 
 graph_learner = as_learner(graph)
 
-plot(graph)
+plot(graph, html = TRUE)
 ```
 
 Using `r ref("resample()")` with 3-fold cross-validation on the task yields:
@@ -229,7 +228,7 @@ rr_graph_learner = readRDS(here::here("data/rr_graph_learner.rda"))
 ```
 
 ```{r feature-engineering-of-date-time-variables-023, echo = FALSE}
-table_responsive(rr_graph_learner$score(msr("regr.mse"))[, .(iteration, task_id, learner_id, resampling_id, regr.mse)])
+DT::datatable(rr_graph_learner$score(msr("regr.mse"))[, .(iteration, task_id, learner_id, resampling_id, regr.mse)])
 ```
 
 We calculate the average RMSE.
@@ -254,4 +253,13 @@ Where we can obtain the RMSE on the held-out validation data.
 
 ```{r feature-engineering-of-date-time-variables-026}
 prediction$score(msr("regr.mse"))
+```
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-05-02-feature-engineering-of-date-time-variables/feature-engineering-of-date-time-variables_files/figure-html5/feature-engineering-of-date-time-variables-002-1.png",
+  destfile = "thumbnail.png"
+)
 ```

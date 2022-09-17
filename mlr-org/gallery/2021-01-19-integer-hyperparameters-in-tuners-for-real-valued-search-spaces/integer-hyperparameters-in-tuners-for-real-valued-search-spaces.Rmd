@@ -1,21 +1,17 @@
 ---
 title: Integer Hyperparameters in Tuners for Real-valued Search Spaces
 categories:
-  - mlr3tuning
   - tuning
-  - optimization
-  - iris data set
   - classification
 author:
   - name: Marc Becker
 description: |
   How to tune integer hyperparameters with tuners that can only propose real numbers.
 date: 01-19-2021
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
+image: ../../images/logo_color.png
 ---
 
 ```{r integer-hyperparameters-in-tuners-for-real-valued-search-spaces-001, include=FALSE}

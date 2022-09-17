@@ -3,12 +3,9 @@ title: Practical Tuning Series - Tuning and Parallel Processing
 description: |
   We teach how to run various jobs in mlr3 in parallel.
 categories:
-  - mlr3tuning
   - tuning
-  - optimization
-  - nested resampling
+  - resampling
   - parallelization
-  - pima data set
   - classification
   - practical tuning series
 author:
@@ -18,7 +15,11 @@ author:
   - name: Bernd Bischl
   - name: Jakob Richter
   - name: Martin Binder
+knitr:
+  opts_chunk:
+    fig.align: center
 date: 03-12-2021
+image: ../../images/logo_color.png
 ---
 
 ```{r practical-tuning-series-tuning-and-parallel-processing-001, include=FALSE}

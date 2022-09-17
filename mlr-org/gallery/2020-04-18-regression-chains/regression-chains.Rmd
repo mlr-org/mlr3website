@@ -5,16 +5,14 @@ categories:
   - mlr3pipelines
 author:
   - name: Lennart Schneider
-date: 04-18-2020
+date: 2020-04-18
 description: |
   We show how to use mlr3pipelines to do regression chains.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
-    css: ../../custom.css
+knitr:
+  opts_chunk:
+    fig.align: center
 bibliography: biblio.bib
+image: thumbnail.png
 ---
 
 ```{r regression-chains-001, include=FALSE}
@@ -159,7 +157,7 @@ step1 = po("copy", outnum = 2, id = "copy1") %>>%
     po("nop", id = "nop1")
   )) %>>%
   po("featureunion", id = "union1")
-step1$plot()
+step1$plot(html = TRUE)
 ```
 
 Training using the input `r ref("Task")`, shows us how the output and the `$state` look like:
@@ -219,7 +217,7 @@ The complete pipeline, more precisely `r ref("Graph")`, looks like the following
 
 ```{r regression-chains-020, fig.width=10, fig.height=10}
 graph = step1 %>>% step2 %>>% step3
-graph$plot()
+graph$plot(html = TRUE)
 ```
 
 # Evaluating the Pipeline
@@ -243,3 +241,12 @@ learner$predict_newdata(data_predict)
 ```
 
 Note that we have to initialize the `r ref("Task")` with $y_{1}$ as the target but the pipeline will automatically predict $y_{3}$ in the final step as our final target, which was our ultimate goal here.
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-04-18-regression-chains/regression-chains_files/figure-html5/regression-chains-020-1.png",
+  destfile = "thumbnail.png"
+)
+```

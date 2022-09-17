@@ -3,7 +3,6 @@ title: Target Transformations via Pipelines
 categories:
   - mlr3pipelines
   - target transformation
-  - mtcars data set
   - classification
 author:
   - name: Lennart Schneider
@@ -12,10 +11,10 @@ description: |
   We show how to do various kinds of target transformations using pipelines.
 header-includes:
   - \usepackage{amsmath}
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
+knitr:
+  opts_chunk:
+    fig.align: center
+image: thumbnail.svg
 ---
 
 ```{r target-transformations-via-pipelines-001, include=FALSE}
@@ -46,7 +45,7 @@ As a prerequisite, you should be quite familiar with `r mlr_pkg("mlr3pipelines")
 
 We load the most important packages for this example.
 
-```{r target-transformations-via-pipelines-002}
+```{r target-transformations-via-pipelines-002, message=FALSE}
 library(mlr3)
 library(mlr3learners)
 library(mlr3pipelines)
@@ -153,7 +152,7 @@ g$add_edge(src_id = "targetmutate", dst_id = "targetinvert",
 This graph (which is conceptually the same graph as constructed via the `ppl("targettrafo")` syntactic sugar above) looks like the following:
 
 ```{r target-transformations-via-pipelines-015}
-g$plot()
+g$plot(html = TRUE)
 ```
 
 We can then finally call `$train()` and `$predict()` (prior to this we wrap the `r ref("Graph")` in a `r ref("GraphLearner", "GraphLearner")`):
@@ -373,7 +372,7 @@ g_bc = ppl("targettrafo", graph = learner_lm,
 The following plot should already look quite familiar:
 
 ```{r target-transformations-via-pipelines-027, fig.width=10, fig.height=10}
-g_bc$plot()
+g_bc$plot(html = TRUE)
 ```
 
 Finally we `$train()` and `$predict()` on the task (again, we wrap the `r ref("Graph")` in a `r ref("GraphLearner")`):
@@ -395,4 +394,13 @@ bmr = benchmark(bg)
 
 ```{r target-transformations-via-pipelines-030}
 bmr$aggregate(msr("regr.mse"))
+```
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-06-15-target-transformations-via-pipelines/workflow.svg",
+  destfile = "thumbnail.svg"
+)
 ```

@@ -2,20 +2,16 @@
 title: mlr3 Basics on "Iris" - Hello World!
 slug: mlr3-basics-iris
 categories:
-  - mlr3
-  - basics
-  - iris data set
   - classification
 description: |
   Basic ML operations on iris: Train, predict, score, resample and benchmark. A simple, hands-on intro to mlr3.
 author:
   - name: Bernd Bischl
 date: 03-18-2020
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
+image: ../../images/logo_color.png
 ---
 
 ```{r 2020-03-18-iris-mlr3-basics-001, include=FALSE}
@@ -48,9 +44,11 @@ The following operations are shown:
 We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
-```{r 2020-03-18-iris-mlr3-basics-002}
+```{r 2020-03-18-iris-mlr3-basics-002, message=FALSE}
 library(mlr3verse)
 library(mlr3learners)
+
+lgr::get_logger("mlr3")$set_threshold("warn")
 ```
 
 ## Creating tasks and learners

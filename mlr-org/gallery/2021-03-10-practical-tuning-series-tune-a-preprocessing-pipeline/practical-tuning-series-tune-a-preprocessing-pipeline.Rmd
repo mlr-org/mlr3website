@@ -3,12 +3,9 @@ title: Practical Tuning Series - Tune a Preprocessing Pipeline
 description: |
   We build a simple preprocessing pipeline and tune it.
 categories:
-  - mlr3tuning
   - tuning
-  - optimization
-  - nested resampling
+  - resampling
   - mlr3pipelines
-  - pima data set
   - classification
   - practical tuning series
 author:
@@ -18,14 +15,13 @@ author:
   - name: Bernd Bischl
   - name: Jakob Richter
   - name: Martin Binder
-date: 03-10-2021
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+date: 2021-03-10
+knitr:
+  opts_chunk:
+    fig.align: center
 params:
   eval_all: TRUE
+image: thumbnail.png
 ---
 
 ```{r practical-tuning-series-tune-a-preprocessing-pipeline-001, include=FALSE}
@@ -175,7 +171,7 @@ For this, we create a `r ref("Graph")` first.
 graph = po("encode") %>>%
   po("imputeoor") %>>%
   learner
-plot(graph)
+plot(graph, html = TRUE)
 ```
 
 We use `r ref("as_learner()")` to  wrap the `r ref("Graph")` into a `r ref("GraphLearner")` with which allows us to use the graph like a normal learner.
@@ -363,3 +359,12 @@ The pipeline ensures that the preprocessing is always a part of the train and pr
 
 The [mlr3book](https://mlr3book.mlr-org.com/) includes chapters on [pipelines](https://mlr3book.mlr-org.com/pipelines.html) and [hyperparameter tuning](https://mlr3book.mlr-org.com/tuning.html).
 The [mlr3cheatsheets](https://cheatsheets.mlr-org.com/) contain frequently used commands and workflows of mlr3.
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2021-03-10-practical-tuning-series-tune-a-preprocessing-pipeline/practical-tuning-series-tune-a-preprocessing-pipeline_files/figure-html5/practical-tuning-series-tune-a-preprocessing-pipeline-027-1.png",
+  destfile = "thumbnail.png"
+)
+```

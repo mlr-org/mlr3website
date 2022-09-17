@@ -5,17 +5,15 @@ categories:
   - classification
   - mlr3pipelines
   - feature engineering
-  - titanic data set
-  - classification
 author:
   - name: Florian Pfisterer
 description: |
   This post shows how to build a Graph using the mlr3pipelines package on the "titanic" dataset. Moreover, feature engineering, data imputation and benchmarking are covered.
 date: 04-27-2020
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
+knitr:
+  opts_chunk:
+    fig.align: center
+image: thumbnail.png
 ---
 
 ```{r 2020-04-27-mlr3pipelines-titanic-advanced-001, include=FALSE}
@@ -39,7 +37,7 @@ We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important p
 The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 The data is part of the `r mlr_pkg("mlr3data")`  package.
 
-```{r 2020-04-27-mlr3pipelines-titanic-advanced-002}
+```{r 2020-04-27-mlr3pipelines-titanic-advanced-002, message=FALSE}
 library(mlr3verse)
 library(mlr3learners)
 ```
@@ -316,3 +314,12 @@ In this case we have examined a number of different features, but there are many
 We could extract even more information from the different features and see what happens.
 But now you are left to yourself! There are many [kaggle kernels](https://www.kaggle.com/c/titanic) that treat the **Titanic Dataset**
 available. This can be a great starter to find even better models.
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-04-27-mlr3pipelines-Imputation-titanic/2020-04-27-mlr3pipelines-titanic-advanced_files/figure-html5/2020-04-27-mlr3pipelines-titanic-advanced-018-1.png",
+  destfile = "thumbnail.png"
+)
+```

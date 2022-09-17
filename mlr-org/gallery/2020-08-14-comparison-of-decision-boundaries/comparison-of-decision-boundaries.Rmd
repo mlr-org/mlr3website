@@ -3,16 +3,15 @@ title: Comparison of Decision Boundaries of Classification Learners
 categories:
   - classification
   - visualization
-  - mlr3viz
 author:
   - name: Michel Lang
 description: |
   Visuzalizes the decision boundaries of multiple classification learners on some artificial data sets.
 date: 08-14-2020
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
+knitr:
+  opts_chunk:
+    fig.align: center
+image: thumbnail.png
 ---
 
 ```{r comparison-of-decision-boundaries-001, include=FALSE}
@@ -201,3 +200,12 @@ As you can see, the decision boundaries look very different.
 Some are linear, others are parallel to the axis, and yet others are highly non-linear.
 The boundaries are partly very smooth with a slow transition of probabilities, others are very abrupt.
 All these properties are important during model selection, and should be considered for your problem at hand.
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-08-14-comparison-of-decision-boundaries/comparison-of-decision-boundaries_files/figure-html5/comparison-of-decision-boundaries-005-1.png",
+  destfile = "thumbnail.png"
+)
+```

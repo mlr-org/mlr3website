@@ -5,7 +5,6 @@ categories:
   - imputation
   - filtering
   - stacking
-  - german credit data set
   - classification
 author:
   - name: Martin Binder
@@ -13,13 +12,12 @@ author:
 date: 03-11-2020
 description: |
   In this use case, we continue working with the German credit dataset. We already used different Learners on it in previous posts and tried to optimize their hyperparameters. To make things interesting, we artificially introduce missing values into the dataset, perform imputation and filtering and stack Learners.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
 params:
   eval_all: TRUE
+image: thumbnail.png
 ---
 
 
@@ -217,7 +215,7 @@ instance = tune(
   search_space = search_space)
 ```
 
-```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-020, echo = FALSE, eval = params$eval_all}
+```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-020, echo = FALSE, eval = params$eval_all, warning=FALSE}
 dir.create(here::here("data"))
 saveRDS(instance, here::here("data/instance.rda"))
 ```
@@ -253,7 +251,7 @@ We built a pretty complex `r ref("Graph")` already.
 Therefore, we plot it:
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-024, fig.width=10, fig.height=10}
-graph_stack$plot()
+graph_stack$plot(html = TRUE)
 ```
 
 We now compare the performance of the stacked learner to the performance of the individual `r ref("Learner")`s:
@@ -336,7 +334,7 @@ robustify = po("fixfactors") %>>%
   po("removeconstants") %>>%
   po("imputesample", affect_columns = selector_type(c("ordered", "factor")))
 
-robustify$plot()
+robustify$plot(html = TRUE)
 ```
 
 This robust learner works even in very pathological conditions:
@@ -362,3 +360,12 @@ Here are only a few hints that help when working with `r ref("PipeOp")`s:
 - Use `po("select")` if you want to remove certain columns (possibly only along a single branch of multiple parallel branches). Both take `selector_xxx()` arguments, e.g. `selector_type("integer")`
 - You may get the best performance if you actually inspect the features and see what kind of transformations work best for them (know your data!)
 - See what `r ref("PipeOp")`s are available by inspecting `mlr_pipeops$keys()`, and get help about them using `?mlr_pipeops_xxx`
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-03-11-mlr3pipelines-tutorial-german-credit/2020-03-11-mlr3pipelines-tutorial-german-credit_files/figure-html5/2020-03-11-mlr3pipelines-tutorial-german-credit-022-1.png",
+  destfile = "thumbnail.png"
+)
+```

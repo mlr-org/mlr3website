@@ -3,13 +3,10 @@ title: Practical Tuning Series - Build an Automated Machine Learning System
 description: |
   We implement a simple automated machine learning (AutoML) system which includes preprocessing, a switch between multiple learners and hyperparameter tuning.
 categories:
-  - mlr3tuning
   - tuning
-  - optimization
-  - nested resampling
+  - resampling
   - mlr3pipelines
   - automl
-  - pima data set
   - classification
   - practical tuning series
 author:
@@ -20,13 +17,12 @@ author:
   - name: Jakob Richter
   - name: Martin Binder
 date: 03-11-2021
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
 params:
   eval_all: TRUE
+image: thumbnail.png
 ---
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-001, include=FALSE}
@@ -99,7 +95,7 @@ graph =
   po("branch", options = c("kknn", "svm", "ranger")) %>>%
   gunion(lapply(learners, po)) %>>%
   po("unbranch")
-graph$plot()
+graph$plot(html = TRUE)
 ```
 
 Alternatively, we can use the `r ref("ppl()")`-shortcut to load a predefined graph from the `r ref("mlr_graphs")` dictionary.
@@ -132,7 +128,7 @@ Additionally, `"robustify"` adds `r ref("PipeOpEncode")` to encode factor column
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-009, fig.width=10, fig.height=10}
 graph = ppl("robustify", task = task, factors_to_numeric = TRUE) %>>%
   graph
-plot(graph)
+plot(graph, html = TRUE)
 ```
 
 We could also create the preprocessing pipeline manually.
@@ -334,4 +330,11 @@ rr = tune_nested(
 The [mlr3book](https://mlr3book.mlr-org.com/) includes chapters on [pipelines](https://mlr3book.mlr-org.com/pipelines.html) and [hyperparameter tuning](https://mlr3book.mlr-org.com/tuning.html).
 The [mlr3cheatsheets](https://cheatsheets.mlr-org.com/) contain frequently used commands and workflows of mlr3.
 
-
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2021-03-11-practical-tuning-series-build-an-automated-machine-learning-system/practical-tuning-series-build-an-automated-machine-learning-system_files/figure-html5/practical-tuning-series-build-an-automated-machine-learning-system-009-1.png",
+  destfile = "thumbnail.png"
+)
+```

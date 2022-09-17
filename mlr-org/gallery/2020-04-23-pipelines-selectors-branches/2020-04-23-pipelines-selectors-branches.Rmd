@@ -2,10 +2,7 @@
 title: Pipelines, Selectors, Branches
 categories:
   - mlr3pipelines
-  - mlr3tuning
   - tuning
-  - optimization
-  - pima data set
   - classification
 author:
   - name: Milan Dragicevic
@@ -13,11 +10,10 @@ author:
 date: 04-23-2020
 description: |
   This tutorial explains how applying different preprocessing steps on different features and branching of preprocessing steps can be achieved using the mlr3pipelines package.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
+image: thumbnail.png
 ---
 
 ## Intro
@@ -51,7 +47,7 @@ This post covers:
 
 We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
-```{r 2020-04-23-pipelines-selectors-branches-002}
+```{r 2020-04-23-pipelines-selectors-branches-002, message=FALSE}
 library(mlr3verse)
 ```
 
@@ -118,7 +114,7 @@ In the end, we obtain a data set without missing values:
 ```{r 2020-04-23-pipelines-selectors-branches-008, fig.height = 10, fig.width = 10}
 # combine the two impuation methods
 impute_graph = imputer_hist %>>% imputer_median
-impute_graph$plot()
+impute_graph$plot(html = TRUE)
 impute_graph$train(task_pima)[[1]]$missings()
 ```
 
@@ -140,7 +136,7 @@ Finally, the two outputs can be combined with `r ref("PipeOpFeatureUnion")`:
 impute_missind = po("copy", 2) %>>%
   gunion(list(impute_graph, miss_ind)) %>>%
   po("featureunion")
-impute_missind$plot()
+impute_missind$plot(html = TRUE)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-012, eval = FALSE}
@@ -152,7 +148,6 @@ head(impute_missind$train(task_pima)[[1]]$data())
 DT::datatable(impute_missind$train(task_pima)[[1]]$data())
 ```
 
-
 ### 2. Select the features for each preprocessing step and apply the preprocessing steps to this subset
 
 We can use the `r ref("PipeOpSelect")` to select the appropriate features and then apply the desired impute `r ref("PipeOp")` on them:
@@ -163,7 +158,7 @@ imputer_hist_2 = po("select",
   id = "slct1") %>>% # unique id so we can combine it in a pipeline with other select PipeOps
   po("imputehist")
 
-imputer_hist_2$plot()
+imputer_hist_2$plot(html = TRUE)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-015, eval = FALSE}
@@ -200,7 +195,7 @@ imputer_missind_2 = po("copy", 4) %>>%
     po("select", selector = selector_name(other_features), id = "slct3"))) %>>%
   po("featureunion")
 
-imputer_missind_2$plot()
+imputer_missind_2$plot(html = TRUE)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-020, eval = FALSE}
@@ -230,7 +225,6 @@ head(imputer_missind_3$train(task_pima)[[1]]$data())
 DT::datatable(imputer_missind_3$train(task_pima)[[1]]$data())
 ```
 
-
 Usually, `po("copy")` is required when there are more than one input channels and multiple output channels, and their numbers do not match.
 
 ## Branching
@@ -249,7 +243,7 @@ graph_branch = po("branch", branches) %>>%
   gunion(list(impute_missind, imputer_median_3)) %>>%
   po("unbranch")
 
-graph_branch$plot()
+graph_branch$plot(html = TRUE)
 ```
 
 ## Tuning the pipeline
@@ -260,7 +254,7 @@ To finalize the graph, we combine it with a rpart learner:
 graph = graph_branch %>>%
   lrn("classif.rpart")
 
-graph$plot()
+graph$plot(html = TRUE)
 ```
 
 To define the parameters to be tuned, we first check the available ones in the graph:
@@ -270,7 +264,7 @@ as.data.table(graph$param_set)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-027, echo = FALSE}
-table_responsive(as.data.table(graph$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
+DT::datatable(as.data.table(graph$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
 ```
 
 We decide to jointly tune the `"branch.selection"`, `"classif.rpart.cp"` and `"classif.rpart.minbucket"` hyperparameters:
@@ -304,7 +298,8 @@ as.data.table(instance$archive)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-030, echo = FALSE}
-table_responsive(as.data.table(instance$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result")))
+#| column: page
+DT::datatable(as.data.table(instance$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result")))
 ```
 
 The best performance in this short tuned experiment was achieved with:
@@ -316,3 +311,12 @@ instance$result
 ## Conclusion
 
 This post shows ways on how to specify features on which preprocessing steps are to be performed. In addition it shows how to create alternative paths in the learner graph. The preprocessing steps that can be used are not limited to imputation. Check the list of available `r ref("PipeOp")`.
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-04-23-pipelines-selectors-branches/2020-04-23-pipelines-selectors-branches_files/figure-html5/2020-04-23-pipelines-selectors-branches-011-1.png",
+  destfile = "thumbnail.png"
+)
+```

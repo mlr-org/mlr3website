@@ -1,13 +1,9 @@
 ---
 title: Select Uncorrelated Features
 categories:
-  - mlr3tuning
-  - tuning
-  - optimization
   - tuning
   - mlr3pipelines
   - filtering
-  - iris data set
   - classification
 author:
   - name: Martin Binder
@@ -15,11 +11,10 @@ author:
 date: 02-25-2020
 description: |
   The following example describes a situation where we aim to remove correlated features. This in essence means, that we drop features until no features have a correlation higher then a given `cutoff`. This is often useful when we for example want to use linear models.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
+image: ../../images/logo_color.png
 ---
 
 ```{r 2020-02-25-remove-correlated-features-001, include=FALSE}
@@ -49,7 +44,7 @@ The example describes a very involved use-case, where the behavior of `r ref("Pi
 
 We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
-```{r 2020-02-25-remove-correlated-features-002}
+```{r 2020-02-25-remove-correlated-features-002, message=FALSE}
 library(mlr3verse)
 ```
 

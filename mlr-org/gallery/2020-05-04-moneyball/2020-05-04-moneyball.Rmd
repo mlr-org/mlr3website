@@ -4,17 +4,16 @@ categories:
   - imputation
   - regression
   - feature importance
-  - moneyball data set
   - mlr3pipelines
 author:
   - name: Philipp Kopper
 date: 05-04-2020
 description: |
   This use case shows how to make use of OpenML data and how to impute missing values in a ML problem.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
+knitr:
+  opts_chunk:
+    fig.align: center
+image: thumbnail.png
 ---
 
 ```{r 2020-05-04-moneyball-001, include=FALSE}
@@ -38,7 +37,7 @@ The following operations are illustrated:
 
 ## Prerequisites
 
-```{r 2020-05-04-moneyball-002}
+```{r 2020-05-04-moneyball-002, message=FALSE}
 # various functions of the mlr3 ecosystem
 library("mlr3verse")
 # about a dozen reasonable learners
@@ -176,7 +175,7 @@ Next, we append the second imputation job for factors.
 ```{r 2020-05-04-moneyball-011, fig.width=10, fig.height=10}
 imp_fct = po("imputeoor", affect_columns = selector_type("factor"))
 graph = imp_num %>>% imp_fct
-graph$plot()
+graph$plot(html = TRUE)
 ```
 
 ## Creating tasks and learners
@@ -197,7 +196,7 @@ task$missings()
 ```
 
 ```{r 2020-05-04-moneyball-013, echo = FALSE}
-table_responsive(t(task$missings()))
+DT::datatable(t(task$missings()))
 ```
 
 The `$missings()` method indicates what we already knew: our missing values.
@@ -228,13 +227,12 @@ pipeop_learner = po(lrn("regr.ranger"), num.trees = 1000, importance = "permutat
 
 # add pipeop learner to graph and create graph learner
 graph_learner = as_learner(graph %>>% pipeop_learner)
-
 ```
 
 The final graph looks like the following:
 
 ```{r 2020-05-04-moneyball-016, fig.width=10, fig.height=10}
-graph_learner$graph$plot()
+graph_learner$graph$plot(html = TRUE)
 ```
 
 ## Train and predict
@@ -256,7 +254,7 @@ head(as.data.table(prediction))
 ```
 
 ```{r 2020-05-04-moneyball-018, echo = FALSE}
-table_responsive(head(as.data.table(prediction)))
+DT::datatable(head(as.data.table(prediction)))
 ```
 
 Viewing the predicted values it seems like the model predicts reasonable values that are fairly close to the truth.
@@ -280,7 +278,7 @@ as.data.table(mlr_measures)
 ```
 
 ```{r 2020-05-04-moneyball-021, echo = FALSE}
-table_responsive(as.data.table(mlr_measures))
+DT::datatable(as.data.table(mlr_measures))
 ```
 
 We choose the `r ref("mlr_measures_regr.mae", "mean absolute error")` and the `r ref("mlr_measures_regr.mse", "mean squared error ")`.
@@ -328,7 +326,7 @@ feature_names = c(feature_names[feature_names %in% task$feature_names],
 select_na = po("select", selector = selector_name(feature_names))
 
 graph_2 = impute_oor %>>% select_na
-graph_2$plot()
+graph_2$plot(html = TRUE)
 ```
 
 Now we complete the learner and apply resampling as before.
@@ -368,3 +366,12 @@ We also learned how to use some `r ref("PipeOp")`s from the `r mlr_pkg("mlr3pipe
 But most importantly, we found a way to predict the runs scored of MLB teams.
 
 If you want to know more, read the [mlr3book](https://mlr3book.mlr-org.com/) and the documentation of the mentioned packages.
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-05-04-moneyball/2020-05-04-moneyball_files/figure-html5/2020-05-04-moneyball-009-1.png",
+  destfile = "thumbnail.png"
+)
+```

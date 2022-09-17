@@ -2,12 +2,9 @@
 title: Tuning a Stacked Learner
 categories:
   - mlr3pipelines
-  - mlr3tuning
   - tuning
-  - optimization
-  - nested resampling
+  - resampling
   - stacking
-  - sonar data set
   - classification
 author:
   - name: Milan Dragicevic
@@ -15,12 +12,12 @@ author:
 date: 04-27-2020
 description: |
   How to create and tune a multilevel stacking model using the mlr3pipelines package.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
+knitr:
+  opts_chunk:
+    fig.align: center
 params:
   eval_all: TRUE
+image: thumbnail.png
 ---
 
 ## Intro
@@ -58,7 +55,7 @@ The test set predictions of the level 1 learners are attached to input data used
 We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
-```{r 2020-04-27-tuning-stacking-002}
+```{r 2020-04-27-tuning-stacking-002, message=FALSE}
 library(mlr3verse)
 library(mlr3learners)
 ```
@@ -121,7 +118,7 @@ level0 = gunion(list(
 We can have a look at the graph from level 0:
 
 ```{r 2020-04-27-tuning-stacking-009, fig.width=12, fig.height = 12}
-level0$plot()
+level0$plot(html = TRUE)
 ```
 
 ### Level 1
@@ -151,7 +148,7 @@ level1 = level0 %>>%
 We can have a look at the graph from level 1:
 
 ```{r 2020-04-27-tuning-stacking-012, fig.width=12, fig.height = 14}
-level1$plot()
+level1$plot(html = TRUE)
 ```
 
 The out-of-bag predictions of the level 1 learners are attached to the input data from level 1 and a final ranger learner will be trained:
@@ -160,7 +157,7 @@ The out-of-bag predictions of the level 1 learners are attached to the input dat
 ranger_lrn = lrn("classif.ranger", predict_type = "prob")
 
 ensemble = level1 %>>% ranger_lrn
-ensemble$plot()
+ensemble$plot(html = TRUE)
 ```
 
 ### Defining the tuning space
@@ -268,7 +265,6 @@ bmr$aggregate(msr("classif.auc"))
 table_responsive(bmr$aggregate(msr("classif.auc"))[, .(nr, task_id, learner_id, resampling_id, iters, classif.auc)])
 ```
 
-
 For a more reliable comparison, the number of evaluation of the random search should be increased.
 
 ## Conclusion
@@ -276,3 +272,12 @@ For a more reliable comparison, the number of evaluation of the random search sh
 This example shows the versatility of `r mlr_pkg("mlr3pipelines")`.
 By using more learners, varied representations of the data set as well as more levels, a powerful yet compute hungry pipeline can be created.
 It is important to note that care should be taken to avoid name clashes of pipeline objects.
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-04-27-tuning-stacking/2020-04-27-tuning-stacking_files/figure-html5/2020-04-27-tuning-stacking-013-1.png",
+  destfile = "thumbnail.png"
+)
+```

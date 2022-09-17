@@ -1,11 +1,8 @@
 ---
 title: Feature Selection on the Titanic Data Set
 categories:
-  - mlr3fselect
-  - optimization
   - feature selection
-  - nested resampling
-  - titanic data set
+  - resampling
   - classification
 description: |
   Short introduction to feature selection with mlr3fselect.
@@ -14,6 +11,7 @@ author:
 date: 01-08-2021
 params:
   eval_all: TRUE
+image: ../../images/logo_color.png
 ---
 
 ```{r mlr3fselect-basic-001, include=FALSE}
@@ -28,7 +26,7 @@ dir.create("data")
 ```
 
 ```{r mlr3fselect-basic-002, include=FALSE, eval = params$eval_all}
-future::plan("multicore")
+future::plan("multisession")
 ```
 
 ## Introduction
@@ -38,7 +36,7 @@ The objective of feature selection is to enhance the interpretability of models,
 
 We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
-```{r mlr3fselect-basic-003}
+```{r mlr3fselect-basic-003, message=FALSE}
 library(mlr3verse)
 library(mlr3fselect)
 ```

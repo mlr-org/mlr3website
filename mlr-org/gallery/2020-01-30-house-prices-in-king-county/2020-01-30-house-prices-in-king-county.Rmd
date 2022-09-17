@@ -2,24 +2,20 @@
 title: House Prices in King County
 categories:
   - regression
-  - visualization
   - feature engineering
-  - mlr3tuning
   - tuning
-  - optimization
-  - king county housing data set
-  - nested resampling
+  - resampling
 author:
   - name: Florian Pfisterer
 date: 01-30-2020
 description: |
   Use case illustrating data preprocessing and model fitting via mlr3 on the "King County House Prices" dataset.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
 params:
   eval_all: FALSE
+image: thumbnail.png
+knitr:
+  opts_chunk:
+    fig.align: center
 ---
 
 ```{r 2020-01-30-house-prices-in-king-county-001, include=FALSE}
@@ -27,6 +23,7 @@ params:
   echo = TRUE,
   R.options = list(width = 120)
 )
+
 
 library(mlr3website)
 library(data.table)
@@ -90,6 +87,7 @@ This helps us to get a first impression of our data and might help us arrive at 
 We can get a quick overview using R's summary function:
 
 ```{r 2020-01-30-house-prices-in-king-county-006}
+#| column: page
 summary(kc_housing)
 dim(kc_housing)
 ```
@@ -289,6 +287,7 @@ cv3 = rsmp("cv", folds = 3)
 For the cross-validation we only use the **training data** by cloning the task and selecting only observations from the training set.
 
 ```{r 2020-01-30-house-prices-in-king-county-025}
+#| column: page
 lrn_rpart = lrn("regr.rpart")
 res = resample(task = task_train, lrn_rpart, cv3)
 res$score(msr("regr.rmse"))
@@ -401,6 +400,7 @@ lrn_impact = po("encodeimpact", affect_columns = selector_name("zipcode")) %>>% 
 Again, we run `r ref("resample()")` and compute the **RMSE**.
 
 ```{r 2020-01-30-house-prices-in-king-county-034, eval = params$eval_all}
+#| column: page
 res = resample(task = task_train, lrn_impact, cv3)
 ```
 
@@ -413,6 +413,7 @@ res = readRDS(here::here("data/res2.rda"))
 ```
 
 ```{r 2020-01-30-house-prices-in-king-county-037}
+#| column: page
 res$score(msr("regr.rmse"))
 sprintf("RMSE of ranger with med_price: %s", round(sqrt(res$aggregate()), 2))
 ```
@@ -483,4 +484,13 @@ Now we can use the augmented `task_test` to predict on new data.
 lrn_ranger$train(task_train)
 pred = lrn_ranger$predict(task_test)
 pred$score(msr("regr.rmse"))
+```
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-01-30-house-prices-in-king-county/2020-01-30-house-prices-in-king-county_files/figure-html5/2020-01-30-house-prices-in-king-county-013-1.png",
+  destfile = "thumbnail.png"
+)
 ```

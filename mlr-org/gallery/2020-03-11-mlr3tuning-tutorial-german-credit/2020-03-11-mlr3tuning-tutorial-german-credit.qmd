@@ -8,14 +8,15 @@ description: |
    In this use case, we continue working with the German credit dataset. We
    work on hyperparameter tuning and apply nested resampling.
 categories:
-  - mlr3tuning
   - tuning
-  - optimization
-  - nested resampling
-  - german credit data set
+  - resampling
   - classification
+knitr:
+  opts_chunk:
+    fig.align: center
 params:
   eval_all: TRUE
+image: thumbnail.png
 ---
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-001, include=FALSE}
@@ -472,3 +473,11 @@ The `scale` parameter is very influential, and scaling is beneficial.
 The `distance` type seems to be the least influential.
 There seems to be an interaction between 'k' and 'kernel'.
 
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2020-03-11-mlr3tuning-tutorial-german-credit/2020-03-11-mlr3tuning-tutorial-german-credit_files/figure-html5/2020-03-11-mlr3tuning-tutorial-german-credit-021-1.png",
+  destfile = "thumbnail.png"
+)
+```

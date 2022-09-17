@@ -1,25 +1,21 @@
 ---
 title: Tuning a Complex Graph
 categories:
-  - mlr3tuning
   - tuning
-  - optimization
   - mlr3pipelines
   - classification
-  - bst data set
 author:
   - name: Lennart Schneider
 date: 02-03-2021
 description: |
   We show how to tune a complex graph for a single task.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
 bibliography: bibliography.bib
 params:
   eval_all: TRUE
+image: thumbnail.png
 ---
 
 ```{r tuning-a-complex-graph-001, include=FALSE}
@@ -33,7 +29,7 @@ library(data.table)
 ```
 
 ```{r tuning-a-complex-graph-002, include=FALSE, eval = params$eval_all}
-future::plan("multicore")
+future::plan("multisession")
 ```
 
 In this use case we show how to tune a rather complex graph consisting of different preprocessing steps and different learners where each preprocessing step and learner itself has parameters that can be tuned.
@@ -47,7 +43,7 @@ Ideally you already had a look at how to tune over [multiple learners](https://m
 
 First, we load the packages we will need:
 
-```{r tuning-a-complex-graph-003}
+```{r tuning-a-complex-graph-003, message=FALSE}
 library(mlr3verse)
 library(mlr3learners)
 ```
@@ -149,7 +145,7 @@ Finally, we also could have used the `branch` `r ref("ppl", "ppl")` to make bran
 The graph looks like the following:
 
 ```{r tuning-a-complex-graph-009, fig.width=10, fig.height=10}
-graph1$plot()
+graph1$plot(html = TRUE)
 ```
 We can inspect the parameters of the `r ref("ParamSet", "ParamSet")` of the graph to see which parameters can be set:
 
@@ -290,7 +286,7 @@ graph2 =
 This graph now looks like the following:
 
 ```{r tuning-a-complex-graph-022, graph2, fig.width=10, fig.height=8}
-graph2$plot()
+graph2$plot(html = TRUE)
 ```
 
 At first, this may look like a linear graph. However, as the `content` parameter of `PipeOpProxy` can be tuned and set to contain any other `r ref("PipeOp")` or `r ref("Graph")`, this will allow for a similar non-linear graph as when doing branching.
@@ -375,4 +371,13 @@ tuner_gs$optimize(tune2)
 
 ```{r tuning-a-complex-graph-030, eval = FALSE}
 as.data.table(tune2$archive)[order(classif.acc), ]
+```
+
+```{r, include = FALSE}
+# this is for the preview image in the gallery
+#| include: false
+utils::download.file(
+  url = "https://mlr-org.com/gallery/2021-02-03-tuning-a-complex-graph/tuning-a-complex-graph_files/figure-html5/tuning-a-complex-graph-009-1.png",
+  destfile = "thumbnail.png"
+)
 ```

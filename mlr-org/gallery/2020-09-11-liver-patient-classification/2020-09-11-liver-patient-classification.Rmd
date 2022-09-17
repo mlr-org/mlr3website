@@ -13,13 +13,13 @@ author:
 description: |
   This use case provides an example on tuning and benchmarking in mlr3verse using data from the Indian Liver Patient Dataset.
 date: 09-11-2020
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
+knitr:
+  opts_chunk:
+    fig.align: center
 bibliography: bibliography.bib
 params:
   eval_all: TRUE
+image: ../../images/logo_color.png
 ---
 
 ```{r 2020-09-11-liver-patient-classification-001, include=FALSE}
@@ -33,7 +33,7 @@ library(data.table)
 ```
 
 ```{r 2020-09-11-liver-patient-classification-002, include=FALSE, eval = params$eval_all}
-future::plan("multicore")
+future::plan("multisession")
 ```
 
 # Preamble
@@ -50,7 +50,7 @@ This tutorial assumes familiarity with the basics of `r mlr_pkg("mlr3tuning")` a
 Consult the [mlr3book](https://mlr3book.mlr-org.com/pipelines.html) if some aspects are not fully understandable.
 We load the most important packages for this example.
 
-```{r 2020-09-11-liver-patient-classification-003}
+```{r 2020-09-11-liver-patient-classification-003, message=FALSE}
 library(mlr3verse)
 library(dplyr)
 library(tidyr)

@@ -1,14 +1,9 @@
 ---
 title: Threshold Tuning for Classification Tasks
 categories:
-  - mlr3tuning
   - tuning
-  - optimization
-  - nested resampling
+  - resampling
   - mlr3pipelines
-  - pima data set
-  - german credit data set
-  - iris data set
   - classification
 author:
   - name: Florian Pfisterer
@@ -16,11 +11,10 @@ date: 10-14-2020
 description: |
   Predicting probabilities in classification tasks allows us to adjust the probability thresholds required for
   assigning an observation to a certain class. This can lead to improved predictive performance.
-output:
-  distill::distill_article:
-    toc: true
-    self_contained: false
-    highlight_downlit: true
+knitr:
+  opts_chunk:
+    fig.align: center
+image: ../../images/logo_color.png
 ---
 
 ```{r 2020-10-14-threshold-tuning-001, include=FALSE}
@@ -50,7 +44,7 @@ This post is a more in-depth version of the [article on threshold tuning in the 
 
 We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
-```{r 2020-10-14-threshold-tuning-002}
+```{r 2020-10-14-threshold-tuning-002, message=FALSE}
 library(mlr3verse)
 ```
 
