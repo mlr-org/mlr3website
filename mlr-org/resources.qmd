@@ -4,25 +4,55 @@ page-layout: full
 title: Resources
 sidebar: false
 toc: false
-listing:
-  - id: listings
-    # contents: documentation-listings/*.qmd
-    template: listings.ejs
-    contents: listings.yml
-  - id: listings2
-    # contents: documentation-listings/*.qmd
-    template: listings2.ejs
-    contents: listings2.yml
+# listing:
+#   - id: listings
+#     # contents: documentation-listings/*.qmd
+#     template: listings.ejs
+#     contents: listings.yml
+#   - id: listings2
+#     # contents: documentation-listings/*.qmd
+#     template: listings2.ejs
+#     contents: listings2.yml
 ---
 ```{r setup, include=FALSE}
 library(mlr3website)
 ```
 
-::: {#listings}
+<!-- ::: {#listings}
 :::
 
 ::: {#listings2}
-:::
+::: -->
+
+## Documentation
+
+- [mlr3book](https://mlr3book.mlr-org.com/)
+- [mlr3gallery](https://mlr3gallery.mlr-org.com/)
+- [{R6} class system introduction](https://r6.r-lib.org/articles/Introduction.html)
+- [{future} package - parallelization backend](https://futureverse.org/)
+
+## Videos
+
+- [useR2019 talk on mlr3](https://www.youtube.com/watch?v=wsP2hiFnDQs)
+- [useR2019 talk on mlr3pipelines and mlr3tuning](https://www.youtube.com/watch?v=gEW5RxkbQuQ)
+- [useR2020 tutorial on mlr3, mlr3tuning and mlr3pipelines](https://www.youtube.com/watch?v=T43hO2o_nZw)
+- [Recorded talk about mlr3spatiotempcv and mlr3spatial at OpenDataScience Europe Conference 2021 in Wageningen, NL](https://av.tib.eu/media/55271)
+
+{{< video https://www.youtube.com/embed/wsP2hiFnDQs width="400" height="300" title='useR2019 talk on mlr3' >}}
+{{< video https://www.youtube.com/embed/gEW5RxkbQuQ width="400" height="300" title='useR2019 talk on mlr3pipelines and mlr3tuning' >}}
+{{< video https://www.youtube.com/embed/T43hO2o_nZw width="400" height="300" title='useR2020 tutorial on mlr3, mlr3tuning and mlr3pipelines' >}}
+<iframe width="400" height="300"  scrolling="no" src="//av.tib.eu/player/55271" frameborder="0" allowfullscreen></iframe>
+
+## Cheatsheets
+
+- [Overview of cheatsheets](https://cheatsheets.mlr-org.com)
+- [mlr3](https://cheatsheets.mlr-org.com/mlr3.pdf)
+- [mlr3tuning](https://cheatsheets.mlr-org.com/mlr3tuning.pdf)
+- [mlr3pipelines](https://cheatsheets.mlr-org.com/mlr3pipelines.pdf)
+
+## Courses/lectures
+
+- The course [Introduction to Machine learning (I2ML)](https://introduction-to-machine-learning.netlify.app/) is a free and open flipped classroom course on the basics of machine learning. `mlr3` is used in the [demos](https://github.com/slds-lmu/lecture_i2ml/tree/master/code-demos-pdf) and [exercises](https://github.com/slds-lmu/lecture_i2ml/tree/master/exercises).
 
 ## Peer-reviewed Articles
 
