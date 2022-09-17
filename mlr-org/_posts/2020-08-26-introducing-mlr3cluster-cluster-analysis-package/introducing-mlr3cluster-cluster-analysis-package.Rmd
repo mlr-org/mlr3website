@@ -212,10 +212,9 @@ learner$train(task)
 autoplot(learner)
 
 # More advanced options from `factoextra::fviz_dend`
-# FIXME:
-# autoplot(learner,
-#   k = learner$param_set$values$k, rect_fill = TRUE,
-#   rect = TRUE, rect_border = c("red", "cyan"))
+autoplot(learner, k = learner$param_set$values$k,
+  rect = TRUE, rect_border = "blue"
+)
 ```
 
 ## Further Development

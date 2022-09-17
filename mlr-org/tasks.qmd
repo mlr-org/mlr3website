@@ -10,6 +10,8 @@ library(mlr3website)
 library(htmltools)
 library(mlr3misc)
 library(data.table)
+library(mlr3spatiotempcv)
+library(DT)
 requireNamespace("mlr3verse")
 lgr::get_logger("mlr3")$set_threshold("warn")
 
