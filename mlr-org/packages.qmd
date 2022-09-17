@@ -20,11 +20,11 @@ The dot next to the package name indicates the [lifecycle stage](https://lifecyc
 
 If you use our packages in your research, please cite our articles on mlr3 [@mlr3], mlr3proba [@mlr3proba] or mlr3pipelines [@mlr3pipelines].
 To get the citation information of other packages, call
-
 ```{r eval = FALSE, echo = TRUE}
 citation("[package]")
 ```
 
+<!--
 ```{r, include = FALSE}
 # Collection of mlr3 ecosystem packages
 # Packages are rendered in a 3 columns grid.
@@ -164,4 +164,4 @@ package_grid(content[.("tasks")])
 
 ```{r}
 package_grid(content[.("utils")])
-```
+``` -->
