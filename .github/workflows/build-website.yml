@@ -39,6 +39,7 @@ jobs:
           devtools::install_github("mlr-org/mlr3extralearners")
           devtools::install_github("mlr-org/mlr3proba")
           devtools::install_github("mlr-org/mlr3mbo")
+          devtools::install_github("mlr-org/mlr3spatiotempcv")
           devtools::install_github("openml/openml-r")
         shell: Rscript {0}
 
