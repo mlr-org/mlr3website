@@ -36,7 +36,7 @@ jobs:
       - name: Install Remotes
         run: |
           devtools::install_github("mlr-org/mlr3book")
-          devtools::install_github("mlr-org/extralearners")
+          devtools::install_github("mlr-org/mlr3extralearners")
           devtools::install_github("mlr-org/mlr3proba")
           devtools::install_github("mlr-org/mlr3mbo")
           devtools::install_github("openml/OpenML")
