@@ -39,7 +39,7 @@ jobs:
           devtools::install_github("mlr-org/extralearners")
           devtools::install_github("mlr-org/mlr3proba")
           devtools::install_github("mlr-org/mlr3mbo")
-
+          devtools::install_github("openml/OpenML")
         shell: Rscript{0}
 
       - name: Install Packages
