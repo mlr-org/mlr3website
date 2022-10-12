@@ -44,6 +44,7 @@ content = rowwise_table(
   "general", "Reference Manuals", "question-circle", "packages.html", "Reference manuals (via package overview)",
   "general", "R6 Introduction", "dice-6", "https://r6.r-lib.org/articles/Introduction.html", "Introduction to R6 classes",
   "general", "Future Package", "stack", "https://futureverse.org/", "Homepage of the parallelization framework 'future'",
+  "general",
 
   "cheatsheet", "mlr3", "file-pdf", "https://cheatsheets.mlr-org.com/mlr3.pdf", "Core package cheat sheet",
   "cheatsheet", "mlr3tuning", "file-pdf", "https://cheatsheets.mlr-org.com/mlr3tuning.pdf", "Tuning cheat sheet",
@@ -107,3 +108,7 @@ A more scientific view on our the packages and the packages we depend on.
 * @future: the parallelization framework package `r cran_pkg("future")` we build upon
 * @checkmate: package `r cran_pkg("checkmate")` for argument checking and defensive programming
 * @batchtools: parallelization framework `r cran_pkg("batchtools")` for high-performance computing clusters, used via `r cran_pkg("future")` or `r gh_pkg("mlr-org/mlr3batchmark")`
+
+## Tutorial Papers
+
+* @pargent2022introduction: An Introduction to Machine Learning for Psychologists in R
