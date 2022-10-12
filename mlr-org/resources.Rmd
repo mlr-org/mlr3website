@@ -55,7 +55,7 @@ content = rowwise_table(
   "video", "useR2020 tutorial", "youtube", "https://www.youtube.com/watch?v=T43hO2o_nZw", "Tutorial on mlr3, mlr3tuning and mlr3pipelines",
   "video", "ODSC talk 2021", "youtube", "https://av.tib.eu/media/55271", "Into to mlr3spatiotempcv and mlr3spatial",
 
-  "course", "I2ML course", "display", "https://introduction-to-machine-learning.netlify.app/", "Introduction to ML course. Free video lectures, slides, quizzes. Exercises use mlr3",
+  "course", "I2ML course", "display", "https://slds-lmu.github.io/i2ml/", "Introduction to ML course. Free video lectures, slides, quizzes. Exercises use mlr3",
   "course", "mlr-outreach", "display", "https://github.com/mlr-org/mlr-outreach", "Slides and other material for teaching mlr3"
 )
 
@@ -107,3 +107,7 @@ A more scientific view on our the packages and the packages we depend on.
 * @future: the parallelization framework package `r cran_pkg("future")` we build upon
 * @checkmate: package `r cran_pkg("checkmate")` for argument checking and defensive programming
 * @batchtools: parallelization framework `r cran_pkg("batchtools")` for high-performance computing clusters, used via `r cran_pkg("future")` or `r gh_pkg("mlr-org/mlr3batchmark")`
+
+## Tutorial Papers
+
+* @pargent2022introduction: An Introduction to Machine Learning for Psychologists in R
