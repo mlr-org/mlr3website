@@ -33,6 +33,10 @@ jobs:
           extra-packages: |
             any::devtools
 
+      - name: Install Packages
+        run: devtools::install()
+        shell: Rscript {0}
+
       - name: Install Remotes
         run: |
           devtools::install_github("mlr-org/mlr3book")
@@ -41,10 +45,8 @@ jobs:
           devtools::install_github("mlr-org/mlr3mbo")
           devtools::install_github("mlr-org/mlr3spatiotempcv")
           devtools::install_github("openml/openml-r")
-        shell: Rscript {0}
-
-      - name: Install Packages
-        run: devtools::install()
+          devtools::install_github("mlr-org/mlr3tuning@callbacks")
+          devtools::install_github("mlr-org/mlr3learners@xgboost_early_stopping")
         shell: Rscript {0}
 
       - name: Build Website

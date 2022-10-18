@@ -42,6 +42,18 @@ jobs:
         run: devtools::install()
         shell: Rscript {0}
 
+      - name: Install Remotes
+        run: |
+          devtools::install_github("mlr-org/mlr3book")
+          devtools::install_github("mlr-org/mlr3extralearners")
+          devtools::install_github("mlr-org/mlr3proba")
+          devtools::install_github("mlr-org/mlr3mbo")
+          devtools::install_github("mlr-org/mlr3spatiotempcv")
+          devtools::install_github("openml/openml-r")
+          devtools::install_github("mlr-org/mlr3tuning@callbacks")
+          devtools::install_github("mlr-org/mlr3learners@xgboost_early_stopping")
+        shell: Rscript {0}
+
       - name: Render Gallery
         run: |
           files = list.files("mlr-org/_gallery/", pattern = ".Rmd", full.names = TRUE, recursive = TRUE)
