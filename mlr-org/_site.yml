@@ -10,10 +10,11 @@ rss:
   full_content: true
   categories:
     - R
+    - r-bloggers
 collections:
   posts:
     categories: true
-    feed_items_max: 1
+    feed_items_max: false
   gallery:
     categories: true
 navbar:
@@ -52,14 +53,27 @@ navbar:
         href: filters.html
       - text: "Feature Selection Wrapper"
         href: fselectors.html
-    - text: "Learn mlr3"
-      href: learn.html
-    - text: "Blog"
-      href: blog.html
+    - text: "Resources"
+      href: resources.html
     - text: "Book"
       href: book.html
+    - text: "Blog"
+      href: blog.html
     - text: "Gallery"
       href: gallery.html
-    - text: "About Us"
-      href: team.html
+    - text: "More"
+      menu:
+      - text: "Support"
+        href: support.html
+      - text: "Contributing"
+        href: contributing.html
+      - text: "Blogroll"
+        href: blogroll.html
+      - text: "---"
+      - text: "What's new"
+        href: https://mlr-org.com/posts/2022-04-25-mlr3-package-updates-q12022/
+      - text: "---"
+      - text: "About us"
+        href: team.html
+
 output: distill::distill_article

@@ -30,16 +30,17 @@ Changes in `mlr-org/docs/` are overwritten by `rmarkdown::render_site()`.
 Open the RStudio project in `mlr-org/` or set working directory to `mlr-org/`.
 
 1. Add a new post with `distill::create_post("Title of Post in Title Case")`.
-The new post is created within the `_posts/` subdirectory.
-1. Write the post.
-Place external images in the subdirectory.
-1. Apply the [mlr-style](https://github.com/mlr-org/mlr3/wiki/Style-Guide#styler-mlr-style) to the post.
+  The new post is created within the `_posts/` subdirectory.
+1. Call `renv::restore()` to install all required packages.
+1. Place external images in the directory of the post.
+1. Apply the [styler mlr-style](https://github.com/mlr-org/mlr3/wiki/Style-Guide#styler-mlr-style) to the post.
 1. Name chunks with `name_chunks_mlr3website(collection = "posts")`.
-1. Call `rmarkdown::render("_posts/2022-02-22-example-post/example-post.Rmd")` to render the post.
-1. Run `rmarkdown::render_site(encoding = 'UTF-8')` to render the website.
-The website is created within the `docs/` directory.
-Open `index.html` to check your post.
-1. Open a pull request and commit the subdirectory including all files.
+1. Add (at least) `categories: R` to the post front matter, otherwise the post won't be shared on r-bloggers.
+1. Render the post
+1. Run `rmarkdown::render_site()` to render the website.
+  The website is created within `docs/`.
+  Open `index.html` to check the post.
+1. Open a pull request and commit the directory of the post **including all files**.
 Merged posts are published via GitHub Pages.
 
 ## How to add a new gallery post
@@ -138,3 +139,9 @@ Does not render blog or gallery posts again.
 Only runs when a gallery post is added or changed.
 Renders all gallery post and builds website.
 Website is pushed to `gh-pages` branch.
+
+## RSS
+
+The main RSS feed for our blog is https://mlr-org.com/blog.xml.
+
+An example for category specific feed (e.g. the one submitted to R-bloggers) is https://mlr-org.com/blog.xml#category:r-bloggers.

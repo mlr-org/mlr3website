@@ -13,6 +13,7 @@ library(mlr3website)
 library(htmltools)
 library(mlr3misc)
 library(data.table)
+library(mlr3spatiotempcv)
 library(DT)
 requireNamespace("mlr3verse")
 lgr::get_logger("mlr3")$set_threshold("warn")
@@ -33,7 +34,7 @@ datatable(
   style = "bootstrap",
   escape = FALSE,
   options = list(paging = FALSE, scrollY = "60vh", scrollX = TRUE, info = FALSE),
-  rownames= FALSE)
+  rownames = FALSE)
 ```
 
 ## Example Usage

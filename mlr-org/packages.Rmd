@@ -56,11 +56,10 @@ package_grid = function(content) {
           ),
           p(paste0(text, ".")),
           div(id = "bottom",
-            if (has_homepage) a(href = url, tags$i(class = "bi bi-house", title = "Homepage")),
-            if (has_homepage) a(href = paste0(url, "reference/"), tags$i(class = "bi bi-question-circle", title = "Reference Manual")),
-            a(href = sprintf("https://github.com/mlr-org/%s", name), tags$i(class = "bi bi-github", title = "Github Project")),
-            if (on_cran) a(href = sprintf("https://cran.r-project.org/package=%s", name), tags$i(class = "fab fa-r-project", title = "CRAN Website"))
-
+            if (has_homepage) a(href = url, "aria-label" = "Go to homepage", tags$i(class = "bi bi-house", title = "Homepage")),
+            if (has_homepage) a(href = paste0(url, "reference/"), "aria-label" = "Go to Reference Manual", tags$i(class = "bi bi-question-circle", title = "Reference Manual")),
+            a(href = sprintf("https://github.com/mlr-org/%s", name), "aria-label" = "Go to Project Page", tags$i(class = "bi bi-github", title = "Github Project")),
+            if (on_cran) a(href = sprintf("https://cran.r-project.org/package=%s", name), "aria-label" = "Go to CRAN page", tags$i(class = "fab fa-r-project", title = "CRAN Website"))
           )
         )
     })
