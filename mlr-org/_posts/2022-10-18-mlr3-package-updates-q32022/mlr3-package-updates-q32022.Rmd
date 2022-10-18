@@ -1,0 +1,241 @@
+---
+title: "mlr3 package updates - q3/2022"
+description: |
+  This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter.
+author:
+  - name: Sebastian Fischer
+    url: https://github.com/sebffischer
+date: 2022-10-18
+preview: logo.png
+categories:
+    - R
+    - News
+output:
+  distill::distill_article:
+
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up with the latest changes across all packages.
+This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter.
+Note that only CRAN packages are listed here and the sort order is alphabetically.
+
+# bbotk 0.5.4
+
+**Description** Black-Box Optimization Toolkit
+
+* feat: Add `OptimizerFocusSearch` that performs a focusing random search.
+
+
+# mlr3 0.14.0
+
+**Description** Machine Learning in R - Next Generation
+
+* Added multiclass measures: `mauc_aunu`, `mauc_aunp`, `mauc_au1u`, `mauc_au1p`.
+* Measure `classif.costs` does not require a `Task` anymore.
+* New converter: `as_task_unsupervised()`
+* Refactored the task types in `mlr_reflections`.
+
+
+# mlr3 0.13.4
+
+* Added new options for parallelization (`"mlr3.exec_random"` and
+  `"mlr3.exec_chunk_size"`). These options are passed down to the respective map
+  functions in package `future.apply`.
+* Fixed runtime measures depending on specific predict types (#832).
+* Added `head()` and `tail()` methods for `Task`.
+* Improved printing of multiple objects.
+
+
+
+# mlr3benchmark 0.1.4
+
+**Description** Analysis and Visualisation of Benchmark Experiments
+
+* Add `friedman_global` argument to posthoc tests and to autoplots to allow methods and plots to run even if the global Friedman test fails (i.e. don't reject null)
+* New maintainer: Sebastian Fischer
+* Fix documentation
+
+
+# mlr3cluster 0.1.4
+
+**Description** Cluster Extension for 'mlr3'
+
+* code refactoring
+
+
+
+# mlr3data 0.6.1
+
+**Description** Collection of Machine Learning Data Sets for 'mlr3'
+
+* Fixed documentation and CRAN notes.
+
+* Added simplified version of the penguins data set as `penguins_simple`.
+* Added labels to data sets.
+
+
+# mlr3db 0.5.0
+
+**Description** Data Base Backend for 'mlr3'
+
+- Support for parquet files as Backend via DuckDB.
+- New converter `as_duckdb_backend()`.
+
+
+# mlr3fairness 0.3.1
+
+**Description** Fairness Auditing and Debiasing for 'mlr3'
+
+* Minor update to improve stability of unit tests and vignette building on CRAN.
+
+
+# mlr3filters 0.6.0
+
+**Description** Filter Based Feature Selection for 'mlr3'
+
+- Add `FilterCarSurvScore` (#120, @mllg)
+- Use featureless learner instead of rpart as default learner for `FilterImportance` and `FilterPerformance` (#124)
+- Add documentation for PipeOpFilter
+- Add mlr3pipelines examples to help pages (#135, @sebffischer)
+- Add `label` arg to `Filter` class (#121, @mllg)
+
+
+# mlr3fselect 0.7.2
+
+**Description** Feature Selection for 'mlr3'
+
+* docs: Re-generate rd files with valid html.
+
+
+# mlr3hyperband 0.4.2
+
+**Description** Hyperband for 'mlr3'
+
+* docs: Re-generate rd files with valid html.
+
+
+# mlr3learners 0.5.4
+
+**Description** Recommended Learners for 'mlr3'
+
+- Added `regr.nnet` learner.
+- Removed the option to use weights in `classif.log_reg`.
+- Added `default_values()` function for ranger and svm learners.
+- Improved documentation.
+
+
+# mlr3measures 0.5.0
+
+**Description** Performance Measures for 'mlr3'
+
+* Added some observation-wise loss functions: `ae`, `ape`, `se`,
+  `sle`, and `zero_one`,
+
+
+# mlr3oml 0.6.0
+
+**Description** Connector Between 'mlr3' and 'OpenML'
+
+**Features**
+
+* Add R6 classes for `OMLCollection`, `OMLRun`, `OMLFlow`.
+* Added function `benchmark_grid_oml` that allows for easier creation of
+  benchmark designs from OpenML task-resampling pairs.
+* Added sugar functions `oml_flow`, `oml_data`, `oml_task`, `oml_run`,
+  `oml_collection` for all OpenML objects.
+* Conversion from OpenML to mlr3 objects is now only possible with the usual
+  s3-converters `as_<object>`. This improves consistency by ensuring that the
+  subcomponents of OpenML objects are always OpenML objects and not suddenly
+  mlr3 objects.
+* Added more converter functions: `as_learner`, `as_resample_result`,
+  `as_data_backend`, `as_benchmark_result`.
+* Added support for parquet files that were recently introduced on OpenML.
+  The global option `mlr3oml.parquet` can be used to enable or disable this.
+  By default it is `FALSE`. This is implemented via the duckdb backend from
+  `mlr3db`.
+* Support to use the OpenML test server. This can be globally enabled using the
+  option `mlr3oml.test_server` or individually for objects.
+  Options to globally define an API-key for the test server are through the
+  environment variable `TESTOPENMLAPIKEY` or the option `mlr3oml.test_api_key`
+
+**Fixes**
+
+* Removed support for survival tasks as mlr3proba is no longer on CRAN
+* OpenML tasks can now also be filtered according to the task type
+
+**Other**
+
+* Implement an arff writer and remove the arff dependency, therefore also
+  removing the option `"farff"` as the `mlr3oml.arff_parser`
+* Increment the cache version number due to changes in the cache structure: This
+  will flush the previous cache folder.
+* Simplified the code structure by adding `OMLObject` class from which all other
+  OpenML objects like `OMLData`, `OMLTask` inherit.
+
+
+# mlr3pipelines 0.4.2
+
+**Description** Preprocessing Operators and Pipelines for 'mlr3'
+
+* Documentation: Clarified `PipeOpHistBin` operation.
+* Documentation: Fixed `PipeOpPCA` documentation of `center` default.
+* Added `$label` active binding, setting it to the `help()`-page title by default.
+* Made tests compatible with upcoming mlr3misc update.
+
+
+# mlr3spatial 0.2.1
+
+**Description** Support for Spatial Objects Within the 'mlr3' Ecosystem
+
+* fix: add `"space"` and `"time"` column role from mlr3spatiotempcv
+
+# mlr3spatial 0.2.0
+
+* BREAKING CHANGE: `TaskClassifST` and `TaskRegrST` are used to train a learner with spatial data.
+  The new tasks unify the work with mlr3spatiotempcv.
+* BREAKING CHANGE: Raster objects cannot be used to create tasks for training anymore.
+* BREAKING CHANGE: `TaskUnsupervised` is used to predict on rasters objects now.
+  The new task type is more convenient for data without a response.
+* feat: Add `as_task_regr_st()` and `as_task_classif_st()` from spatial objects.
+* feat: Add `as_task_unsupervised()` from raster objects.
+* feat: Task `leipzig` with land cover target.
+* feat: `data("leipzig")` loads an `sf` object with land cover in Leipzig.
+* feat: GeoTIFF and GeoPackage of Leipzig in `extdata` folder.
+* refactor: Vector data is handled with `DataBackendDataTable` now and `DataBackendVector` is removed.
+* BREAKING CHANGE: `DataBackendRaster` cannot be created from `RasterLayer` objects anymore.
+* fix: `spatial_predict()` returned an unnamed response.
+* fix: `spatial_predict()` wrote predictions to the wrong cell.
+* BREAKING CHANGE: Remove `demo_raster()`, `demo_stack_spatraster()`, `demo_stack_rasterbrick()` and `demo_rasterbrick()` functions.
+* feat: Prediction layer contains `NA` at raster cells with `NA` values in one or more feature layers.
+
+
+# mlr3tuning 0.14.0
+
+**Description** Tuning for 'mlr3'
+
+* feat: Add option `evaluate_default` to evaluate learners with hyperparameters set to their default values.
+* refactor: From now on, the default of `smooth` is `FALSE` for `TunerGenSA`.
+
+
+# mlr3viz 0.5.10
+
+**Description** Visualizations for 'mlr3'
+
+- Improved documentation.
+- Make checks run without suggested packages.
+
+
+# paradox 0.10.0
+
+**Description** Define and Work with Parameter Spaces for Complex Algorithms
+
+* Reset `.has_extra_trafo` to `FALSE` when trafo is set to `NULL`.
+* `rd_info.ParamSet` collapses vector with `"\n"` due changes in roxygen 7.2.0
+* Add method `set_values()` to conveniently add parameter values.
+
+
