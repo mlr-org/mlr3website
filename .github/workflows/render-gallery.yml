@@ -50,7 +50,7 @@ jobs:
           devtools::install_github("mlr-org/mlr3mbo")
           devtools::install_github("mlr-org/mlr3spatiotempcv")
           devtools::install_github("openml/openml-r")
-          devtools::install_github("mlr-org/mlr3verse@mlr3misc")
+          devtools::install_github("mlr-org/mlr3verse")
           devtools::install_github("mlr-org/mlr3tuning@callbacks")
           devtools::install_github("mlr-org/mlr3learners@xgboost_early_stopping")
         shell: Rscript {0}
