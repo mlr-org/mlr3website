@@ -49,16 +49,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -72,9 +73,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -92,8 +93,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--  https://schema.org/Article -->
-  <meta property="article:published" itemprop="datePublished" content="2022-04-06"/>
-  <meta property="article:created" itemprop="dateCreated" content="2022-04-06"/>
+  <meta property="article:published" itemprop="datePublished" content="2022-10-21"/>
+  <meta property="article:created" itemprop="dateCreated" content="2022-10-21"/>
   <meta name="article:author" content="Marc Becker"/>
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
@@ -111,12 +112,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","params"]}},"value":[{"type":"character","attributes":{},"value":["Early Stopping with XGBoost"]},{"type":"character","attributes":{},"value":["We show how to use early stopping to reduce overfitting when training XGBoost models.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Marc Becker"]}]}]},{"type":"character","attributes":{},"value":["2022-04-06"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","self_contained","highlight_downlit"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[false]},{"type":"logical","attributes":{},"value":[true]}]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["eval_all"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","params"]}},"value":[{"type":"character","attributes":{},"value":["Early Stopping with XGBoost"]},{"type":"character","attributes":{},"value":["We show how to use early stopping to reduce overfitting when training XGBoost models.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Marc Becker"]}]}]},{"type":"character","attributes":{},"value":["2022-10-21"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","self_contained","highlight_downlit"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[false]},{"type":"logical","attributes":{},"value":[true]}]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["eval_all"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["data/at.rda","early-stopping-with-xgboost_files/anchor-4.2.2/anchor.min.js","early-stopping-with-xgboost_files/bowser-1.9.3/bowser.min.js","early-stopping-with-xgboost_files/distill-2.2.21/template.v2.js","early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-006-1.png","early-stopping-with-xgboost_files/header-attrs-2.13/header-attrs.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.map","early-stopping-with-xgboost_files/popper-2.6.0/popper.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-bundle.umd.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-light-border.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.umd.min.js","early-stopping-with-xgboost_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["data/instance.rda","early-stopping-with-xgboost_files/anchor-4.2.2/anchor.min.js","early-stopping-with-xgboost_files/bowser-1.9.3/bowser.min.js","early-stopping-with-xgboost_files/distill-2.2.21/template.v2.js","early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-006-1.png","early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-007-1.png","early-stopping-with-xgboost_files/header-attrs-2.13/header-attrs.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.map","early-stopping-with-xgboost_files/popper-2.6.0/popper.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-bundle.umd.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-light-border.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.umd.min.js","early-stopping-with-xgboost_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -187,6 +188,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -428,10 +430,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1263,9 +1261,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1277,6 +1287,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1376,6 +1411,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1398,7 +1435,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -1437,7 +1474,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="early-stopping-with-xgboost_files/header-attrs-2.13/header-attrs.js"></script>
+  <script src="early-stopping-with-xgboost_files/header-attrs-2.17/header-attrs.js"></script>
   <script src="early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="early-stopping-with-xgboost_files/popper-2.6.0/popper.min.js"></script>
   <link href="early-stopping-with-xgboost_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1458,7 +1495,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Early Stopping with XGBoost","description":"We show how to use early stopping to reduce overfitting when training XGBoost models.","authors":[{"author":"Marc Becker","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-04-06T00:00:00.000+02:00","citationText":"Becker, 2022"}
+{"title":"Early Stopping with XGBoost","description":"We show how to use early stopping to reduce overfitting when training XGBoost models.","authors":[{"author":"Marc Becker","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-10-21T00:00:00.000+02:00","citationText":"Becker, 2022"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1477,7 +1514,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="d-byline">
   Marc Becker  
   
-<br/>2022-04-06
+<br/>2022-10-21
 </div>
 
 <div class="d-article">
@@ -1493,90 +1530,128 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </nav>
 </div>
 <h1 id="scope">Scope</h1>
-<p>In this post, we use early stopping to reduce overfitting when training an <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.xgboost.html"><code>XGBoost model</code></a>. We start with a short recap on early stopping and overfitting. After that, we use the early stopping mechanism of XGBoost and train a model on the <a href="https://mlr3.mlr-org.com/reference/mlr_tasks_spam.html"><code>Spam Classification</code></a> data set. Finally, we tune the hyperparameters of an XGBoost model and use early stopping at once.</p>
+<p>In this post, we use early stopping to reduce overfitting when training an <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.xgboost.html"><code>XGBoost model</code></a>.
+We start with a short recap on early stopping and overfitting.
+After that, we use the early stopping mechanism of XGBoost and train a model on the <a href="https://mlr3.mlr-org.com/reference/mlr_tasks_spam.html"><code>Spam Classification</code></a> data set.
+Finally, we tune the hyperparameters of an XGBoost model and use early stopping in one go.
+The reader should be familiar with <a href="https://mlr3gallery.mlr-org.com/posts/2021-03-09-practical-tuning-series-tune-a-support-vector-machine/">tuning</a> in the mlr3 ecosystem.</p>
+<p>Early stopping is only available in the development versions of <a href="https://mlr3tuning.mlr-org.com">mlr3tuning</a> and <a href="https://mlr3learners.mlr-org.com">mlr3learners</a>.
+Install the packages with <a href="https://cran.r-project.org/package=remotes">remotes</a>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'>remotes</span><span class='fu'>::</span><span class='fu'><a href='https://remotes.r-lib.org/reference/install_github.html'>install_github</a></span><span class='op'>(</span><span class='st'>"mlr-org/mlr3tuning"</span><span class='op'>)</span></span>
+<span><span class='fu'>remotes</span><span class='fu'>::</span><span class='fu'><a href='https://remotes.r-lib.org/reference/install_github.html'>install_github</a></span><span class='op'>(</span><span class='st'>"mlr-org/mlr3learners"</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p>The early stopping feature will be available on CRAN in a few weeks.</p>
 <h1 id="early-stopping">Early Stopping</h1>
-<p>Early stopping is a technique used to reduce overfitting when fitting a model in an iterative process. Overfitting occurs when a model fits increasingly to the training data but the performance on unseen data decreases. When using early stopping, the performance is monitored on a validation set, and the training stops when performance decreases in a specific number of iterations.</p>
+<p>Early stopping is a technique used to reduce overfitting when fitting a model in an iterative process.
+Overfitting occurs when a model fits increasingly to the training data but the performance on unseen data decreases.
+When using early stopping, the performance is monitored on a test set, and the training stops when performance decreases in a specific number of iterations.</p>
 <h1 id="resampling">Resampling</h1>
-<p>We load the <a href="https://mlr3verse.mlr-org.com">mlr3verse</a> which provides all functions required for this example.</p>
+<p>We initialize the random number generator with a fixed seed for reproducibility.
+The <a href="https://mlr3verse.mlr-org.com">mlr3verse</a> package provides all functions required for this example.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3verse.mlr-org.com'>mlr3verse</a></span><span class='op'>)</span>
-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>7832</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mlr3verse.mlr-org.com'>mlr3verse</a></span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>When training an XGBoost learner, we can use early stopping to find the optimal number of trees. We have to define a separate early stopping set so that the learner monitors its performance while training. Additionally, we need to define the range in which the performance must increase with <code>early_stopping_rounds</code> and the maximum number of boosting rounds with <code>nrounds</code>. In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.</p>
+<p>When training an XGBoost model, we can use early stopping to find the optimal number of boosting rounds.
+The <a href="https://mlr3.mlr-org.com/reference/partition.html"><code>partition()</code></a> function splits the observations of the task into two disjoint sets.
+We use 80% of observations to train the model and the remaining 20% as the test set to monitor the performance.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.xgboost"</span>,
-  nrounds <span class='op'>=</span> <span class='fl'>1000</span>,
-  early_stopping_rounds <span class='op'>=</span> <span class='fl'>100</span>,
-  eval_metric <span class='op'>=</span> <span class='st'>"error"</span>
-<span class='op'>)</span>
-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>task</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>tsk</a></span><span class='op'>(</span><span class='st'>"spam"</span><span class='op'>)</span></span>
+<span><span class='va'>split</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/partition.html'>partition</a></span><span class='op'>(</span><span class='va'>task</span>, ratio <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span></span>
+<span><span class='va'>task</span><span class='op'>$</span><span class='fu'>set_row_roles</span><span class='op'>(</span><span class='va'>split</span><span class='op'>$</span><span class='va'>test</span>, <span class='st'>"test"</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>Before we can train the learner, we have to define the early stopping set. The <a href="https://mlr3.mlr-org.com/reference/partition.html"><code>partition()</code></a> function splits the observations of the task into two disjoint sets. We use 80% of observations to train the model and the remaining 20% as the early stopping set.</p>
+<p>The <code>early_stopping_set</code> parameter controls which set is used monitoring the performance.
+Additionally, we need to define the range in which the performance must increase with <code>early_stopping_rounds</code> and the maximum number of boosting rounds with <code>nrounds</code>.
+In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>task</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>tsk</a></span><span class='op'>(</span><span class='st'>"spam"</span><span class='op'>)</span>
-<span class='va'>split</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/partition.html'>partition</a></span><span class='op'>(</span><span class='va'>task</span>, ratio <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span>
-<span class='va'>task</span><span class='op'>$</span><span class='fu'>set_row_roles</span><span class='op'>(</span><span class='va'>split</span><span class='op'>$</span><span class='va'>test</span>, <span class='st'>"early_stopping"</span><span class='op'>)</span>
-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.xgboost"</span>,</span>
+<span>  nrounds <span class='op'>=</span> <span class='fl'>1000</span>,</span>
+<span>  early_stopping_rounds <span class='op'>=</span> <span class='fl'>100</span>,</span>
+<span>  early_stopping_set <span class='op'>=</span> <span class='st'>"test"</span>,</span>
+<span>  eval_metric <span class='op'>=</span> <span class='st'>"error"</span></span>
+<span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
 <p>We train the learner with early stopping.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learner</span><span class='op'>$</span><span class='fu'>train</span><span class='op'>(</span><span class='va'>task</span><span class='op'>)</span>
-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>learner</span><span class='op'>$</span><span class='fu'>train</span><span class='op'>(</span><span class='va'>task</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>The <code>$evaluation_log</code> of the model stores the performance scores on the training and early stopping set. Figure 1 shows that the classification error on the training set decreases, whereas the error on the early stopping set increases after 20 rounds.</p>
+<p>The <code>$evaluation_log</code> of the model stores the performance scores on the training and test set.
+Figure 1 shows that the classification error on the training set decreases, whereas the error on the test set increases after 20 rounds.</p>
 <div class="layout-chunk" data-layout="l-body">
 <details>
 <summary>Show code</summary>
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggplot2.tidyverse.org'>ggplot2</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-datatable.com'>data.table</a></span><span class='op'>)</span>
-
-<span class='va'>data</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html'>melt</a></span><span class='op'>(</span>
-  <span class='va'>learner</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>evaluation_log</span>,
-  id.vars <span class='op'>=</span> <span class='st'>"iter"</span>,
-  variable.name <span class='op'>=</span> <span class='st'>"set"</span>,
-  value.name <span class='op'>=</span> <span class='st'>"error"</span>
-<span class='op'>)</span>
-
-<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>data</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>iter</span>, y <span class='op'>=</span> <span class='va'>error</span>, group <span class='op'>=</span> <span class='va'>set</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='va'>set</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>xintercept <span class='op'>=</span> <span class='va'>learner</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>best_iteration</span><span class='op'>)</span>, color <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_manual.html'>scale_colour_manual</a></span><span class='op'>(</span>values<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#f8766d"</span>, <span class='st'>"#00b0f6"</span><span class='op'>)</span>, labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Train"</span>, <span class='st'>"Early Stopping"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Rounds"</span>, y <span class='op'>=</span> <span class='st'>"Classification Error"</span>, color <span class='op'>=</span> <span class='st'>"Set"</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span>
-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggplot2.tidyverse.org'>ggplot2</a></span><span class='op'>)</span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-datatable.com'>data.table</a></span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>data</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html'>melt</a></span><span class='op'>(</span></span>
+<span>  <span class='va'>learner</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>evaluation_log</span>,</span>
+<span>  id.vars <span class='op'>=</span> <span class='st'>"iter"</span>,</span>
+<span>  variable.name <span class='op'>=</span> <span class='st'>"set"</span>,</span>
+<span>  value.name <span class='op'>=</span> <span class='st'>"error"</span></span>
+<span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>data</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>iter</span>, y <span class='op'>=</span> <span class='va'>error</span>, group <span class='op'>=</span> <span class='va'>set</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='va'>set</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>xintercept <span class='op'>=</span> <span class='va'>learner</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>best_iteration</span><span class='op'>)</span>, color <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_manual.html'>scale_colour_manual</a></span><span class='op'>(</span>values<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#f8766d"</span>, <span class='st'>"#00b0f6"</span><span class='op'>)</span>, labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Train"</span>, <span class='st'>"Test"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Rounds"</span>, y <span class='op'>=</span> <span class='st'>"Classification Error"</span>, color <span class='op'>=</span> <span class='st'>"Set"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span></span></code></pre>
 </div>
 </details>
-<div class="figure"><span style="display:block;" id="fig:early-stopping-with-xgboost-006"></span>
-<img src="early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-006-1.png" alt="Comparison between train and early stopping set classification error." width="624" />
+<div class="figure"><span style="display:block;" id="fig:early-stopping-with-xgboost-007"></span>
+<img src="early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-007-1.png" alt="Comparison between train and test set classification error." width="624" />
 <p class="caption">
-Figure 1: Comparison between train and early stopping set classification error.
+Figure 1: Comparison between train and test set classification error.
 </p>
 </div>
 </div>
-<p>We can check the optimal number of trees by accessing <code>$best_iteration</code>.</p>
+<p>The slot <code>$best_iteration</code> contains the optimal number of boosting rounds.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learner</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>best_iteration</span>
-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>learner</span><span class='op'>$</span><span class='va'>model</span><span class='op'>$</span><span class='va'>best_iteration</span></span></code></pre>
 </div>
 <pre><code>[1] 20</code></pre>
 </div>
+<p>Note that, <code>learner$predict()</code> will use the model from the last iteration, not the best one.
+See the next section on how to fit a model with the optimal number of boosting rounds and hyperparameter configuration.</p>
 <h1 id="tuning">Tuning</h1>
-<p>Next, we want to tune the hyperparameters of an XGBoost learner and find the optimal number of trees in one go. First, we load a predefined tuning space from the <a href="https://mlr3tuningspaces.mlr-org.com">mlr3tuningspaces</a> package.</p>
+<p>In this section, we want to tune the hyperparameters of an XGBoost model and find the optimal number of boosting rounds in one go.
+For this we need the <a href="https://mlr3tuning.mlr-org.com/reference/mlr3tuning.early_stopping.html"><code>early stopping callback</code></a> which handles early stopping during the tuning process.
+The performance of a hyperparameter configuration is evaluated with a resampling strategy while tuning e.g. 3-fold cross-validation.
+In each resampling iteration, a new XGBoost model is trained and early stopping is used to find the optimal number of boosting rounds.
+This results in three different optimal number of boosting rounds for one hyperparameter configuration when applying a 3-fold cross-validation.
+The callback picks the maximum of the three values and writes it to the archive.
+It uses the maximum value because the final model is fitted on the complete data set.
+Now let’s start with a practical example.</p>
+<p>First, we load the XGBoost learner and set the early stopping parameters.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>tuning_space</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuningspaces.mlr-org.com/reference/lts.html'>lts</a></span><span class='op'>(</span><span class='st'>"classif.xgboost.default"</span><span class='op'>)</span>
-<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html'>as.data.table</a></span><span class='op'>(</span><span class='va'>tuning_space</span><span class='op'>)</span>
-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.xgboost"</span>,</span>
+<span>  nrounds <span class='op'>=</span> <span class='fl'>1000</span>,</span>
+<span>  early_stopping_rounds <span class='op'>=</span> <span class='fl'>100</span>,</span>
+<span>  early_stopping_set <span class='op'>=</span> <span class='st'>"test"</span></span>
+<span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p>Next, we load a predefined tuning space from the <a href="https://mlr3tuningspaces.mlr-org.com">mlr3tuningspaces</a> package.
+The tuning space includes the most commonly tuned parameters of XGBoost.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>tuning_space</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuningspaces.mlr-org.com/reference/lts.html'>lts</a></span><span class='op'>(</span><span class='st'>"classif.xgboost.default"</span><span class='op'>)</span></span>
+<span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html'>as.data.table</a></span><span class='op'>(</span><span class='va'>tuning_space</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
@@ -1641,44 +1716,112 @@ Figure 1: Comparison between train and early stopping set classification error.
 </tbody>
 </table></div>
 </div>
-<p>We copy the <a href="https://mlr3tuningspaces.mlr-org.com/reference/TuningSpace.html"><code>tuning space</code></a> to the parameter set of the learner and add the additional early stopping parameters.</p>
+<p>We argument the learner with the tuning space.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>=</span> <span class='va'>tuning_space</span><span class='op'>$</span><span class='va'>values</span>
-<span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>=</span> <span class='fu'>mlr3misc</span><span class='fu'>::</span><span class='fu'><a href='https://mlr3misc.mlr-org.com/reference/insert_named.html'>insert_named</a></span><span class='op'>(</span><span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-  nrounds <span class='op'>=</span> <span class='fl'>1000</span>,
-  early_stopping_rounds <span class='op'>=</span> <span class='fl'>100</span>,
-  eval_metric <span class='op'>=</span> <span class='st'>"error"</span>
-<span class='op'>)</span><span class='op'>)</span>
-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuningspaces.mlr-org.com/reference/lts.html'>lts</a></span><span class='op'>(</span><span class='va'>learner</span><span class='op'>)</span></span>
+<span><span class='va'>learner</span></span></code></pre>
 </div>
+<pre><code>&lt;LearnerClassifXgboost:classif.xgboost&gt;
+* Model: -
+* Parameters: nrounds=&lt;RangeTuneToken&gt;, nthread=1, verbose=0, early_stopping_set=test,
+  early_stopping_rounds=100, eta=&lt;RangeTuneToken&gt;, max_depth=&lt;RangeTuneToken&gt;,
+  colsample_bytree=&lt;RangeTuneToken&gt;, colsample_bylevel=&lt;RangeTuneToken&gt;, lambda=&lt;RangeTuneToken&gt;,
+  alpha=&lt;RangeTuneToken&gt;, subsample=&lt;RangeTuneToken&gt;
+* Packages: mlr3, mlr3learners, xgboost
+* Predict Types:  [response], prob
+* Feature Types: logical, integer, numeric
+* Properties: hotstart_forward, importance, missings, multiclass, twoclass, weights</code></pre>
 </div>
-<p>The <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a> automates the tuning of a learner. It tunes the hyperparameters and fits a final model on the complete data set. The early stopping set allows the use of early stopping in both steps.</p>
+<p>The default tuning space contains the <code>nrounds</code> hyperparameter.
+We have to overwrite it with an upper bound for early stopping.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>task</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>tsk</a></span><span class='op'>(</span><span class='st'>"spam"</span><span class='op'>)</span>
-<span class='va'>split</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/partition.html'>partition</a></span><span class='op'>(</span><span class='va'>task</span>, ratio <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span>
-<span class='va'>task</span><span class='op'>$</span><span class='fu'>set_row_roles</span><span class='op'>(</span><span class='va'>split</span><span class='op'>$</span><span class='va'>test</span>, roles <span class='op'>=</span> <span class='st'>"early_stopping"</span><span class='op'>)</span>
-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='fu'>set_values</span><span class='op'>(</span>nrounds <span class='op'>=</span> <span class='fl'>1000</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>The training of the <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a> starts the tuning. For each configuration, early stopping estimates the optimal number of trees. After completion, the learner is trained on the best hyperparameter configuration, and early stopping is used one last time.</p>
+<p>We run a small batch of random hyperparameter configurations.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>at</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuning.mlr-org.com/reference/auto_tuner.html'>auto_tuner</a></span><span class='op'>(</span>
-  method <span class='op'>=</span> <span class='st'>"random_search"</span>,
-  learner <span class='op'>=</span> <span class='va'>learner</span>,
-  resampling <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
-  measure <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msr</a></span><span class='op'>(</span><span class='st'>"classif.ce"</span><span class='op'>)</span>,
-  term_evals <span class='op'>=</span> <span class='fl'>10</span>
-<span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>instance</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3tuning.mlr-org.com/reference/tune.html'>tune</a></span><span class='op'>(</span></span>
+<span>  method <span class='op'>=</span> <span class='st'>"random_search"</span>,</span>
+<span>  task <span class='op'>=</span> <span class='va'>task</span>,</span>
+<span>  learner <span class='op'>=</span> <span class='va'>learner</span>,</span>
+<span>  resampling <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>rsmp</a></span><span class='op'>(</span><span class='st'>"cv"</span>, folds <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,</span>
+<span>  measure <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>msr</a></span><span class='op'>(</span><span class='st'>"classif.ce"</span><span class='op'>)</span>,</span>
+<span>  term_evals <span class='op'>=</span> <span class='fl'>4</span>,</span>
+<span>  batch_size <span class='op'>=</span> <span class='fl'>2</span>,</span>
+<span>  callbacks <span class='op'>=</span> <span class='fu'><a href='https://mlr3misc.mlr-org.com/reference/clbk.html'>clbk</a></span><span class='op'>(</span><span class='st'>"mlr3tuning.early_stopping"</span><span class='op'>)</span></span>
+<span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p>We can see that the optimal number of boosting rounds (<code>max_nrounds</code>) strongly depends on the other hyperparameters.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>instance</span><span class='op'>$</span><span class='va'>archive</span></span></code></pre>
+</div>
+<pre><code>&lt;ArchiveTuning&gt;
+      eta max_depth colsample_bytree colsample_bylevel lambda alpha subsample classif.ce runtime_learners
+1: -1.046         1             0.89              0.18  -6.28  -2.7      0.69      0.055              1.6
+2: -0.015        19             0.51              0.24  -0.87   4.4      0.55      0.104              0.7
+3: -8.467        13             0.87              0.55  -5.73  -3.9      0.27      0.068             24.4
+4: -7.047         8             0.61              0.59  -4.85  -2.5      0.59      0.062             21.8
+             timestamp batch_nr warnings errors max_nrounds      resample_result
+1: 2022-10-19 11:14:21        1        0      0         373 &lt;ResampleResult[21]&gt;
+2: 2022-10-19 11:14:21        1        0      0         193 &lt;ResampleResult[21]&gt;
+3: 2022-10-19 11:15:07        2        0      0        1000 &lt;ResampleResult[21]&gt;
+4: 2022-10-19 11:15:07        2        0      0        1000 &lt;ResampleResult[21]&gt;</code></pre>
+</div>
+<p>In the best hyperparameter configuration, the value of <code>nrounds</code> is replaced by <code>max_nrounds</code> and early stopping is deactivated.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>instance</span><span class='op'>$</span><span class='va'>result_learner_param_vals</span></span></code></pre>
+</div>
+<pre><code>$nrounds
+[1] 373
 
-<span class='va'>at</span><span class='op'>$</span><span class='fu'>train</span><span class='op'>(</span><span class='va'>task</span><span class='op'>)</span>
-</code></pre>
+$nthread
+[1] 1
+
+$verbose
+[1] 0
+
+$early_stopping_set
+[1] &quot;none&quot;
+
+$eta
+[1] 0.3513197
+
+$max_depth
+[1] 1
+
+$colsample_bytree
+[1] 0.8918211
+
+$colsample_bylevel
+[1] 0.1841578
+
+$lambda
+[1] 0.001868043
+
+$alpha
+[1] 0.06402412
+
+$subsample
+[1] 0.6890264</code></pre>
+</div>
+<p>Finally, fit the final model on the complete data set.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>learner</span> <span class='op'>=</span> <span class='fu'><a href='https://mlr3.mlr-org.com/reference/mlr_sugar.html'>lrn</a></span><span class='op'>(</span><span class='st'>"classif.xgboost"</span><span class='op'>)</span></span>
+<span><span class='va'>learner</span><span class='op'>$</span><span class='va'>param_set</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>=</span> <span class='va'>instance</span><span class='op'>$</span><span class='va'>result_learner_param_vals</span></span>
+<span><span class='va'>learner</span><span class='op'>$</span><span class='fu'>train</span><span class='op'>(</span><span class='va'>task</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>The <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a> can now be used to make predictions on new data</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>The trained model can now be used to make predictions on new data.</p>
+<p>We can also use the <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a> get a tuned XGBoost model.
+Note that, early stopping is deactivated when the final model is fitted.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
