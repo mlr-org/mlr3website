@@ -30,7 +30,6 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 
 * feat: Add `OptimizerFocusSearch` that performs a focusing random search.
 
-
 # mlr3 0.14.0
 
 **Description** Machine Learning in R - Next Generation
@@ -39,7 +38,6 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * Measure `classif.costs` does not require a `Task` anymore.
 * New converter: `as_task_unsupervised()`
 * Refactored the task types in `mlr_reflections`.
-
 
 # mlr3 0.13.4
 
@@ -50,8 +48,6 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * Added `head()` and `tail()` methods for `Task`.
 * Improved printing of multiple objects.
 
-
-
 # mlr3benchmark 0.1.4
 
 **Description** Analysis and Visualisation of Benchmark Experiments
@@ -60,14 +56,11 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * New maintainer: Sebastian Fischer
 * Fix documentation
 
-
 # mlr3cluster 0.1.4
 
 **Description** Cluster Extension for 'mlr3'
 
 * code refactoring
-
-
 
 # mlr3data 0.6.1
 
@@ -78,7 +71,6 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * Added simplified version of the penguins data set as `penguins_simple`.
 * Added labels to data sets.
 
-
 # mlr3db 0.5.0
 
 **Description** Data Base Backend for 'mlr3'
@@ -86,13 +78,11 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 - Support for parquet files as Backend via DuckDB.
 - New converter `as_duckdb_backend()`.
 
-
 # mlr3fairness 0.3.1
 
 **Description** Fairness Auditing and Debiasing for 'mlr3'
 
 * Minor update to improve stability of unit tests and vignette building on CRAN.
-
 
 # mlr3filters 0.6.0
 
@@ -104,20 +94,17 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 - Add mlr3pipelines examples to help pages (#135, @sebffischer)
 - Add `label` arg to `Filter` class (#121, @mllg)
 
-
 # mlr3fselect 0.7.2
 
 **Description** Feature Selection for 'mlr3'
 
 * docs: Re-generate rd files with valid html.
 
-
 # mlr3hyperband 0.4.2
 
 **Description** Hyperband for 'mlr3'
 
 * docs: Re-generate rd files with valid html.
-
 
 # mlr3learners 0.5.4
 
@@ -128,14 +115,12 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 - Added `default_values()` function for ranger and svm learners.
 - Improved documentation.
 
-
 # mlr3measures 0.5.0
 
 **Description** Performance Measures for 'mlr3'
 
 * Added some observation-wise loss functions: `ae`, `ape`, `se`,
   `sle`, and `zero_one`,
-
 
 # mlr3oml 0.6.0
 
@@ -177,7 +162,6 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * Simplified the code structure by adding `OMLObject` class from which all other
   OpenML objects like `OMLData`, `OMLTask` inherit.
 
-
 # mlr3pipelines 0.4.2
 
 **Description** Preprocessing Operators and Pipelines for 'mlr3'
@@ -186,7 +170,6 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * Documentation: Fixed `PipeOpPCA` documentation of `center` default.
 * Added `$label` active binding, setting it to the `help()`-page title by default.
 * Made tests compatible with upcoming mlr3misc update.
-
 
 # mlr3spatial 0.2.1
 
@@ -213,14 +196,12 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * BREAKING CHANGE: Remove `demo_raster()`, `demo_stack_spatraster()`, `demo_stack_rasterbrick()` and `demo_rasterbrick()` functions.
 * feat: Prediction layer contains `NA` at raster cells with `NA` values in one or more feature layers.
 
-
 # mlr3tuning 0.14.0
 
 **Description** Tuning for 'mlr3'
 
 * feat: Add option `evaluate_default` to evaluate learners with hyperparameters set to their default values.
 * refactor: From now on, the default of `smooth` is `FALSE` for `TunerGenSA`.
-
 
 # mlr3viz 0.5.10
 
@@ -229,7 +210,6 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 - Improved documentation.
 - Make checks run without suggested packages.
 
-
 # paradox 0.10.0
 
 **Description** Define and Work with Parameter Spaces for Complex Algorithms
@@ -237,5 +217,3 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * Reset `.has_extra_trafo` to `FALSE` when trafo is set to `NULL`.
 * `rd_info.ParamSet` collapses vector with `"\n"` due changes in roxygen 7.2.0
 * Add method `set_values()` to conveniently add parameter values.
-
-
