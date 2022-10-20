@@ -117,7 +117,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["data/instance.rda","early-stopping-with-xgboost_files/anchor-4.2.2/anchor.min.js","early-stopping-with-xgboost_files/bowser-1.9.3/bowser.min.js","early-stopping-with-xgboost_files/distill-2.2.21/template.v2.js","early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-006-1.png","early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-007-1.png","early-stopping-with-xgboost_files/header-attrs-2.13/header-attrs.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.map","early-stopping-with-xgboost_files/popper-2.6.0/popper.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-bundle.umd.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-light-border.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.umd.min.js","early-stopping-with-xgboost_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["data/instance.rda","early-stopping-with-xgboost_files/anchor-4.2.2/anchor.min.js","early-stopping-with-xgboost_files/bowser-1.9.3/bowser.min.js","early-stopping-with-xgboost_files/distill-2.2.21/template.v2.js","early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-006-1.png","early-stopping-with-xgboost_files/figure-html5/early-stopping-with-xgboost-007-1.png","early-stopping-with-xgboost_files/header-attrs-2.13/header-attrs.js","early-stopping-with-xgboost_files/header-attrs-2.17/header-attrs.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.js","early-stopping-with-xgboost_files/jquery-3.6.0/jquery-3.6.0.min.map","early-stopping-with-xgboost_files/popper-2.6.0/popper.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-bundle.umd.min.js","early-stopping-with-xgboost_files/tippy-6.2.7/tippy-light-border.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.css","early-stopping-with-xgboost_files/tippy-6.2.7/tippy.umd.min.js","early-stopping-with-xgboost_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1568,7 +1568,7 @@ We use 80% of observations to train the model and the remaining 20% as the test 
 <span><span class='va'>task</span><span class='op'>$</span><span class='fu'>set_row_roles</span><span class='op'>(</span><span class='va'>split</span><span class='op'>$</span><span class='va'>test</span>, <span class='st'>"test"</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>The <code>early_stopping_set</code> parameter controls which set is used monitoring the performance.
+<p>The <code>early_stopping_set</code> parameter controls which set is used to monitore the performance.
 Additionally, we need to define the range in which the performance must increase with <code>early_stopping_rounds</code> and the maximum number of boosting rounds with <code>nrounds</code>.
 In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1629,10 +1629,10 @@ Figure 1: Comparison between train and test set classification error.
 See the next section on how to fit a model with the optimal number of boosting rounds and hyperparameter configuration.</p>
 <h1 id="tuning">Tuning</h1>
 <p>In this section, we want to tune the hyperparameters of an XGBoost model and find the optimal number of boosting rounds in one go.
-For this we need the <a href="https://mlr3tuning.mlr-org.com/reference/mlr3tuning.early_stopping.html"><code>early stopping callback</code></a> which handles early stopping during the tuning process.
+For this, we need the <a href="https://mlr3tuning.mlr-org.com/reference/mlr3tuning.early_stopping.html"><code>early stopping callback</code></a> which handles early stopping during the tuning process.
 The performance of a hyperparameter configuration is evaluated with a resampling strategy while tuning e.g. 3-fold cross-validation.
 In each resampling iteration, a new XGBoost model is trained and early stopping is used to find the optimal number of boosting rounds.
-This results in three different optimal number of boosting rounds for one hyperparameter configuration when applying a 3-fold cross-validation.
+This results in three different optimal numbers of boosting rounds for one hyperparameter configuration when applying 3-fold cross-validation.
 The callback picks the maximum of the three values and writes it to the archive.
 It uses the maximum value because the final model is fitted on the complete data set.
 Now let’s start with a practical example.</p>
@@ -1819,7 +1819,7 @@ $subsample
 </div>
 </div>
 <p>The trained model can now be used to make predictions on new data.</p>
-<p>We can also use the <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a> get a tuned XGBoost model.
+<p>We can also use the <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a> to get a tuned XGBoost model.
 Note that, early stopping is deactivated when the final model is fitted.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

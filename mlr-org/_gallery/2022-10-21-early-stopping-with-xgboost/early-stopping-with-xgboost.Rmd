@@ -72,7 +72,7 @@ split = partition(task, ratio = 0.8)
 task$set_row_roles(split$test, "test")
 ```
 
-The `early_stopping_set` parameter controls which set is used monitoring the performance.
+The `early_stopping_set` parameter controls which set is used to monitore the performance.
 Additionally, we need to define the range in which the performance must increase with `early_stopping_rounds` and the maximum number of boosting rounds with `nrounds`.
 In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.
 
@@ -125,10 +125,10 @@ See the next section on how to fit a model with the optimal number of boosting r
 # Tuning
 
 In this section, we want to tune the hyperparameters of an XGBoost model and find the optimal number of boosting rounds in one go.
-For this we need the `r ref("mlr3tuning.early_stopping", "early stopping callback")` which handles early stopping during the tuning process.
+For this, we need the `r ref("mlr3tuning.early_stopping", "early stopping callback")` which handles early stopping during the tuning process.
 The performance of a hyperparameter configuration is evaluated with a resampling strategy while tuning e.g. 3-fold cross-validation.
 In each resampling iteration, a new XGBoost model is trained and early stopping is used to find the optimal number of boosting rounds.
-This results in three different optimal number of boosting rounds for one hyperparameter configuration when applying a 3-fold cross-validation.
+This results in three different optimal numbers of boosting rounds for one hyperparameter configuration when applying 3-fold cross-validation.
 The callback picks the maximum of the three values and writes it to the archive.
 It uses the maximum value because the final model is fitted on the complete data set.
 Now let's start with a practical example.
@@ -214,5 +214,5 @@ learner$train(task)
 
 The trained model can now be used to make predictions on new data.
 
-We can also use the `r ref("AutoTuner")` get a tuned XGBoost model.
+We can also use the `r ref("AutoTuner")` to get a tuned XGBoost model.
 Note that, early stopping is deactivated when the final model is fitted.
