@@ -1,0 +1,71 @@
+---
+sidebar: false
+toc: false
+---
+
+# Feature Selection Filter
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(mlr3website)
+library(htmltools)
+library(mlr3misc)
+library(data.table)
+library(mlr3filters)
+
+content = as.data.table(mlr_filters, objects = TRUE)[, .(key, task_type, packages)]
+
+# add links
+content[, key := link_keys(key, prefix = "mlr_filters")]
+content[, packages := link_pkgs(packages, remove = c("mlr3", "mlr3filters"))]
+content[, task_type := map(task_type, strsplit, split = ",", fixed = TRUE)]
+
+# add line breaks to cells
+cols = c("packages", "task_type")
+content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
+
+setnames(content, c("Key", "Task Types", "Packages"))
+```
+
+`r ref("Filter", text = "Feature Filters")` quantify the importance of each feature of a `r ref("Task")` by assigning them a numerical score.
+In a second step, features can be selected by either selecting a fixed absolute or relative frequency of the best features, or by thresholding on the score value.
+
+The `r ref("mlr_pipeops_filter", text = "Filter PipeOp")` allows to use filters as a preprocessing step.
+
+```{r}
+#| column: page
+DT::datatable(
+  content,
+  style = "bootstrap",
+  escape = FALSE,
+  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
+  rownames = FALSE)
+```
+
+## Example Usage
+
+Use the $-\log_10()$-transformed $p$-values of a Kruskal-Wallis rank sum test (implemented in `r ref("kruskal.test()")`) for filtering features of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` tasks.
+
+```{r, echo=TRUE}
+library("mlr3verse")
+
+# retrieve a task
+task = tsk("pima")
+
+# retrieve a filter
+filter = flt("kruskal_test")
+
+# calculate scores
+filter$calculate(task)
+
+# access scores
+filter$scores
+
+# plot scores
+autoplot(filter)
+
+# subset task to 3 most important features
+task$select(head(names(filter$scores), 3))
+task$feature_names
+```

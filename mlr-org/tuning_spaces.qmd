@@ -1,0 +1,77 @@
+---
+sidebar: false
+toc: false
+---
+
+# Tuning Spaces
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(mlr3website)
+library(htmltools)
+library(mlr3misc)
+library(data.table)
+library(mlr3tuningspaces)
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+
+content = as.data.table(mlr_tuning_spaces, objects = TRUE)[, .(key, label, learner, n_values, object)]
+content[, learner := link_keys(learner, "mlr_learners")]
+
+# add links
+content[, collection := map_chr(object, function(x) intersect(x$tags, c("default", "rbv2")))]
+content[, key := pmap_chr(list(key, collection), function(k, c) as.character(a(href = sprintf("https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_%s.html", c), k)))]
+
+content[, `:=`(object = NULL, collection = NULL)]
+setnames(content, c("Key", "Label", "Learner", "# hyperparameters"))
+```
+
+The package `r mlr_pkg("mlr3tuningspaces")` ships with some predefined tuning spaces for hyperparameter optimization.
+See the respective manual page for the article from which they were extracted.
+
+```{r}
+#| column: page
+DT::datatable(
+  content,
+  style = "bootstrap",
+  escape = FALSE,
+  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
+  rownames = FALSE)
+```
+
+## Example Usage
+
+Load a tuning space for the `r ref("mlr_learners_classif.rpart", text = "classification tree")` learner from the @bischl_hyperparameter_2021 article.
+
+```{r echo=TRUE}
+library(mlr3verse)
+
+# load learner and set search space
+learner = lts(lrn("classif.rpart"))
+
+# retrieve task
+task = tsk("pima")
+
+# load tuner and set batch size
+tuner = tnr("random_search", batch_size = 10)
+
+# hyperparameter tuning on the pima data set
+instance = tune(
+  method = tnr("grid_search", resolution = 5, batch_size = 25),
+  task = task,
+  learner = learner,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+)
+
+# best performing hyperparameter configuration
+instance$result
+
+# fit final model on complete data set
+learner$param_set$values = instance$result_learner_param_vals
+learner$train(task)
+
+print(learner)
+```
+

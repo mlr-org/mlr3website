@@ -1,0 +1,37 @@
+---
+sidebar: false
+toc: false
+---
+
+# Pipeline Operators
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(mlr3website)
+library(htmltools)
+library(mlr3misc)
+library(data.table)
+library(mlr3verse)
+
+content = as.data.table(mlr_pipeops, objects = TRUE)[, .(key, packages, tags)]
+content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
+
+content[, key := link_keys(key, "mlr_pipeops")]
+content[, packages := link_pkgs(packages, remove = "mlr3pipelines")]
+setnames(content, c("Key", "Packages", "Tags"))
+```
+
+Objects of class `r ref("PipeOp")` are the building blocks to compose linear machine learning pipelines and non-linear `r ref("Graph", text = "Graphs")`.
+The base objects are implemented in `r mlr_pkg("mlr3pipelines")`.
+
+
+```{r}
+#| column: page
+DT::datatable(
+  content,
+  style = "bootstrap",
+  escape = FALSE,
+  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
+  rownames = FALSE)
+```

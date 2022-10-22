@@ -1,0 +1,62 @@
+---
+sidebar: false
+toc: false
+page-layout: article
+listing:
+  - id: listings3
+    template: listings3.ejs
+    contents: listings3.yml
+  - id: listings4
+    template: listings4.ejs
+    contents: listings4.yml
+---
+
+<div class="banner">
+  <img src="images/banner.png" class="banner" alt="">
+</div>
+
+<div class="center-text">
+# mlr(3): Machine Learning in R
+</div>
+An open-source collection of R packages providing a unified interface for machine learning in the R language.
+
+::: {#listings3}
+:::
+
+
+## Resources
+
+```{r, echo = FALSE}
+library(data.table)
+library(htmltools)
+library(mlr3misc)
+# Social buttons
+content = rbindlist(list(
+  list(name = "GitHub", url = "https://github.com/mlr-org/mlr3", icon = "github"),
+  list(name = "Mattermost", url = "https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/", icon = "chat-dots"),
+  list(name = "Book", url = "https://mlr3book.mlr-org.com/", icon = "book"),
+  list(name = "StackOverflow", url = "https://stackoverflow.com/questions/tagged/mlr3", icon = "stack-overflow")
+))
+
+div(class = 'btn-container',
+  pmap(content, function(name, url, icon) {
+    a(href = url, class="btn",
+      tags$i(class = sprintf("bi-%s", icon)),
+      name
+    )
+  })
+)
+```
+
+## Quick Start
+
+The mlr3verse meta-package installs mlr3 and some of the most important extension packages:
+
+```{r, eval=FALSE}
+install.packages("mlr3verse")
+```
+
+## Examples
+
+::: {#listings4}
+:::

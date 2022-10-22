@@ -1,0 +1,50 @@
+/*-- scss:defaults --*/
+// $code-color: "#f6f6f6" !important;
+// $bs-light-rgb: 248, 249, 250 !important;
+// $link-color: "#266ce0" !important;
+// Code blocks
+// $font-family: "Roboto Mono", "JetBrains Mono", monospace !important;
+$code-block-bg-alpha: -0.8;
+/*-- scss:rules --*/
+
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Roboto+Mono|JetBrains+Mono&display=swap");
+
+// code blocks with code
+p code:not(.sourceCode),
+li code:not(.sourceCode),
+kbd,
+pre:not(.sourceCode),
+samp {
+        background-color: hsla(232, 15%, 15%, 1) !important;
+        padding: 0.25em;
+        border-radius: 6px !important;
+}
+
+// code blocks without code
+div.sourceCode {
+        background-color: hsla(232, 15%, 15%, 1) !important;
+        border-radius: 6px;
+}
+
+a {
+        color: #2196f3 !important;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+        color: #595959 !important       ;
+}
+
+body {
+        color: hsla(232, 75%, 95%, 1) !important;
+        font-family: "Roboto" !important;
+}
+
+code {
+        color: #fff !important;
+        background-color: #f6f6f6;
+}
+
+.listing-date {
+        width: 100px;
+}

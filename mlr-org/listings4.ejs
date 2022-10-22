@@ -1,0 +1,31 @@
+
+```{=html}
+
+<% for (const item of items) { %>
+
+<!-- <h2><%- item.category %></h2> -->
+
+<p><%- item.description %></p>
+
+<div class="list grid" style="column-gap: 10px;">
+
+<% for (const tile of item.tiles) { %>
+  <div class="listings4 rounded-3 g-col-12 g-col-sm-6 g-col-md-6 mb-2" <%= metadataAttrs(tile) %>>
+    <div class="listings4-icon-large-custom">
+      <a href="<%- tile.href %>">
+        <div class="listings4 bi bi-<%- tile.icon %>"><%= tile.title %></div>
+      </a>
+    </div>
+    <div class="listings4-text"><%= tile.description %></div>
+    <!-- <a href="<%- tile.href %>">
+      <img src="<%- tile.thumbnail %>" alt="<%- tile.description %>" class="card-img-top"/>
+    </a> -->
+
+  </div>
+<% } %>
+
+</div>
+
+<% } %>
+
+```

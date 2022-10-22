@@ -1,0 +1,79 @@
+---
+sidebar: false
+toc: false
+---
+
+# Terminators
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(mlr3website)
+library(htmltools)
+library(mlr3misc)
+library(data.table)
+library(bbotk)
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+
+content = as.data.table(mlr_terminators)[, .(key, label, properties, unit)]
+
+# add links
+content[, key := link_keys(key, prefix = "mlr_terminators")]
+
+# add line breaks to cells
+# content[, properties := map_chr(properties, function(x) paste0(x, collapse = "<br/>"))]
+
+setnames(content, c("Key", "Label", "Properties", "Unit"))
+```
+
+
+```{r, echo=FALSE}
+DT::datatable(
+  content,
+  style = "bootstrap",
+  escape = FALSE,
+  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
+  rownames = FALSE)
+```
+
+## Example Usage
+
+Stop tuning when a `r ref("mlr_terminators_perf_reached", text = "performance level")` is reached.
+
+```{r, echo=TRUE}
+library(mlr3verse)
+
+# load terminator and set performance level
+terminator = trm("perf_reached", level = 0.25)
+
+# load tuner
+tuner = tnr("random_search", batch_size = 10)
+
+# retrieve task
+task = tsk("pima")
+
+# load learner and set search space
+learner = lts(lrn("classif.rpart"))
+
+# set instance
+instance = TuningInstanceSingleCrit$new(
+  task = task,
+  learner = learner,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+  terminator = terminator
+)
+
+# hyperparameter tuning on the pima data set
+tuner$optimize(instance)
+
+# best performing hyperparameter configuration
+instance$result
+
+# fit final model on complete data set
+learner$param_set$values = instance$result_learner_param_vals
+learner$train(task)
+
+print(learner)
+```

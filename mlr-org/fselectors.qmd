@@ -1,0 +1,79 @@
+---
+sidebar: false
+toc: false
+---
+
+# Feature Selection Wrapper
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(mlr3website)
+library(htmltools)
+library(mlr3misc)
+library(data.table)
+library(mlr3fselect)
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+
+content = as.data.table(mlr_fselectors, objects = TRUE)[, .(key, label, packages, properties, object)]
+
+# add links
+content[, key := link_keys(key, prefix = "mlr_fselectors")]
+content[, packages := link_pkgs(packages)]
+
+# remove content
+content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
+
+# add line breaks to cells
+cols = c("properties", "packages")
+content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
+
+content[, object := NULL]
+setnames(content, c("Key", "Label", "Packages", "Properties"))
+```
+
+Feature selection wrappers can be found in the `r mlr_pkg("mlr3fselect")` packages.
+The goal is to find the best subset of features with respect to a `r ref("Measure", text = "performance measure")` in an iterative fashion.
+
+```{r}
+#| column: page
+DT::datatable(
+  content,
+  style = "bootstrap",
+  escape = FALSE,
+  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
+  rownames = FALSE)
+```
+
+## Example Usage
+
+Run a `r ref("mlr_fselectors_sequential", text = "sequential feature selection")` on the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set.
+
+```{r, echo = TRUE}
+library(mlr3verse)
+
+# retrieve task
+task = tsk("pima")
+
+# load learner
+learner = lrn("classif.rpart")
+
+# feature selection on the pima indians diabetes data set
+instance = fselect(
+  method = fs("sequential"),
+  task = task,
+  learner = learner,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce")
+)
+
+# best performing feature subset
+instance$result
+
+# subset the task and fit the final model
+task$select(instance$result_feature_set)
+learner$train(task)
+
+print(learner)
+```

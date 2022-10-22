@@ -1,0 +1,15 @@
+---
+# Reference: https://quarto.org/docs/websites/website-listings.html#advanced-options
+title: "Gallery"
+listing:
+  contents: gallery
+  table-striped: true
+  type: default
+  grid-columns: 2
+  categories: numbered
+  date-format: YYYY-MM-DD
+  feed: true
+  sort: "date desc"
+  fields: [image, title, author, date]
+sidebar: false
+---

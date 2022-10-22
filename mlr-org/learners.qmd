@@ -1,0 +1,86 @@
+---
+sidebar: false
+toc: false
+---
+
+# Learners
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(mlr3website)
+library(htmltools)
+library(mlr3misc)
+library(data.table)
+library(mlr3)
+library(mlr3learners)
+library(mlr3extralearners)
+
+content = as.data.table(mlr_learners, objects = TRUE)
+content[, base_package := map(object, function(x) strsplit(x$man, "::", TRUE)[[1]][1])]
+content[, packages := pmap(list(packages, base_package), function(x, y) setdiff(x, c(y, "mlr3")))]
+
+# add links
+content[, key := pmap_chr(list(base_package, key), function(base_package, key) as.character(a(href = sprintf("https://%s.mlr-org.com/reference/mlr_learners_%s.html", base_package, key), key)))]
+content[, packages := link_pkgs(packages)]
+
+# add line breaks to cells
+sdcols = c("packages", "properties", "feature_types", "predict_types")
+content[, (sdcols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = sdcols]
+
+setcolorder(content, c("key", "label", "base_package", "packages", "feature_types", "predict_types", "properties"))
+content[, `:=`(object = NULL, task_type = NULL)]
+setnames(content,
+  c("label", "key", "base_package", "packages", "feature_types", "predict_types", "properties"),
+  c("Label", "Key", "Base Package", "Packages", "Feature Types", "Predict Types", "Properties"))
+```
+
+To keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the `r cran_pkg("rpart")` package and some learners for debugging.
+A subjective selection of implementations for essential ML algorithms can be found in `r mlr_pkg("mlr3learners")` package.
+Survival learners are provided by `r mlr_pkg("mlr3proba")`, cluster learners via `r mlr_pkg("mlr3cluster")`.
+Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the `r mlr_pkg("mlr3extralearners")` package.
+
+```{r}
+#| column: page
+DT::datatable(content,
+  style = "bootstrap",
+  escape = FALSE,
+  options = list(paging = TRUE, scrollX = TRUE, info = FALSE),
+  rownames = FALSE)
+```
+
+## Example Usage
+
+Fit a `r ref("mlr_learners_classif.rpart", text = "classification tree")` on the `r ref("mlr_tasks_breast_cancer", text = "Wisconsin Breast Cancer Data Set")` and predict on left-out observations.
+
+```{r, echo = TRUE}
+library("mlr3verse")
+
+# retrieve the task
+task = tsk("breast_cancer")
+
+# split into two partitions
+split = partition(task)
+
+# retrieve a learner
+learner = lrn("classif.rpart", keep_model = TRUE, predict_type = "prob")
+
+# fit decision tree
+learner$train(task, split$train)
+
+# access learned model
+learner$model
+
+# predict on data frame with new data
+predictions = learner$predict_newdata(task$data(split$test))
+
+# predict on subset of the task
+predictions = learner$predict(task, split$test)
+
+# inspect predictions
+predictions
+predictions$score(msr("classif.auc"))
+autoplot(predictions, type = "roc")
+```
+
+

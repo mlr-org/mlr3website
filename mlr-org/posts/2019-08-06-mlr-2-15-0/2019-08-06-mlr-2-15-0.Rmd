@@ -1,0 +1,102 @@
+---
+title: mlr-2.15.0
+authors: ["Patrick Schratz"]
+date: '2019-08-06'
+slug: mlr-2-15-0
+categories:
+  - R
+  - r-bloggers
+tags:
+  - mlr
+  - release
+
+description: "Summary of changes in mlr-2.15.0"
+---
+
+We just released _mlr_ v2.15.0 to CRAN.
+This version includes some breaking changes and the usual bug fixes from the last three months.
+
+We made good progress on the goal of cleaning up the [Github repo](https://github.com/mlr-org/mlr).
+We processed nearly all open pull requests (around 40).
+In the next months we will focus on cleaning up the issue tracker even though most of our time will go into improving the successor package [mlr3](https://github.com/mlr-org/mlr3) and its extension packages.
+
+Unless there are active contributions from the user side, we do not expect much feature additions for the next version(s) of _mlr_.
+
+# Changes to `benchmark()`
+
+The `benchmark()` function does not store the tuning results (stored in the `$extract` slot) anymore by default.
+This change was made to prevent BenchmarkResult (BMR) objects from getting huge in size (~ GB) when multiple models are compared with extensive tuning.
+Unless you want to do a analysis on the tuning effects, you do not need the tuning results to compare the performance of the algorithms.
+Huge BMR objects can cause various troubles.
+One of them (which was the inital root for this change) appears when benchmarking is done on a HPC using multiple workers.
+Each worker has a limited amount of memory and expecting a huge BMR might limit the amount of workers that can be spawned.
+In addition, loading the large resulting BMR into the global environment (or merging it using `mergeBenchmarkResults()`) for post-analysis will become a pain.
+To save users from all of these troubles in the first place, we decided to change the default.
+
+To store the tuning results, you have to actively set `keep.extract = TRUE` from now on.
+Not storing the tuning was actually already implicitly the default in `resample()` since the user had to set the `extract` argument manually to save certain results (tuning, feature importance).
+With the new change the package became more consistent.
+
+# Changes to Filters
+
+## New ensemble filters
+
+With this release it is possible to calculate ensemble filters with _mlr_ [\@seijo-pardo2017].
+"Ensemble filters" are similar to ensemble models in the way that multiple filters are used to generate the ranking of features.
+Multiple aggregations functions are supported (`min()`, `mean()`, `median()`, "Borda") with the latter being the most used one in literature while writing this.
+
+To our knowledge there is no other package/framework in R currently that supports ensemble filters in a similar way _mlr_ does.
+Since _mlr_ makes it possible to use filters from a [variety of different packages](https://mlr.mlr-org.com/articles/tutorial/filter_methods.html), the user is able to create powerful ensemble filters.
+Note however that currently you cannot tune the selection of simple filters since tuning a character vector param is not supported by _ParamHelpers_.
+See [this discussion](https://github.com/berndbischl/ParamHelpers/pull/206) for more information.
+
+Here is a simple toy example how to create ensemble filters in _mlr_ from `?filterFeatures()`:
+
+```{r, eval = TRUE, collapse=TRUE}
+library(mlr)
+filterFeatures(iris.task, method = "E-min",
+  base.methods = c("FSelectorRcpp_gain.ratio", "FSelectorRcpp_information.gain"), abs = 2)
+```
+
+## New return structure for filter values
+
+With the added support for ensemble filters we also changes the return structure of calculated filter values.
+
+The new makes it easier to apply post-analysis tasks like grouping and filtering.
+The "method" of each row is now grouped into one column and the filter values are stored in a separate one.
+We also added a default sorting of the results by the "value" of each "method".
+
+Below is a comparison of the old and new output:
+
+```{r, collapse=TRUE}
+# new
+generateFilterValuesData(iris.task,
+  method = c("FSelectorRcpp_gain.ratio", "FSelectorRcpp_information.gain"))
+```
+
+```{r, eval = FALSE}
+# old
+generateFilterValuesData(iris.task,
+  method = c('gain.ratio','information.gain')
+## FilterValues:
+## Task: iris-example
+##           name    type gain.ratio information.gain
+## 1 Sepal.Length numeric  0.4196464        0.4521286
+## 2  Sepal.Width numeric  0.2472972        0.2672750
+## 3 Petal.Length numeric  0.8584937        0.9402853
+## 4  Petal.Width numeric  0.8713692        0.9554360
+```
+
+# Learners
+
+Besides the integration of new learners and some added options for integrated ones (check the [NEWS](https://mlr.mlr-org.com/news/index.html#learners---general) file), we fixed a bug that caused an incorrect aggregation of probabilities in certain cases.
+This bug was around undetected for quite some time and was revealed due to a change in _data.table_'s `rbindlist()` function.
+Thankfully [\@danielhorn](https://github.com/danielhorn) reported this [issue](https://github.com/mlr-org/mlr/issues/2578) and we could fix it within a few days.
+
+Another mentionable change is that the commonly used  `e1071::svm()` learner now only uses the formula interface internally if factors are present in the data.
+This aims to prevent ["stack overflow" problems](https://github.com/mlr-org/mlr/issues/1738) that some user encountered with large datasets.
+
+With [PR #1784](https://github.com/mlr-org/mlr/issues/1784) we added more support for estimating standard errors using the internal methods of the "Random Forest" algorithm.
+Please check the [NEWS](https://mlr.mlr-org.com/news/index.html#learners---general) file for more detailed information about the implemented RF learners.
+
+# References
