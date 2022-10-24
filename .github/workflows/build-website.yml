@@ -18,53 +18,73 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
+      # - name: Change directory
+      #   run: cd mlr-org
 
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
-          r-version: 4.1.3
+          # pak-version: devel
 
-      - uses: r-lib/actions/setup-pandoc@v2
+      # - uses: r-lib/actions/setup-pandoc@v2
+      - uses: quarto-dev/quarto-actions/setup@v2
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      # set date/week for use in cache creation
+      # https://github.community/t5/GitHub-Actions/How-to-set-and-access-a-Workflow-variable/m-p/42970
+      # - cache R packages daily
+      - name: "[Cache] Prepare daily timestamp for cache"
+        if: runner.os != 'Windows'
+        id: date
+        run: echo "::set-output name=date::$(date '+%d-%m')"
+
+      - name: "[Cache] Cache R packages"
+        if: runner.os != 'Windows'
+        uses: pat-s/always-upload-cache@v3
         with:
-        #   pak-version: devel
-          extra-packages: |
-            any::devtools
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{steps.date.outputs.date}}
+          restore-keys: ${{ runner.os }}-r-${{ matrix.config.r }}-${{steps.date.outputs.date}}
 
-      - name: Install Remotes
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
         run: |
-          devtools::install_github("mlr-org/mlr3book")
-          devtools::install_github("mlr-org/mlr3extralearners")
-          devtools::install_github("mlr-org/mlr3proba")
-          devtools::install_github("mlr-org/mlr3mbo")
-          devtools::install_github("mlr-org/mlr3spatiotempcv")
-          devtools::install_github("openml/openml-r")
-        shell: Rscript {0}
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'install.packages("remotes", repos = "cloud.r-project.org"); cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
 
-      - name: Install Packages
-        run: devtools::install()
-        shell: Rscript {0}
-
-      - name: Build Website
-        run: rmarkdown::render_site(input = "mlr-org", encoding = "UTF-8")
-        shell: Rscript {0}
-
-      # bug in render_site deletes rss feed
-      # rss feed with last post can be restored by rendering the post again
-      # https://github.com/rstudio/distill/issues/381
-      - name: Restore RSS Feed
-        run: |
-          files = list.files("mlr-org/_posts", ".Rmd", full.names = TRUE, recursive = TRUE)
-          rmarkdown::render(files[length(files)], encoding = "UTF-8")
-        shell: Rscript {0}
-
-      - name: Deploy
-        if: ${{ github.event_name == 'push' }}
-        uses: JamesIves/github-pages-deploy-action@4.1.5
+      - uses: pat-s/actions/setup-renv@renv-subdir
+        env:
+          RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
         with:
-          branch: gh-pages
-          folder: mlr-org/docs
-          single-commit: false
+          working-directory: mlr-org
+          cache-version: 1
+
+      - name: debug
+        env:
+          QUARTO_PUB_AUTH_TOKEN: ${{ inputs.QUARTO_PUB_AUTH_TOKEN }}
+          RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
+        run: |
+          cd mlr-org
+          R -q -e 'install.packages("renv", repos = "cloud.r-project.org"); renv::restore()'
+          ls /home/runner/work/mlr3website/mlr3website/mlr-org/renv/library/R-4.2/x86_64-pc-linux-gnu
+          git config --global user.email "${{ inputs.GITHUB_EMAIL }}"
+          git config --global user.name "${{ inputs.GITHUB_USERNAME }}"
+          quarto publish gh-pages
+
+      # - name: Install Packages
+      #   run: devtools::install()
+      #   shell: Rscript {0}
+
+      # - name: Render Quarto Project
+      #   uses: quarto-dev/quarto-actions/render@v2
+      # with:
+      #   path: mlr-org
+
+      # - name: Publish to GitHub Pages (and render)
+      #   uses: quarto-dev/quarto-actions/publish@v2
+      #   with:
+      #     path: mlr-org
+      #     target: gh-pages
