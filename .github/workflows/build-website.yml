@@ -69,9 +69,10 @@ jobs:
         run: |
           cd mlr-org
           R -q -e 'install.packages("renv", repos = "cloud.r-project.org"); renv::restore()'
-          ls /home/runner/work/mlr3website/mlr3website/mlr-org/renv/library/R-4.2/x86_64-pc-linux-gnu
+          ls /home/runner/work/mlr3website/mlr-org/renv/library/R-4.2/x86_64-pc-linux-gnu
+          ls ${{ env.R_LIBS_USER }}
           git config --global user.email "quarto-github-actions-publish@example.com"
-          git config --global user.name "${{ env.RUNNER_NAME }}"
+          git config --global user.name "mlr-org"
           quarto publish gh-pages
 
       # - name: Install Packages
