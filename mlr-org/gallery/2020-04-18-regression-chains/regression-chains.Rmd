@@ -16,7 +16,7 @@ image: thumbnail.png
 ---
 
 ```{r regression-chains-001, include=FALSE}
- knitr::opts_chunk$set(
+knitr::opts_chunk$set(
   echo = TRUE,
   R.options = list(width = 120)
 )
@@ -67,9 +67,10 @@ library(data.table)
 library(mvtnorm)
 set.seed(2409)
 n = 100
-(mean = c(y1 = 1, y2 = 2, y3 = 3))
-(sigma = matrix(c(1, -0.5, 0.25, -0.5, 1, -0.25, 0.25, -0.25, 1),
-  nrow = 3, ncol = 3, byrow = TRUE))
+(mean <- c(y1 = 1, y2 = 2, y3 = 3))
+(sigma <- matrix(c(1, -0.5, 0.25, -0.5, 1, -0.25, 0.25, -0.25, 1),
+  nrow = 3, ncol = 3, byrow = TRUE
+))
 Y = rmvnorm(n, mean = mean, sigma = sigma)
 ```
 
@@ -104,28 +105,32 @@ colfun = colorRampPalette(c("#161B1D", "#ADD8E6"))
 setorder(data, y1)
 plot3d(data$x1, data$x2, data$y1,
   xlab = "x1", ylab = "x2", zlab = "y1",
-  type = "s", radius = 0.1, col = colfun(n))
+  type = "s", radius = 0.1, col = colfun(n)
+)
 ```
 
 ```{r regression-chains-009, eval = FALSE}
 setorder(data, y2)
 plot3d(data$x1, data$x2, data$y2,
   xlab = "x1", ylab = "x2", zlab = "y2",
-  type = "s", radius = 0.1, col = colfun(n))
+  type = "s", radius = 0.1, col = colfun(n)
+)
 ```
 
 ```{r regression-chains-010, eval = FALSE}
 setorder(data, y3)
 plot3d(data$x1, data$x2, data$y3,
   xlab = "x1", ylab = "x2", zlab = "y3",
-  type = "s", radius = 0.1, col = colfun(n))
+  type = "s", radius = 0.1, col = colfun(n)
+)
 ```
 
 ```{r regression-chains-011, eval = FALSE}
 setorder(data, y3)
 plot3d(data$y1, data$y2, data$y3,
   xlab = "y1", ylab = "y2", zlab = "y3",
-  type = "s", radius = 0.1, col = colfun(n))
+  type = "s", radius = 0.1, col = colfun(n)
+)
 ```
 
 # Building the Pipeline
@@ -151,9 +156,11 @@ The first step of predicting $y_{1}$ looks like the following:
 ```{r regression-chains-013, fig.width=10, fig.height=10}
 step1 = po("copy", outnum = 2, id = "copy1") %>>%
   gunion(list(
-    po("colroles", id = "drop_y2_y3",
-      new_role = list(y2 = character(), y3 = character())) %>>%
-    po("learner_cv", learner = lrn("regr.lm"), id = "y1_learner"),
+    po("colroles",
+      id = "drop_y2_y3",
+      new_role = list(y2 = character(), y3 = character())
+    ) %>>%
+      po("learner_cv", learner = lrn("regr.lm"), id = "y1_learner"),
     po("nop", id = "nop1")
   )) %>>%
   po("featureunion", id = "union1")
@@ -177,13 +184,17 @@ mlr_pipeops$add("update_target", mlr3pipelines:::PipeOpUpdateTarget)
 ```
 
 ```{r regression-chains-016}
-step2 = po("update_target", id = "y2_target",
-    new_target_name = "y2") %>>%
+step2 = po("update_target",
+  id = "y2_target",
+  new_target_name = "y2"
+) %>>%
   po("copy", outnum = 2, id = "copy2") %>>%
   gunion(list(
-    po("colroles", id = "drop_y3",
-      new_role = list(y3 = character())) %>>%
-    po("learner_cv", learner = lrn("regr.lm"), id = "y2_learner"),
+    po("colroles",
+      id = "drop_y3",
+      new_role = list(y3 = character())
+    ) %>>%
+      po("learner_cv", learner = lrn("regr.lm"), id = "y2_learner"),
     po("nop", id = "nop2")
   )) %>>%
   po("featureunion", id = "union2")
@@ -200,8 +211,10 @@ step2$state
 In the final third step we define $y_{3}$ as the new target (again, `PipeOpUpdateTarget` drops the previous original target from the feature set, here $y_{2}$):
 
 ```{r regression-chains-018}
-step3 = po("update_target", id = "y3_target",
-    new_target_name = "y3") %>>%
+step3 = po("update_target",
+  id = "y3_target",
+  new_target_name = "y3"
+) %>>%
   po("learner", learner = lrn("regr.lm"), id = "y3_learner")
 ```
 
@@ -217,7 +230,7 @@ The complete pipeline, more precisely `r ref("Graph")`, looks like the following
 
 ```{r regression-chains-020, fig.width=10, fig.height=10}
 graph = step1 %>>% step2 %>>% step3
-graph$plot(html = TRUE)
+graph$plot(html = FALSE)
 ```
 
 # Evaluating the Pipeline
@@ -245,8 +258,10 @@ Note that we have to initialize the `r ref("Task")` with $y_{1}$ as the target b
 ```{r, include = FALSE}
 # this is for the preview image in the gallery
 #| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2020-04-18-regression-chains/regression-chains_files/figure-html5/regression-chains-020-1.png",
-  destfile = "thumbnail.png"
-)
+if (!file.exists("thumbnail.png")) {
+  utils::download.file(
+    url = "http://mlr-org.com/gallery/2020-04-18-regression-chains/regression-chains_files/figure-html/regression-chains-020-1.png",
+    destfile = "thumbnail.png"
+  )
+}
 ```
