@@ -251,7 +251,7 @@ We built a pretty complex `r ref("Graph")` already.
 Therefore, we plot it:
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-024, fig.width=10, fig.height=10}
-graph_stack$plot(html = TRUE)
+graph_stack$plot(html = FALSE)
 ```
 
 We now compare the performance of the stacked learner to the performance of the individual `r ref("Learner")`s:
@@ -334,7 +334,7 @@ robustify = po("fixfactors") %>>%
   po("removeconstants") %>>%
   po("imputesample", affect_columns = selector_type(c("ordered", "factor")))
 
-robustify$plot(html = TRUE)
+robustify$plot(html = FALSE)
 ```
 
 This robust learner works even in very pathological conditions:
@@ -360,12 +360,3 @@ Here are only a few hints that help when working with `r ref("PipeOp")`s:
 - Use `po("select")` if you want to remove certain columns (possibly only along a single branch of multiple parallel branches). Both take `selector_xxx()` arguments, e.g. `selector_type("integer")`
 - You may get the best performance if you actually inspect the features and see what kind of transformations work best for them (know your data!)
 - See what `r ref("PipeOp")`s are available by inspecting `mlr_pipeops$keys()`, and get help about them using `?mlr_pipeops_xxx`
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2020-03-11-mlr3pipelines-tutorial-german-credit/2020-03-11-mlr3pipelines-tutorial-german-credit_files/figure-html5/2020-03-11-mlr3pipelines-tutorial-german-credit-022-1.png",
-  destfile = "thumbnail.png"
-)
-```

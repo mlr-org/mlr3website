@@ -152,7 +152,7 @@ g$add_edge(src_id = "targetmutate", dst_id = "targetinvert",
 This graph (which is conceptually the same graph as constructed via the `ppl("targettrafo")` syntactic sugar above) looks like the following:
 
 ```{r target-transformations-via-pipelines-015}
-g$plot(html = TRUE)
+g$plot(html = FALSE)
 ```
 
 We can then finally call `$train()` and `$predict()` (prior to this we wrap the `r ref("Graph")` in a `r ref("GraphLearner", "GraphLearner")`):
@@ -372,7 +372,7 @@ g_bc = ppl("targettrafo", graph = learner_lm,
 The following plot should already look quite familiar:
 
 ```{r target-transformations-via-pipelines-027, fig.width=10, fig.height=10}
-g_bc$plot(html = TRUE)
+g_bc$plot(html = FALSE)
 ```
 
 Finally we `$train()` and `$predict()` on the task (again, we wrap the `r ref("Graph")` in a `r ref("GraphLearner")`):
@@ -394,13 +394,4 @@ bmr = benchmark(bg)
 
 ```{r target-transformations-via-pipelines-030}
 bmr$aggregate(msr("regr.mse"))
-```
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2020-06-15-target-transformations-via-pipelines/workflow.svg",
-  destfile = "thumbnail.svg"
-)
 ```

@@ -175,7 +175,7 @@ Next, we append the second imputation job for factors.
 ```{r 2020-05-04-moneyball-011, fig.width=10, fig.height=10}
 imp_fct = po("imputeoor", affect_columns = selector_type("factor"))
 graph = imp_num %>>% imp_fct
-graph$plot(html = TRUE)
+graph$plot(html = FALSE)
 ```
 
 ## Creating tasks and learners
@@ -232,7 +232,7 @@ graph_learner = as_learner(graph %>>% pipeop_learner)
 The final graph looks like the following:
 
 ```{r 2020-05-04-moneyball-016, fig.width=10, fig.height=10}
-graph_learner$graph$plot(html = TRUE)
+graph_learner$graph$plot(html = FALSE)
 ```
 
 ## Train and predict
@@ -326,7 +326,7 @@ feature_names = c(feature_names[feature_names %in% task$feature_names],
 select_na = po("select", selector = selector_name(feature_names))
 
 graph_2 = impute_oor %>>% select_na
-graph_2$plot(html = TRUE)
+graph_2$plot(html = FALSE)
 ```
 
 Now we complete the learner and apply resampling as before.
@@ -366,12 +366,3 @@ We also learned how to use some `r ref("PipeOp")`s from the `r mlr_pkg("mlr3pipe
 But most importantly, we found a way to predict the runs scored of MLB teams.
 
 If you want to know more, read the [mlr3book](https://mlr3book.mlr-org.com/) and the documentation of the mentioned packages.
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2020-05-04-moneyball/2020-05-04-moneyball_files/figure-html5/2020-05-04-moneyball-009-1.png",
-  destfile = "thumbnail.png"
-)
-```

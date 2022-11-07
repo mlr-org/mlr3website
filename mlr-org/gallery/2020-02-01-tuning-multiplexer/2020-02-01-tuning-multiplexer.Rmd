@@ -122,7 +122,7 @@ graph =
   po("branch", options = learners_ids) %>>%
   gunion(lapply(learners, po)) %>>%
   po("unbranch")
-graph$plot(html = TRUE)
+graph$plot(html = FALSE)
 ```
 
 The pipeline has now quite a lot of available hyperparameters.
@@ -301,13 +301,4 @@ extract_inner_tuning_results(rr)
 
 ```{r 2020-02-01-tuning-multiplexer-028, echo = FALSE}
 table_responsive(extract_inner_tuning_results(rr))
-```
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2020-02-01-tuning-multiplexer/2020-02-01-tuning-multiplexer_files/figure-html5/2020-02-01-tuning-multiplexer-023-1.png",
-  destfile = "thumbnail.png"
-)
 ```

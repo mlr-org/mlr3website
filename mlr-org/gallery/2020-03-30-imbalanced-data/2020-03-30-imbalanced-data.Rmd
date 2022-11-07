@@ -300,12 +300,3 @@ The results show that oversampling the minority class (for simple oversampling a
 
 In this post, we tuned and compared 5 different settings of sampling ratios for the undersampling method, the oversampling method and different SMOTE variants (using different values of `K` nearest neighbors during the sampling process).
 If you want to know more, read the [mlr3book](https://mlr3book.mlr-org.com/) and the documentation of the mentioned packages.
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2020-03-30-imbalanced-data/2020-03-30-imbalanced-data_files/figure-html5/2020-03-30-imbalanced-data-018-1.png",
-  destfile = "thumbnail.png"
-)
-```

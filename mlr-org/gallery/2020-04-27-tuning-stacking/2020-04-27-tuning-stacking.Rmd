@@ -23,7 +23,7 @@ image: thumbnail.png
 ## Intro
 
 ```{r 2020-04-27-tuning-stacking-001, include=FALSE}
- knitr::opts_chunk$set(
+knitr::opts_chunk$set(
   echo = TRUE,
   warning = FALSE,
   R.options = list(width = 120)
@@ -72,7 +72,7 @@ For the stacking example, we use the [sonar classification task](https://mlr3.ml
 
 ```{r 2020-04-27-tuning-stacking-004}
 task_sonar = tsk("sonar")
-task_sonar$col_roles$stratum = task_sonar$target_names #stratification
+task_sonar$col_roles$stratum = task_sonar$target_names # stratification
 ```
 
 ## Pipeline creation
@@ -82,8 +82,8 @@ task_sonar$col_roles$stratum = task_sonar$target_names #stratification
 As mentioned, the level 0 learners are `r ref("mlr_learners_classif.rpart", "rpart")`, `r ref("mlr_learners_classif.glmnet", "glmnet")` and `r ref("mlr_learners_classif.lda", "lda")`:
 
 ```{r 2020-04-27-tuning-stacking-005}
-learner_rpart  = lrn("classif.rpart", predict_type = "prob")
-learner_glmnet =  lrn("classif.glmnet", predict_type = "prob")
+learner_rpart = lrn("classif.rpart", predict_type = "prob")
+learner_glmnet = lrn("classif.glmnet", predict_type = "prob")
 learner_lda = lrn("classif.lda", predict_type = "prob")
 ```
 
@@ -111,14 +111,14 @@ level0 = gunion(list(
   anova %>>% cv1_rpart,
   mrmr %>>% cv1_glmnet,
   find_cor %>>% cv1_lda,
-  po("nop", id = "nop1")))  %>>%
+  po("nop", id = "nop1"))) %>>%
   po("featureunion", id = "union1")
 ```
 
 We can have a look at the graph from level 0:
 
 ```{r 2020-04-27-tuning-stacking-009, fig.width=12, fig.height = 12}
-level0$plot(html = TRUE)
+level0$plot(html = FALSE)
 ```
 
 ### Level 1
@@ -126,7 +126,7 @@ level0$plot(html = TRUE)
 Now, we create the level 1 learners:
 
 ```{r 2020-04-27-tuning-stacking-010}
-cv2_rpart = po("learner_cv", learner_rpart , id = "rprt_2")
+cv2_rpart = po("learner_cv", learner_rpart, id = "rprt_2")
 cv2_glmnet = po("learner_cv", learner_glmnet, id = "glmnet_2")
 cv2_lda = po("learner_cv", learner_lda, id = "lda_2")
 ```
@@ -140,15 +140,14 @@ level1 = level0 %>>%
     po("pca", id = "pca2_1", param_vals = list(scale. = TRUE)) %>>% cv2_rpart,
     po("pca", id = "pca2_2", param_vals = list(scale. = TRUE)) %>>% cv2_glmnet,
     po("pca", id = "pca2_3", param_vals = list(scale. = TRUE)) %>>% cv2_lda,
-    po("nop", id = "nop2"))
-  )  %>>%
+    po("nop", id = "nop2"))) %>>%
   po("featureunion", id = "union2")
 ```
 
 We can have a look at the graph from level 1:
 
 ```{r 2020-04-27-tuning-stacking-012, fig.width=12, fig.height = 14}
-level1$plot(html = TRUE)
+level1$plot(html = FALSE)
 ```
 
 The out-of-bag predictions of the level 1 learners are attached to the input data from level 1 and a final ranger learner will be trained:
@@ -157,7 +156,7 @@ The out-of-bag predictions of the level 1 learners are attached to the input dat
 ranger_lrn = lrn("classif.ranger", predict_type = "prob")
 
 ensemble = level1 %>>% ranger_lrn
-ensemble$plot(html = TRUE)
+ensemble$plot(html = FALSE)
 ```
 
 ### Defining the tuning space
@@ -166,21 +165,21 @@ In order to tune the ensemble's hyperparameter jointly, we define the search spa
 
 ```{r 2020-04-27-tuning-stacking-014}
 search_space_ensemble = ps(
-    filt1.filter.nfeat = p_int(5, 50),
-    filt2.filter.nfeat = p_int(5, 50),
-    filt3.filter.nfeat = p_int(5, 50),
-    pca2_1.rank. = p_int(3, 50),
-    pca2_2.rank. = p_int(3, 50),
-    pca2_3.rank. = p_int(3, 20),
-    rprt_1.cp = p_dbl(0.001, 0.1),
-    rprt_1.minbucket = p_int(1, 10),
-    glmnet_1.alpha = p_dbl(0, 1),
-    rprt_2.cp = p_dbl(0.001, 0.1),
-    rprt_2.minbucket = p_int(1, 10),
-    glmnet_2.alpha = p_dbl(0, 1),
-    classif.ranger.mtry = p_int(1, 10),
-    classif.ranger.sample.fraction = p_dbl(0.5, 1),
-    classif.ranger.num.trees = p_int(50, 200))
+  filt1.filter.nfeat = p_int(5, 50),
+  filt2.filter.nfeat = p_int(5, 50),
+  filt3.filter.nfeat = p_int(5, 50),
+  pca2_1.rank. = p_int(3, 50),
+  pca2_2.rank. = p_int(3, 50),
+  pca2_3.rank. = p_int(3, 20),
+  rprt_1.cp = p_dbl(0.001, 0.1),
+  rprt_1.minbucket = p_int(1, 10),
+  glmnet_1.alpha = p_dbl(0, 1),
+  rprt_2.cp = p_dbl(0.001, 0.1),
+  rprt_2.minbucket = p_int(1, 10),
+  glmnet_2.alpha = p_dbl(0, 1),
+  classif.ranger.mtry = p_int(1, 10),
+  classif.ranger.sample.fraction = p_dbl(0.5, 1),
+  classif.ranger.num.trees = p_int(50, 200))
 ```
 
 ### Performance comparison
@@ -272,12 +271,3 @@ For a more reliable comparison, the number of evaluation of the random search sh
 This example shows the versatility of `r mlr_pkg("mlr3pipelines")`.
 By using more learners, varied representations of the data set as well as more levels, a powerful yet compute hungry pipeline can be created.
 It is important to note that care should be taken to avoid name clashes of pipeline objects.
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2020-04-27-tuning-stacking/2020-04-27-tuning-stacking_files/figure-html5/2020-04-27-tuning-stacking-013-1.png",
-  destfile = "thumbnail.png"
-)
-```

@@ -19,7 +19,7 @@ image: thumbnail.png
 ## Intro
 
 ```{r 2020-04-23-pipelines-selectors-branches-001, include=FALSE}
- knitr::opts_chunk$set(
+knitr::opts_chunk$set(
   echo = TRUE,
   R.options = list(width = 120)
 )
@@ -114,7 +114,7 @@ In the end, we obtain a data set without missing values:
 ```{r 2020-04-23-pipelines-selectors-branches-008, fig.height = 10, fig.width = 10}
 # combine the two impuation methods
 impute_graph = imputer_hist %>>% imputer_median
-impute_graph$plot(html = TRUE)
+impute_graph$plot(html = FALSE)
 impute_graph$train(task_pima)[[1]]$missings()
 ```
 
@@ -136,7 +136,7 @@ Finally, the two outputs can be combined with `r ref("PipeOpFeatureUnion")`:
 impute_missind = po("copy", 2) %>>%
   gunion(list(impute_graph, miss_ind)) %>>%
   po("featureunion")
-impute_missind$plot(html = TRUE)
+impute_missind$plot(html = FALSE)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-012, eval = FALSE}
@@ -158,7 +158,7 @@ imputer_hist_2 = po("select",
   id = "slct1") %>>% # unique id so we can combine it in a pipeline with other select PipeOps
   po("imputehist")
 
-imputer_hist_2$plot(html = TRUE)
+imputer_hist_2$plot(html = FALSE)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-015, eval = FALSE}
@@ -195,7 +195,7 @@ imputer_missind_2 = po("copy", 4) %>>%
     po("select", selector = selector_name(other_features), id = "slct3"))) %>>%
   po("featureunion")
 
-imputer_missind_2$plot(html = TRUE)
+imputer_missind_2$plot(html = FALSE)
 ```
 
 ```{r 2020-04-23-pipelines-selectors-branches-020, eval = FALSE}
@@ -243,7 +243,7 @@ graph_branch = po("branch", branches) %>>%
   gunion(list(impute_missind, imputer_median_3)) %>>%
   po("unbranch")
 
-graph_branch$plot(html = TRUE)
+graph_branch$plot(html = FALSE)
 ```
 
 ## Tuning the pipeline
@@ -254,7 +254,7 @@ To finalize the graph, we combine it with a rpart learner:
 graph = graph_branch %>>%
   lrn("classif.rpart")
 
-graph$plot(html = TRUE)
+graph$plot(html = FALSE)
 ```
 
 To define the parameters to be tuned, we first check the available ones in the graph:
@@ -279,7 +279,7 @@ search_space = ps(
 In order to tune the graph, it needs to be converted to a learner:
 
 ```{r 2020-04-23-pipelines-selectors-branches-029, results = 'hide'}
-graph_learner =  as_learner(graph)
+graph_learner = as_learner(graph)
 
 cv3 = rsmp("cv", folds = 3)
 
@@ -311,12 +311,3 @@ instance$result
 ## Conclusion
 
 This post shows ways on how to specify features on which preprocessing steps are to be performed. In addition it shows how to create alternative paths in the learner graph. The preprocessing steps that can be used are not limited to imputation. Check the list of available `r ref("PipeOp")`.
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2020-04-23-pipelines-selectors-branches/2020-04-23-pipelines-selectors-branches_files/figure-html5/2020-04-23-pipelines-selectors-branches-011-1.png",
-  destfile = "thumbnail.png"
-)
-```

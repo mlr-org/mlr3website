@@ -171,7 +171,7 @@ For this, we create a `r ref("Graph")` first.
 graph = po("encode") %>>%
   po("imputeoor") %>>%
   learner
-plot(graph, html = TRUE)
+plot(graph, html = FALSE)
 ```
 
 We use `r ref("as_learner()")` to  wrap the `r ref("Graph")` into a `r ref("GraphLearner")` with which allows us to use the graph like a normal learner.
@@ -359,12 +359,3 @@ The pipeline ensures that the preprocessing is always a part of the train and pr
 
 The [mlr3book](https://mlr3book.mlr-org.com/) includes chapters on [pipelines](https://mlr3book.mlr-org.com/pipelines.html) and [hyperparameter tuning](https://mlr3book.mlr-org.com/tuning.html).
 The [mlr3cheatsheets](https://cheatsheets.mlr-org.com/) contain frequently used commands and workflows of mlr3.
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2021-03-10-practical-tuning-series-tune-a-preprocessing-pipeline/practical-tuning-series-tune-a-preprocessing-pipeline_files/figure-html5/practical-tuning-series-tune-a-preprocessing-pipeline-027-1.png",
-  destfile = "thumbnail.png"
-)
-```
