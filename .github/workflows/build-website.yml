@@ -20,15 +20,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Change directory
-      #   run: cd mlr-org
-
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
           # pak-version: devel
 
-      # - uses: r-lib/actions/setup-pandoc@v2
       - uses: quarto-dev/quarto-actions/setup@v2
 
       # set date/week for use in cache creation
@@ -43,7 +39,7 @@ jobs:
         if: runner.os != 'Windows'
         uses: pat-s/always-upload-cache@v3
         with:
-          path: ${{ env.R_LIBS_USER }}
+          path: /home/runner/work/mlr3website/mlr3website/mlr-org/renv/library
           key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{steps.date.outputs.date}}
           restore-keys: ${{ runner.os }}-r-${{ matrix.config.r }}-${{steps.date.outputs.date}}
 
@@ -55,37 +51,18 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'install.packages("remotes", repos = "cloud.r-project.org"); cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
 
-      # - uses: pat-s/actions/setup-renv@renv-subdir
-      #   env:
-      #     RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
-      #   with:
-      #     working-directory: mlr-org
-      #     cache-version: 1
-
-      - name: debug
+      - name: Restore renv environment
         env:
-          QUARTO_PUB_AUTH_TOKEN: ${{ inputs.QUARTO_PUB_AUTH_TOKEN }}
           RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
         run: |
           cd mlr-org
-          R -q -e 'install.packages("renv", repos = "cloud.r-project.org"); renv::restore()'
-          ls /home/runner/work/mlr3website/mlr-org/renv/library/R-4.2/x86_64-pc-linux-gnu
-          ls ${{ env.R_LIBS_USER }}
+          R -q -e 'options(Ncpus = 2); install.packages("renv", repos = "cloud.r-project.org"); renv::restore()'
+
+      - name: Render and publish
+        env:
+          QUARTO_PUB_AUTH_TOKEN: ${{ inputs.QUARTO_PUB_AUTH_TOKEN }}
+        run: |
+          cd mlr-org
           git config --global user.email "quarto-github-actions-publish@example.com"
           git config --global user.name "mlr-org"
           quarto publish gh-pages
-
-      # - name: Install Packages
-      #   run: devtools::install()
-      #   shell: Rscript {0}
-
-      # - name: Render Quarto Project
-      #   uses: quarto-dev/quarto-actions/render@v2
-      # with:
-      #   path: mlr-org
-
-      # - name: Publish to GitHub Pages (and render)
-      #   uses: quarto-dev/quarto-actions/publish@v2
-      #   with:
-      #     path: mlr-org
-      #     target: gh-pages
