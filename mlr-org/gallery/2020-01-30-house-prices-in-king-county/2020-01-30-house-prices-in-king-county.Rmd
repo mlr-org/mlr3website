@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 library(mlr3website)
 library(data.table)
-future::plan("multicore")
+future::plan("multisession")
 ```
 
 The use-case illustrated below touches on the following concepts:
