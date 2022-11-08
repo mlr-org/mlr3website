@@ -6,3 +6,9 @@ freeze: true
 
 # Enable banner style title blocks
 title-block-banner: true
+
+knitr:
+  opts_chunk:
+    fig.align: center
+    R.options:
+      width: 120
