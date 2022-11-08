@@ -174,11 +174,11 @@ instance = tune(
 ```
 
 ```{r early-stopping-with-xgboost-015, include=FALSE, eval=params$eval_all}
-saveRDS(instance, "data/instance.rda")
+saveRDS(instance, "instance.rda")
 ```
 
 ```{r early-stopping-with-xgboost-016, include=FALSE}
-instance = readRDS("data/instance.rda")
+instance = readRDS("instance.rda")
 ```
 
 We can see that the optimal number of boosting rounds (`max_nrounds`) strongly depends on the other hyperparameters.
