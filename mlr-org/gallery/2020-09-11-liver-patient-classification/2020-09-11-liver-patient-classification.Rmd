@@ -445,11 +445,11 @@ bmr = benchmark(design, store_models = FALSE)
 ```
 
 ```{r 2020-09-11-liver-patient-classification-021, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, here::here("data/bmr.rda"))
+saveRDS(bmr, "bmr.rda")
 ```
 
 ```{r 2020-09-11-liver-patient-classification-022, echo = FALSE}
-bmr = readRDS(here::here("data/bmr.rda"))
+bmr = readRDS("bmr.rda")
 ```
 
 As mentioned above, stratified 5-fold cross-validation was chosen.

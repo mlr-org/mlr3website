@@ -202,11 +202,11 @@ instance = tune(
 ```
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-016, echo = FALSE, eval = params$eval_all}
-saveRDS(instance, here::here("data/instance_1.rda"))
+saveRDS(instance, "instance_1.rda")
 ```
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-017, echo = FALSE}
-instance = readRDS(here::here("data/instance_1.rda"))
+instance = readRDS("instance_1.rda")
 ```
 
 The following shows a quick way to visualize the tuning results.
@@ -261,12 +261,12 @@ rr = resample(task, at, outer_resampling, store_models = TRUE)
 ```
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-021, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, here::here("data/rr_1.rda"))
+saveRDS(rr, "rr_1.rda")
 ```
 
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-022, echo = FALSE}
-rr = readRDS(here::here("data/rr_1.rda"))
+rr = readRDS("rr_1.rda")
 ```
 
 We check the inner tuning results for stable hyperparameters.

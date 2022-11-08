@@ -217,11 +217,11 @@ instance = tune(
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-020, echo = FALSE, eval = params$eval_all, warning=FALSE}
 dir.create(here::here("data"))
-saveRDS(instance, here::here("data/instance.rda"))
+saveRDS(instance, "instance.rda")
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-021, echo = FALSE}
-instance = readRDS(here::here("data/instance.rda"))
+instance = readRDS("instance.rda")
 ```
 
 We can plot the performance against the number of features.
@@ -270,11 +270,11 @@ bmr = benchmark(grid)
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-026, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, here::here("data/bmr.rda"))
+saveRDS(bmr, "bmr.rda")
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-027, echo = FALSE}
-bmr = readRDS(here::here("data/bmr.rda"))
+bmr = readRDS("bmr.rda")
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-028, echo = FALSE}

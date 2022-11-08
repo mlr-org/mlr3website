@@ -267,11 +267,11 @@ rr = resample(task, at, resampling_outer, store_models = TRUE)
 ```
 
 ```{r mlr3fselect-basic-024, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, here::here("data/rr.rda"))
+saveRDS(rr, "rr.rda")
 ```
 
 ```{r mlr3fselect-basic-025, echo = FALSE}
-rr = readRDS(here::here("data/rr.rda"))
+rr = readRDS("rr.rda")
 ```
 
 The aggregated performance of all outer resampling iterations is the unbiased predictive performance we can expected from the logistic regression model with an optimized feature set found by sequential selection.

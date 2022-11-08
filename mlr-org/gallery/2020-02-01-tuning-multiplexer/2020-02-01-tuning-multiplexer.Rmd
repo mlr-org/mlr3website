@@ -176,11 +176,11 @@ extract_inner_tuning_results(rr)
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-011, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, here::here("data/rr.rda"))
+saveRDS(rr, "rr.rda")
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-012, echo = FALSE}
-rr = readRDS(here::here("data/rr.rda"))
+rr = readRDS("rr.rda")
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-013, echo = FALSE}
@@ -254,11 +254,11 @@ as.data.table(instance$archive)
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-020, echo = FALSE, eval = params$eval_all}
-saveRDS(instance, here::here("data/instance.rda"))
+saveRDS(instance, "instance.rda")
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-021, echo = FALSE}
-instance = readRDS(here::here("data/instance.rda"))
+instance = readRDS("instance.rda")
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-022, echo = FALSE}
@@ -287,11 +287,11 @@ rr = tune_nested(
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-025, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, here::here("data/rr_2.rda"))
+saveRDS(rr, "rr_2.rda")
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-026, echo = FALSE}
-rr = readRDS(here::here("data/rr_2.rda"))
+rr = readRDS("rr_2.rda")
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-027, eval = FALSE}

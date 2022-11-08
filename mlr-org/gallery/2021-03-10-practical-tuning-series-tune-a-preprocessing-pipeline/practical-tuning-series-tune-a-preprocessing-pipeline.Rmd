@@ -297,11 +297,11 @@ bmr = benchmark(design, store_models = TRUE)
 ```
 
 ```{r practical-tuning-series-tune-a-preprocessing-pipeline-025, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, here::here("data/bmr_1.rda"))
+saveRDS(bmr, "bmr_1.rda")
 ```
 
 ```{r practical-tuning-series-tune-a-preprocessing-pipeline-026, echo = FALSE}
-bmr = readRDS(here::here("data/bmr_1.rda"))
+bmr = readRDS("bmr_1.rda")
 ```
 
 We compare the aggregated performances on the outer test sets which give us an unbiased performance estimate of the `r ref("GraphLearner")`s with the different encoding methods.

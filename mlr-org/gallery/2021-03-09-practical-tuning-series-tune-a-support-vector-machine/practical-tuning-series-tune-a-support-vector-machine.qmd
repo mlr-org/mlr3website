@@ -167,11 +167,11 @@ tuner$optimize(instance)
 ```
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-016, echo = FALSE}
-saveRDS(instance, here::here("data/instance_1.rda"))
+saveRDS(instance, "instance_1.rda")
 ```
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-017, echo = FALSE}
-instance = readRDS(here::here("data/instance_1.rda"))
+instance = readRDS("instance_1.rda")
 ```
 
 We plot the performances depending on the evaluated `cost` and `gamma` values.
@@ -252,11 +252,11 @@ instance = tune(
 ```
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-024, echo = FALSE}
-saveRDS(instance, here::here("data/instance_2.rda"))
+saveRDS(instance, "instance_2.rda")
 ```
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-025, echo = FALSE}
-instance = readRDS(here::here("data/instance_2.rda"))
+instance = readRDS("instance_2.rda")
 ```
 
 The hyperparameter values after the transformation are stored in the `x_domain` column as lists.
@@ -342,11 +342,11 @@ instance = tune(
 ```
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-035, echo = FALSE}
-saveRDS(instance, here::here("data/instance_3.rda"))
+saveRDS(instance, "instance_3.rda")
 ```
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-036, echo = FALSE}
-instance = readRDS(here::here("data/instance_3.rda"))
+instance = readRDS("instance_3.rda")
 ```
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-037}
@@ -404,11 +404,11 @@ rr = resample(task = task, learner = at, resampling = resampling_outer, store_mo
 ```
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-041, echo = FALSE}
-saveRDS(rr, here::here("data/rr_1.rda"))
+saveRDS(rr, "rr_1.rda")
 ```
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-042, echo = FALSE}
-rr = readRDS(here::here("data/rr_1.rda"))
+rr = readRDS("rr_1.rda")
 ```
 
 We check the inner tuning results for stable hyperparameters.

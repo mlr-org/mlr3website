@@ -232,11 +232,11 @@ tuner_gs$optimize(tune1)
 ```
 
 ```{r tuning-a-complex-graph-016, echo = FALSE, eval = params$eval_all}
-saveRDS(tune1, here::here("data/tune1.rda"))
+saveRDS(tune1, "tune1.rda")
 ```
 
 ```{r tuning-a-complex-graph-017, echo = FALSE}
-tune1 = readRDS(here::here("data/tune1.rda"))
+tune1 = readRDS("tune1.rda")
 ```
 
 Now, we can inspect the results ordered by the `classification accuracy`:
