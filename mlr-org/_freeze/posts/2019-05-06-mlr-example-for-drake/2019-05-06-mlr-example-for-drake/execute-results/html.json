@@ -1,0 +1,14 @@
+{
+  "hash": "3d2ae5319238391640814af787036424",
+  "result": {
+    "markdown": "---\ntitle: \"mlr + drake: Reproducible machine-learning workflow management\"\nauthors: [\"Patrick Schratz\"]\ndate: '2019-05-06'\nslug: mlr-example-for-drake\ncategories:\n  - r-bloggers\ntags:\n  - reproducibility\n  - make\n  - workflow\n  - drake\n  - mlr\n\ndescription: \"Using mlr and drake\"\n---\n\n\nYou may have heard about the [drake](https://ropensci.github.io/drake/) package.\nIt got a lot attention recently in the R community because it simplifies reproducible workflow management.\nThis comes especially handy for large projects which have hundreds of intermediate steps.\nBuilt-in High-Performance-Cluster (HPC) support and graph visualization are just two goodies that come on top of the basic functionality.\n\n_drake_ is able to track changes in your intermediate targets.\nThis means once you change something in your early workflow pipeline, _drake_ will automatically update all follow-up objects that might be affected by this change.\nThe following tweet wraps the struggle of keeping track of dependencies in a research project in an simple picture:\n\n<blockquote class=\"twitter-tweet\" data-conversation=\"none\" data-lang=\"de\"><p lang=\"en\" dir=\"ltr\">Save me from myself and having to remember all this when files change <a href=\"https://t.co/hVeSFQOimj\">pic.twitter.com/hVeSFQOimj</a></p>&mdash; Dr. Brianna McHorse 🏳️‍🌈 (\\@fossilosophy) <a href=\"https://twitter.com/fossilosophy/status/966408174470299648?ref_src=twsrc%5Etfw\">21. Februar 2018</a></blockquote>\n<script async src=\"https://platform.twitter.com/widgets.js\" charset=\"utf-8\"></script>\n\nThe maintainer of _drake_, Will Landau ([\\@wlandau](https://github.com/wlandau-lilly)) is extremely responsive and has also written one of the most extensive and detailed [manuals](https://ropenscilabs.github.io/drake-manual/) that exist in the R package jungle.\n\nIf you have installed _drake_, you can start right away with one of the built-in examples.\n\n```r\ndrake::drake_example(\"mlr-slurm\")\n```\n\nAt the time of writing, there are 17(!) [examples](https://github.com/wlandau/drake-examples) that you can choose from.\nOne of the newest shows how to use _mlr_ with _drake_ on a HPC.\n\nMachine-Learning projects/tasks interact especially well with the _drake_ idea since you can easily create [large comparison matrices](https://ropenscilabs.github.io/drake-manual/plans.html#large-plan) using different algorithms / hyperparameter settings.\nAt the same time _drake_ can sent these settings in parallel to a HPC for you, simplifying your modeling tasks a lot.\n\n<div style=\"text-align:center\"><img width=\"100px\" src =\"drake.svg\" /></div>\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
