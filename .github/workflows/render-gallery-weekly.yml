@@ -2,12 +2,9 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - gallery_weekly
 
-name: build-website
+name: gallery-weekly
 
 jobs:
   build-website:
@@ -58,11 +55,12 @@ jobs:
           cd mlr-org
           R -q -e 'options(Ncpus = 2); install.packages("renv", repos = "cloud.r-project.org"); renv::restore()'
 
-      - name: Render and publish
-        env:
-          QUARTO_PUB_AUTH_TOKEN: ${{ inputs.QUARTO_PUB_AUTH_TOKEN }}
+      - name: Update renv environment
         run: |
           cd mlr-org
-          git config --global user.email "quarto-github-actions-publish@example.com"
-          git config --global user.name "mlr-org"
-          quarto publish gh-pages
+          R -q -e 'renv::update(prompt = FALSE)'
+
+      - name: Render gallery
+        run: |
+          cd mlr-org
+          quarto render gallery/2021-07-06-introduction-to-mlr3tuningspaces/introduction-to-mlr3tuningspaces.qmd
