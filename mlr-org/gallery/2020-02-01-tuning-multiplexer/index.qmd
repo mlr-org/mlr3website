@@ -15,6 +15,11 @@ image: thumbnail.png
 
 {{< include ../_setup.qmd >}}
 
+```{r setup2}
+#| include: false
+future::plan("sequential")
+```
+
 This use case shows how to tune over multiple learners for a single task.
 You will learn the following:
 

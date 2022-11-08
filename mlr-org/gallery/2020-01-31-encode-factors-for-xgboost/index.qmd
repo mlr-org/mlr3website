@@ -14,6 +14,11 @@ image: XGBoost_logo.png
 
 {{< include ../_setup.qmd >}}
 
+```{r setup2}
+#| include: false
+future::plan("sequential")
+```
+
 The package `r cran_pkg("xgboost")` unfortunately does not support handling of categorical features.
 Therefore, it is required to manually convert factor columns to numerical dummy features.
 We show how to use `r mlr_pkg("mlr3pipelines")` to augment the `r ref("mlr_learners_classif.xgboost", "xgboost learner")` with an automatic factor encoding.

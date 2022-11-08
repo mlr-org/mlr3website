@@ -10,21 +10,10 @@ author:
 description: |
   This post shows how to build a Graph using the mlr3pipelines package on the "titanic" dataset.
 date: 03-12-2020
-knitr:
-  opts_chunk:
-    fig.align: center
 image: ../../images/logo_color.png
 ---
 
-```{r 2020-03-12-mlr3pipelines-titanic-Basics-001, include=FALSE}
- knitr::opts_chunk$set(
-  echo = TRUE,
-  R.options = list(width = 120)
-)
-
-library(mlr3website)
-library(data.table)
-```
+{{< include ../_setup.qmd >}}
 
 ## Intro
 
