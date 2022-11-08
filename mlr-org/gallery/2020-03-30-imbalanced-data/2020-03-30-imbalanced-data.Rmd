@@ -14,8 +14,6 @@ knitr:
   opts_chunk:
     fig.align: center
 bibliography: bibliography.bib
-params:
-  eval_all: TRUE
 image: thumbnail.png
 ---
 
@@ -28,9 +26,6 @@ set.seed(7832)
 
 library(mlr3website)
 library(data.table)
-```
-
-```{r 2020-03-30-imbalanced-data-002, include=FALSE, eval = params$eval_all}
 future::plan(list("sequential", "multisession"))
 ```
 
@@ -243,18 +238,10 @@ design = benchmark_grid(
 print(design)
 ```
 
-```{r 2020-03-30-imbalanced-data-015, eval = params$eval_all}
+```{r 2020-03-30-imbalanced-data-015}
 lgr::get_logger("bbotk")$set_threshold("warn")
 # NOTE: This code runs about 5 minutes
 bmr = benchmark(design, store_models = TRUE)
-```
-
-```{r 2020-03-30-imbalanced-data-016, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, here::here("data/bmr.rda"))
-```
-
-```{r 2020-03-30-imbalanced-data-017, echo = FALSE}
-bmr = readRDS(here::here("data/bmr.rda"))
 ```
 
 ## Visualize benchmark results

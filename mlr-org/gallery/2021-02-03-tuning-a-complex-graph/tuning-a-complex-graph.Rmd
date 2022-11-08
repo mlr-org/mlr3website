@@ -13,8 +13,6 @@ knitr:
   opts_chunk:
     fig.align: center
 bibliography: bibliography.bib
-params:
-  eval_all: TRUE
 image: thumbnail.png
 ---
 
@@ -26,10 +24,7 @@ knitr::opts_chunk$set(
 
 library(mlr3website)
 library(data.table)
-```
-
-```{r tuning-a-complex-graph-002, include=FALSE, eval = params$eval_all}
-future::plan("multisession")
+future::plan("multicore")
 ```
 
 In this use case we show how to tune a rather complex graph consisting of different preprocessing steps and different learners where each preprocessing step and learner itself has parameters that can be tuned.
@@ -226,17 +221,9 @@ DT::datatable(generate_design_grid(tune_ps1, resolution = 4)$data)
 
 We trigger the tuning.
 
-```{r tuning-a-complex-graph-015, eval = params$eval_all}
+```{r tuning-a-complex-graph-015}
 tuner_gs = tnr("grid_search", resolution = 4, batch_size = 10)
 tuner_gs$optimize(tune1)
-```
-
-```{r tuning-a-complex-graph-016, echo = FALSE, eval = params$eval_all}
-saveRDS(tune1, here::here("data/tune1.rda"))
-```
-
-```{r tuning-a-complex-graph-017, echo = FALSE}
-tune1 = readRDS(here::here("data/tune1.rda"))
 ```
 
 Now, we can inspect the results ordered by the `classification accuracy`:

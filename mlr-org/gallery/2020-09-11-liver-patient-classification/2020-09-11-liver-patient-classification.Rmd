@@ -17,8 +17,6 @@ knitr:
   opts_chunk:
     fig.align: center
 bibliography: bibliography.bib
-params:
-  eval_all: TRUE
 image: ../../images/logo_color.png
 ---
 
@@ -30,10 +28,7 @@ image: ../../images/logo_color.png
 
 library(mlr3website)
 library(data.table)
-```
-
-```{r 2020-09-11-liver-patient-classification-002, include=FALSE, eval = params$eval_all}
-future::plan("multisession")
+future::plan("multicore")
 ```
 
 # Preamble
@@ -434,7 +429,7 @@ task_liver$col_roles$stratum = task_liver$target_names
 To rank the different learners and finally decide which one fits best for the task at hand, we used benchmarking.
 The following code chunk executes our benchmarking with all learners.
 
-```{r 2020-09-11-liver-patient-classification-020, warning = FALSE, eval = params$eval_all}
+```{r 2020-09-11-liver-patient-classification-020, warning = FALSE}
 design = benchmark_grid(
   tasks = task_liver,
   learners = c(learners, learners_bal),
@@ -442,14 +437,6 @@ design = benchmark_grid(
 )
 
 bmr = benchmark(design, store_models = FALSE)
-```
-
-```{r 2020-09-11-liver-patient-classification-021, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, here::here("data/bmr.rda"))
-```
-
-```{r 2020-09-11-liver-patient-classification-022, echo = FALSE}
-bmr = readRDS(here::here("data/bmr.rda"))
 ```
 
 As mentioned above, stratified 5-fold cross-validation was chosen.

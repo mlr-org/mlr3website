@@ -166,14 +166,6 @@ We trigger the tuning by passing the `r ref("TuningInstanceSingleCrit")` to the 
 tuner$optimize(instance)
 ```
 
-```{r practical-tuning-series-tune-a-support-vector-machine-016, echo = FALSE}
-saveRDS(instance, here::here("data/instance_1.rda"))
-```
-
-```{r practical-tuning-series-tune-a-support-vector-machine-017, echo = FALSE}
-instance = readRDS(here::here("data/instance_1.rda"))
-```
-
 We plot the performances depending on the evaluated `cost` and `gamma` values.
 
 ```{r preview-image, eval = FALSE}
@@ -249,14 +241,6 @@ instance = tune(
   measure = measure,
   resolution = 5
 )
-```
-
-```{r practical-tuning-series-tune-a-support-vector-machine-024, echo = FALSE}
-saveRDS(instance, here::here("data/instance_2.rda"))
-```
-
-```{r practical-tuning-series-tune-a-support-vector-machine-025, echo = FALSE}
-instance = readRDS(here::here("data/instance_2.rda"))
 ```
 
 The hyperparameter values after the transformation are stored in the `x_domain` column as lists.
@@ -341,14 +325,6 @@ instance = tune(
 )
 ```
 
-```{r practical-tuning-series-tune-a-support-vector-machine-035, echo = FALSE}
-saveRDS(instance, here::here("data/instance_3.rda"))
-```
-
-```{r practical-tuning-series-tune-a-support-vector-machine-036, echo = FALSE}
-instance = readRDS(here::here("data/instance_3.rda"))
-```
-
 ```{r practical-tuning-series-tune-a-support-vector-machine-037}
 instance$result
 ```
@@ -401,14 +377,6 @@ We put the `r ref("AutoTuner")` into a `r ref("resample()")` call to get the out
 ```{r practical-tuning-series-tune-a-support-vector-machine-040}
 resampling_outer = rsmp("cv", folds = 3)
 rr = resample(task = task, learner = at, resampling = resampling_outer, store_models = TRUE)
-```
-
-```{r practical-tuning-series-tune-a-support-vector-machine-041, echo = FALSE}
-saveRDS(rr, here::here("data/rr_1.rda"))
-```
-
-```{r practical-tuning-series-tune-a-support-vector-machine-042, echo = FALSE}
-rr = readRDS(here::here("data/rr_1.rda"))
 ```
 
 We check the inner tuning results for stable hyperparameters.
