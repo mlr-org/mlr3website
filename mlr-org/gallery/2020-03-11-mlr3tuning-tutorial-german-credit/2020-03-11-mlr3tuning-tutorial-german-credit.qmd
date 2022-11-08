@@ -14,8 +14,6 @@ categories:
 knitr:
   opts_chunk:
     fig.align: center
-params:
-  eval_all: TRUE
 image: thumbnail.png
 ---
 
@@ -28,9 +26,6 @@ image: thumbnail.png
 library(mlr3website)
 library(data.table)
 assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode,"rtvs"), "data.table")
-```
-
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-002, include=FALSE, eval = params$eval_all}
 future::plan("multicore")
 ```
 
@@ -172,16 +167,8 @@ instance_grid$result
 
 Now, we tune:
 
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-015, eval = params$eval_all}
+```{r 2020-03-11-mlr3tuning-tutorial-german-credit-015}
 tuner_grid$optimize(instance_grid)
-```
-
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-016, echo = FALSE, eval = params$eval_all}
-saveRDS(instance_grid, here::here("data/instance_grid.rda"))
-```
-
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-017, echo = FALSE}
-instance_grid = readRDS(here::here("data/instance_grid.rda"))
 ```
 
 The result is returned by `$optimize()` together with its performance. It can be also accessed with the  `$result` slot:
@@ -261,16 +248,8 @@ instance_random = TuningInstanceSingleCrit$new(
 )
 ```
 
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-024, eval = params$eval_all}
+```{r 2020-03-11-mlr3tuning-tutorial-german-credit-024}
 tuner_random$optimize(instance_random)
-```
-
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-025, echo = FALSE, eval = params$eval_all}
-saveRDS(instance_random, here::here("data/instance_random.rda"))
-```
-
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-026, echo = FALSE}
-instance_random = readRDS(here::here("data/instance_random.rda"))
 ```
 
 Like before, we can review the `Archive`.
@@ -341,16 +320,8 @@ at_grid = AutoTuner$new(
 The `r ref("AutoTuner")` behaves just like a regular `r ref("Learner")`.
 It can be used to combine the steps of hyperparameter tuning and model fitting but is especially useful for resampling and *fair* comparison of performance through benchmarking:
 
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-033, eval = params$eval_all}
+```{r 2020-03-11-mlr3tuning-tutorial-german-credit-033}
 rr = resample(task, at_grid, cv10, store_models = TRUE)
-```
-
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-034, echo = FALSE, eval = params$eval_all}
-saveRDS(rr , here::here("data/resample_result.rda"))
-```
-
-```{r 2020-03-11-mlr3tuning-tutorial-german-credit-035, echo=FALSE}
-rr = readRDS(here::here("data/resample_result.rda"))
 ```
 
 We check the inner tuning results for stable hyperparameters.
@@ -432,7 +403,7 @@ perfdata
 
 ```{r 2020-03-11-mlr3tuning-tutorial-german-credit-045, echo=FALSE}
 #| column: page
-perfdata = readRDS(here::here("data/randomsearch_3600.rds"))
+perfdata = readRDS("randomsearch_3600.rds")
 DT::datatable(perfdata)
 ```
 

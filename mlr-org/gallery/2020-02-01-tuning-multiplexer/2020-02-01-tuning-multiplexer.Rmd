@@ -13,8 +13,6 @@ description: |
 knitr:
   opts_chunk:
     fig.align: center
-params:
-  eval_all: TRUE
 image: thumbnail.png
 ---
 
@@ -161,7 +159,7 @@ table_responsive(as.data.table(instance$archive, exclude_columns = c("uhash",  "
 
 But: Via this approach we can now get unbiased performance results via nested resampling and using the `r ref("AutoTuner")` (which would make much more sense if we would select from 100 models and not 2).
 
-```{r 2020-02-01-tuning-multiplexer-010, eval = params$eval_all}
+```{r 2020-02-01-tuning-multiplexer-010}
 at = auto_tuner(
   method = "grid_search",
   learner = graph_learner,
@@ -173,14 +171,6 @@ rr = resample(task, at, outer_cv5, store_models = TRUE)
 
 # access inner tuning result
 extract_inner_tuning_results(rr)
-```
-
-```{r 2020-02-01-tuning-multiplexer-011, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, here::here("data/rr.rda"))
-```
-
-```{r 2020-02-01-tuning-multiplexer-012, echo = FALSE}
-rr = readRDS(here::here("data/rr.rda"))
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-013, echo = FALSE}
@@ -237,7 +227,7 @@ search_space = ps(
 Very similar code as before, we just swap out the search space.
 And now use random search.
 
-```{r 2020-02-01-tuning-multiplexer-019, eval = params$eval_all}
+```{r 2020-02-01-tuning-multiplexer-019}
 graph_learner = as_learner(graph)
 graph_learner$id = "g"
 
@@ -251,14 +241,6 @@ instance = tune(
 )
 
 as.data.table(instance$archive)
-```
-
-```{r 2020-02-01-tuning-multiplexer-020, echo = FALSE, eval = params$eval_all}
-saveRDS(instance, here::here("data/instance.rda"))
-```
-
-```{r 2020-02-01-tuning-multiplexer-021, echo = FALSE}
-instance = readRDS(here::here("data/instance.rda"))
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-022, echo = FALSE}
@@ -275,7 +257,7 @@ autoplot(instance)
 
 Nested resampling, now really needed:
 
-```{r 2020-02-01-tuning-multiplexer-024, eval = params$eval_all}
+```{r 2020-02-01-tuning-multiplexer-024}
 rr = tune_nested(
   method = "grid_search",
   task = task,
@@ -284,14 +266,6 @@ rr = tune_nested(
   outer_resampling = outer_cv5,
   measure = msr("classif.ce"),
   term_evals = 10L)
-```
-
-```{r 2020-02-01-tuning-multiplexer-025, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, here::here("data/rr_2.rda"))
-```
-
-```{r 2020-02-01-tuning-multiplexer-026, echo = FALSE}
-rr = readRDS(here::here("data/rr_2.rda"))
 ```
 
 ```{r 2020-02-01-tuning-multiplexer-027, eval = FALSE}

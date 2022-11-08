@@ -19,8 +19,6 @@ date: 2021-03-10
 knitr:
   opts_chunk:
     fig.align: center
-params:
-  eval_all: TRUE
 image: thumbnail.png
 ---
 
@@ -31,9 +29,6 @@ image: thumbnail.png
 )
 
 library(mlr3website)
-```
-
-```{r practical-tuning-series-tune-a-preprocessing-pipeline-002, include=FALSE, eval = params$eval_all}
 future::plan("sequential")
 ```
 
@@ -289,19 +284,11 @@ at_2 = AutoTuner$new(
 
 We run the benchmark.
 
-```{r practical-tuning-series-tune-a-preprocessing-pipeline-024, eval = params$eval_all}
+```{r practical-tuning-series-tune-a-preprocessing-pipeline-024}
 resampling_outer = rsmp("cv", folds = 3)
 design = benchmark_grid(task, list(at_1, at_2), resampling_outer)
 
 bmr = benchmark(design, store_models = TRUE)
-```
-
-```{r practical-tuning-series-tune-a-preprocessing-pipeline-025, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, here::here("data/bmr_1.rda"))
-```
-
-```{r practical-tuning-series-tune-a-preprocessing-pipeline-026, echo = FALSE}
-bmr = readRDS(here::here("data/bmr_1.rda"))
 ```
 
 We compare the aggregated performances on the outer test sets which give us an unbiased performance estimate of the `r ref("GraphLearner")`s with the different encoding methods.
