@@ -430,7 +430,7 @@ In general, we want to use parallelization to speed things up on multi-core mach
 For parallelization, `r mlr_pkg("mlr3")` relies on the `r cran_pkg("future")` package:
 
 ```{r 2020-03-11-mlr3-basics-german-credit-032, eval=FALSE}
-# future::plan("multisession") # uncomment for parallelization
+# future::plan("multicore") # uncomment for parallelization
 ```
 
 In the benchmark we can compare different measures.

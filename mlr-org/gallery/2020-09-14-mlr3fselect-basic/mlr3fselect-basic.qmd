@@ -9,8 +9,6 @@ description: |
 author:
   - name: Marc Becker
 date: 01-08-2021
-params:
-  eval_all: TRUE
 image: ../../images/logo_color.png
 ---
 
@@ -22,11 +20,7 @@ image: ../../images/logo_color.png
 
 library(mlr3website)
 library(data.table)
-dir.create("data")
-```
-
-```{r mlr3fselect-basic-002, include=FALSE, eval = params$eval_all}
-future::plan("multisession")
+future::plan("multicore")
 ```
 
 ## Introduction
@@ -260,18 +254,10 @@ at = AutoFSelector$new(
 
 We put the `r ref("AutoFSelector")` into a `r ref("resample()")` call to get the outer resampling loop.
 
-```{r mlr3fselect-basic-023, eval = params$eval_all}
+```{r mlr3fselect-basic-023}
 resampling_outer = rsmp("cv", folds = 3)
 
 rr = resample(task, at, resampling_outer, store_models = TRUE)
-```
-
-```{r mlr3fselect-basic-024, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, "rr.rda")
-```
-
-```{r mlr3fselect-basic-025, echo = FALSE}
-rr = readRDS("rr.rda")
 ```
 
 The aggregated performance of all outer resampling iterations is the unbiased predictive performance we can expected from the logistic regression model with an optimized feature set found by sequential selection.

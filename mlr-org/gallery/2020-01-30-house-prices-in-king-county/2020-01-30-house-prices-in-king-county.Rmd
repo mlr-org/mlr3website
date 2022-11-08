@@ -10,8 +10,6 @@ author:
 date: 01-30-2020
 description: |
   Use case illustrating data preprocessing and model fitting via mlr3 on the "King County House Prices" dataset.
-params:
-  eval_all: TRUE
 image: thumbnail.png
 knitr:
   opts_chunk:
@@ -27,10 +25,7 @@ knitr::opts_chunk$set(
 
 library(mlr3website)
 library(data.table)
-```
-
-```{r 2020-01-30-house-prices-in-king-county-002, include=FALSE, eval = params$eval_all}
-future::plan("multisession")
+future::plan("multicore")
 ```
 
 The use-case illustrated below touches on the following concepts:
@@ -341,17 +336,9 @@ at = auto_tuner(
   batch_size = 40)
 ```
 
-```{r 2020-01-30-house-prices-in-king-county-028, eval = params$eval_all}
+```{r 2020-01-30-house-prices-in-king-county-028}
 # And resample the AutoTuner
 res = resample(tsk_nozip, at, cv3, store_models = TRUE)
-```
-
-```{r 2020-01-30-house-prices-in-king-county-029, echo = FALSE, eval = params$eval_all}
-saveRDS(res, "res.rda")
-```
-
-```{r 2020-01-30-house-prices-in-king-county-030, echo = FALSE}
-res = readRDS("res.rda")
 ```
 
 ```{r 2020-01-30-house-prices-in-king-county-031}
@@ -399,17 +386,9 @@ lrn_impact = po("encodeimpact", affect_columns = selector_name("zipcode")) %>>% 
 
 Again, we run `r ref("resample()")` and compute the **RMSE**.
 
-```{r 2020-01-30-house-prices-in-king-county-034, eval = params$eval_all}
+```{r 2020-01-30-house-prices-in-king-county-034}
 #| column: page
 res = resample(task = task_train, lrn_impact, cv3)
-```
-
-```{r 2020-01-30-house-prices-in-king-county-035, echo = FALSE, eval = params$eval_all}
-saveRDS(res, "data/res2.rda")
-```
-
-```{r 2020-01-30-house-prices-in-king-county-036, echo = FALSE}
-res = readRDS("res2.rda"))
 ```
 
 ```{r 2020-01-30-house-prices-in-king-county-037}
@@ -433,18 +412,10 @@ filter = flt("mrmr")
 
 The resulting **RMSE** is slightly higher, and at the same time we only use $12$ features.
 
-```{r 2020-01-30-house-prices-in-king-county-039, eval = params$eval_all}
+```{r 2020-01-30-house-prices-in-king-county-039}
 graph = po("filter", filter, param_vals = list(filter.nfeat = 12)) %>>% po("learner", lrn("regr.ranger"))
 lrn_filter = as_learner(graph)
 res = resample(task = task_train, lrn_filter, cv3)
-```
-
-```{r 2020-01-30-house-prices-in-king-county-040, echo = FALSE, eval = params$eval_all}
-saveRDS(res, "res3.rda"))
-```
-
-```{r 2020-01-30-house-prices-in-king-county-041, echo = FALSE}
-res = readRDS("res3.rda"))
 ```
 
 ```{r 2020-01-30-house-prices-in-king-county-042}

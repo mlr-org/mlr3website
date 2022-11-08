@@ -20,8 +20,6 @@ date: 03-11-2021
 knitr:
   opts_chunk:
     fig.align: center
-params:
-  eval_all: TRUE
 image: thumbnail.png
 ---
 
@@ -32,6 +30,7 @@ knitr::opts_chunk$set(
 )
 
 library(mlr3website)
+future::plan("multicore")
 ```
 
 # Scope
@@ -190,7 +189,7 @@ graph_learner$id = "graph_learner"
 
 We define a tuning instance and select a random search which is stopped after 20 evaluated configurations.
 
-```{r practical-tuning-series-build-an-automated-machine-learning-system-015, eval = params$eval_all}
+```{r practical-tuning-series-build-an-automated-machine-learning-system-015}
 instance = tune(
   method = "random_search",
   task = task,
@@ -199,14 +198,6 @@ instance = tune(
   measure = msr("classif.ce"),
   term_evals = 20
 )
-```
-
-```{r practical-tuning-series-build-an-automated-machine-learning-system-016, echo = FALSE, eval = params$eval_all}
-saveRDS(instance, "instance_1.rda")
-```
-
-```{r practical-tuning-series-build-an-automated-machine-learning-system-017, echo = FALSE}
-instance = readRDS("instance_1.rda")
 ```
 
 The following shows a quick way to visualize the tuning results.
@@ -235,7 +226,7 @@ Instead we have to use nested resampling to get an unbiased performance estimate
 
 We use nested resampling to get an unbiased estimate of the predictive performance of our graph learner.
 
-```{r practical-tuning-series-build-an-automated-machine-learning-system-020, eval = params$eval_all}
+```{r practical-tuning-series-build-an-automated-machine-learning-system-020}
 graph_learner = as_learner(graph)
 graph_learner$param_set$values$branch.selection =
   to_tune(c("kknn", "svm", "ranger"))
@@ -258,15 +249,6 @@ at = AutoTuner$new(
 
 outer_resampling = rsmp("cv", folds = 3)
 rr = resample(task, at, outer_resampling, store_models = TRUE)
-```
-
-```{r practical-tuning-series-build-an-automated-machine-learning-system-021, echo = FALSE, eval = params$eval_all}
-saveRDS(rr, "rr_1.rda")
-```
-
-
-```{r practical-tuning-series-build-an-automated-machine-learning-system-022, echo = FALSE}
-rr = readRDS("rr_1.rda")
 ```
 
 We check the inner tuning results for stable hyperparameters.

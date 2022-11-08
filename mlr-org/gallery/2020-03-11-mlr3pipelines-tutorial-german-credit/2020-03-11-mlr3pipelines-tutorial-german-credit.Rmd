@@ -15,8 +15,6 @@ description: |
 knitr:
   opts_chunk:
     fig.align: center
-params:
-  eval_all: TRUE
 image: thumbnail.png
 ---
 
@@ -28,9 +26,6 @@ image: thumbnail.png
 )
 
 library(mlr3website)
-```
-
-```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-002, include=FALSE, eval = params$eval_all}
 future::plan("multicore")
 ```
 
@@ -205,7 +200,7 @@ Thus, we make use of a grid search.
 For higher dimensions, strategies like random search are more appropriate.
 The tuning procedure may take some time:
 
-```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-019, eval = params$eval_all}
+```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-019}
 instance = tune(
   method = "grid_search",
   task,
@@ -213,15 +208,6 @@ instance = tune(
   resampling = cv10,
   measure = msr("classif.ce"),
   search_space = search_space)
-```
-
-```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-020, echo = FALSE, eval = params$eval_all, warning=FALSE}
-dir.create(here::here("data"))
-saveRDS(instance, "instance.rda")
-```
-
-```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-021, echo = FALSE}
-instance = readRDS("instance.rda")
 ```
 
 We can plot the performance against the number of features.
@@ -256,7 +242,7 @@ graph_stack$plot(html = FALSE)
 
 We now compare the performance of the stacked learner to the performance of the individual `r ref("Learner")`s:
 
-```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-025, warning=FALSE, eval = params$eval_all}
+```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-025, warning=FALSE}
 grid = benchmark_grid(
   task = task,
   learner = list(
@@ -267,14 +253,6 @@ grid = benchmark_grid(
   resampling = cv10)
 
 bmr = benchmark(grid)
-```
-
-```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-026, echo = FALSE, eval = params$eval_all}
-saveRDS(bmr, "bmr.rda")
-```
-
-```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-027, echo = FALSE}
-bmr = readRDS("bmr.rda")
 ```
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-028, echo = FALSE}
