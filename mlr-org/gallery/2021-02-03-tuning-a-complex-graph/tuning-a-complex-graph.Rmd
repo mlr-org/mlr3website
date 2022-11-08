@@ -19,7 +19,7 @@ image: thumbnail.png
 ---
 
 ```{r tuning-a-complex-graph-001, include=FALSE}
- knitr::opts_chunk$set(
+knitr::opts_chunk$set(
   echo = TRUE,
   R.options = list(width = 120)
 )
@@ -145,7 +145,7 @@ Finally, we also could have used the `branch` `r ref("ppl", "ppl")` to make bran
 The graph looks like the following:
 
 ```{r tuning-a-complex-graph-009, fig.width=10, fig.height=10}
-graph1$plot(html = TRUE)
+graph1$plot(html = FALSE)
 ```
 We can inspect the parameters of the `r ref("ParamSet", "ParamSet")` of the graph to see which parameters can be set:
 
@@ -286,7 +286,7 @@ graph2 =
 This graph now looks like the following:
 
 ```{r tuning-a-complex-graph-022, graph2, fig.width=10, fig.height=8}
-graph2$plot(html = TRUE)
+graph2$plot(html = FALSE)
 ```
 
 At first, this may look like a linear graph. However, as the `content` parameter of `PipeOpProxy` can be tuned and set to contain any other `r ref("PipeOp")` or `r ref("Graph")`, this will allow for a similar non-linear graph as when doing branching.
@@ -373,11 +373,3 @@ tuner_gs$optimize(tune2)
 as.data.table(tune2$archive)[order(classif.acc), ]
 ```
 
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2021-02-03-tuning-a-complex-graph/tuning-a-complex-graph_files/figure-html5/tuning-a-complex-graph-009-1.png",
-  destfile = "thumbnail.png"
-)
-```

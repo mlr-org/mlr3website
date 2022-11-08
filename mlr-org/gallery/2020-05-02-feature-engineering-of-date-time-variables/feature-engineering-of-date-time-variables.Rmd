@@ -204,7 +204,7 @@ graph = po("datefeatures", cyclic = TRUE, minute = FALSE, second = FALSE) %>>%
 
 graph_learner = as_learner(graph)
 
-plot(graph, html = TRUE)
+plot(graph, html = FALSE)
 ```
 
 Using `r ref("resample()")` with 3-fold cross-validation on the task yields:
@@ -253,13 +253,4 @@ Where we can obtain the RMSE on the held-out validation data.
 
 ```{r feature-engineering-of-date-time-variables-026}
 prediction$score(msr("regr.mse"))
-```
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-utils::download.file(
-  url = "https://mlr-org.com/gallery/2020-05-02-feature-engineering-of-date-time-variables/feature-engineering-of-date-time-variables_files/figure-html5/feature-engineering-of-date-time-variables-002-1.png",
-  destfile = "thumbnail.png"
-)
 ```

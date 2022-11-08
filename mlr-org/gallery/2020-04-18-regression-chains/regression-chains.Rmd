@@ -164,7 +164,7 @@ step1 = po("copy", outnum = 2, id = "copy1") %>>%
     po("nop", id = "nop1")
   )) %>>%
   po("featureunion", id = "union1")
-step1$plot(html = TRUE)
+step1$plot(html = FALSE)
 ```
 
 Training using the input `r ref("Task")`, shows us how the output and the `$state` look like:
@@ -254,14 +254,3 @@ learner$predict_newdata(data_predict)
 ```
 
 Note that we have to initialize the `r ref("Task")` with $y_{1}$ as the target but the pipeline will automatically predict $y_{3}$ in the final step as our final target, which was our ultimate goal here.
-
-```{r, include = FALSE}
-# this is for the preview image in the gallery
-#| include: false
-if (!file.exists("thumbnail.png")) {
-  utils::download.file(
-    url = "http://mlr-org.com/gallery/2020-04-18-regression-chains/regression-chains_files/figure-html/regression-chains-020-1.png",
-    destfile = "thumbnail.png"
-  )
-}
-```
