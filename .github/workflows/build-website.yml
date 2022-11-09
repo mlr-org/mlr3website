@@ -27,21 +27,12 @@ jobs:
 
       - uses: quarto-dev/quarto-actions/setup@v2
 
-      # set date/week for use in cache creation
-      # https://github.community/t5/GitHub-Actions/How-to-set-and-access-a-Workflow-variable/m-p/42970
-      # - cache R packages daily
-      - name: "[Cache] Prepare daily timestamp for cache"
-        if: runner.os != 'Windows'
-        id: date
-        run: echo "::set-output name=date::$(date '+%d-%m')"
-
-      - name: "[Cache] Cache R packages"
-        if: runner.os != 'Windows'
+      - name: Cache R packages
         uses: pat-s/always-upload-cache@v3
         with:
           path: ~/.cache/R/renv
-          key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{steps.date.outputs.date}}
-          restore-keys: ${{ runner.os }}-r-${{ matrix.config.r }}-${{steps.date.outputs.date}}
+          key: ${{ runner.os }}-r-${{ matrix.config.r }}-lock-${{ hashFiles('mlr-org/renv.lock') }}
+          restore-keys: ${{ runner.os }}-r-${{ matrix.config.r }}-lock-
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
