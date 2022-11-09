@@ -1,0 +1,132 @@
+---
+title: "Most Popular Learners in mlr"
+authors: ["Jabok Richter"]
+date: 2017-03-30
+categories: ["R", "r-bloggers"]
+tags: ["learner", "algorithm", "popular", "machine-learning", "rstats"]
+description: "An attempt to asses the popularity of mlr learners"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, eval = FALSE)
+library(mlr)
+library(stringi)
+library(cranlogs)
+library(data.table)
+library(ggplot2)
+```
+
+For the development of [mlr](https://github.com/mlr-org/mlr) as well as for an "machine learning expert" it can be handy to know what are the most popular learners used.
+Not necessarily to see, what are the top notch performing methods but to see what is used "out there" in the real world.
+Thanks to the nice little package [cranlogs](https://github.com/metacran/cranlogs) from [metacran](https://www.r-pkg.org/) you can at least get a slight estimate as I will show in the following...
+
+First we need to install the `cranlogs` package using `devtools`:
+
+```{r install cranlogs, eval=FALSE}
+devtools::install_github("metacran/cranlogs")
+```
+
+Now let's load all the packages we will need:
+
+```{r libraries}
+library(mlr)
+library(stringi)
+library(cranlogs)
+library(data.table)
+```
+
+Do obtain a neat table of all available learners in _mlr_ we can call `listLearners()`.
+This table also contains a column with the needed packages for each learner separated with a `,`.
+
+```{r listLearners, warning=FALSE}
+# obtain used packages for all learners
+lrns = as.data.table(listLearners())
+all.pkgs = stri_split(lrns$package, fixed = ",")
+```
+
+_Note:_ You might get some warnings here because you likely did not install all packages that _mlr_ suggests -- which is totally fine.
+
+Now we can obtain the download counts from the _rstudio cran mirror_, i.e. from the last month.
+We use `data.table` to easily sum up the download counts of each day.
+
+```{r downloadCounts}
+all.downloads = cran_downloads(packages = unique(unlist(all.pkgs)),
+                               when = "last-month")
+all.downloads = as.data.table(all.downloads)
+monthly.downloads = all.downloads[, list(monthly = sum(count)), by = package]
+```
+
+As some learners need multiple packages we will use the download count of the package with the least downloads.
+
+```{r aggregateDownloads}
+lrn.downloads = sapply(all.pkgs, function(pkgs) {
+  monthly.downloads[package %in% pkgs, min(monthly)]
+})
+```
+
+Let's put these numbers in our table:
+
+```{r firstTable, results='hide'}
+lrns$downloads = lrn.downloads
+lrns = lrns[order(downloads, decreasing = TRUE),]
+lrns[, .(class, name, package, downloads)]
+```
+
+_Here are the first 5 rows of the table:_
+
+```{r firstTableKnit, echo=FALSE, results='asis'}
+knitr::kable(lrns[, .(class, name, package, downloads)][1:5])
+```
+
+Now let's get rid of the duplicates introduced by the distinction of the type _classif_, _regr_ and we already have our...
+
+## Nearly final table
+
+```{r finalTable, results='hide'}
+lrns.small = lrns[, .SD[1,], by = .(name, package)]
+lrns.small[, .(class, name, package, downloads)]
+```
+
+The top 20 according to the _rstudio cran mirror_:
+
+```{r finalTableKnit, echo=FALSE, results='asis'}
+knitr::kable(lrns.small[, .(class, name, package, downloads)][1:20])
+```
+
+As we are just looking for the packages let's compress the table a bit further and come to our...
+
+## Final table
+
+```{r compressTable, results='hide'}
+lrns.pgks = lrns[,list(learners = paste(class, collapse = ",")),
+                 by = .(package, downloads)]
+lrns.pgks
+```
+
+_Here are the first 20 rows of the table:_
+
+```{r compressTableKnit, echo=FALSE, results='asis'}
+knitr::kable(lrns.pgks[1:20,])
+```
+
+And of course we want to have a small visualization:
+
+```{r compressTablePlot}
+library(ggplot2)
+library(forcats)
+lrns.pgks$learners = factor(lrns.pgks$learners, lrns.pgks$learners)
+g = ggplot(lrns.pgks[20:1], aes(x = fct_inorder(stri_sub(
+  paste0(package,": ",learners), 0, 64)), y = downloads, fill = downloads))
+g + geom_bar(stat = "identity") +
+  coord_flip() +
+  xlab("") +
+  scale_fill_continuous(guide=FALSE)
+```
+
+## Remarks
+
+This is not really representative of how popular each learner is, as some packages have multiple purposes (e.g. multiple learners).
+Furthermore it would be great to have access to the [trending](https://www.r-pkg.org/trending) list.
+Also [_most stars at GitHub_](https://www.r-pkg.org/starred) gives a better view of what the developers are interested in.
+Looking for machine learning packages we see there e.g: [xgboost](https://github.com/dmlc/xgboost), [h2o](https://github.com/h2oai/h2o-3) and [tensorflow](https://github.com/rstudio/tensorflow).
