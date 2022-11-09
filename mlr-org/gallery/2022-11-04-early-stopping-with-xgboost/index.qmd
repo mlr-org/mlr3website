@@ -7,22 +7,17 @@ categories:
   - classification
 author:
   - name: Marc Becker
-date: 08-11-2022
-params:
-  eval_all: FALSE
+date: 2022-11-09
+image: preview.png
 ---
 
-```{r early-stopping-with-xgboost-001, include=FALSE}
- knitr::opts_chunk$set(
-  echo = TRUE,
-  R.options = list(width = 120)
-)
+{{< include ../_setup.qmd >}}
 
-library(mlr3website)
-
-set.seed(7832)
+```{r early-stopping-with-xgboost-001}
+#| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
+future::plan("multisession")
 ```
 
 # Scope
@@ -160,7 +155,7 @@ learner$param_set$set_values(nrounds = 1000)
 
 We run a small batch of random hyperparameter configurations.
 
-```{r early-stopping-with-xgboost-014, eval=params$eval_all}
+```{r early-stopping-with-xgboost-014}
 instance = tune(
   method = "random_search",
   task = task,
@@ -171,14 +166,6 @@ instance = tune(
   batch_size = 2,
   callbacks = clbk("mlr3tuning.early_stopping")
 )
-```
-
-```{r early-stopping-with-xgboost-015, include=FALSE, eval=params$eval_all}
-saveRDS(instance, "instance.rda")
-```
-
-```{r early-stopping-with-xgboost-016, include=FALSE}
-instance = readRDS("instance.rda")
 ```
 
 We can see that the optimal number of boosting rounds (`max_nrounds`) strongly depends on the other hyperparameters.
