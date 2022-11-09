@@ -1,0 +1,112 @@
+---
+title: "Announcing mlr3spatial"
+description: |
+  We are happy to announce that mlr3spatial has been released on CRAN in November 2021.
+  [mlr3spatial](https://mlr3spatial.mlr-org.com/) simplifies the handling of spatial objects in the [mlr3](https://github.com/mlr-org) ecosystem.
+  Before [mlr3spatial](https://mlr3spatial.mlr-org.com/), the user had to extract tabular data from spatial objects to train a model or predict spatial data.
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+  - name: Patrick Schratz
+    url: https://github.com/pat-s
+date: 2021-12-01
+categories:
+    - R
+    - CRAN
+---
+
+
+```{r announcing-mlr3spatial-001, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+s
+We are happy to announce that [mlr3spatial](https://mlr3spatial.mlr-org.com/) has been released on [CRAN](https://cran.r-project.org/web/packages/mlr3spatial/index.html) in November 2021.
+[mlr3spatial](https://mlr3spatial.mlr-org.com/) simplifies the handling of spatial objects in the [mlr3](https://github.com/mlr-org) ecosystem.
+Before [mlr3spatial](https://mlr3spatial.mlr-org.com/), the user had to extract tabular data from spatial objects to train a model or predict spatial data.
+
+Now, mlr3 [Tasks](https://mlr3.mlr-org.com/reference/Task.html) can directly read from spatial objects via specialized [Data Backends](https://mlr3.mlr-org.com/reference/DataBackend.html).
+Such tasks can be used to train a model or to perform resampling just like any other `mlr3` task.
+We support spatial raster objects created by the [terra](https://CRAN.R-project.org/package=terra), [raster](https://CRAN.R-project.org/package=raster) and [stars](https://CRAN.R-project.org/package=stars) packages with [`DataBackendRaster`](https://mlr3spatial.mlr-org.com/reference/DataBackendRaster.html).
+Additionally, vector data created with the [sf](https://CRAN.R-project.org/package=sf) package is handled with [`DataBackendVector`](https://mlr3spatial.mlr-org.com/reference/DataBackendVector.html).
+
+The `predict_raster()` function creates spatial rasters and features with predictions from mlr3 learners.
+We only have to pass a task with a spatial data backend which provides the data and spatial reference.
+To avoid memory issues with large raster files, prediction is done in chunks.
+For this, the raster map is divided into multiple horizontal strips.
+The vertical extension of these strips is controlled by the `chunksize` parameter.
+The actual memory usage per core is a multiple of the specified chunk size.
+We choose a default chunk size of 200 Megabytes which should work on most consumer grade machines.
+If more memory is available, a larger chunk size accelerates the prediction process.
+
+One after the other, the raster chunks are loaded into memory and the prediction is written to disk.
+Finally, the complete raster is available on disk.
+The learner can also make use of future-based parallelization to accelerate the predictions.
+The vignette on [“Benchmarking parallel predictions”](https://mlr3spatial.mlr-org.com/articles/benchmark.html) showcases the parallelization capabilities of [mlr3spatial](https://mlr3spatial.mlr-org.com/).
+
+## Use Case - Landsat7 data as {stars} object
+
+### Data Preparation
+
+```{r announcing-mlr3spatial-002, include=FALSE}
+library("stars")
+```
+
+```{r announcing-mlr3spatial-003}
+library("mlr3")
+library("mlr3spatial")
+```
+
+First, the TIFF files is read via `stars::read_stars()` and put into a `DataBackendRaster`.
+The DataBackend is then used to create a regression task with the response being `layer.1`.
+
+```{r announcing-mlr3spatial-004, error=TRUE}
+tif = system.file("tif/L7_ETMs.tif", package = "stars")
+stack = stars::read_stars(tif)
+
+backend = as_data_backend(stack)
+task = as_task_regr(backend, target = "band1")
+
+print(task)
+```
+
+For large raster files with millions of values it helps to predict in parallel.
+To enable this, set `learner$parallel_predict = TRUE` and initiate a parallel plan via {future}, e.g. via `plan("multisession")`.
+Since this is only an example, parallelization is not enabled here.
+Here we will use a simple regression tree as an example learner.
+In practice you might want to use a different learner - you can find an overview of available learners [here](https://mlr3extralearners.mlr-org.com/articles/learners/list_learners.html).
+
+```{r announcing-mlr3spatial-005}
+learner = lrn("regr.rpart")
+set.seed(42)
+row_ids = sample(1:task$nrow, 500)
+learner$train(task, row_ids = row_ids)
+
+print(learner)
+```
+
+### Prediction
+
+For prediction `predict_spatial()` is used.
+It will return a raster file which contains the predictions.
+Users can select which R spatial format the returned raster should have.
+Note that by default `mlr3spatial` operates with `SpatRaster` objects from package `terra`.
+If a different output format is requested (e.g. `"stars"`), coercion is happening in the background which might take some time.
+
+```{r announcing-mlr3spatial-006, warning=FALSE}
+ras = predict_spatial(task, learner, format = "stars")
+names(ras) = "cadmium"
+
+print(ras)
+```
+
+### Visualization
+
+Finally we can plot the predictions.
+The color vector is extracted from the "viridis" color palette via `dput(viridis::viridis_pal()(5))` and provided to the S3 `plot()` call, which makes use of the S3 plot method within the `stars` package in this scenario.
+
+```{r announcing-mlr3spatial-007}
+plot(ras, col = c("#440154FF", "#443A83FF", "#31688EFF", "#21908CFF", "#35B779FF", "#8FD744FF", "#FDE725FF"))
+```
+
+
+
