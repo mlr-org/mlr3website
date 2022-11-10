@@ -1,0 +1,125 @@
+---
+title: "mlr3 package Updates - Q4/2021"
+description: |
+  This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter.
+author:
+  - name: Patrick Schratz
+    url: https://github.com/pat-s
+date: 2022-01-03
+categories:
+    - R
+    - News
+---
+
+
+```{r mlr3-package-updates-q42021-001, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up with the latest changes across all packages.
+This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter.
+Note that only CRAN packages are listed here and the sort order is alphabetically.
+
+Interval: 2021-10-01 - 2021-12-31
+
+## [mlr3 0.13.0](https://github.com/mlr-org/mlr3)
+
+**Description: Machine Learning in R - Next Generation**
+
+* Learners which are capable of resuming/continuing (e.g.,
+  learner `(classif|regr|surv).xgboost` with hyperparameter `nrounds` updated)
+  can now optionally store a stack of trained learners to be used to hotstart
+  their training. Note that this feature is still somewhat experimental.
+  See `HotstartStack` and #719.
+* New measures to score similarity of selected feature sets:
+  `sim.jaccard` (Jaccard Index) and `sim.phi` (Phi coefficient) (#690).
+* `predict_newdata()` now also supports `DataBackend` as input.
+* New function `install_pkgs()` to install required packages. This generic works
+  for all objects with a `packages` field as well as `ResampleResult` and
+  `BenchmarkResult` (#728).
+* New learner `regr.debug` for debugging.
+* New `Task` method `$set_levels()` to control how data with factor columns
+  is returned, independent of the used `DataBackend`.
+* Measures now return `NA` if prerequisite are not met (#699).
+  This allows to conveniently score your experiments with  multiple measures
+  having different requirements.
+* Feature names may no longer contain the special character `%`.
+
+
+## [mlr3benchmark 0.1.3](https://github.com/mlr-org/mlr3benchmark)
+
+**Description: Analysis and Visualisation of Benchmark Experiments**
+
+* Fix README.
+* Fix for PMCMRplus.
+
+
+## [mlr3db 0.4.2](https://github.com/mlr-org/mlr3db)
+
+**Description: Data Base Backend for 'mlr3'**
+
+* Compatibility fixes with new duckdb version.
+
+
+## [mlr3learners 0.5.1](https://github.com/mlr-org/mlr3learners)
+
+**Description: Recommended learners for mlr3**
+
+* `eval_metric()` is now explicitly set for xgboost learners to silence a
+  deprecation warning.
+* Improved how the added hyperparameter `mtry.ratio` is converted to `mtry` to
+  simplify tuning.
+* Multiple updates to hyperparameter sets.
+
+
+## [mlr3pipelines 0.4.0](https://github.com/mlr-org/mlr3pipelines)
+
+**Description: Preprocessing Operators and Pipelines for 'mlr3'**
+
+* New operator `%>>!%` that modifies Graphs in-place.
+* New methods `chain_graphs()`, `concat_graphs()`, `Graph$chain()` as alternatives for `%>>%` and `%>>!%`.
+* New methods `pos()` and `ppls()` which create lists of PipeOps/Graphs and can be seen as "plural" forms of `po()` and `ppl()`.
+* `po()` S3-method for PipeOp class that clones a PipeOp object and optionally modifies its attributes.
+* `Graph$add_pipeop()` now clones the PipeOp being added.
+* Documentation: Clarified documentation about cloning of input arguments in several places.
+* Performance enhancements for Graph concatenation.
+* More informative error outputs.
+* New attribute graph_model `GraphLearner` class, which gets the trained graph.
+* `as_learner()` S3-method for PipeOp class that turns wraps a PipeOp in a Graph and turns that into a Learner.
+* Changed PipeOps:
+  - `PipeOpHistBin`: renamed 'bins' Param to 'breaks'
+  - `PipeOpImputeHist`: fix handling of integer features spanning the entire represented integer range
+  - `PipeOpImputeOOR`: fix handling of integer features spanning the entire represented integer range
+  - `PipeOpProxy`: Avoid unnecessary clone
+  - `PipeOpScale`: Performance improvement
+
+
+## [mlr3proba 0.4.2](https://github.com/mlr-org/mlr3proba)
+
+**Description: Probabilistic Supervised Learning for 'mlr3'**
+
+* Patch for linux.
+
+
+## [mlr3spatial 0.1.0](https://github.com/mlr-org/mlr3spatial)
+
+**Description: Support for Spatial Objects Within the 'mlr3' Ecosystem**
+
+* Initial release.
+
+
+## [mlr3tuningspaces 0.0.1](https://github.com/mlr-org/mlr3tuningspaces)
+
+**Description: Search Spaces for Hyperparameter Tuning**
+
+* Initial release.
+
+
+## [mlr3viz 0.5.7](https://github.com/mlr-org/mlr3viz)
+
+**Description: Visualizations for 'mlr3'**
+
+* Compatibility fix for testthat.
+
+
+

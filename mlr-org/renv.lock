@@ -560,10 +560,10 @@
     },
     "bbotk": {
       "Package": "bbotk",
-      "Version": "0.6.0",
+      "Version": "0.7.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4aaef05225a247ef0b5576f3492fbff5",
+      "Hash": "808ef313066059f5d4ec376b24741860",
       "Requirements": [
         "R6",
         "checkmate",
@@ -873,6 +873,14 @@
       "Hash": "019388fc48e48b3da0d3a76ff94608a8",
       "Requirements": []
     },
+    "collections": {
+      "Package": "collections",
+      "Version": "0.3.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1d820482cad96b2c786620f3b5a1d2f5",
+      "Requirements": []
+    },
     "colorspace": {
       "Package": "colorspace",
       "Version": "2.0-3",
@@ -923,12 +931,6 @@
       "Version": "2.1.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "RemoteType": "standard",
-      "RemotePkgRef": "cranlogs",
-      "RemoteRef": "cranlogs",
-      "RemoteRepos": "https://stat.ethz.ch/CRAN/",
-      "RemotePkgPlatform": "aarch64-apple-darwin20",
-      "RemoteSha": "2.1.1",
       "Hash": "cfa4eec97df94fd69cb8652368966020",
       "Requirements": [
         "httr",
@@ -977,6 +979,20 @@
       "Repository": "CRAN",
       "Hash": "0eb86baa62f06e8855258fa5a8048667",
       "Requirements": []
+    },
+    "cyclocomp": {
+      "Package": "cyclocomp",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "53cbed70a2f7472d48fb6aef08442f25",
+      "Requirements": [
+        "callr",
+        "crayon",
+        "desc",
+        "remotes",
+        "withr"
+      ]
     },
     "data.table": {
       "Package": "data.table",
@@ -2003,6 +2019,26 @@
         "RcppParallel"
       ]
     },
+    "languageserver": {
+      "Package": "languageserver",
+      "Version": "0.3.14",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d373abf27f4ff792419fc9208149c8f6",
+      "Requirements": [
+        "R6",
+        "callr",
+        "collections",
+        "fs",
+        "jsonlite",
+        "lintr",
+        "roxygen2",
+        "stringi",
+        "styler",
+        "xml2",
+        "xmlparsedata"
+      ]
+    },
     "later": {
       "Package": "later",
       "Version": "1.3.0",
@@ -2082,6 +2118,26 @@
         "cli",
         "glue",
         "rlang"
+      ]
+    },
+    "lintr": {
+      "Package": "lintr",
+      "Version": "3.0.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b21ebd652d940f099915221f3328ab7b",
+      "Requirements": [
+        "backports",
+        "codetools",
+        "crayon",
+        "cyclocomp",
+        "digest",
+        "glue",
+        "jsonlite",
+        "knitr",
+        "rex",
+        "xml2",
+        "xmlparsedata"
       ]
     },
     "listenv": {
@@ -2381,7 +2437,7 @@
       "RemoteRef": "main",
       "RemoteSha": "060e545c2a8bf34c64de2e301738d0d9b9660fb4",
       "Remotes": "alan-turing-institute/distr6, binderh/CoxBoost, mlr-org/mlr3proba,\n    RaphaelS1/survivalmodels, xoopR/param6, xoopR/set6",
-      "Hash": "17583dcc0d3e78468b23ab07f7301eb4",
+      "Hash": "eb94a2039a7c6ef28d20fbb2893cded0",
       "Requirements": [
         "R6",
         "checkmate",
@@ -2603,10 +2659,10 @@
     },
     "mlr3tuning": {
       "Package": "mlr3tuning",
-      "Version": "0.15.0",
+      "Version": "0.16.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "764645194b40af8cfd6762007d2f1f1a",
+      "Hash": "3807096768b5c2635dde5f6dc30963d9",
       "Requirements": [
         "R6",
         "bbotk",
@@ -3565,6 +3621,16 @@
         "stringr"
       ]
     },
+    "rex": {
+      "Package": "rex",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ae34cd56890607370665bee5bd17812f",
+      "Requirements": [
+        "lazyeval"
+      ]
+    },
     "rgenoud": {
       "Package": "rgenoud",
       "Version": "5.9-0.3",
@@ -4455,6 +4521,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "40682ed6a969ea5abfd351eb67833adc",
+      "Requirements": []
+    },
+    "xmlparsedata": {
+      "Package": "xmlparsedata",
+      "Version": "1.0.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "45e4bf3c46476896e821fc0a408fb4fc",
       "Requirements": []
     },
     "xopen": {
