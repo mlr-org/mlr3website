@@ -41,7 +41,9 @@ DT::datatable(
 
 Stop tuning when a `r ref("mlr_terminators_perf_reached", text = "performance level")` is reached.
 
-```{r, echo=TRUE}
+```{r}
+#| echo: true
+#| eval: false
 library(mlr3verse)
 
 # load terminator and set performance level
