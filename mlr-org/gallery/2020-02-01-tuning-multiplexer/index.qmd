@@ -10,12 +10,12 @@ author:
 date: 02-01-2020
 description: |
   This use case shows how to tune over multiple learners for a single task.
-image: thumbnail.png
+image: preview.png
 ---
 
 {{< include ../_setup.qmd >}}
 
-```{r setup2}
+```{r 2020-02-01-tuning-multiplexer-001}
 #| include: false
 future::plan("sequential")
 ```
@@ -43,7 +43,8 @@ We will consider 2 cases: (a) Running the learners in their default, so without 
 We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
-```{r 2020-02-01-tuning-multiplexer-002, message=FALSE}
+```{r 2020-02-01-tuning-multiplexer-002}
+#| message: false
 library(mlr3verse)
 library(mlr3tuning)
 library(mlr3learners)
@@ -109,12 +110,12 @@ The pipe consists of three elements:
 * our learners (combined with `r ref("gunion()")`)
 * `r ref("mlr_pipeops_unbranch", text = "unbranch")` combines the forked paths at the end.
 
-```{r 2020-02-01-tuning-multiplexer-006, fig.width = 10, fig.height = 8}
+```{r 2020-02-01-tuning-multiplexer-006}
 graph =
   po("branch", options = learners_ids) %>>%
   gunion(lapply(learners, po)) %>>%
   po("unbranch")
-graph$plot(html = FALSE)
+plot(graph, html = FALSE)
 ```
 
 The pipeline has now quite a lot of available hyperparameters.
@@ -132,53 +133,50 @@ We can now tune over this pipeline, and probably running grid search seems a goo
 available learner.
 NB: We have now written down in (much more complicated code) what we did before with `benchmark`.
 
-```{r 2020-02-01-tuning-multiplexer-008, results = "hide"}
+```{r 2020-02-01-tuning-multiplexer-008}
 graph_learner = as_learner(graph)
 graph_learner$id = "g"
-graph_learner$param_set$values$branch.selection = to_tune(levels = c("rf", "xgb"))
+
+search_space = ps(
+  branch.selection = p_fct(c("rf", "xgb"))
+)
 
 instance = tune(
   method = "grid_search",
   task = task,
   learner = graph_learner,
   resampling = inner_cv2,
-  measure = msr("classif.ce"))
+  measure = msr("classif.ce"),
+  search_space = search_space
+)
 
-as.data.table(instance$archive)
-```
-
-```{r 2020-02-01-tuning-multiplexer-009, echo = FALSE}
-table_responsive(as.data.table(instance$archive, exclude_columns = c("uhash",  "resample_result")))
+as.data.table(instance$archive)[, list(branch.selection, classif.ce)]
 ```
 
 But: Via this approach we can now get unbiased performance results via nested resampling and using the `r ref("AutoTuner")` (which would make much more sense if we would select from 100 models and not 2).
 
-```{r 2020-02-01-tuning-multiplexer-010}
+```{r 2020-02-01-tuning-multiplexer-009}
 at = auto_tuner(
   method = "grid_search",
   learner = graph_learner,
   resampling = inner_cv2,
   measure = msr("classif.ce"),
+  search_space = search_space
 )
 
 rr = resample(task, at, outer_cv5, store_models = TRUE)
-
-# access inner tuning result
-extract_inner_tuning_results(rr)
 ```
 
-```{r 2020-02-01-tuning-multiplexer-013, echo = FALSE}
-table_responsive(extract_inner_tuning_results(rr)[, c("iteration", "branch.selection", "classif.ce", "task_id", "learner_id", "resampling_id"), with = FALSE])
+Access inner tuning result.
+
+```{r 2020-02-01-tuning-multiplexer-010}
+extract_inner_tuning_results(rr)[, list(iteration, branch.selection, classif.ce)]
 ```
 
-```{r 2020-02-01-tuning-multiplexer-014, results = 'hide'}
-# access inner tuning archives
-extract_inner_tuning_archives(rr)
-```
+Access inner tuning archives.
 
-```{r 2020-02-01-tuning-multiplexer-015, echo = FALSE}
-#| column: page
-DT::datatable(extract_inner_tuning_archives(rr, exclude_columns = c("uhash",  "resample_result")))
+```{r 2020-02-01-tuning-multiplexer-011}
+extract_inner_tuning_archives(rr)[, list(iteration, branch.selection, classif.ce, resample_result)]
 ```
 
 # Model-Selection and Tuning with Pipelines
@@ -194,12 +192,8 @@ NB: Many AutoML systems work in a very similar way.
 Remember, that the pipeline contains a joint set of all contained hyperparameters.
 Prefixed with the respective PipeOp ID, to make names unique.
 
-```{r 2020-02-01-tuning-multiplexer-016, eval = FALSE}
-as.data.table(graph$param_set)
-```
-
-```{r 2020-02-01-tuning-multiplexer-017, echo = FALSE}
-table_responsive(as.data.table(graph$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
+```{r 2020-02-01-tuning-multiplexer-012}
+as.data.table(graph$param_set)[, list(id, class, lower, upper, nlevels)]
 ```
 
 We decide to tune the `mtry` parameter of the random forest and the `nrounds` parameter of xgboost.
@@ -209,7 +203,7 @@ We also have to reflect the hierarchical order of the parameter sets (admittedly
 We can only set the `mtry` value if the pipe is configured to use the random forest (`r ref("mlr_learners_classif.ranger", "ranger")`).
 The same applies for the xgboost parameter.
 
-```{r 2020-02-01-tuning-multiplexer-018}
+```{r 2020-02-01-tuning-multiplexer-013}
 search_space = ps(
   branch.selection = p_fct(c("rf", "xgb")),
   rf.mtry = p_int(1L, 20L, depends = branch.selection == "rf"),
@@ -221,37 +215,29 @@ search_space = ps(
 Very similar code as before, we just swap out the search space.
 And now use random search.
 
-```{r 2020-02-01-tuning-multiplexer-019}
-graph_learner = as_learner(graph)
-graph_learner$id = "g"
-
+```{r 2020-02-01-tuning-multiplexer-014}
 instance = tune(
   method = "random_search",
   task = task,
   learner = graph_learner,
   resampling = inner_cv2,
   measure = msr("classif.ce"),
-  term_evals = 10
+  term_evals = 10,
+  search_space = search_space
 )
 
-as.data.table(instance$archive)
-```
-
-```{r 2020-02-01-tuning-multiplexer-022, echo = FALSE}
-#| column: page
-DT::datatable(as.data.table(instance$archive, exclude_columns = c("uhash",  "resample_result")))
+as.data.table(instance$archive)[, list(branch.selection, xgb.nrounds, rf.mtry, classif.ce)]
 ```
 
 The following shows a quick way to visualize the tuning results.
 
-```{r 2020-02-01-tuning-multiplexer-023, fig.width=10, fig.height=5}
-# autoplot(instance, cols_x = c("xgb.nrounds","rf.mtry"))
-autoplot(instance)
+```{r 2020-02-01-tuning-multiplexer-015}
+autoplot(instance, cols_x = c("xgb.nrounds","rf.mtry"))
 ```
 
 Nested resampling, now really needed:
 
-```{r 2020-02-01-tuning-multiplexer-024}
+```{r 2020-02-01-tuning-multiplexer-016}
 rr = tune_nested(
   method = "grid_search",
   task = task,
@@ -259,14 +245,12 @@ rr = tune_nested(
   inner_resampling = inner_cv2,
   outer_resampling = outer_cv5,
   measure = msr("classif.ce"),
-  term_evals = 10L)
+  term_evals = 10L,
+  search_space = search_space)
 ```
 
-```{r 2020-02-01-tuning-multiplexer-027, eval = FALSE}
-# access inner tuning result
-extract_inner_tuning_results(rr)
-```
+Access inner tuning result.
 
-```{r 2020-02-01-tuning-multiplexer-028, echo = FALSE}
-table_responsive(extract_inner_tuning_results(rr))
+```{r 2020-02-01-tuning-multiplexer-017}
+extract_inner_tuning_results(rr)[, list(iteration, branch.selection, classif.ce)]
 ```
