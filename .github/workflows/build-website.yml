@@ -20,7 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: r-lib/actions/setup-r@v2
+      - id: setup
+        uses: r-lib/actions/setup-r@v2
 
       - uses: quarto-dev/quarto-actions/setup@v2
 
@@ -28,16 +29,13 @@ jobs:
         uses: pat-s/always-upload-cache@v3
         with:
           path: ~/.cache/R/renv
-          key: ${{ runner.os }}-r-${{ matrix.config.r }}-lock-${{ hashFiles('mlr-org/renv.lock') }}
-          restore-keys: ${{ runner.os }}-r-${{ matrix.config.r }}-lock-
+          key: ${{ runner.os }}-r-${{ steps.setup.outputs.installed-r-version }}-lock-${{ hashFiles('book/renv.lock') }}
+          restore-keys: ${{ runner.os }}-r-${{ steps.setup.outputs.installed-r-version }}-lock-
 
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'install.packages("remotes", repos = "cloud.r-project.org"); cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
+      - name: Install System Dependencies
+        uses: mlr-org/actions/renv-system-dependencies@v1
+        with:
+          path: 'mlr-org/renv.lock'
 
       - name: Restore renv environment
         run: |
