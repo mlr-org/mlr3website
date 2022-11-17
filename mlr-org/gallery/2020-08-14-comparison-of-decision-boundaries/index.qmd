@@ -117,14 +117,11 @@ bmr <- benchmark(design, store_models = TRUE)
 
 A quick look into the performance values:
 
-```{r comparison-of-decision-boundaries-010, output="asis", echo = TRUE, results = 'hide'}
+```{r comparison-of-decision-boundaries-010}
 perf <- bmr$aggregate(msr("classif.acc"))[, c("task_id", "learner_id", "classif.acc")]
 perf
 ```
 
-```{r comparison-of-decision-boundaries-011, echo = FALSE}
-table_responsive(perf)
-```
 
 ## Plotting
 

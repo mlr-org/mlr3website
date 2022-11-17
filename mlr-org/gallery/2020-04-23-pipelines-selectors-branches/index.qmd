@@ -109,12 +109,8 @@ impute_graph$train(task_pima)[[1]]$missings()
 
 The `r ref("PipeOpMissInd")` operator replaces features with missing values with a missing value indicator:
 
-```{r 2020-04-23-pipelines-selectors-branches-009, eval = FALSE}
-head(miss_ind$train(list(task_pima))[[1]]$data())
-```
-
-```{r 2020-04-23-pipelines-selectors-branches-010, echo = FALSE}
-table_responsive(head(miss_ind$train(list(task_pima))[[1]]$data()))
+```{r 2020-04-23-pipelines-selectors-branches-009}
+miss_ind$train(list(task_pima))[[1]]$data()
 ```
 
 Obviously, this step can not be applied to the already imputed data as there are no missing values.
@@ -128,13 +124,8 @@ impute_missind = po("copy", 2) %>>%
 impute_missind$plot(html = FALSE)
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-012, eval = FALSE}
-head(impute_missind$train(task_pima)[[1]]$data())
-```
-
-```{r 2020-04-23-pipelines-selectors-branches-013, echo = FALSE}
-#| column: page
-DT::datatable(impute_missind$train(task_pima)[[1]]$data())
+```{r 2020-04-23-pipelines-selectors-branches-012}
+impute_missind$train(task_pima)[[1]]$data()
 ```
 
 ### 2. Select the features for each preprocessing step and apply the preprocessing steps to this subset
@@ -150,24 +141,16 @@ imputer_hist_2 = po("select",
 imputer_hist_2$plot(html = FALSE)
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-015, eval = FALSE}
-head(imputer_hist_2$train(task_pima)[[1]]$data())
+```{r 2020-04-23-pipelines-selectors-branches-015}
+imputer_hist_2$train(task_pima)[[1]]$data()
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-016, echo = FALSE}
-table_responsive(head(imputer_hist_2$train(task_pima)[[1]]$data()))
-```
-
-```{r 2020-04-23-pipelines-selectors-branches-017, results = 'hide'}
+```{r 2020-04-23-pipelines-selectors-branches-017}
 imputer_median_2 =
   po("select", selector = selector_name(c("insulin", "triceps")), id = "slct2") %>>%
   po("imputemedian")
 
-head(imputer_median_2$train(task_pima)[[1]]$data())
-```
-
-```{r 2020-04-23-pipelines-selectors-branches-018, echo = FALSE}
-table_responsive(head(imputer_median_2$train(task_pima)[[1]]$data()))
+imputer_median_2$train(task_pima)[[1]]$data()
 ```
 
 To reproduce the result of the fist example (1.), we need to copy the data four times and apply `imputer_hist_2`, `imputer_median_2` and `miss_ind` on each of the three copies.
@@ -187,31 +170,24 @@ imputer_missind_2 = po("copy", 4) %>>%
 imputer_missind_2$plot(html = FALSE)
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-020, eval = FALSE}
-head(imputer_missind_2$train(task_pima)[[1]]$data())
-```
-
-```{r 2020-04-23-pipelines-selectors-branches-021, echo = FALSE}
+```{r 2020-04-23-pipelines-selectors-branches-020}
 #| column: page
-DT::datatable(imputer_missind_2$train(task_pima)[[1]]$data())
+imputer_missind_2$train(task_pima)[[1]]$data()
 ```
 
 Note that when there is one input channel, it is automatically copied as many times as needed for the downstream `r ref("PipeOp")`s.
 In other words, the code above works also without `po("copy", 4)`:
 
-```{r 2020-04-23-pipelines-selectors-branches-022, results = 'hide'}
+```{r 2020-04-23-pipelines-selectors-branches-022}
+#| column: page
+
 imputer_missind_3 = gunion(list(imputer_hist_2,
   imputer_median_2,
   miss_ind,
   po("select", selector = selector_name(other_features), id = "slct3"))) %>>%
   po("featureunion")
 
-head(imputer_missind_3$train(task_pima)[[1]]$data())
-```
-
-```{r 2020-04-23-pipelines-selectors-branches-023, echo = FALSE}
-#| column: page
-DT::datatable(imputer_missind_3$train(task_pima)[[1]]$data())
+imputer_missind_3$train(task_pima)[[1]]$data()
 ```
 
 Usually, `po("copy")` is required when there are more than one input channels and multiple output channels, and their numbers do not match.
@@ -248,13 +224,10 @@ graph$plot(html = FALSE)
 
 To define the parameters to be tuned, we first check the available ones in the graph:
 
-```{r 2020-04-23-pipelines-selectors-branches-026, eval = FALSE}
-as.data.table(graph$param_set)
+```{r 2020-04-23-pipelines-selectors-branches-026}
+as.data.table(graph$param_set)[, .(id, class, lower, upper, nlevels)]
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-027, echo = FALSE}
-DT::datatable(as.data.table(graph$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
-```
 
 We decide to jointly tune the `"branch.selection"`, `"classif.rpart.cp"` and `"classif.rpart.minbucket"` hyperparameters:
 
@@ -267,7 +240,7 @@ search_space = ps(
 
 In order to tune the graph, it needs to be converted to a learner:
 
-```{r 2020-04-23-pipelines-selectors-branches-029, results = 'hide'}
+```{r 2020-04-23-pipelines-selectors-branches-029}
 graph_learner = as_learner(graph)
 
 cv3 = rsmp("cv", folds = 3)
@@ -283,12 +256,7 @@ instance = tune(
   search_space = search_space,
   term_evals = 5)
 
-as.data.table(instance$archive)
-```
-
-```{r 2020-04-23-pipelines-selectors-branches-030, echo = FALSE}
-#| column: page
-DT::datatable(as.data.table(instance$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result")))
+as.data.table(instance$archive, unnest = NULL, exclude_columns = c("x_domain", "uhash", "resample_result"))
 ```
 
 The best performance in this short tuned experiment was achieved with:

@@ -108,12 +108,8 @@ Note, that `predict_type` = "prob" is required for `po("threshold")` to have any
 
 The `thresholds` are now exposed as a `hyperparameter` of the `r ref("GraphLearner")` we created:
 
-```{r 2020-10-14-threshold-tuning-009, eval = FALSE}
-l$param_set
-```
-
-```{r 2020-10-14-threshold-tuning-010, echo = FALSE}
-table_responsive(as.data.table(l$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
+```{r 2020-10-14-threshold-tuning-009}
+as.data.table(l$param_set)[, .(id, class, lower, upper, nlevels)]
 ```
 
 We can now tune those thresholds from the outside as follows:
@@ -200,12 +196,8 @@ l2 = GraphLearner$new(gr)
 Note, that `predict_type` = "prob" is required for `po("tunethreshold")` to have any effect.
 Additionally, note that this time no `threshold` parameter is exposed, it is automatically tuned internally.
 
-```{r 2020-10-14-threshold-tuning-016, eval = FALSE}
-l2$param_set
-```
-
-```{r 2020-10-14-threshold-tuning-017, echo = FALSE}
-table_responsive(as.data.table(l2$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
+```{r 2020-10-14-threshold-tuning-016}
+as.data.table(l2$param_set)[, .(id, class, lower, upper, nlevels)]
 ```
 
 If we now use the `r ref("GraphLearner")`, it automatically adjusts the `thresholds` during prediction.
@@ -226,10 +218,6 @@ bmr = benchmark(benchmark_grid(
 ))
 ```
 
-```{r 2020-10-14-threshold-tuning-019, eval = FALSE}
+```{r 2020-10-14-threshold-tuning-019}
 bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))
-```
-
-```{r 2020-10-14-threshold-tuning-020, echo = FALSE}
-table_responsive(bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))[,.SD, .SDcols = !c("resample_result")])
 ```

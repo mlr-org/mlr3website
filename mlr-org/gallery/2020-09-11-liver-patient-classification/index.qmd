@@ -494,7 +494,7 @@ Subsequently, sensitivity, specificity, false negative rate (FNR), and false pos
 
 ```{r 2020-09-11-liver-patient-classification-026, echo=FALSE}
 # Table with train AUC, sensitivity, specificity, false negative rate and false positive rate
-table_responsive(bmr$aggregate(list(
+bmr$aggregate(list(
   msr("classif.auc"),
   msr("classif.sensitivity"),
   msr("classif.specificity"),
@@ -507,7 +507,7 @@ table_responsive(bmr$aggregate(list(
   "classif.specificity",
   "classif.fnr",
   "classif.fpr"
-)])
+)]
 ```
 
 As it turned out, without oversampling logistic regression, LDA, k-NN, CART, and random forest score very high on sensitivity and rather low on specificity; QDA and naive Bayes, on the other hand, score relatively high on specificity, but not as high on sensitivity.

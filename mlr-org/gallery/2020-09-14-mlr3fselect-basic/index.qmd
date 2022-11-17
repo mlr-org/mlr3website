@@ -146,12 +146,8 @@ fselector$optimize(instance)
 
 The `r ref("ArchiveFSelect")` stores a `data.table::data.table()` which consists of the evaluated feature sets and the corresponding estimated predictive performances.
 
-```{r mlr3fselect-basic-013, eval = FALSE}
-as.data.table(instance$archive)
-```
-
-```{r mlr3fselect-basic-014, echo = FALSE}
-table_responsive(as.data.table(instance$archive, exclude_columns = c("runtime_learners", "resample_result", "uhash")))
+```{r mlr3fselect-basic-013}
+as.data.table(instance$archive, exclude_columns = c("runtime_learners", "resample_result", "uhash"))
 ```
 
 The associated resampling iterations can be accessed in the `r ref("BenchmarkResult")` by calling
@@ -213,12 +209,8 @@ fselector$optimize(instance)
 
 We access the results.
 
-```{r mlr3fselect-basic-020, eval = FALSE}
+```{r mlr3fselect-basic-020}
 as.data.table(instance$archive, exclude_columns = c("runtime_learners", "timestamp", "batch_nr", "resample_result", "uhash"))
-```
-
-```{r mlr3fselect-basic-021, echo = FALSE}
-table_responsive(as.data.table(instance$archive, exclude_columns = c("runtime_learners", "timestamp", "batch_nr", "resample_result", "uhash")))
 ```
 
 ## Nested resampling
@@ -274,12 +266,8 @@ DT::datatable(extract_inner_fselect_results(rr))
 Next, we want to compare the predictive performances estimated on the outer resampling to the inner resampling.
 Significantly lower predictive performances on the outer resampling indicate that the models with the optimized feature sets overfit the data.
 
-```{r mlr3fselect-basic-029, eval = FALSE}
-rr$score()
-```
-
-```{r mlr3fselect-basic-030, echo = FALSE}
-table_responsive(rr$score()[, c("iteration", "task_id", "learner_id", "resampling_id", "classif.ce"), with = FALSE])
+```{r mlr3fselect-basic-029}
+rr$score()[, .(iteration, task_id, learner_id, resampling_id, classif.ce)]
 ```
 
 The archives of the `r ref("AutoFSelector")`s gives us all evaluated feature sets with the associated predictive performances.

@@ -97,12 +97,8 @@ print(cm)
 The `r ref("Learner")` contains information about all parameters that can be configured, including data type, constraints, defaults, etc.
 We can change the hyperparameters either during construction of later through an active binding.
 
-```{r 2020-03-18-iris-mlr3-basics-006, eval = FALSE}
-as.data.table(learner_1$param_set)
-```
-
-```{r 2020-03-18-iris-mlr3-basics-007, echo = FALSE}
-table_responsive(as.data.table(learner_1$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
+```{r 2020-03-18-iris-mlr3-basics-006}
+as.data.table(learner_1$param_set)[, .(id, class, lower, upper, nlevels)]
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-008}
@@ -120,22 +116,14 @@ rr = resample(task, learner_1, cv10)
 print(rr)
 ```
 
-```{r 2020-03-18-iris-mlr3-basics-010, eval = FALSE}
-rr$score(msrs(c("classif.acc", "classif.ce")))
+```{r 2020-03-18-iris-mlr3-basics-010}
+rr$score(msrs(c("classif.acc", "classif.ce")))[, .(iteration, task_id, learner_id, resampling_id, classif.ce)]
 ```
 
-```{r 2020-03-18-iris-mlr3-basics-011, echo = FALSE}
-table_responsive(rr$score()[, c("iteration", "task_id", "learner_id", "resampling_id", "classif.ce"), with = FALSE])
-```
-
-```{r 2020-03-18-iris-mlr3-basics-012, results = 'hide'}
+```{r 2020-03-18-iris-mlr3-basics-012}
 # get all predictions nicely concatenated in a table
 prediction = rr$prediction()
-head(as.data.table(prediction))
-```
-
-```{r 2020-03-18-iris-mlr3-basics-013, echo = FALSE}
-table_responsive(head(as.data.table(prediction)))
+as.data.table(prediction)
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-014}

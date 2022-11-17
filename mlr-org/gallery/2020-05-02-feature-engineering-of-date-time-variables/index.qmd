@@ -132,11 +132,7 @@ We can then use `r ref("resample()")` with 3-fold cross-validation:
 ```{r feature-engineering-of-date-time-variables-012}
 rr_ranger = resample(task_ranger, learner = learner_ranger, resampling = cv3)
 
-rr_ranger$score(msr("regr.mse"))
-```
-
-```{r feature-engineering-of-date-time-variables-015, echo = FALSE}
-table_responsive(rr_ranger$score(msr("regr.mse"))[, .(iteration, task_id, learner_id, resampling_id, regr.mse)])
+rr_ranger$score(msr("regr.mse"))[, .(iteration, task_id, learner_id, resampling_id, regr.mse)]
 ```
 
 We calculate the average RMSE.

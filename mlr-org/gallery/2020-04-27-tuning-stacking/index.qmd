@@ -235,12 +235,9 @@ bmr = benchmark(design, store_models = TRUE)
 ```
 
 ```{r 2020-04-27-tuning-stacking-021, eval = FALSE}
-bmr$aggregate(msr("classif.auc"))
+bmr$aggregate(msr("classif.auc"))[, .(nr, task_id, learner_id, resampling_id, iters, classif.auc)]
 ```
 
-```{r 2020-04-27-tuning-stacking-022, echo = FALSE}
-table_responsive(bmr$aggregate(msr("classif.auc"))[, .(nr, task_id, learner_id, resampling_id, iters, classif.auc)])
-```
 
 For a more reliable comparison, the number of evaluation of the random search should be increased.
 
