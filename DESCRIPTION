@@ -4,8 +4,8 @@ Version: 0.0.0.9000
 Authors@R:
     person("Marc", "Becker", , "marcbecker@posteo.de", role = c("cre", "aut"),
            comment = c(ORCID = "0000-0002-8115-0400"))
-Description: Use this package to install all dependencies and additional
-    helper files required to build the mlr3 website.
+Description: Use this package to install helper files required to build the mlr3
+    website.
 License: MIT + file LICENSE
 URL: https://github.com/mlr-org/mlr3website
 BugReports: https://github.com/mlr-org/mlr3website/issues
@@ -15,6 +15,10 @@ Imports:
     checkmate,
     data.table,
     rprojroot
+    mlr3book,
+    mlr3misc,
+    rprojroot,
+    stringi
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2

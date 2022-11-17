@@ -3,10 +3,8 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{mlr_pkg}
+\alias{ref_pkg}
 \alias{ref}
-\alias{cran_pkg}
-\alias{gh_pkg}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -14,6 +12,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{mlr3book}{\code{\link[mlr3book]{cran_pkg}}, \code{\link[mlr3book]{gh_pkg}}, \code{\link[mlr3book]{mlr_pkg}}, \code{\link[mlr3book]{ref}}}
+  \item{mlr3book}{\code{\link[mlr3book]{ref}}, \code{\link[mlr3book]{ref_pkg}}}
 }}
 
