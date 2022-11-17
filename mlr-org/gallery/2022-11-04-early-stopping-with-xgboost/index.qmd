@@ -38,7 +38,7 @@ When using early stopping, the performance is monitored on a test set, and the t
 # XGBoost with Early Stopping
 
 We initialize the random number generator with a fixed seed for reproducibility.
-The `r mlr_pkg("mlr3verse")` package provides all functions required for this example.
+The `r ref_pkg("mlr3verse")` package provides all functions required for this example.
 
 ```{r early-stopping-with-xgboost-003}
 #| message: false
@@ -131,7 +131,7 @@ learner = lrn("classif.xgboost",
 )
 ```
 
-Next, we load a predefined tuning space from the `r mlr_pkg("mlr3tuningspaces")` package.
+Next, we load a predefined tuning space from the `r ref_pkg("mlr3tuningspaces")` package.
 The tuning space includes the most commonly tuned parameters of XGBoost.
 
 ```{r early-stopping-with-xgboost-010}

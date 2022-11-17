@@ -30,7 +30,7 @@ We will walk through this tutorial interactively. The text is kept short to be f
 ## Prerequisites
 
 Ensure all packages used in this tutorial are installed.
-This includes the `r mlr_pkg("mlr3verse")` package, as well as other packages for data handling, cleaning and visualization which we are going to use (`r cran_pkg("data.table")`, `r cran_pkg("ggplot2")`, `r cran_pkg("rchallenge")`, and `r cran_pkg("skimr")`).
+This includes the `r ref_pkg("mlr3verse")` package, as well as other packages for data handling, cleaning and visualization which we are going to use (`r ref_pkg("data.table")`, `r ref_pkg("ggplot2")`, `r ref_pkg("rchallenge")`, and `r ref_pkg("skimr")`).
 
 Then, load the main packages we are going to use:
 
@@ -75,7 +75,7 @@ The goal is to classify people by their credit risk (good or bad) using 20 perso
 
 ### Importing the Data
 
-The dataset we are going to use is a transformed version of this German credit dataset, as provided by the `r cran_pkg("rchallenge")` package (this transformed dataset was proposed by Ulrike Grömping, with factors instead of dummy variables and corrected features):
+The dataset we are going to use is a transformed version of this German credit dataset, as provided by the `r ref_pkg("rchallenge")` package (this transformed dataset was proposed by Ulrike Grömping, with factors instead of dummy variables and corrected features):
 
 ```{r 2020-03-11-mlr3-basics-german-credit-003, message=FALSE}
 data("german", package = "rchallenge")
@@ -95,7 +95,7 @@ str(german)
 Our dataset has `r nrow(german)` observations and `r ncol(german)` columns.
 The variable we want to predict is `credit_risk` (either good or bad), i.e., we aim to classify people by their credit risk.
 
-We also recommend the `r cran_pkg("skimr")` package as it creates very well readable and understandable overviews:
+We also recommend the `r ref_pkg("skimr")` package as it creates very well readable and understandable overviews:
 
 ```{r 2020-03-11-mlr3-basics-german-credit-005}
 skimr::skim(german)
@@ -115,7 +115,7 @@ After feeling confident with the data, we want to do modeling now.
 
 ## Modeling
 
-Considering how we are going to tackle the problem of classifying the credit risk relates closely to what `r mlr_pkg("mlr3")` entities we will use.
+Considering how we are going to tackle the problem of classifying the credit risk relates closely to what `r ref_pkg("mlr3")` entities we will use.
 
 The typical questions that arise when building a machine learning workflow are:
 
@@ -123,7 +123,7 @@ The typical questions that arise when building a machine learning workflow are:
 - What are appropriate learning algorithms?
 - How do we evaluate "good" performance?
 
-More systematically in `r mlr_pkg("mlr3")` they can be expressed via five components:
+More systematically in `r ref_pkg("mlr3")` they can be expressed via five components:
 
 1. The `r ref("Task")` definition.
 2. The `r ref("Learner")` definition.
@@ -135,9 +135,9 @@ More systematically in `r mlr_pkg("mlr3")` they can be expressed via five compon
 
 First, we are interested in the target which we want to model.
 Most supervised machine learning problems are **regression** or **classification** problems.
-However, note that other problems include unsupervised learning or time-to-event data (covered in `r mlr_pkg("mlr3proba")`).
+However, note that other problems include unsupervised learning or time-to-event data (covered in `r ref_pkg("mlr3proba")`).
 
-Within `r mlr_pkg("mlr3")`, to distinguish between these problems, we define `r ref("Task", text = "Tasks")`.
+Within `r ref_pkg("mlr3")`, to distinguish between these problems, we define `r ref("Task", text = "Tasks")`.
 If we want to solve a classification problem, we define a classification task -- `r ref("TaskClassif")`.
 For a regression problem, we define a regression task -- `r ref("TaskRegr")`.
 
@@ -148,7 +148,7 @@ Thus, we define a `r ref("TaskClassif")`:
 task = as_task_classif(german, id = "GermanCredit", target = "credit_risk")
 ```
 
-Note that the German credit data is also given as an example task which ships with the `r mlr_pkg("mlr3")` package.
+Note that the German credit data is also given as an example task which ships with the `r ref_pkg("mlr3")` package.
 Thus, you actually don't need to construct it yourself, just call `tsk("german_credit")` to retrieve the object from the dictionary `r ref("mlr_tasks")`.
 
 ### Learner Definition
@@ -157,14 +157,14 @@ After having decided *what* should be modeled, we need to decide on *how*.
 This means we need to decide which learning algorithms, or `r ref("Learner", text = "Learners")` are appropriate.
 Using prior knowledge (e.g. knowing that it is a classification task or assuming that the classes are linearly separable) one ends up with one or more suitable `r ref("Learner")`s.
 
-Many learners can be obtained via the `r mlr_pkg("mlr3learners")` package.
-Additionally, many learners are provided via the `r mlr_pkg("mlr3extralearners")` package, from GitHub.
+Many learners can be obtained via the `r ref_pkg("mlr3learners")` package.
+Additionally, many learners are provided via the `r ref_pkg("mlr3extralearners")` package, from GitHub.
 These two resources combined account for a large fraction of standard learning algorithms.
-As `r mlr_pkg("mlr3")` usually only wraps learners from packages, it is even easy to create a formal `r ref("Learner")` by yourself.
-You may find the section about [extending mlr3](https://mlr3book.mlr-org.com/extending.html) in the `r mlr_pkg("mlr3book")` very helpful.
-If you happen to write your own `r ref("Learner")` in `r mlr_pkg("mlr3")`, we would be happy if you share it with the `r mlr_pkg("mlr3")` community.
+As `r ref_pkg("mlr3")` usually only wraps learners from packages, it is even easy to create a formal `r ref("Learner")` by yourself.
+You may find the section about [extending mlr3](https://mlr3book.mlr-org.com/extending.html) in the `r ref_pkg("mlr3book")` very helpful.
+If you happen to write your own `r ref("Learner")` in `r ref_pkg("mlr3")`, we would be happy if you share it with the `r ref_pkg("mlr3")` community.
 
-All available `r ref("Learner")`s (i.e. all which you have installed from `r mlr_pkg("mlr3")`, `mlr3learners`, `mlr3extralearners`, or self-written ones) are registered in the dictionary `r ref("mlr_learners")`:
+All available `r ref("Learner")`s (i.e. all which you have installed from `r ref_pkg("mlr3")`, `mlr3learners`, `mlr3extralearners`, or self-written ones) are registered in the dictionary `r ref("mlr_learners")`:
 
 ```{r 2020-03-11-mlr3-basics-german-credit-007}
 mlr_learners
@@ -216,7 +216,7 @@ The remaining 20 percent are used for evaluation at a subsequent later point in 
 head(train_set)
 ```
 
-In `r mlr_pkg("mlr3")` the training with a subset of the data can be declared by the additional argument `row_ids = train_set`:
+In `r ref_pkg("mlr3")` the training with a subset of the data can be declared by the additional argument `row_ids = train_set`:
 
 ```{r 2020-03-11-mlr3-basics-german-credit-012}
 learner_logreg$train(task, row_ids = train_set)
@@ -238,7 +238,7 @@ summary(learner_logreg$model)
 #### Random Forest
 
 Just like the logistic regression, we could train a random forest instead.
-We use the fast implementation from the `r cran_pkg("ranger")` package.
+We use the fast implementation from the `r ref_pkg("ranger")` package.
 For this, we first need to define the learner and then actually train it.
 
 We now additionally supply the importance argument (`importance = "permutation"`).
@@ -256,7 +256,7 @@ We can access the importance values using `$importance()`:
 learner_rf$importance()
 ```
 
-In order to obtain a plot for the importance values, we convert the importance to a `r cran_pkg("data.table")` and then process it with `r cran_pkg("ggplot2")`:
+In order to obtain a plot for the importance values, we convert the importance to a `r ref_pkg("data.table")` and then process it with `r ref_pkg("ggplot2")`:
 
 ```{r 2020-03-11-mlr3-basics-german-credit-017}
 importance = as.data.table(learner_rf$importance(), keep.rownames = TRUE)
@@ -329,7 +329,7 @@ To measure the performance of a learner on new unseen data, we usually mimic the
 The training set is used for training the learner, and the test set is only used for predicting and evaluating the performance of the trained learner.
 Numerous resampling methods (cross-validation, bootstrap) repeat the splitting process in different ways.
 
-Within `r mlr_pkg("mlr3")`, we need to specify the resampling strategy using the `r ref("rsmp()")` function:
+Within `r ref_pkg("mlr3")`, we need to specify the resampling strategy using the `r ref("rsmp()")` function:
 
 ```{r 2020-03-11-mlr3-basics-german-credit-024}
 resampling = rsmp("holdout", ratio = 2/3)
@@ -356,7 +356,7 @@ Lower is better.
 We can easily run different resampling strategies, e.g. repeated holdout (`"subsampling"`), or cross validation.
 Most methods perform repeated train/predict cycles on different data subsets and aggregate the result (usually as the mean).
 Doing this manually would require us to write loops.
-`r mlr_pkg("mlr3")` does the job for us:
+`r ref_pkg("mlr3")` does the job for us:
 
 ```{r 2020-03-11-mlr3-basics-german-credit-027}
 resampling = rsmp("subsampling", repeats = 10)
@@ -372,7 +372,7 @@ rr = resample(task, learner = learner_logreg, resampling = resampling)
 rr$aggregate()
 ```
 
-`r mlr_pkg("mlr3")` features scores for many more measures.
+`r ref_pkg("mlr3")` features scores for many more measures.
 Here, we apply `r ref("mlr_measures_classif.fpr")` for the false positive rate, and `r ref("mlr_measures_classif.fnr")` for the false negative rate.
 Multiple measures can be provided as a list of measures (which can directly be constructed via `r ref("msrs()")`:
 
@@ -384,7 +384,7 @@ measures = msrs(c("classif.fpr", "classif.fnr"))
 rr$aggregate(measures)
 ```
 
-There are a few more resampling methods, and quite a few more measures (implemented in `r mlr_pkg("mlr3measures")`).
+There are a few more resampling methods, and quite a few more measures (implemented in `r ref_pkg("mlr3measures")`).
 They are automatically registered in the respective dictionaries:
 
 ```{r 2020-03-11-mlr3-basics-german-credit-030}
@@ -416,7 +416,7 @@ bmr = benchmark(grid)
 
 Careful, large benchmarks may take a long time! This one should take less than a minute, however.
 In general, we want to use parallelization to speed things up on multi-core machines.
-For parallelization, `r mlr_pkg("mlr3")` relies on the `r cran_pkg("future")` package:
+For parallelization, `r ref_pkg("mlr3")` relies on the `r ref_pkg("future")` package:
 
 ```{r 2020-03-11-mlr3-basics-german-credit-032, eval=FALSE}
 # future::plan("multicore") # uncomment for parallelization
@@ -435,7 +435,7 @@ We see that the two models perform very similarly.
 
 ## Deviating from hyperparameters defaults
 
-The previously shown techniques build the backbone of a `r mlr_pkg("mlr3")`-featured machine learning workflow.
+The previously shown techniques build the backbone of a `r ref_pkg("mlr3")`-featured machine learning workflow.
 However, in most cases one would never proceed in the way we did.
 While many R packages have carefully selected default settings, they will not perform optimally in any scenario.
 Typically, we can select the values of such hyperparameters.
@@ -510,13 +510,13 @@ The "low" settings seem to underfit a bit, the "high" setting is comparable to t
 
 ## Outlook
 
-This tutorial was a detailed introduction to machine learning workflows within `r mlr_pkg("mlr3")`.
+This tutorial was a detailed introduction to machine learning workflows within `r ref_pkg("mlr3")`.
 Having followed this tutorial you should be able to run your first models yourself.
 Next to that we spiked into performance evaluation and benchmarking.
 Furthermore, we showed how to customize learners.
 
-The next parts of the tutorial will go more into depth into additional `r mlr_pkg("mlr3")` topics:
+The next parts of the tutorial will go more into depth into additional `r ref_pkg("mlr3")` topics:
 
-- [Part II - Tuning](https://mlr3gallery.mlr-org.com/posts/2020-03-11-mlr3tuning-tutorial-german-credit/) introduces you to the `r mlr_pkg("mlr3tuning")` package
+- [Part II - Tuning](https://mlr3gallery.mlr-org.com/posts/2020-03-11-mlr3tuning-tutorial-german-credit/) introduces you to the `r ref_pkg("mlr3tuning")` package
 
-- [Part III - Pipelines](https://mlr3gallery.mlr-org.com/posts/2020-03-11-mlr3pipelines-tutorial-german-credit/) introduces you to the `r mlr_pkg("mlr3pipelines")` package
+- [Part III - Pipelines](https://mlr3gallery.mlr-org.com/posts/2020-03-11-mlr3pipelines-tutorial-german-credit/) introduces you to the `r ref_pkg("mlr3pipelines")` package

@@ -34,9 +34,9 @@ content[, object := NULL]
 setnames(content, c("Key", "Label", "Packages", "Properties", "Classes"))
 ```
 
-Popular black-box optimization techniques are implemented in the `r mlr_pkg("bbotk")` package.
-The corresponding connectors to for tuning hyperparameters of learners or pipelines reside as `r ref("Tuner")` objects in package `r mlr_pkg("mlr3tuning")`.
-Additionally, packages `r mlr_pkg("mlr3hyperband")` and `r gh_pkg("mlr-org/mlr3mbo")` provide some modern and sophisticated approaches.
+Popular black-box optimization techniques are implemented in the `r ref_pkg("bbotk")` package.
+The corresponding connectors to for tuning hyperparameters of learners or pipelines reside as `r ref("Tuner")` objects in package `r ref_pkg("mlr3tuning")`.
+Additionally, packages `r ref_pkg("mlr3hyperband")` and `r ref_pkg("mlr-org/mlr3mbo")` provide some modern and sophisticated approaches.
 
 All tuners operator on box-constrained tuning spaces which have to be defined by the user.
 Some popular spaces from literature are readily available as [tuning spaces](tuning_spaces.html).

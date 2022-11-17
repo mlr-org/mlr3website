@@ -19,7 +19,7 @@ image: ../../images/logo_color.png
 However, it is possible to round the real values proposed by a `r ref("Tuner")` to integers before passing them to the learner in the evaluation.
 We show how to apply a parameter transformation to a `r ref("ParamSet")` and use this set in the tuning process.
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
 ```{r integer-hyperparameters-in-tuners-for-real-valued-search-spaces-002}
 library(mlr3verse)
@@ -86,14 +86,10 @@ However, in the learners hyperparameters space, `k` is an integer value.
 instance$result_x_domain
 ```
 
-The archive shows us that for all real-valued `k` proposed by `r cran_pkg("GenSA")`, an integer-valued `k` in the learner hyperparameter space (`x_domain_k`) was created.
+The archive shows us that for all real-valued `k` proposed by `r ref_pkg("GenSA")`, an integer-valued `k` in the learner hyperparameter space (`x_domain_k`) was created.
 
-```{r integer-hyperparameters-in-tuners-for-real-valued-search-spaces-010, eval = FALSE}
-as.data.table(instance$archive)
-```
-
-```{r integer-hyperparameters-in-tuners-for-real-valued-search-spaces-011, echo = FALSE}
-table_responsive(as.data.table(instance$archive)[, c("k", "classif.ce", "x_domain_k"), with = FALSE])
+```{r integer-hyperparameters-in-tuners-for-real-valued-search-spaces-010}
+as.data.table(instance$archive)[, .(k, classif.ce, x_domain_k)]
 ```
 
 Internally, `r ref("TunerGenSA")` was given the parameter types of the search space and therefore suggested real numbers for `k`.
@@ -107,4 +103,4 @@ Second, the rounding introduces discontinuities which can be problematic for som
 
 We successfully tuned a integer-valued hyperparameter with `r ref("TunerGenSA")` which is only suitable for an real-valued search space.
 This technique is not limited to tuning problems.
-`r ref("Optimizer")` in `r mlr_pkg("bbotk")` can be also used in the same way to produce points with integer parameters.
+`r ref("Optimizer")` in `r ref_pkg("bbotk")` can be also used in the same way to produce points with integer parameters.

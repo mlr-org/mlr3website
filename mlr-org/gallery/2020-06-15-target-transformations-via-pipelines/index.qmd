@@ -20,7 +20,7 @@ Transforming the target variable often can lead to predictive improvement and is
 
 One option to perform, e.g., a $\log$ transformation would be to manually transform the target prior to training a `r ref("Learner", "Learner")` (and also predicting from it) and then manually invert this transformation via $\exp$ after predicting from the `r ref("Learner")`. This is quite cumbersome, especially if a transformation and inverse transformation require information about both the training and prediction data.
 
-In this post, we show how to do various kinds of target transformations using `r mlr_pkg("mlr3pipelines")` and explain the design of the target transformation and inversion `r ref("PipeOp", "PipeOps")`.
+In this post, we show how to do various kinds of target transformations using `r ref_pkg("mlr3pipelines")` and explain the design of the target transformation and inversion `r ref("PipeOp", "PipeOps")`.
 
 You will:
 
@@ -30,7 +30,7 @@ You will:
 
 * implement a custom target transformation PipeOp, `PipeOpTargetTrafoBoxCox`
 
-As a prerequisite, you should be quite familiar with `r mlr_pkg("mlr3pipelines")`, i.e, know about the `$state` field of `r ref("PipeOp")`s, input and output channels, as well as `r ref("Graph", "Graphs")`. We will start with a `r ref("PipeOp")` for simple target transformations, `r ref("PipeOpTargetMutate")`.
+As a prerequisite, you should be quite familiar with `r ref_pkg("mlr3pipelines")`, i.e, know about the `$state` field of `r ref("PipeOp")`s, input and output channels, as well as `r ref("Graph", "Graphs")`. We will start with a `r ref("PipeOp")` for simple target transformations, `r ref("PipeOpTargetMutate")`.
 
 We load the most important packages for this example.
 
@@ -91,7 +91,7 @@ In principle, this is all that is needed to transform the target prior to traini
 trafo$train(list(task))$output$data(cols = task$target_names)
 ```
 
-After having predicted from the `r ref("Learner")` we could then proceed to apply the inverse transformation function in a similar manner. However, in `r mlr_pkg("mlr3pipelines")`, we decided to go with a more unified design of handling target transformations. In all target transformation `r ref("PipeOp")`s also the inverse transformation function of the target has to be specified. Therefore, in `r ref("PipeOpTargetMutate")`, the parameter `inverter` also has to be correctly specified:
+After having predicted from the `r ref("Learner")` we could then proceed to apply the inverse transformation function in a similar manner. However, in `r ref_pkg("mlr3pipelines")`, we decided to go with a more unified design of handling target transformations. In all target transformation `r ref("PipeOp")`s also the inverse transformation function of the target has to be specified. Therefore, in `r ref("PipeOpTargetMutate")`, the parameter `inverter` also has to be correctly specified:
 
 ```{r target-transformations-via-pipelines-009}
 trafo$param_set$values$inverter = function(x) list(response = exp(x$response))
@@ -205,7 +205,7 @@ $$y_{i}(\lambda) = \begin{cases}
 \log(y_{i}) & \text{if}~\lambda = 0
 \end{cases}$$
 
-`r mlr_pkg("mlr3pipelines")` already supports the Box-Cox transformation for numerical, positive features, see `?PipeOpBoxCox`.
+`r ref_pkg("mlr3pipelines")` already supports the Box-Cox transformation for numerical, positive features, see `?PipeOpBoxCox`.
 
 Here we will design a `r ref("PipeOp")` to apply the Box-Cox transformation as a target transformation. The $\lambda$ parameter of the transformation is estimated during training and used for both the training and prediction transformation. After predicting from a `r ref("Learner")` we will as always apply the inverse transformation function. To do the actual transformation we will use `r ref("bestNormalize::boxcox()")`.
 

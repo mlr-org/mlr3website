@@ -17,9 +17,9 @@ image: ../../images/logo_color.png
 
 ## Intro
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
-The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
-The data is part of the `r mlr_pkg("mlr3data")`  package.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+The `r ref_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
+The data is part of the `r ref_pkg("mlr3data")`  package.
 
 ```{r 2020-03-12-mlr3pipelines-titanic-Basics-002, message=FALSE}
 library(mlr3verse)
@@ -63,7 +63,7 @@ With the dataset, we get an explanation of the meanings of the different variabl
 | `ticket`   | Ticket number                       |
 | `cabin`    | Cabin                               |
 
-We can use the `r cran_pkg("skimr")` package in order to get a first overview of the data:
+We can use the `r ref_pkg("skimr")` package in order to get a first overview of the data:
 
 ```{r 2020-03-12-mlr3pipelines-titanic-Basics-004, R.options=list(width = 120)}
 data("titanic", package = "mlr3data")

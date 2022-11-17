@@ -15,8 +15,8 @@ image: ../../images/logo_color.png
 
 ## Goals and Prerequisites
 
-This use case shows how to use the basic `r mlr_pkg("mlr3")` package on the iris `r ref("Task")`, so it's our "Hello World" example.
-It assumes no prior knowledge in ML or `r mlr_pkg("mlr3")`.
+This use case shows how to use the basic `r ref_pkg("mlr3")` package on the iris `r ref("Task")`, so it's our "Hello World" example.
+It assumes no prior knowledge in ML or `r ref_pkg("mlr3")`.
 You can find most of the content here also in the [mlr3book](https://mlr3book.mlr-org.com/) in a more detailed way.
 Hence we will not make a lot of general comments, but keep it hands-on and short.
 
@@ -30,8 +30,8 @@ The following operations are shown:
 
 ## Loading basic packages
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
-The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+The `r ref_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
 ```{r 2020-03-18-iris-mlr3-basics-002, message=FALSE}
 library(mlr3verse)
@@ -97,12 +97,8 @@ print(cm)
 The `r ref("Learner")` contains information about all parameters that can be configured, including data type, constraints, defaults, etc.
 We can change the hyperparameters either during construction of later through an active binding.
 
-```{r 2020-03-18-iris-mlr3-basics-006, eval = FALSE}
-as.data.table(learner_1$param_set)
-```
-
-```{r 2020-03-18-iris-mlr3-basics-007, echo = FALSE}
-table_responsive(as.data.table(learner_1$param_set)[, c("id", "class", "lower", "upper", "nlevels"), with = FALSE])
+```{r 2020-03-18-iris-mlr3-basics-006}
+as.data.table(learner_1$param_set)[, .(id, class, lower, upper, nlevels)]
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-008}
@@ -120,22 +116,14 @@ rr = resample(task, learner_1, cv10)
 print(rr)
 ```
 
-```{r 2020-03-18-iris-mlr3-basics-010, eval = FALSE}
-rr$score(msrs(c("classif.acc", "classif.ce")))
+```{r 2020-03-18-iris-mlr3-basics-010}
+rr$score(msrs(c("classif.acc", "classif.ce")))[, .(iteration, task_id, learner_id, resampling_id, classif.ce)]
 ```
 
-```{r 2020-03-18-iris-mlr3-basics-011, echo = FALSE}
-table_responsive(rr$score()[, c("iteration", "task_id", "learner_id", "resampling_id", "classif.ce"), with = FALSE])
-```
-
-```{r 2020-03-18-iris-mlr3-basics-012, results = 'hide'}
+```{r 2020-03-18-iris-mlr3-basics-012}
 # get all predictions nicely concatenated in a table
 prediction = rr$prediction()
-head(as.data.table(prediction))
-```
-
-```{r 2020-03-18-iris-mlr3-basics-013, echo = FALSE}
-table_responsive(head(as.data.table(prediction)))
+as.data.table(prediction)
 ```
 
 ```{r 2020-03-18-iris-mlr3-basics-014}
@@ -145,16 +133,16 @@ print(cm)
 
 ## Populating the learner dictionary
 
-`r mlr_pkg("mlr3learners")` ships out with a dozen different popular `r ref("Learner", "Learners")`.
+`r ref_pkg("mlr3learners")` ships out with a dozen different popular `r ref("Learner", "Learners")`.
 We can list them from the dictionary.
-If we want more, we can install an extension package, `r mlr_pkg("mlr3extralearners")`, from GitHub.
+If we want more, we can install an extension package, `r ref_pkg("mlr3extralearners")`, from GitHub.
 Note how after the installation the dictionary increases in size.
 
 ```{r 2020-03-18-iris-mlr3-basics-015, message = FALSE}
-head(as.data.table(mlr_learners)[, c("key", "packages")])
+# head(as.data.table(mlr_learners)[, c("key", "packages")])
 # remotes::install_github("mlr-org/mlr3extralearners")
-library(mlr3extralearners)
-print(as.data.table(mlr_learners)[, c("key", "packages")])
+# library(mlr3extralearners)
+# print(as.data.table(mlr_learners)[, c("key", "packages")])
 ```
 
 ## Benchmarking multiple learners

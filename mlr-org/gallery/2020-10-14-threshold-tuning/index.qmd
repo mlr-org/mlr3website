@@ -24,14 +24,14 @@ This can lead to improved classification performance, especially for cases where
 This is for example often done in ROC Analysis. The mlr3book also has a chapter on [ROC Analysis](https://mlr3book.mlr-org.com/binary-classification.html#binary-roc)) for the interested reader.
 This post does not focus on ROC analysis, but instead focusses on the general problem of adjusting classification thresholds for arbitrary metrics.
 
-This post assumes some familiarity with the `r mlr_pkg("mlr3")`, and also the `r mlr_pkg("mlr3pipelines")` and `r mlr_pkg("mlr3tuning")` packages, as both are used during the post.
+This post assumes some familiarity with the `r ref_pkg("mlr3")`, and also the `r ref_pkg("mlr3pipelines")` and `r ref_pkg("mlr3tuning")` packages, as both are used during the post.
 The [mlr3book](https://mlr3book.mlr-org.com/) contains more details on those two packages.
 This post is a more in-depth version of the [article on threshold tuning in the mlr3book](https://mlr3book.mlr-org.com/cost-sens.html#threshold-tuning-1).
 
 
 ## Prerequisites
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
 ```{r 2020-10-14-threshold-tuning-002, message=FALSE}
 library(mlr3verse)
@@ -85,9 +85,9 @@ This threshold value can now be adjusted optimally for a given measure, such as 
 
 ## Adjusting thresholds: Two strategies
 
-Currently `r mlr_pkg("mlr3pipelines")`  offers two main strategies towards adjusting `classification thresholds`.
+Currently `r ref_pkg("mlr3pipelines")`  offers two main strategies towards adjusting `classification thresholds`.
 We can either expose the thresholds as a `hyperparameter` of the Learner by using `r ref("PipeOpThreshold")`.
-This allows us to tune the `thresholds` via an outside optimizer from `r mlr_pkg("mlr3tuning")`.
+This allows us to tune the `thresholds` via an outside optimizer from `r ref_pkg("mlr3tuning")`.
 
 Alternatively, we can also use `r ref("PipeOpTuneThreshold")` which automatically tunes the threshold after each learner fit.
 
@@ -108,12 +108,8 @@ Note, that `predict_type` = "prob" is required for `po("threshold")` to have any
 
 The `thresholds` are now exposed as a `hyperparameter` of the `r ref("GraphLearner")` we created:
 
-```{r 2020-10-14-threshold-tuning-009, eval = FALSE}
-l$param_set
-```
-
-```{r 2020-10-14-threshold-tuning-010, echo = FALSE}
-table_responsive(as.data.table(l$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
+```{r 2020-10-14-threshold-tuning-009}
+as.data.table(l$param_set)[, .(id, class, lower, upper, nlevels)]
 ```
 
 We can now tune those thresholds from the outside as follows:
@@ -200,12 +196,8 @@ l2 = GraphLearner$new(gr)
 Note, that `predict_type` = "prob" is required for `po("tunethreshold")` to have any effect.
 Additionally, note that this time no `threshold` parameter is exposed, it is automatically tuned internally.
 
-```{r 2020-10-14-threshold-tuning-016, eval = FALSE}
-l2$param_set
-```
-
-```{r 2020-10-14-threshold-tuning-017, echo = FALSE}
-table_responsive(as.data.table(l2$param_set)[, c("id", "class", "lower","upper","nlevels"), with = FALSE])
+```{r 2020-10-14-threshold-tuning-016}
+as.data.table(l2$param_set)[, .(id, class, lower, upper, nlevels)]
 ```
 
 If we now use the `r ref("GraphLearner")`, it automatically adjusts the `thresholds` during prediction.
@@ -226,10 +218,6 @@ bmr = benchmark(benchmark_grid(
 ))
 ```
 
-```{r 2020-10-14-threshold-tuning-019, eval = FALSE}
+```{r 2020-10-14-threshold-tuning-019}
 bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))
-```
-
-```{r 2020-10-14-threshold-tuning-020, echo = FALSE}
-table_responsive(bmr$aggregate(list(msr("classif.ce"), msr("classif.fnr")))[,.SD, .SDcols = !c("resample_result")])
 ```

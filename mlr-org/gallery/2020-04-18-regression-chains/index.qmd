@@ -14,7 +14,7 @@ image: thumbnail.png
 
 {{< include ../_setup.qmd >}}
 
-In this tutorial we demonstrate how to use `r mlr_pkg("mlr3pipelines")` to handle multi-target regression by arranging regression models as a chain, i.e., creating a linear sequence of regression models.
+In this tutorial we demonstrate how to use `r ref_pkg("mlr3pipelines")` to handle multi-target regression by arranging regression models as a chain, i.e., creating a linear sequence of regression models.
 
 # Regression Chains
 
@@ -33,7 +33,7 @@ Writing pipelines with such steps allows for great flexibility in modeling more 
 
 # Prerequisites
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
 ```{r regression-chains-002}
 library(mlr3verse)
@@ -83,7 +83,7 @@ As a real-world example for such a situation, consider e.g. hospital data, where
 # 3D Visualization of the Data
 
 If you feel confident to already have a good feeling of the data, feel free to skip this section.
-If not, you can use the `r cran_pkg("rgl")` package to play around with the following four 3D plots with either the feature variables or $y_{1}$ and $y_{2}$ on the x- and y-axis and the target variables on the respective z-axes:
+If not, you can use the `r ref_pkg("rgl")` package to play around with the following four 3D plots with either the feature variables or $y_{1}$ and $y_{2}$ on the x- and y-axis and the target variables on the respective z-axes:
 
 ```{r regression-chains-007, eval = FALSE}
 library(rgl)

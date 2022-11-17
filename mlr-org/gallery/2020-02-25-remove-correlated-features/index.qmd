@@ -22,16 +22,16 @@ This is often useful when we for example want to use **linear models**.
 
 ## Prerequisites
 
-This tutorial assumes familiarity with the basics of `r mlr_pkg("mlr3pipelines")`.
+This tutorial assumes familiarity with the basics of `r ref_pkg("mlr3pipelines")`.
 Consult the [mlr3book](https://mlr3book.mlr-org.com/pipelines.html) if some aspects are not  fully understandable.
-Additionally, we compare different cutoff values via tuning using the `r mlr_pkg("mlr3tuning")` package.
-Again, the [mlr3book](https://mlr3book.mlr-org.com/paradox.html) has an intro to `r mlr_pkg("mlr3tuning")` and `r mlr_pkg("paradox")`.
+Additionally, we compare different cutoff values via tuning using the `r ref_pkg("mlr3tuning")` package.
+Again, the [mlr3book](https://mlr3book.mlr-org.com/paradox.html) has an intro to `r ref_pkg("mlr3tuning")` and `r ref_pkg("paradox")`.
 
 The example describes a very involved use-case, where the behavior of `r ref("PipeOpSelect")` is manipulated via a **trafo** on it's `r ref("ParamSet")`
 
 ## Getting started
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
 ```{r 2020-02-25-remove-correlated-features-002, message=FALSE}
 library(mlr3verse)
@@ -54,7 +54,7 @@ graph_learner = po("select") %>>% lrn("classif.rpart")
 
 Now we get to the magic:
 
-We want to use the function `r ref("caret::findCorrelation()")` from the `r cran_pkg("caret")` package in order to select uncorrelated variables.
+We want to use the function `r ref("caret::findCorrelation()")` from the `r ref_pkg("caret")` package in order to select uncorrelated variables.
 This function has a `cutoff` parameter, that specifies the maximum correlation allowed between variables.
 In order to expose this variable as a `numeric` parameter we can tune over we specify the following `r ref("ParamSet")`:
 
@@ -117,4 +117,4 @@ as.data.table(instance$archive)[
   ))]
 ```
 
-Voila, we created our own `r ref("PipeOp")`, that uses very advanced knowledge of `r mlr_pkg("mlr3pipelines")` and `r mlr_pkg("paradox")` in only few lines of code.
+Voila, we created our own `r ref("PipeOp")`, that uses very advanced knowledge of `r ref_pkg("mlr3pipelines")` and `r ref_pkg("paradox")` in only few lines of code.

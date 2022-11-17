@@ -36,7 +36,7 @@ The other parts can be found here:
 * [Part IV - Tuning and Parallel Processing](https://mlr3gallery.mlr-org.com/posts/2021-03-12-practical-tuning-series-tuning-and-parallel-processing/)
 
 In this post, we build a simple preprocessing pipeline and tune it.
-For this, we are using the `r mlr_pkg("mlr3pipelines")` extension package.
+For this, we are using the `r ref_pkg("mlr3pipelines")` extension package.
 First, we start by imputing missing values in the [Pima Indians Diabetes data set](https://mlr3.mlr-org.com/reference/mlr_tasks_pima.html).
 After that, we encode a factor column to numerical dummy columns in the data set.
 Next, we combine both preprocessing steps to a `r ref("Graph")` and create a `r ref("GraphLearner")`.
@@ -44,15 +44,15 @@ Finally, nested resampling is used to compare the performance of two imputation 
 
 # Prerequisites
 
-We load the `r mlr_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
 
 ```{r practical-tuning-series-tune-a-preprocessing-pipeline-003, message = FALSE}
 library(mlr3verse)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
-The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r mlr_pkg("mlr3")` packages.
-The `r mlr_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r mlr_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r mlr_pkg("mlr3tuning")` ).
+The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r ref_pkg("mlr3")` packages.
+The `r ref_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r ref_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r ref_pkg("mlr3tuning")` ).
 
 ```{r practical-tuning-series-tune-a-preprocessing-pipeline-004}
 set.seed(7832)
@@ -80,7 +80,7 @@ task$cbind(data)
 skimr::skim(task$data())
 ```
 
-We choose the xgboost algorithm from the `r cran_pkg("xgboost")` package as learner.
+We choose the xgboost algorithm from the `r ref_pkg("xgboost")` package as learner.
 
 ```{r practical-tuning-series-tune-a-preprocessing-pipeline-006}
 learner = lrn("classif.xgboost", nrounds = 100, id = "xgboost", verbose = 0)
@@ -96,7 +96,7 @@ round(task$missings() / task$nrow, 2)
 
 The `xgboost` learner has an internal method for handling missing data but some learners cannot handle missing values.
 We will try to beat the internal method in terms of predictive performance.
-The `r mlr_pkg("mlr3pipelines")` package offers various methods to impute missing values.
+The `r ref_pkg("mlr3pipelines")` package offers various methods to impute missing values.
 
 ```{r practical-tuning-series-tune-a-preprocessing-pipeline-008}
 mlr_pipeops$keys("^impute")

@@ -30,9 +30,9 @@ You will learn the following:
 
 This is an advanced use case. What should you know before:
 
-* `r mlr_pkg("mlr3")` basics
-* `r mlr_pkg("mlr3tuning")` basics, especially `r ref("AutoTuner")`
-* `r mlr_pkg("mlr3pipelines")`, especially branching
+* `r ref_pkg("mlr3")` basics
+* `r ref_pkg("mlr3tuning")` basics, especially `r ref("AutoTuner")`
+* `r ref_pkg("mlr3pipelines")`, especially branching
 
 # The Setup
 
@@ -40,8 +40,8 @@ Assume, you are given some ML task and what to compare a couple of learners, pro
 That's a super standard scenario, it actually sounds so common that you might wonder: Why an (advanced) blog post about this? With pipelines?
 We will consider 2 cases: (a) Running the learners in their default, so without tuning, and (b) with tuning.
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
-The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+The `r ref_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
 ```{r 2020-02-01-tuning-multiplexer-002}
 #| message: false
@@ -93,7 +93,7 @@ Three reasons:
    If we do that we have "optimized on the CV" (we basically ran a grid search over our learners!) and we know that this is will produce optimistically biased results.
    NB: This is a somewhat ridiculous criticism if we are going over only a handful of options, and the bias will be very small.
    But it will be noticeable if we do this over hundreds of learners, so it is important to understand the underlying problem.
-   This is a somewhat subtle point, and this gallery post is more about technical hints for `r mlr_pkg("mlr3")`, so we will stop this discussion here.
+   This is a somewhat subtle point, and this gallery post is more about technical hints for `r ref_pkg("mlr3")`, so we will stop this discussion here.
 2. For some tuning algorithms, you might have a chance to more efficiently select from the set of algorithms than running the full benchmark.
    Because of the categorical nature of the problem, you will not be able to learn stuff like "If learner A works bad, I don't have to try learner B", but you can potentially save some resampling iterations.
    Assume you have so select from 100 candidates, experiments are expensive, and you use a 20-fold CV.
