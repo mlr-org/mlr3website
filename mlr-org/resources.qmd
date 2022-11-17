@@ -58,12 +58,12 @@ library(mlr3website)
 
 A more scientific view on our the packages and the packages we depend on.
 
-* @mlr3: about the base package `r mlr_pkg("mlr3")`
-* @mlr3pipelines: building machine learning pipelines with `r mlr_pkg("mlr3pipelines")`
-* @mlr3proba: probabilistic regression with `r mlr_pkg("mlr3proba")` (including survival analysis)
-* @future: the parallelization framework package `r cran_pkg("future")` we build upon
-* @checkmate: package `r cran_pkg("checkmate")` for argument checking and defensive programming
-* @batchtools: parallelization framework `r cran_pkg("batchtools")` for high-performance computing clusters, used via `r cran_pkg("future")` or `r gh_pkg("mlr-org/mlr3batchmark")`
+* @mlr3: about the base package `r ref_pkg("mlr3")`
+* @mlr3pipelines: building machine learning pipelines with `r ref_pkg("mlr3pipelines")`
+* @mlr3proba: probabilistic regression with `r ref_pkg("mlr3proba")` (including survival analysis)
+* @future: the parallelization framework package `r ref_pkg("future")` we build upon
+* @checkmate: package `r ref_pkg("checkmate")` for argument checking and defensive programming
+* @batchtools: parallelization framework `r ref_pkg("batchtools")` for high-performance computing clusters, used via `r ref_pkg("future")` or `r ref_pkg("mlr-org/mlr3batchmark")`
 
 
 

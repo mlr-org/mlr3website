@@ -29,7 +29,7 @@ Note, that correctness of the results can not be guaranteed.
 
 ## Prerequisites
 
-This tutorial assumes familiarity with the basics of `r mlr_pkg("mlr3tuning")` and `r mlr_pkg("mlr3pipelines")`.
+This tutorial assumes familiarity with the basics of `r ref_pkg("mlr3tuning")` and `r ref_pkg("mlr3pipelines")`.
 Consult the [mlr3book](https://mlr3book.mlr-org.com/pipelines.html) if some aspects are not fully understandable.
 We load the most important packages for this example.
 
@@ -65,7 +65,7 @@ Section 3 presents learners and their hyperparameter tuning while section 4, dea
 
 # Indian Liver Patient Dataset
 
-The data set we used for our project is the "Indian Liver Patient Dataset" which was obtained from the `r mlr_pkg("mlr3data")` package. It was donated by three professors from India in 2012 @Dua2017.
+The data set we used for our project is the "Indian Liver Patient Dataset" which was obtained from the `r ref_pkg("mlr3data")` package. It was donated by three professors from India in 2012 @Dua2017.
 
 ```{r 2020-09-11-liver-patient-classification-005}
 # Importing data
@@ -346,7 +346,7 @@ tune_ps_rf = ps(
 )
 ```
 
-The next step is to instantiate the AutoTuner from `r mlr_pkg("mlr3tuning")`.
+The next step is to instantiate the AutoTuner from `r ref_pkg("mlr3tuning")`.
 We employed 5-fold cross-validation for the inner loop of the nested resampling. The number of evaluations was set to 100 as the stopping criterion. As an evaluation metric we used AUC.
 
 ```{r 2020-09-11-liver-patient-classification-016}
@@ -383,7 +383,7 @@ learners$learner_rf$predict_sets = c("train", "test")
 ```
 
 During our research we found that oversampling can potentially increase the performance of the learners.
-As mentioned in section 2.2, we opted for perfectly balancing the classes. By using `r mlr_pkg("mlr3pipelines")` we can apply the benchmark function later on.
+As mentioned in section 2.2, we opted for perfectly balancing the classes. By using `r ref_pkg("mlr3pipelines")` we can apply the benchmark function later on.
 
 ```{r 2020-09-11-liver-patient-classification-017}
 # Oversampling minority class to get perfectly balanced classes

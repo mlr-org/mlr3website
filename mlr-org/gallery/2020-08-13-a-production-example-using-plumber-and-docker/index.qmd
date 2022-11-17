@@ -100,7 +100,7 @@ However, in our REST API, the `newdata` will be received at an endpoint that acc
 
 ### Using plumber to set up our REST API
 
-The package `r cran_pkg("plumber")` allows us to create a REST API by simply commenting existing R code. `plumber` makes use of these comments to define the web service. Running `plumber::plumb` on the commented R file then results in a runnable web service that other systems can interact with over a network.
+The package `r ref_pkg("plumber")` allows us to create a REST API by simply commenting existing R code. `plumber` makes use of these comments to define the web service. Running `plumber::plumb` on the commented R file then results in a runnable web service that other systems can interact with over a network.
 
 As an endpoint for predicting the `medv`, we will use a `POST` request. This will allow us to enclose data in the body of the request message. More precisely, we assume that the data will be provided in the JSON format.
 
@@ -241,4 +241,4 @@ To stop all running containers use:
 docker stop $(docker ps -a -q)
 ```
 
-Finally, you can proceed to deploy your container to an Amazon Web Service or an Azure Cloud. For the latter, the package `r cran_pkg("AzureContainers")` is especially helpful. If you do plan to do this note that the `plumber` service above is exposed over HTTP, and there is no authentication layer making it insecure. You may think about adding a layer of authentification and restricting the service to HTTPS.
+Finally, you can proceed to deploy your container to an Amazon Web Service or an Azure Cloud. For the latter, the package `r ref_pkg("AzureContainers")` is especially helpful. If you do plan to do this note that the `plumber` service above is exposed over HTTP, and there is no authentication layer making it insecure. You may think about adding a layer of authentification and restricting the service to HTTPS.

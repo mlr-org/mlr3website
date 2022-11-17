@@ -27,7 +27,7 @@ content[, `:=`(object = NULL, collection = NULL)]
 setnames(content, c("Key", "Label", "Learner", "# hyperparameters"))
 ```
 
-The package `r mlr_pkg("mlr3tuningspaces")` ships with some predefined tuning spaces for hyperparameter optimization.
+The package `r ref_pkg("mlr3tuningspaces")` ships with some predefined tuning spaces for hyperparameter optimization.
 See the respective manual page for the article from which they were extracted.
 
 ```{r}

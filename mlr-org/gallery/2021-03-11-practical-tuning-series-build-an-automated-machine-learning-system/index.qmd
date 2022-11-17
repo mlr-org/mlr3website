@@ -32,20 +32,20 @@ The other parts can be found here:
 * [Part IV - Tuning and Parallel Processing](https://mlr3gallery.mlr-org.com/posts/2021-03-12-practical-tuning-series-tuning-and-parallel-processing/)
 
 In this post, we implement a simple automated machine learning (AutoML) system which includes preprocessing, a switch between multiple learners and hyperparameter tuning.
-For this, we build a pipeline with the `r mlr_pkg("mlr3pipelines")` extension package.
+For this, we build a pipeline with the `r ref_pkg("mlr3pipelines")` extension package.
 Additionally, we use nested resampling to get an unbiased performance estimate of our AutoML system.
 
 # Prerequisites
 
-We load the `r mlr_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-002, message = FALSE}
 library(mlr3verse)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
-The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r mlr_pkg("mlr3")` packages.
-The `r mlr_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r mlr_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r mlr_pkg("mlr3tuning")` ).
+The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r ref_pkg("mlr3")` packages.
+The `r ref_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r ref_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r ref_pkg("mlr3tuning")` ).
 
 ```{r practical-tuning-series-build-an-automated-machine-learning-system-003}
 set.seed(7832)

@@ -16,10 +16,10 @@ image: ../../images/logo_color.png
 
 ## Introduction
 
-In this tutorial, we introduce the `r mlr_pkg("mlr3fselect")` package by comparing feature selection methods on the Titanic disaster data set.
+In this tutorial, we introduce the `r ref_pkg("mlr3fselect")` package by comparing feature selection methods on the Titanic disaster data set.
 The objective of feature selection is to enhance the interpretability of models, speed up the learning process and increase the predictive performance.
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
 ```{r mlr3fselect-basic-003, message=FALSE}
 library(mlr3verse)
@@ -39,7 +39,7 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 The [Titanic data set](https://www.kaggle.com/c/titanic/data) contains data for 887 Titanic passengers, including whether they survived when the Titanic sank.
 Our goal will be to predict the survival of the Titanic passengers.
 
-After loading the data set from the `r mlr_pkg("mlr3data")` package, we impute the missing age values with the median age of the passengers, set missing embarked values to `"s"` and remove `character` features.
+After loading the data set from the `r ref_pkg("mlr3data")` package, we impute the missing age values with the median age of the passengers, set missing embarked values to `"s"` and remove `character` features.
 We could use feature engineering to create new features from the `character` features, however we want to focus on feature selection in this tutorial.
 
 In addition to the `survived` column, the reduced data set contains the following attributes for each passenger:
@@ -74,7 +74,7 @@ task = as_task_classif(titanic, target = "survived", positive = "yes")
 
 ## Model
 
-We use the logistic regression learner provided by the `r mlr_pkg("mlr3learners")` package.
+We use the logistic regression learner provided by the `r ref_pkg("mlr3learners")` package.
 
 ```{r mlr3fselect-basic-007}
 library(mlr3learners)

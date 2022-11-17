@@ -31,9 +31,9 @@ The other parts can be found here:
 * [Part IV - Tuning and Parallel Processing](https://mlr3gallery.mlr-org.com/posts/2021-03-12-practical-tuning-series-tuning-and-parallel-processing/)
 
 In this post, we demonstrate how to optimize the hyperparameters of a support vector machine (SVM).
-We are using the `r mlr_pkg("mlr3")` machine learning framework with the `r mlr_pkg("mlr3tuning")` extension package.
+We are using the `r ref_pkg("mlr3")` machine learning framework with the `r ref_pkg("mlr3tuning")` extension package.
 
-First, we start by showing the basic building blocks of `r mlr_pkg("mlr3tuning")`  and tune the `cost` and `gamma` hyperparameters of an SVM with a radial basis function on the [Iris data set](https://mlr3.mlr-org.com/reference/mlr_tasks_iris.html).
+First, we start by showing the basic building blocks of `r ref_pkg("mlr3tuning")`  and tune the `cost` and `gamma` hyperparameters of an SVM with a radial basis function on the [Iris data set](https://mlr3.mlr-org.com/reference/mlr_tasks_iris.html).
 After that, we use transformations to tune the both hyperparameters on the logarithmic scale.
 Next, we explain the importance of dependencies to tune hyperparameters like `degree` which are dependent on the choice of kernel.
 After that, we fit an SVM with optimized hyperparameters on the full dataset.
@@ -41,15 +41,15 @@ Finally, nested resampling is used to compute an unbiased performance estimate o
 
 # Prerequisites
 
-We load the `r mlr_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-003, message = FALSE}
 library(mlr3verse)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
-The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r mlr_pkg("mlr3")` packages.
-The `r mlr_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r mlr_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r mlr_pkg("mlr3tuning")` ).
+The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r ref_pkg("mlr3")` packages.
+The `r ref_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r ref_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r ref_pkg("mlr3tuning")` ).
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-004}
 set.seed(7832)
@@ -71,7 +71,7 @@ task = tsk("iris")
 skimr::skim(task$data())
 ```
 
-We choose the support vector machine implementation from the `r cran_pkg("e1071")` package (which is based on [LIBSVM](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)) and use it as a classification machine by setting `type` to `"C-classification"`.
+We choose the support vector machine implementation from the `r ref_pkg("e1071")` package (which is based on [LIBSVM](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)) and use it as a classification machine by setting `type` to `"C-classification"`.
 
 ```{r practical-tuning-series-tune-a-support-vector-machine-006}
 learner = lrn("classif.svm", type = "C-classification", kernel = "radial")

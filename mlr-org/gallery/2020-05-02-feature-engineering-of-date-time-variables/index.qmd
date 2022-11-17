@@ -14,7 +14,7 @@ image: thumbnail.png
 
 {{< include ../_setup.qmd >}}
 
-In this tutorial, we demonstrate how `r mlr_pkg("mlr3pipelines")` can be used to easily engineer features based on date-time variables.
+In this tutorial, we demonstrate how `r ref_pkg("mlr3pipelines")` can be used to easily engineer features based on date-time variables.
 Relying on the [Bike Sharing Dataset](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) and the `r ref("mlr_learners_regr.ranger", "ranger learner")` we compare the root mean square error (RMSE) of a random forest using the original features (baseline), to the RMSE of a random forest using newly engineered features on top of the original ones.
 
 ## Motivation
@@ -41,14 +41,14 @@ plot(hours_sin, hours_cos,
 text(hours_sin, hours_cos, col = cols, labels = as.character(hours))
 ```
 
-`r mlr_pkg("mlr3pipelines")` provides the `r ref("PipeOpDateFeatures")` pipeline which can be used to automatically engineer features based on `POSIXct` columns, including handling of cyclical features.
+`r ref_pkg("mlr3pipelines")` provides the `r ref("PipeOpDateFeatures")` pipeline which can be used to automatically engineer features based on `POSIXct` columns, including handling of cyclical features.
 
 This is useful as most learners naturally cannot handle dates and `POSIXct` variables and therefore require conversion prior to training.
 
 ## Prerequisites
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
-The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+The `r ref_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
 ```{r feature-engineering-of-date-time-variables-003, message=FALSE}
 library(mlr3verse)
@@ -69,7 +69,7 @@ The dataset can be downloaded from the UCI Machine Learning Repository.
 After reading in the data, we fix some factor levels, and convert some data types:
 
 The `r ref("mlr_tasks_bike_sharing", "Bike Sharing Dataset")` contains the hourly count of rental bikes between years 2011 and 2012 in Capital bikeshare system with the corresponding weather and seasonal information.
-We load the data set from the `r mlr_pkg("mlr3data")` package.
+We load the data set from the `r ref_pkg("mlr3data")` package.
 
 ```{r feature-engineering-of-date-time-variables-005}
 data("bike_sharing", package = "mlr3data")

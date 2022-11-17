@@ -44,7 +44,7 @@ Following features are illustrated:
 * Engineering features
 * Creating a sparser model
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
 ```{r 2020-01-30-house-prices-in-king-county-003}
 library(mlr3verse)
@@ -60,7 +60,7 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 
 ## House Price Prediction in King County {#use-case-regr-houses}
 
-We use the `kc_housing` dataset contained in the package `r mlr_pkg("mlr3data")` in order to provide a use-case for the application of `r mlr_pkg("mlr3")` on real-world data.
+We use the `kc_housing` dataset contained in the package `r ref_pkg("mlr3data")` in order to provide a use-case for the application of `r ref_pkg("mlr3")` on real-world data.
 
 ```{r 2020-01-30-house-prices-in-king-county-005}
 data("kc_housing", package = "mlr3data")
@@ -98,7 +98,7 @@ In addition to the price column, we have several other columns:
 Before we continue with the analysis,  we preprocess some features so that they are stored in the correct format.
 
 First we convert the `date` column to `numeric`.
-To do so, we convert the date to the POSIXct date/time class with the `r cran_pkg("anytime")` package.
+To do so, we convert the date to the POSIXct date/time class with the `r ref_pkg("anytime")` package.
 Next, use `difftime()` to convert to days since the first day recorded in the data set:
 
 ```{r 2020-01-30-house-prices-in-king-county-007, message = FALSE}
@@ -162,7 +162,7 @@ After those initial manipulations, we load all required packages and create a `r
 tsk = as_task_regr(kc_housing, target = "price")
 ```
 
-We can inspect associations between variables using `r mlr_pkg("mlr3viz")`'s `autoplot` function in order to get some good first impressions for our data.
+We can inspect associations between variables using `r ref_pkg("mlr3viz")`'s `autoplot` function in order to get some good first impressions for our data.
 Note, that this does in no way prevent us from using other powerful plot functions of our choice on the original data.
 
 #### Distribution of the price:
@@ -284,7 +284,7 @@ sprintf("RMSE of the simple rpart: %s", round(sqrt(res$aggregate()), 2))
 ### Many Trees: Random Forest
 
 We might be able to improve upon the **RMSE** using more powerful learners.
-We first load the `r mlr_pkg("mlr3learners")` package, which contains the `r cran_pkg("ranger")` learner (a package which implements the "Random Forest" algorithm).
+We first load the `r ref_pkg("mlr3learners")` package, which contains the `r ref_pkg("ranger")` learner (a package which implements the "Random Forest" algorithm).
 
 ```{r 2020-01-30-house-prices-in-king-county-026}
 library(mlr3learners)
@@ -296,14 +296,14 @@ sprintf("RMSE of the simple ranger: %s", round(sqrt(res$aggregate()), 2))
 
 Often tuning **RandomForest** methods does not increase predictive performances substantially.
 If time permits, it can nonetheless lead to improvements and should thus be performed.
-In this case, we resort to tune a different kind of model: **Gradient Boosted Decision Trees** from the package `r cran_pkg("xgboost")`.
+In this case, we resort to tune a different kind of model: **Gradient Boosted Decision Trees** from the package `r ref_pkg("xgboost")`.
 
 ### A better baseline: `AutoTuner`
 
 Tuning can often further improve the performance.
 In this case, we *tune* the xgboost learner in order to see whether this can improve performance.
 For the `AutoTuner` we have to specify a **Termination Criterion** (how long the tuning should run) a **Tuner** (which tuning method to use) and a **ParamSet** (which space we might want to search through).
-For now, we do not use the **zipcode** column, as `r cran_pkg("xgboost")` cannot naturally deal with categorical features.
+For now, we do not use the **zipcode** column, as `r ref_pkg("xgboost")` cannot naturally deal with categorical features.
 The **AutoTuner** automatically performs nested cross-validation.
 
 ```{r 2020-01-30-house-prices-in-king-county-027}
@@ -344,9 +344,9 @@ We can obtain the resulting parameters in the respective splits by accessing the
 sapply(res$learners, function(x) x$learner$param_set$values)[-2, ]
 ```
 
-**NOTE:** To keep runtime low, we only tune parts of the hyperparameter space of `r cran_pkg("xgboost")` in this example.
+**NOTE:** To keep runtime low, we only tune parts of the hyperparameter space of `r ref_pkg("xgboost")` in this example.
 Additionally, we only allow for $10$ random search iterations, which is usually too little for real-world applications.
-Nonetheless, we are able to obtain an improved performance when comparing to the `r cran_pkg("ranger")` model.
+Nonetheless, we are able to obtain an improved performance when comparing to the `r ref_pkg("ranger")` model.
 
 In order to further improve our results we have several options:
 
@@ -392,11 +392,11 @@ sprintf("RMSE of ranger with med_price: %s", round(sqrt(res$aggregate()), 2))
 ###  Advanced: Obtaining a sparser model
 
 In many cases, we might want to have a sparse model.
-For this purpose we can use a `r ref("mlr3filters::Filter")` implemented in `r mlr_pkg("mlr3filters")`.
+For this purpose we can use a `r ref("mlr3filters::Filter")` implemented in `r ref_pkg("mlr3filters")`.
 This can prevent our learner from overfitting make it easier for humans to interpret models as fewer variables influence the resulting prediction.
 
 In this example, we use `PipeOpFilter` (via `po("filter", ...)`) to add a feature-filter before training the model.
-For a more in-depth insight, refer to the sections on `r mlr_pkg("mlr3pipelines")`  and `mlr3filters` in the **mlr3 book**: [Feature Selection](https://mlr3book.mlr-org.com/fs.html) and [Pipelines](https://mlr3book.mlr-org.com/pipelines.html).
+For a more in-depth insight, refer to the sections on `r ref_pkg("mlr3pipelines")`  and `mlr3filters` in the **mlr3 book**: [Feature Selection](https://mlr3book.mlr-org.com/fs.html) and [Pipelines](https://mlr3book.mlr-org.com/pipelines.html).
 
 ```{r 2020-01-30-house-prices-in-king-county-038}
 filter = flt("mrmr")

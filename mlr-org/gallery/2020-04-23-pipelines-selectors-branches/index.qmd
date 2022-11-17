@@ -17,7 +17,7 @@ image: thumbnail.png
 
 ## Intro
 
-`r mlr_pkg("mlr3pipelines")`  offers a very flexible way to create data preprocessing steps.
+`r ref_pkg("mlr3pipelines")`  offers a very flexible way to create data preprocessing steps.
 This is achieved by a modular approach using `r ref("PipeOp")`s.
 For detailed overview check the [mlr3book](https://mlr3book.mlr-org.com/pipelines.html).
 
@@ -34,7 +34,7 @@ This post covers:
 
 ## Prerequisites
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
 ```{r 2020-04-23-pipelines-selectors-branches-002, message=FALSE}
 library(mlr3verse)

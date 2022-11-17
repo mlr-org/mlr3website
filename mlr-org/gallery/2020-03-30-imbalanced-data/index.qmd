@@ -24,18 +24,18 @@ future::plan(list("sequential", "multisession"))
 # Intro
 
 This use case compares different approaches to handle class imbalance for the
-`r ref("mlr_tasks_optdigits", "Optical Recognition of Handwritten Digits")` (optdigits) binary classification data set using the `r mlr_pkg("mlr3")` package.
+`r ref("mlr_tasks_optdigits", "Optical Recognition of Handwritten Digits")` (optdigits) binary classification data set using the `r ref_pkg("mlr3")` package.
 We mainly focus on undersampling the majority class, oversampling the minority class, and the SMOTE imbalance correction [@smote] that enriches the minority class with synthetic data.
 The use case requires prior knowledge in basic ML concepts (issues imbalanced data, hyperparameter tuning, nested cross-validation).
-The R packages `r mlr_pkg("mlr3")`, `r mlr_pkg("mlr3pipelines")` and `r mlr_pkg("mlr3tuning")` will be used.
+The R packages `r ref_pkg("mlr3")`, `r ref_pkg("mlr3pipelines")` and `r ref_pkg("mlr3tuning")` will be used.
 You can find most of the content here also in the [mlr3book](https://mlr3book.mlr-org.com/) explained in a more detailed way.
 
 These steps are performed:
 
 * Retrieve data sets from `OpenML`
-* Define imbalance correction pipeline `r ref("Graph")`s (undersampling, oversampling and SMOTE) with `r mlr_pkg("mlr3pipelines")`
-* Autotune the `r ref("Graph")` together with a learner using `r mlr_pkg("mlr3tuning")`
-* Benchmark the autotuned `r ref("Graph")` and visualize the results using `r mlr_pkg("mlr3viz")`
+* Define imbalance correction pipeline `r ref("Graph")`s (undersampling, oversampling and SMOTE) with `r ref_pkg("mlr3pipelines")`
+* Autotune the `r ref("Graph")` together with a learner using `r ref_pkg("mlr3tuning")`
+* Benchmark the autotuned `r ref("Graph")` and visualize the results using `r ref_pkg("mlr3viz")`
 
 # Prerequisites
 
@@ -76,7 +76,7 @@ d = getOMLDataSet(980)
 d
 ```
 
-After downloading the chosen data set, we create an `r mlr_pkg("mlr3")` classification task:
+After downloading the chosen data set, we create an `r ref_pkg("mlr3")` classification task:
 
 ```{r 2020-03-30-imbalanced-data-006, eval = FALSE}
 # make sure target is a factor and create mlr3 tasks
@@ -86,7 +86,7 @@ task = as_task_classif(data, id = d$desc$name, target = d$target.features)
 task
 ```
 
-Please note that the optdigits dataset is also included in the `r mlr_pkg("mlr3data")`  package where you can get the preprocessed (integers properly encoded as such, etc.) data via:
+Please note that the optdigits dataset is also included in the `r ref_pkg("mlr3data")`  package where you can get the preprocessed (integers properly encoded as such, etc.) data via:
 
 ```{r 2020-03-30-imbalanced-data-007}
 data("optdigits", package = "mlr3data")
@@ -101,7 +101,7 @@ skimr::skim(task$data())
 
 # Imbalance correction
 
-In `r mlr_pkg("mlr3pipelines")` , there is a `r ref("PipeOpClassBalancing", "class balancing")` and a `r ref("PipeOpSmote", "smote")` pipe operator that can be combined with any learner.
+In `r ref_pkg("mlr3pipelines")` , there is a `r ref("PipeOpClassBalancing", "class balancing")` and a `r ref("PipeOpSmote", "smote")` pipe operator that can be combined with any learner.
 Below, we define the undersampling, oversampling and SMOTE `r ref("PipeOp")`s/`r ref("Graph")`.
 All three imbalance correction methods have hyperparameters to control the degree of class imbalance.
 We apply the `r ref("PipeOp")`s/`r ref("Graph")` to the current `r ref("Task", "task")` with specific hyperparameter values to see how the class balance changes:

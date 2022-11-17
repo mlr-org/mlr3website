@@ -32,8 +32,8 @@ library(mlr3learners)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
-The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r mlr_pkg("mlr3")` packages.
-The `r mlr_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r mlr_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r mlr_pkg("mlr3tuning")` ).
+The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r ref_pkg("mlr3")` packages.
+The `r ref_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r ref_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r ref_pkg("mlr3tuning")` ).
 
 ```{r tuning-a-complex-graph-004}
 set.seed(7832)
@@ -43,7 +43,7 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 
 ## Data and Task
 
-We are going to work with some gene expression data included as a supplement in the `r cran_pkg("bst")` package.
+We are going to work with some gene expression data included as a supplement in the `r ref_pkg("bst")` package.
 The data consists of 2308 gene profiles in 63 training and 20 test samples.
 The following data preprocessing steps are done analogously as in `vignette("khan", package = "bst")`:
 

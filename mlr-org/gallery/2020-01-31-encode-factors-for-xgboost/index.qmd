@@ -19,11 +19,11 @@ image: XGBoost_logo.png
 future::plan("sequential")
 ```
 
-The package `r cran_pkg("xgboost")` unfortunately does not support handling of categorical features.
+The package `r ref_pkg("xgboost")` unfortunately does not support handling of categorical features.
 Therefore, it is required to manually convert factor columns to numerical dummy features.
-We show how to use `r mlr_pkg("mlr3pipelines")` to augment the `r ref("mlr_learners_classif.xgboost", "xgboost learner")` with an automatic factor encoding.
+We show how to use `r ref_pkg("mlr3pipelines")` to augment the `r ref("mlr_learners_classif.xgboost", "xgboost learner")` with an automatic factor encoding.
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
 ```{r 2020-01-31-encode-factors-for-xgboost-002}
 library(mlr3verse)
@@ -118,4 +118,4 @@ rr$aggregate()
 ```
 
 Success! We augmented xgboost with handling of factors and ordered factors.
-If we combine this learner with a tuner from `r mlr_pkg("mlr3tuning")`, we get a universal and competitive learner.
+If we combine this learner with a tuner from `r ref_pkg("mlr3tuning")`, we get a universal and competitive learner.

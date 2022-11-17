@@ -35,10 +35,10 @@ setnames(content,
   c("Label", "Key", "Base Package", "Packages", "Feature Types", "Predict Types", "Properties"))
 ```
 
-To keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the `r cran_pkg("rpart")` package and some learners for debugging.
-A subjective selection of implementations for essential ML algorithms can be found in `r mlr_pkg("mlr3learners")` package.
-Survival learners are provided by `r mlr_pkg("mlr3proba")`, cluster learners via `r mlr_pkg("mlr3cluster")`.
-Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the `r mlr_pkg("mlr3extralearners")` package.
+To keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the `r ref_pkg("rpart")` package and some learners for debugging.
+A subjective selection of implementations for essential ML algorithms can be found in `r ref_pkg("mlr3learners")` package.
+Survival learners are provided by `r ref_pkg("mlr3proba")`, cluster learners via `r ref_pkg("mlr3cluster")`.
+Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the `r ref_pkg("mlr3extralearners")` package.
 
 ```{r}
 #| column: page
