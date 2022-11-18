@@ -1,9 +1,13 @@
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 13 * * 5"
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-name: gallery-weekly
+name: build-website
 
 jobs:
   build-website:
@@ -38,12 +42,11 @@ jobs:
           cd mlr-org
           R -q -e 'options(Ncpus = 2); install.packages("renv", repos = "cloud.r-project.org"); renv::restore()'
 
-      - name: Update renv environment
+      - name: Render and publish
+        env:
+          QUARTO_PUB_AUTH_TOKEN: ${{ inputs.QUARTO_PUB_AUTH_TOKEN }}
         run: |
           cd mlr-org
-          R -q -e 'renv::update(prompt = FALSE)'
-
-      - name: Render gallery
-        run: |
-          cd mlr-org
-          quarto render gallery
+          git config --global user.email "quarto-github-actions-publish@example.com"
+          git config --global user.name "mlr-org"
+          quarto publish gh-pages
