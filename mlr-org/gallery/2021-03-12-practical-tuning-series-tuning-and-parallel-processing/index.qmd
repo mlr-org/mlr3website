@@ -16,7 +16,7 @@ author:
   - name: Jakob Richter
   - name: Martin Binder
 date: 03-12-2021
-image: ../../images/logo_color.png
+image: preview.png
 ---
 
 {{< include ../_setup.qmd >}}
@@ -30,21 +30,21 @@ The other parts can be found here:
 * [Part II - Tune a Preprocessing Pipeline](https://mlr3gallery.mlr-org.com/posts/2021-03-10-practical-tuning-series-tune-a-preprocessing-pipeline/)
 * [Part III - Build an Automated Machine Learning System](https://mlr3gallery.mlr-org.com/posts/2021-03-11-practical-tuning-series-build-an-automated-machine-learning-system/)
 
-In this post, we teach how to run various jobs in `r mlr_pkg("mlr3")` in parallel.
+In this post, we teach how to run various jobs in `r ref_pkg("mlr3")` in parallel.
 The goal is to map *computational jobs* (e.g. evaluation of one configuration) to a pool of *workers* (usually physical CPU cores, sometimes remote computational nodes) to reduce the run time needed for tuning.
 
 # Prerequisites
 
-We load the `r mlr_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
-Additionally, make sure you have installed the packages `r cran_pkg("future")` and `r cran_pkg("future.apply")`.
+We load the `r ref_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
+Additionally, make sure you have installed the packages `r ref_pkg("future")` and `r ref_pkg("future.apply")`.
 
 ```{r practical-tuning-series-tuning-and-parallel-processing-002, message = FALSE}
 library(mlr3verse)
 ```
 
 We decrease the verbosity of the logger to keep the output clearly represented.
-The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r mlr_pkg("mlr3")` packages.
-The `r mlr_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r mlr_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r mlr_pkg("mlr3tuning")` ).
+The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r ref_pkg("mlr3")` packages.
+The `r ref_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r ref_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r ref_pkg("mlr3tuning")` ).
 
 ```{r practical-tuning-series-tuning-and-parallel-processing-003}
 set.seed(7832)
@@ -84,7 +84,7 @@ if (future::supportsMulticore()) {
 
 # Resampling
 
-The `r ref("resample()")` and `r ref("benchmark()")` functions in `r mlr_pkg("mlr3")` can be executed in parallel.
+The `r ref("resample()")` and `r ref("benchmark()")` functions in `r ref_pkg("mlr3")` can be executed in parallel.
 The parallelization is triggered by simply declaring a plan via `r ref("future::plan()")`.
 
 ```{r practical-tuning-series-tuning-and-parallel-processing-007}
@@ -119,7 +119,7 @@ The 2 experiments and the 3-fold cross-validation result in 6 jobs which are exe
 
 # Tuning
 
-The `r mlr_pkg("mlr3tuning")` package internally calls `r ref("benchmark()")` during tuning.
+The `r ref_pkg("mlr3tuning")` package internally calls `r ref("benchmark()")` during tuning.
 If the tuner is capable of suggesting multiple configurations per iteration (such as random search,  grid search,  or hyperband), these configurations  represent  individual  experiments,  and  the  loop  flattening of `r ref("benchmark()")` is triggered.
 E.g., all resampling iterations of all hyperparameter configurations on a grid can be executed in parallel.
 

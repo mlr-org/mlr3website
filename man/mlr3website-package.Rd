@@ -4,9 +4,9 @@
 \name{mlr3website-package}
 \alias{mlr3website}
 \alias{mlr3website-package}
-\title{mlr3website: R Package to Build the Website of the mlr3 Ecosystem via Distill}
+\title{mlr3website: R Package to Build the Website of the mlr3 Ecosystem via Quarto}
 \description{
-Use this package to install all dependencies and additional helper files required to build the mlr3 website.
+Use this package to install helper files required to build the mlr3 website.
 }
 \seealso{
 Useful links:

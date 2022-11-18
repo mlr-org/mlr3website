@@ -40,8 +40,8 @@ Finally, we fit a classification tree with optimized hyperparameters on the full
 
 # Prerequistes
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls the most important packages for this example.
-Among other packages, it loads the hyperparameter optimization package of the mlr3 ecosystem `r mlr_pkg("mlr3tuning")`.
+We load the `r ref_pkg("mlr3verse")` package which pulls the most important packages for this example.
+Among other packages, it loads the hyperparameter optimization package of the mlr3 ecosystem `r ref_pkg("mlr3tuning")`.
 
 ```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-003}
 #| message: false
@@ -90,7 +90,7 @@ as.data.table(learner$param_set)[, list(id, class, lower, upper, nlevels)]
 
 # Tuning Space
 
-The package `r mlr_pkg("mlr3tuningspaces")` is a collection of search spaces for hyperparameter tuning from peer-reviewed articles.
+The package `r ref_pkg("mlr3tuningspaces")` is a collection of search spaces for hyperparameter tuning from peer-reviewed articles.
 We use the search space from the @bischl_hyperparameter_2021 article.
 
 ```{r hyperparameter-tuning-on-the-palmer-penguins-data-set-008}

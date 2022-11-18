@@ -33,7 +33,7 @@ content[, object := NULL]
 setnames(content, c("Key", "Label", "Packages", "Properties"))
 ```
 
-Feature selection wrappers can be found in the `r mlr_pkg("mlr3fselect")` packages.
+Feature selection wrappers can be found in the `r ref_pkg("mlr3fselect")` packages.
 The goal is to find the best subset of features with respect to a `r ref("Measure", text = "performance measure")` in an iterative fashion.
 
 ```{r}

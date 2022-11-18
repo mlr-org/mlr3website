@@ -24,13 +24,13 @@ On each level, the extended data is used to train a new level of learners.
 This can be repeated for several iterations until a final learner is trained.
 To avoid overfitting, it is advisable to use test set (out-of-bag) predictions in each level.
 
-In this post, a multilevel stacking example will be created using `r mlr_pkg("mlr3pipelines")`  and tuned using `r mlr_pkg("mlr3tuning")` .
+In this post, a multilevel stacking example will be created using `r ref_pkg("mlr3pipelines")`  and tuned using `r ref_pkg("mlr3tuning")` .
 A similar example is available in the [mlr3book](https://mlr3book.mlr-org.com/pipe-nonlinear.html#multilevel-stacking).
 However, we additionally explain how to tune the hyperparameters of the whole ensemble and each underlying learner jointly.
 
 In our stacking example, we proceed as follows:
 
-1. **Level 0:** Based on the input data, we train three learners (`r ref("mlr_learners_classif.rpart", "rpart")`, `r ref("mlr_learners_classif.glmnet", "glmnet")` and `r ref("mlr_learners_classif.lda", "lda")`) on a sparser feature space obtained using different feature filter methods from `r mlr_pkg("mlr3filters")` to obtain slightly decorrelated predictions.
+1. **Level 0:** Based on the input data, we train three learners (`r ref("mlr_learners_classif.rpart", "rpart")`, `r ref("mlr_learners_classif.glmnet", "glmnet")` and `r ref("mlr_learners_classif.lda", "lda")`) on a sparser feature space obtained using different feature filter methods from `r ref_pkg("mlr3filters")` to obtain slightly decorrelated predictions.
 The test set predictions of these learners are attached to the original data (used in level 0) and will serve as input for the learners in level 1.
 2. **Level 1:** We transform this extended data using PCA, on which we then train additional three learners (`r ref("mlr_learners_classif.rpart", "rpart")`, `r ref("mlr_learners_classif.glmnet", "glmnet")` and `r ref("mlr_learners_classif.lda", "lda")`).
 The test set predictions of the level 1 learners are attached to input data used in level 1.
@@ -38,8 +38,8 @@ The test set predictions of the level 1 learners are attached to input data used
 
 ## Prerequisites
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
-The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+The `r ref_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
 ```{r 2020-04-27-tuning-stacking-002, message=FALSE}
 library(mlr3verse)
@@ -235,17 +235,14 @@ bmr = benchmark(design, store_models = TRUE)
 ```
 
 ```{r 2020-04-27-tuning-stacking-021, eval = FALSE}
-bmr$aggregate(msr("classif.auc"))
+bmr$aggregate(msr("classif.auc"))[, .(nr, task_id, learner_id, resampling_id, iters, classif.auc)]
 ```
 
-```{r 2020-04-27-tuning-stacking-022, echo = FALSE}
-table_responsive(bmr$aggregate(msr("classif.auc"))[, .(nr, task_id, learner_id, resampling_id, iters, classif.auc)])
-```
 
 For a more reliable comparison, the number of evaluation of the random search should be increased.
 
 ## Conclusion
 
-This example shows the versatility of `r mlr_pkg("mlr3pipelines")`.
+This example shows the versatility of `r ref_pkg("mlr3pipelines")`.
 By using more learners, varied representations of the data set as well as more levels, a powerful yet compute hungry pipeline can be created.
 It is important to note that care should be taken to avoid name clashes of pipeline objects.

@@ -18,13 +18,13 @@ image: thumbnail.png
 This is the second post of the titanic use case series.
 You can find the first use case [here](https://mlr3gallery.mlr-org.com/posts/2020-03-12-intro-pipelines-titanic/).
 
-In this section we will focus on more advanced usage of `r mlr_pkg("mlr3pipelines")` .
+In this section we will focus on more advanced usage of `r ref_pkg("mlr3pipelines")` .
 Specifically, this section illustrates the different options when it comes to data imputation and feature engineering.
 Furthermore, the section shows how to **benchmark**, **feature engineer** and compare our results.
 
-We load the `r mlr_pkg("mlr3verse")` package which pulls in the most important packages for this example.
-The `r mlr_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
-The data is part of the `r mlr_pkg("mlr3data")`  package.
+We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
+The `r ref_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
+The data is part of the `r ref_pkg("mlr3data")`  package.
 
 ```{r 2020-04-27-mlr3pipelines-titanic-advanced-002, message=FALSE}
 library(mlr3verse)
@@ -74,7 +74,7 @@ As a result, instead of imputing a constant value, we will do two things:
 * Add an additional column for each `variable` that indicates whether a value was missing or not.
   If the information that a value was missing is important, this column contains this information.
 
-This imputation scheme is called 'imputation with constants' and is already implemented in `r mlr_pkg("mlr3pipelines")` .
+This imputation scheme is called 'imputation with constants' and is already implemented in `r ref_pkg("mlr3pipelines")` .
 It can be done using `r ref("PipeOpImputeConstant")`.
 
 Remember that we are trying to optimize our predictive power by using a random forest model (`r ref("mlr_learners_classif.ranger")`).
@@ -172,7 +172,7 @@ So our model has not improved heavily, currently it has an accuracy of  `0.79`.
 
 ## Feature Engineering
 
-We will do this using `r ref("PipeOpMutate")` in order to showcase the power of `r mlr_pkg("mlr3pipelines")` .
+We will do this using `r ref("PipeOpMutate")` in order to showcase the power of `r ref_pkg("mlr3pipelines")` .
 Additionally, we will make use of the `character` columns.
 Hence, we will re-select them:
 

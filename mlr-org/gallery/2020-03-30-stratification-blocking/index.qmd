@@ -46,7 +46,7 @@ In classification tasks, the ratio of the target class distribution should be si
 
 Stratification can also be performed with respect to explanatory categorical variables to ensure that all subgroups are represented in all training and test sets.
 
-In `r mlr_pkg("mlr3")`, each `r ref("Task")` has a slot [`$col_roles`](https://mlr3.mlr-org.com/reference/Task.html#active-bindings).
+In `r ref_pkg("mlr3")`, each `r ref("Task")` has a slot [`$col_roles`](https://mlr3.mlr-org.com/reference/Task.html#active-bindings).
 This slot shows general roles certain features will have throughout different stages of the machine learning process.
 At least, the `$col_roles` slot shows which variables will be used as `feature`s and as the `target`.
 However, the `$col_roles` slot can be more diverse and some variables might even serve multiple roles.
@@ -134,7 +134,7 @@ It is evident that in each fold, the combination of `housing` and `telephone` ha
 An additional concern when specifying resampling is respecting the natural grouping of the data.
 Blocking refers to the situation where subsets of observations belong together and must not be separated during resampling. Hence, for one train/test set pair the entire block is either in the training set or in the test set.
 
-The following example is based on the [BreastCancer](https://www.rdocumentation.org/packages/mlbench/versions/2.1-1/topics/BreastCancer) data set from the `r cran_pkg("mlbench")` package:
+The following example is based on the [BreastCancer](https://www.rdocumentation.org/packages/mlbench/versions/2.1-1/topics/BreastCancer) data set from the `r ref_pkg("mlbench")` package:
 
 ```{r 2020-03-30-stratification-blocking-014}
 data(BreastCancer, package = "mlbench")
@@ -254,4 +254,4 @@ unlist(lapply(1:rc$iters, function(i) all.equal(train_ind[[i]], rc$train_set(i))
 
 # Conclusions
 
-This post shows how to control the resampling process when using `r mlr_pkg("mlr3")` in order to account for data specificities.
+This post shows how to control the resampling process when using `r ref_pkg("mlr3")` in order to account for data specificities.

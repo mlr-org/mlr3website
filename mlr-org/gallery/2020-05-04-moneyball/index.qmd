@@ -15,7 +15,7 @@ image: thumbnail.png
 
 {{< include ../_setup.qmd >}}
 
-This use case shows how to easily work with datasets available via [OpenML](https://www.openml.org/) into an `r mlr_pkg("mlr3")` workflow.
+This use case shows how to easily work with datasets available via [OpenML](https://www.openml.org/) into an `r ref_pkg("mlr3")` workflow.
 
 The following operations are illustrated:
 
@@ -44,8 +44,8 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 
 ## Retrieving the data from OpenML
 
-We can use the `r cran_pkg("OpenML")` package to retrieve data (and more) straight away.
-`r cran_pkg("OpenML")` is is an inclusive movement to build an open, organized, online ecosystem for machine learning.
+We can use the `r ref_pkg("OpenML")` package to retrieve data (and more) straight away.
+`r ref_pkg("OpenML")` is is an inclusive movement to build an open, organized, online ecosystem for machine learning.
 Typically, you can retrieve the data with an `data.id`.
 The id can be found on [OpenML](https://www.openml.org/).
 We choose the data set `41021`.
@@ -67,7 +67,7 @@ head(as.data.table(oml_data))
 DT::datatable(as.data.table(oml_data))
 ```
 
-However, the description within the `r cran_pkg("OpenML")` object is not very detailed.
+However, the description within the `r ref_pkg("OpenML")` object is not very detailed.
 The previously referenced [page](https://www.openml.org/d/41021) however states the following:
 
 In the early 2000s, Billy Beane and Paul DePodesta worked for the Oakland Athletics.
@@ -104,7 +104,7 @@ While Beane and DePodesta defined most of these statistics and measures for indi
 These statistics seem very informative if you are into baseball.
 If baseball of rather obscure to you, simply take these features as given or give this [article](https://en.wikipedia.org/wiki/Baseball_statistics) a quick read.
 
-Finally, note that the `moneyball` dataset is also included in the `r mlr_pkg("mlr3data")`  package where you can get the preprocessed (integers properly encoded as such, etc.) data via:
+Finally, note that the `moneyball` dataset is also included in the `r ref_pkg("mlr3data")`  package where you can get the preprocessed (integers properly encoded as such, etc.) data via:
 
 ```{r 2020-05-04-moneyball-007}
 data("moneyball", package = "mlr3data")
@@ -152,7 +152,7 @@ For the other missing (categorical) features, we simply add a new level which in
 It is important to note that in this case here the vast majority of information on the features is missing.
 In this case, imputation is performed to not throw away the existing information of the features.
 
-`r mlr_pkg("mlr3")` has some solutions for that within the `r mlr_pkg("mlr3pipelines")`  package.
+`r ref_pkg("mlr3")` has some solutions for that within the `r ref_pkg("mlr3pipelines")`  package.
 We start with an easy `r ref("PipeOp")` which only performs numeric imputation.
 
 ```{r 2020-05-04-moneyball-010}
@@ -201,11 +201,11 @@ test_learner = lrn("regr.ranger")
 test_learner$properties
 ```
 
-Typically, in `r mlr_pkg("mlr3")` the `$properties` field would tell us whether missing values are a problem to this learner or not.
+Typically, in `r ref_pkg("mlr3")` the `$properties` field would tell us whether missing values are a problem to this learner or not.
 As it is not listed here, the random forest cannot deal with missing values.
 
 As we aim to use imputation beforehand, we incorporate it into the learner.
-Our selected learner is going to be a random forest from the `r cran_pkg("ranger")` package.
+Our selected learner is going to be a random forest from the `r ref_pkg("ranger")` package.
 
 One can allow the embedding of the preprocessing (imputation) into a learner by creating a `r ref("PipeOpLearner")`.
 This special `r ref("Learner")` can be put into a graph together with the `imputer`.
@@ -253,7 +253,7 @@ Viewing the predicted values it seems like the model predicts reasonable values 
 While the prediction indicated that the model is doing what it is supposed to, we want to have a more systematic understanding of the model performance.
 That means we want to know by how much our model is away from the truth on average.
 Cross-validation investigates this question.
-In `r mlr_pkg("mlr3")` 10-fold cross-validation is constructed as follows:
+In `r ref_pkg("mlr3")` 10-fold cross-validation is constructed as follows:
 
 ```{r 2020-05-04-moneyball-019}
 cv10 = rsmp("cv", folds = 10)
@@ -346,11 +346,11 @@ This may be because there were simply too many instances or because the features
 ## Conclusion
 
 So, to sum up, what we have learned:
-We can access very cool data straight away with the `r cran_pkg("OpenML")` package.
-(We are working on a better direct implementation into `r mlr_pkg("mlr3")` at the moment.)
-We can work with missing data very well in `r mlr_pkg("mlr3")`.
+We can access very cool data straight away with the `r ref_pkg("OpenML")` package.
+(We are working on a better direct implementation into `r ref_pkg("mlr3")` at the moment.)
+We can work with missing data very well in `r ref_pkg("mlr3")`.
 Nevertheless, we discovered that sometimes imputation does not lead to the intended goals.
-We also learned how to use some `r ref("PipeOp")`s from the `r mlr_pkg("mlr3pipelines")`  package.
+We also learned how to use some `r ref("PipeOp")`s from the `r ref_pkg("mlr3pipelines")`  package.
 
 But most importantly, we found a way to predict the runs scored of MLB teams.
 

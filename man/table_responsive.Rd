@@ -16,7 +16,9 @@ Tabular R object.}
 Converts a tabular R object with \code{knitr::kable()} to a html table. Wide
 tables can be scrolled horizontally. The table is scrolled vertically if its
 length exceeds 700px. The table header stays fixed at the top when scrolling
-down. The following CSS rules must be applied.\if{html}{\out{<div class="sourceCode css">}}\preformatted{/* Scroll container around table*/
+down. The following CSS rules must be applied.
+
+\if{html}{\out{<div class="sourceCode css">}}\preformatted{/* Scroll container around table*/
 .table-responsive \{
   width: 100\%;
   max-height: 700px;

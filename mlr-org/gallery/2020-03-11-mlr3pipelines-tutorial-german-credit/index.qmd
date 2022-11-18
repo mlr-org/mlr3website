@@ -84,7 +84,7 @@ future::plan("multiprocess")
 
 In this use case, we will take a look at composite machine learning algorithms that may incorporate data preprocessing or the combination of multiple `r ref("Learner")`s ("ensemble methods").
 
-We use the `r mlr_pkg("mlr3pipelines")` package that enables us to chain `r ref("PipeOp")`s into data flow `r ref("Graph")`s.
+We use the `r ref_pkg("mlr3pipelines")` package that enables us to chain `r ref("PipeOp")`s into data flow `r ref("Graph")`s.
 
 Available `r ref("PipeOp")`s are listed in the `mlr_pipeops` dictionary:
 
@@ -151,13 +151,13 @@ rr$aggregate()
 Typically, sparse models, i.e. having models with few(er) features, are desirable.
 This is due to a variety of reasons, e.g., enhanced interpretability or decreased costs of acquiring data.
 Furthermore, sparse models may actually be associated with increased performance (especially if overfitting is anticipated).
-We can use *feature filter* to only keep features with the highest *information*. Filters are implemented in the `r mlr_pkg("mlr3filters")` package and listed in the following dictionary:
+We can use *feature filter* to only keep features with the highest *information*. Filters are implemented in the `r ref_pkg("mlr3filters")` package and listed in the following dictionary:
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-015}
 mlr_filters
 ```
 
-We apply the `r ref("FilterMIM")` (mutual information maximization) `Filter` as implemented in the `r cran_pkg("praznik")` package. This `Filter` allows for the selection of the top-`k` features of best mutual information.
+We apply the `r ref("FilterMIM")` (mutual information maximization) `Filter` as implemented in the `r ref_pkg("praznik")` package. This `Filter` allows for the selection of the top-`k` features of best mutual information.
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-016}
 filter = flt("mim")

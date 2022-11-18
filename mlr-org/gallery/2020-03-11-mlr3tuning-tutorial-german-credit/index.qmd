@@ -83,12 +83,12 @@ cv10$instance
 
 # Simple Parameter Tuning
 
-Parameter tuning in `r mlr_pkg("mlr3")` needs two packages:
+Parameter tuning in `r ref_pkg("mlr3")` needs two packages:
 
-1. The `r mlr_pkg("paradox")` package is used for the search space definition of the hyperparameters.
-1. The `r mlr_pkg("mlr3tuning")` package is used for tuning the hyperparameters.
+1. The `r ref_pkg("paradox")` package is used for the search space definition of the hyperparameters.
+1. The `r ref_pkg("mlr3tuning")` package is used for tuning the hyperparameters.
 
-The packages are loaded by the `r mlr_pkg("mlr3verse")`  package.
+The packages are loaded by the `r ref_pkg("mlr3verse")`  package.
 
 ## Search Space and Problem Definition
 
@@ -292,7 +292,7 @@ The more we search, the more optimistically biased the associated performance me
 
 There is a solution to this problem, namely **Nested Resampling**.
 
-The `r mlr_pkg("mlr3tuning")`  package provides an `r ref("AutoTuner")` that acts like our tuning method but is actually a `r ref("Learner")`.
+The `r ref_pkg("mlr3tuning")`  package provides an `r ref("AutoTuner")` that acts like our tuning method but is actually a `r ref("Learner")`.
 The `$train()` method facilitates tuning of hyperparameters on the training data, using a resampling strategy (below we use 5-fold cross-validation).
 Then, we actually train a model with optimal hyperparameters on the whole training data.
 
