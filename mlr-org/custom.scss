@@ -1,10 +1,38 @@
 /*-- scss:defaults --*/
 $code-color: "#f6f6f6";
-// $bs-light-rgb: 248, 249, 250 !important;
 /*-- scss:rules --*/
 
 @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono|JetBrains+Mono&display=swap");
+
+.feature {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media only screen and (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature__item {
+  text-align: center;
+  padding: 30px;
+}
+
+.feature__icon {
+  padding-bottom: 15px;
+}
+.feature__a {
+  border-bottom: 0px;
+  text-decoration: none;
+}
+
+.feature__i {
+  font-size: 3rem;
+  color: #000;
+}
+
+
 
 footer.footer .nav-footer,
 #quarto-header nav {

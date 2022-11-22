@@ -3,25 +3,44 @@ sidebar: false
 toc: false
 page-layout: article
 listing:
-  - id: listings3
-    template: listings3.ejs
-    contents: listings3.yml
   - id: listings4
     template: listings4.ejs
     contents: listings4.yml
 ---
-
-<div class="banner">
-  <img src="images/banner.png" class="banner" alt="">
-</div>
 
 <div class="center-text">
 # mlr(3): Machine Learning in R
 </div>
 An open-source collection of R packages providing a unified interface for machine learning in the R language.
 
-::: {#listings3}
-:::
+
+```{r}
+#| echo: false
+library(mlr3misc)
+library(htmltools)
+library(data.table)
+content = rowwise_table(
+    ~icon,          ~text,                                                    ~link,
+    "code-square",  "A scientifically designed and easy to learn interface.", "index.html",
+    "pen",          "More than 100 connected machine learning algorithms.",   "learners.html",
+    "box",          "Light on dependencies.",                                 "index.html",
+    "stack",        "Convenient parallelization with the future package.",    "https://futureverse.org/",
+    "sliders",      "State-of-the-art optimization algorithms.",              "tuners.html",
+    "share",        "Dataflow programming with pipelines.",                   "https://mlr3pipelines.mlr-org.com/"
+)
+div(class = "feature",
+  pmap(content, function(icon, text, link) {
+    div(class = "feature__item",
+        div(class="feature__icon",
+          a(href = link, class = "feature__a",
+            tags$i(class = sprintf("bi-%s feature__i", icon))
+         )
+       ),
+      text
+    )
+  })
+)
+```
 
 
 ## Resources
