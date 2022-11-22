@@ -42,11 +42,27 @@ jobs:
           cd mlr-org
           R -q -e 'options(Ncpus = 2); install.packages("renv", repos = "cloud.r-project.org"); renv::restore()'
 
-      - name: Render and publish
-        env:
-          QUARTO_PUB_AUTH_TOKEN: ${{ inputs.QUARTO_PUB_AUTH_TOKEN }}
-        run: |
-          cd mlr-org
-          git config --global user.email "quarto-github-actions-publish@example.com"
-          git config --global user.name "mlr-org"
-          quarto publish gh-pages
+      - name: Render site
+        run: quarto render mlr-org/
+
+      - name: Deploy netlify preview
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: mlr-org/actions/quarto-netlify-preview@v1
+        with:
+          netlify_auth_token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          netlify_site_id: ${{ secrets.NETLIFY_SITE_ID }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          path: mlr-org/_site
+          netlify_url: mlr3website.netlify.app
+
+      - name: Deploy
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          git-config-name: mlr-org
+          git-config-email: <>
+          commit-message: 'deploy website'
+          branch: gh-pages
+          folder: mlr-org/_site
+          single-commit: true
