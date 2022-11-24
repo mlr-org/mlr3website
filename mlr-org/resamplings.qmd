@@ -36,15 +36,14 @@ reactable(content, columns = list(
   label = colDef(name = "Label"),
   params = colDef(name = "Parameters", cell = function(value) {
     if (length(value)) {
-      tags$ul(
-        map(value, function(x) tags$li(x))
-      )
-    } else character(1)
+      tags$ul(map(value, function(x) tags$li(class = "object-table__list", x)))
+    }
   }),
   iters = colDef(name = "Default Iterations")
   ),
   searchable = TRUE,
-  pagination = FALSE
+  pagination = FALSE,
+  highlight = TRUE
 )
 ```
 

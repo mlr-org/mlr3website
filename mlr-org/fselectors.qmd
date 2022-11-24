@@ -3,47 +3,52 @@ sidebar: false
 toc: false
 ---
 
-# Feature Selection Wrapper
+{{< include _setup.qmd >}}
 
-```{r, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r}
+#| include: false
 
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
 library(mlr3fselect)
+
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
-
-content = as.data.table(mlr_fselectors, objects = TRUE)[, .(key, label, packages, properties, object)]
-
-# add links
-content[, key := link_keys(key, prefix = "mlr_fselectors")]
-content[, packages := link_pkgs(packages)]
-
-# remove content
-content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
-
-# add line breaks to cells
-cols = c("properties", "packages")
-content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
-
-content[, object := NULL]
-setnames(content, c("Key", "Label", "Packages", "Properties"))
 ```
+
+# Feature Selection Wrapper
 
 Feature selection wrappers can be found in the `r ref_pkg("mlr3fselect")` packages.
 The goal is to find the best subset of features with respect to a `r ref("Measure", text = "performance measure")` in an iterative fashion.
 
 ```{r}
+#| echo: false
 #| column: page
-DT::datatable(
-  content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
-  rownames = FALSE)
+
+content = as.data.table(mlr_fselectors, objects = TRUE)[, .(key, label, packages, properties, object)]
+content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
+content[, object := NULL]
+
+reactable(content, columns = list(
+  key = colDef(name = "Key",
+    cell = function(value) {
+      mlr3book::ref(sprintf("%s_%s", "mlr_fselectors", value), text = value, format = "htmltools")
+    }
+  ),
+  label = colDef(name = "Label"),
+  packages = colDef(name = "Packages", cell = function(value) {
+    value = setdiff(value, "bbotk")
+    if (length(value)) {
+      map(value, function(x) tags$li(class = "object-table__list", mlr3book::ref_pkg(x, pkg = x, format = "htmltools"), " "))
+    }
+  }),
+  properties = colDef(name = "Properties", cell = function(value) {
+    if (length(value)) {
+      tags$ul(map(value, function(x) tags$li(class = "object-table__list", x)))
+    }
+  })
+  ),
+  searchable = TRUE,
+  pagination = FALSE
+)
 ```
 
 ## Example Usage

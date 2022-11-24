@@ -3,17 +3,16 @@ sidebar: false
 toc: false
 ---
 
+{{< include _setup.qmd >}}
+
 # Graphs
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+Graphs are predefined arrangements of `r ref("PipeOp")` objects from the `r ref_pkg("mlr3pipelines")` package.
+The goal is to simplify some popular operations which usually consist of multiple steps.
 
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
-library(mlr3pipelines)
-library(mlr3proba)
+```{r}
+#| echo: false
+#| column: page
 
 content = rowwise_table(
   ~ key, ~label,
@@ -28,26 +27,15 @@ content = rowwise_table(
   "survtoregr", "Survival to Regression Reduction"
 )
 
-# add links
-content[, key := link_keys(key, prefix = "mlr_graphs")]
-
-# link_keys fails
-# mlr_graphs_branching is renamed to mlr_graphs_branch
-# remove when label branch is merged to master
-content = rbindlist(list(content, list(key = "branch", label = "Branch Between Alternative Paths")))
-
-setnames(content, c("Key", "Label"))
-```
-
-Graphs are predefined arrangements of `r ref("PipeOp")` objects from the `r ref_pkg("mlr3pipelines")` package.
-The goal is to simplify some popular operations which usually consist of multiple steps.
-
-```{r}
-#| column: page
-DT::datatable(
-  content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
-  rownames = FALSE)
+reactable(content, columns = list(
+  key = colDef(name = "Key",
+    cell = function(value) {
+      mlr3book::ref(sprintf("%s_%s", "mlr_graphs", value), text = value, format = "htmltools")
+    }
+  ),
+  label = colDef(name = "Label")
+  ),
+  searchable = TRUE,
+  pagination = FALSE
+)
 ```

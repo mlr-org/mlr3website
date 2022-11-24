@@ -3,41 +3,47 @@ sidebar: false
 toc: false
 ---
 
-# Tuning Spaces
+{{< include _setup.qmd >}}
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r}
+#| include: false
 
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
-library(mlr3tuningspaces)
+library("mlr3tuningspaces")
+
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
-
-content = as.data.table(mlr_tuning_spaces, objects = TRUE)[, .(key, label, learner, n_values, object)]
-content[, learner := link_keys(learner, "mlr_learners")]
-
-# add links
-content[, collection := map_chr(object, function(x) intersect(x$tags, c("default", "rbv2")))]
-content[, key := pmap_chr(list(key, collection), function(k, c) as.character(a(href = sprintf("https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_%s.html", c), k)))]
-
-content[, `:=`(object = NULL, collection = NULL)]
-setnames(content, c("Key", "Label", "Learner", "# hyperparameters"))
 ```
+
+
+# Tuning Spaces
 
 The package `r ref_pkg("mlr3tuningspaces")` ships with some predefined tuning spaces for hyperparameter optimization.
 See the respective manual page for the article from which they were extracted.
 
 ```{r}
+#| echo: false
 #| column: page
-DT::datatable(
-  content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
-  rownames = FALSE)
+
+content = as.data.table(mlr_tuning_spaces, objects = TRUE)[, .(key, label, learner, n_values, object)]
+content[, object := NULL]
+
+reactable(content, columns = list(
+  key = colDef(name = "Key",
+    cell = function(value) {
+     mlr3book::ref(sprintf("%s_%s", "mlr_tuning_spaces", value), text = value, format = "htmltools")
+    }
+  ),
+  label = colDef(name = "Label"),
+  learner = colDef(name = "Learner",
+    cell = function(value) {
+      mlr3book::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
+    }
+  ),
+  n_values = colDef(name = "# Hyperparameters")
+  ),
+  searchable = TRUE,
+  pagination = FALSE
+)
 ```
 
 ## Example Usage

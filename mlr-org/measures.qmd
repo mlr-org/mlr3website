@@ -34,8 +34,8 @@ reactable(content, columns = list(
   packages = colDef(name = "Packages", cell = function(value) {
     value = setdiff(value, c("mlr3", "mlr3measures"))
     if (length(value)) {
-        map(value, function(x) span(mlr3book::ref_pkg(x, pkg = x, format = "htmltools"), " "))
-    } else character(1)
+      tags$ul(map(value, function(x) tags$li(class = "object-table__list", mlr3book::ref_pkg(x, pkg = x, format = "htmltools"))))
+    }
   }),
   task_type = colDef(name = "Task Type")
   ),

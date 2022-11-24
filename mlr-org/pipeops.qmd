@@ -3,35 +3,45 @@ sidebar: false
 toc: false
 ---
 
-# Pipeline Operators
+{{< include _setup.qmd >}}
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r}
+#| include: false
 
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
-library(mlr3verse)
-
-content = as.data.table(mlr_pipeops, objects = TRUE)[, .(key, packages, tags)]
-content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
-
-content[, key := link_keys(key, "mlr_pipeops")]
-content[, packages := link_pkgs(packages, remove = "mlr3pipelines")]
-setnames(content, c("Key", "Packages", "Tags"))
+library("mlr3verse")
 ```
+
+# Pipeline Operators
 
 Objects of class `r ref("PipeOp")` are the building blocks to compose linear machine learning pipelines and non-linear `r ref("Graph", text = "Graphs")`.
 The base objects are implemented in `r ref_pkg("mlr3pipelines")`.
 
-
 ```{r}
+#| echo: false
 #| column: page
-DT::datatable(
-  content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
-  rownames = FALSE)
+
+content = as.data.table(mlr_pipeops, objects = TRUE)[, .(key, label, packages, tags)]
+content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
+
+reactable(content, columns = list(
+  key = colDef(name = "Key",
+    cell = function(value) {
+      mlr3book::ref(sprintf("%s_%s", "mlr_pipeops", value), text = value, format = "htmltools")
+    }
+  ),
+  label = colDef(name = "Label"),
+  packages = colDef(name = "Packages", cell = function(value) {
+    value = setdiff(value, c("mlr3pipelines"))
+    if (length(value)) {
+      tags$ul(map(value, function(x) tags$li(class = "object-table__list", mlr3book::ref_pkg(x, pkg = x, format = "htmltools"))))
+    }
+  }),
+  tags = colDef(name = "Tags", cell = function(value) {
+    if (length(value)) {
+      tags$ul(map(value, function(x) tags$li(class = "object-table__list", x)))
+    }
+  })),
+  searchable = TRUE,
+  pagination = FALSE
+)
 ```

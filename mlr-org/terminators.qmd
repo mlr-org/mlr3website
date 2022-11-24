@@ -3,38 +3,37 @@ sidebar: false
 toc: false
 ---
 
-# Terminators
+{{< include _setup.qmd >}}
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r}
+#| include: false
 
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
-library(bbotk)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
-
-content = as.data.table(mlr_terminators)[, .(key, label, properties, unit)]
-
-# add links
-content[, key := link_keys(key, prefix = "mlr_terminators")]
-
-# add line breaks to cells
-# content[, properties := map_chr(properties, function(x) paste0(x, collapse = "<br/>"))]
-
-setnames(content, c("Key", "Label", "Properties", "Unit"))
 ```
 
+# Terminators
 
-```{r, echo=FALSE}
-DT::datatable(
-  content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
-  rownames = FALSE)
+```{r}
+#| echo: false
+#| column: page
+
+library(bbotk)
+content = as.data.table(mlr_terminators)[, .(key, label, properties, unit)]
+
+reactable(content, columns = list(
+  key = colDef(name = "Key",
+    cell = function(value) {
+      mlr3book::ref(sprintf("%s_%s", "mlr_terminators", value), text = value, format = "htmltools")
+    }
+  ),
+  label = colDef(name = "Label"),
+  properties = colDef(name = "Properties"),
+  unit = colDef(name = "Unit")
+  ),
+  searchable = TRUE,
+  pagination = FALSE
+)
 ```
 
 ## Example Usage
