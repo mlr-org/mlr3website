@@ -2,10 +2,6 @@
 sidebar: false
 toc: false
 page-layout: article
-listing:
-  - id: listings4
-    template: listings4.ejs
-    contents: listings4.yml
 ---
 
 <div class="center-text">
@@ -28,12 +24,12 @@ content = rowwise_table(
     "sliders",      "State-of-the-art optimization algorithms.",              "tuners.html",
     "share",        "Dataflow programming with pipelines.",                   "https://mlr3pipelines.mlr-org.com/"
 )
-div(class = "feature",
+div(class = "feature-grid",
   pmap(content, function(icon, text, link) {
-    div(class = "feature__item",
-        div(class="feature__icon",
-          a(href = link, class = "feature__a",
-            tags$i(class = sprintf("bi-%s feature__i", icon))
+    div(class = "feature-grid__item",
+        div(class="feature-grid__icon",
+          a(href = link, class = "feature-grid__a",
+            tags$i(class = sprintf("bi-%s feature-grid__i", icon))
          )
        ),
       text
@@ -42,40 +38,36 @@ div(class = "feature",
 )
 ```
 
-
-## Resources
+## Examples
 
 ```{r, echo = FALSE}
-library(data.table)
-library(htmltools)
+#| echo: false
 library(mlr3misc)
-# Social buttons
-content = rbindlist(list(
-  list(name = "GitHub", url = "https://github.com/mlr-org/mlr3", icon = "github"),
-  list(name = "Mattermost", url = "https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/", icon = "chat-dots"),
-  list(name = "Book", url = "https://mlr3book.mlr-org.com/", icon = "book"),
-  list(name = "StackOverflow", url = "https://stackoverflow.com/questions/tagged/mlr3", icon = "stack-overflow")
-))
+library(htmltools)
+library(data.table)
 
-div(class = 'btn-container',
-  pmap(content, function(name, url, icon) {
-    a(href = url, class="btn",
-      tags$i(class = sprintf("bi-%s", icon)),
-      name
-    )
+content = rowwise_table(
+  ~name,                    ~icon,      ~url,                                                                       ~text,                                                     ~objective,
+  "Basic Machine Learning", "pen",      "gallery/2020-03-18-iris-mlr3-basics/",                                     "Basic machine learning",                                   list(list("Learner", "Task", "Resampling")),
+  "Optimization",           "sliders",  "gallery/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins/",   "Hyperparameter tuning of a support vector machine",        list(list("Tuning Space", "Tuning", "Nested Resampling")),
+  "Pipelines",              "share",    "gallery/2020-03-11-mlr3pipelines-tutorial-german-credit/",                 "Preprocessing pipelines", list(list("Pipelines", "Missing Values", "Optimization")),
+  "Feature Selection",      "funnel",   "gallery/2020-09-14-mlr3fselect-basic/",                                    "Feature Selection on the Titanic data set", list(list("Sequential Feature Selection", "Nested Resampling"))
+)
+
+div(class = "grid grid-two",
+  pmap(content, function(name, icon, url, text, objective) {
+      div(class = "grid__item",
+        h3(class = "grid__title",
+          tags$i(class = sprintf("bi-%s grid__title-icon", icon)),
+          HTML("&nbsp;"),
+          name
+        ),
+        p(paste0(text, ".")),
+        a(href = url, span(class = "grid__link-box")),
+        tags$ul(class = "grid__list",
+          map(objective, function(x) tags$li(x))
+        )
+      )
   })
 )
 ```
-
-## Quick Start
-
-The mlr3verse meta-package installs mlr3 and some of the most important extension packages:
-
-```{r, eval=FALSE}
-install.packages("mlr3verse")
-```
-
-## Examples
-
-::: {#listings4}
-:::

@@ -3,56 +3,89 @@ bibliography: publications.bib
 page-layout: full
 title: Resources
 sidebar: false
-toc: false
-# listing:
-#   - id: listings
-#     # contents: documentation-listings/*.qmd
-#     template: listings.ejs
-#     contents: listings.yml
-#   - id: listings2
-#     # contents: documentation-listings/*.qmd
-#     template: listings2.ejs
-#     contents: listings2.yml
+toc: true
 ---
-```{r setup, include=FALSE}
-library(mlr3website)
+
+{{< include _setup.qmd >}}
+
+```{r}
+#| include: false
+
+resource_grid = function(content) {
+  div(class = "grid grid-three",
+    pmap(content, function(category, name, icon, url, text) {
+      div(class = "grid__item",
+        h3(class = "grid__title",
+          tags$i(class = sprintf("bi-%s grid__title-icon", icon)),
+          HTML("&nbsp;"),
+          name
+        ),
+        p(
+        paste0(text, "."),
+        a(href = url, "aria-label" = sprintf("Go to %s", name), span(class = "grid__link-box"))
+        )
+      )
+    })
+  )
+}
+
+# Text description should be one sentence
+content = rowwise_table(
+  ~category, ~name, ~icon, ~url, ~text,
+  "general", "Book", "book", "https://github.com/mlr-org/mlr3book/", "Central entry point to the mlr3verse",
+  "general", "Gallery", "image", "https://mlr3gallery.mlr-org.com/", "Collection of case studies and demos",
+  "general", "Reference Manual", "question-circle", "packages.html", "Reference manuals (via package overview)",
+  "general", "R6 Introduction", "dice-6", "https://r6.r-lib.org/articles/Introduction.html", "Introduction to R6 classes",
+  "general", "Future Package", "stack", "https://futureverse.org/", "Homepage of the parallelization framework 'future'",
+  "cheatsheet", "mlr3", "file-pdf", "https://cheatsheets.mlr-org.com/mlr3.pdf", "Core package cheat sheet",
+  "cheatsheet", "mlr3tuning", "file-pdf", "https://cheatsheets.mlr-org.com/mlr3tuning.pdf", "Tuning cheat sheet",
+  "cheatsheet", "mlr3fselect", "file-pdf", "https://cheatsheets.mlr-org.com/mlr3fselect.pdf", "Feature selection cheat sheet",
+  "cheatsheet", "mlr3pipelines", "file-pdf", "https://cheatsheets.mlr-org.com/mlr3pipelines.pdf", "Pipelines cheat sheet",
+  "video", "useR2019 talk", "youtube", "https://www.youtube.com/watch?v=wsP2hiFnDQs", "Short intro to mlr3",
+  "video", "useR2019 talk", "youtube", "https://www.youtube.com/watch?v=gEW5RxkbQuQ", "Short intro to mlr3pipelines and mlr3tuning",
+  "video", "useR2020 tutorial", "youtube", "https://www.youtube.com/watch?v=T43hO2o_nZw", "Tutorial on mlr3, mlr3tuning and mlr3pipelines",
+  "video", "ODSC talk 2021", "youtube", "https://av.tib.eu/media/55271", "Into to mlr3spatiotempcv and mlr3spatial",
+  "course", "I2ML course", "display", "https://slds-lmu.github.io/i2ml/", "Introduction to ML course. Free video lectures, slides, quizzes. Exercises use mlr3",
+  "course", "mlr-outreach", "display", "https://github.com/mlr-org/mlr-outreach", "Slides and other material for teaching mlr3"
+)
+setkeyv(content, "category")
 ```
 
-<!-- ::: {#listings}
-:::
-
-::: {#listings2}
-::: -->
 
 ## Documentation
 
-- [mlr3book](https://mlr3book.mlr-org.com/)
-- [mlr3gallery](https://mlr3gallery.mlr-org.com/)
-- [{R6} class system introduction](https://r6.r-lib.org/articles/Introduction.html)
-- [{future} package - parallelization backend](https://futureverse.org/)
+Entry points to learn about mlr3.
+
+```{r, echo = FALSE}
+resource_grid(content[.("general")])
+```
+
+
+## Cheat Sheets
+
+The essential things neatly summarized.
+Perfectly printed out next to the keyboard or on a second monitor.
+
+```{r, echo = FALSE}
+resource_grid(content[.("cheatsheet")])
+```
 
 ## Videos
 
-- [useR2019 talk on mlr3](https://www.youtube.com/watch?v=wsP2hiFnDQs)
-- [useR2019 talk on mlr3pipelines and mlr3tuning](https://www.youtube.com/watch?v=gEW5RxkbQuQ)
-- [useR2020 tutorial on mlr3, mlr3tuning and mlr3pipelines](https://www.youtube.com/watch?v=T43hO2o_nZw)
-- [Recorded talk about mlr3spatiotempcv and mlr3spatial at OpenDataScience Europe Conference 2021 in Wageningen, NL](https://av.tib.eu/media/55271)
+Recorded tutorials and lectures we have given.
 
-{{< video https://www.youtube.com/embed/wsP2hiFnDQs width="400" height="300" title='useR2019 talk on mlr3' >}}
-{{< video https://www.youtube.com/embed/gEW5RxkbQuQ width="400" height="300" title='useR2019 talk on mlr3pipelines and mlr3tuning' >}}
-{{< video https://www.youtube.com/embed/T43hO2o_nZw width="400" height="300" title='useR2020 tutorial on mlr3, mlr3tuning and mlr3pipelines' >}}
-<iframe width="400" height="300"  scrolling="no" src="//av.tib.eu/player/55271" frameborder="0" allowfullscreen></iframe>
+```{r, echo = FALSE}
+resource_grid(content[.("video")])
+```
 
-## Cheatsheets
+## Courses/Lectures
 
-- [Overview of cheatsheets](https://cheatsheets.mlr-org.com)
-- [mlr3](https://cheatsheets.mlr-org.com/mlr3.pdf)
-- [mlr3tuning](https://cheatsheets.mlr-org.com/mlr3tuning.pdf)
-- [mlr3pipelines](https://cheatsheets.mlr-org.com/mlr3pipelines.pdf)
+Material from teaching at our universities.
 
-## Courses/lectures
+```{r, echo = FALSE}
+resource_grid(content[.("course")])
+```
 
-- The course [Introduction to Machine learning (I2ML)](https://slds-lmu.github.io/i2ml/) is a free and open flipped classroom course on the basics of machine learning. `mlr3` is used in the [demos](https://github.com/slds-lmu/lecture_i2ml/tree/master/code-demos-pdf) and [exercises](https://github.com/slds-lmu/lecture_i2ml/tree/master/exercises).
 
 ## Peer-reviewed Articles
 
@@ -65,5 +98,6 @@ A more scientific view on our the packages and the packages we depend on.
 * @checkmate: package `r ref_pkg("checkmate")` for argument checking and defensive programming
 * @batchtools: parallelization framework `r ref_pkg("batchtools")` for high-performance computing clusters, used via `r ref_pkg("future")` or `r ref_pkg("mlr-org/mlr3batchmark")`
 
+## Tutorial Papers
 
-
+* @pargent2022introduction: An Introduction to Machine Learning for Psychologists in R
