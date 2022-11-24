@@ -3,24 +3,16 @@ sidebar: false
 toc: false
 ---
 
-# Resamplings
+{{< include _setup.qmd >}}
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r}
+#| include: false
 
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
-library(DT)
-library(mlr3spatiotempcv)
+requireNamespace("mlr3spatiotempcv")
 requireNamespace("mlr3verse")
-
-content = as.data.table(mlr3::mlr_resamplings)[, .(key, label, params, iters)]
-content[, key := link_keys(key, prefix = "mlr_resamplings")]
-content[, params := map(params, paste0, collapse = ", ")]
-setnames(content, c("Key", "Label", "Parameters", "Default Iterations"))
 ```
+
+# Resamplings
 
 Resamplings split the observations multiple times into two sets: training and test.
 The former is used to fit the model, the latter is used to evaluate the predictions.
@@ -28,14 +20,32 @@ The `r ref("Resampling")` objects provide an abstraction for this procedure whil
 
 If only a single split is required (i.e., a holdout split), the `r ref("partition()")` function provides a single split into training and test set.
 
+
 ```{r}
+#| echo: false
 #| column: page
-DT::datatable(
-  content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
-  rownames = FALSE)
+
+content = as.data.table(mlr3::mlr_resamplings)[, .(key, label, params, iters)]
+
+reactable(content, columns = list(
+  key = colDef(
+    cell = function(value) {
+      mlr3book::ref(sprintf("%s_%s", "mlr_resamplings", value), text = value, format = "htmltools")
+    }
+  ),
+  label = colDef(name = "Label"),
+  params = colDef(name = "Parameters", cell = function(value) {
+    if (length(value)) {
+      tags$ul(
+        map(value, function(x) tags$li(x))
+      )
+    } else character(1)
+  }),
+  iters = colDef(name = "Default Iterations")
+  ),
+  searchable = TRUE,
+  pagination = FALSE
+)
 ```
 
 ## Example Usage
