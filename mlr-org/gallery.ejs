@@ -1,7 +1,14 @@
 ```{=html}
-<ul>
-<% for (const item of items) { %>
-  <li><a href="<%- item.href %>"><%= item.title %></a></li>
-<% } %>
-</ul>
+<div class="gallery">
+  <div class="gallery__icon">
+    <i class="bi-<%- items[0].icon %>"></i>
+  </div>
+  <div class="gallery__list">
+    <ul>
+      <% for (const item of items) { %>
+        <li><a href="<%- item.href %>"><%= item.title %></a></li>
+      <% } %>
+    </ul>
+  </div>
+</div>
 ```
