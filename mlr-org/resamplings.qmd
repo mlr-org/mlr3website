@@ -25,21 +25,17 @@ If only a single split is required (i.e., a holdout split), the `r ref("partitio
 #| echo: false
 #| column: page
 
-content = as.data.table(mlr3::mlr_resamplings)[, .(key, label, params, iters)]
+content = as.data.table(mlr3::mlr_resamplings)[, .(key, label, iters)]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_resamplings", value), text = value, format = "htmltools")
+}
 
 reactable(content, columns = list(
-  key = colDef(
-    cell = function(value) {
-      mlr3book::ref(sprintf("%s_%s", "mlr_resamplings", value), text = value, format = "htmltools")
-    }
-  ),
-  label = colDef(name = "Label"),
-  params = colDef(name = "Parameters", cell = function(value) {
-    if (length(value)) {
-      tags$ul(map(value, function(x) tags$li(class = "object-table__list", x)))
-    }
-  }),
-  iters = colDef(name = "Default Iterations")
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label"),
+    iters = colDef(name = "Default Iterations")
   ),
   searchable = TRUE,
   pagination = FALSE,

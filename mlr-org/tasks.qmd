@@ -24,19 +24,21 @@ The goal of these tasks is to quickly demonstrate the capabilities of the packag
 
 content = as.data.table(mlr3::mlr_tasks)[, .(key, label, task_type, nrow, ncol)]
 
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_tasks", value), text = value, format = "htmltools")
+}
+
 reactable(content, columns = list(
-  key = colDef(name = "Key",
-    cell = function(value) {
-      mlr3book::ref(sprintf("%s_%s", "mlr_tasks", value), text = value, format = "htmltools")
-    }
-  ),
-  label = colDef(name = "Label"),
-  task_type = colDef(name = "Task Type"),
-  nrow = colDef(name = "# Rows"),
-  ncol = colDef(name = "# Cols")
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label", minWidth = 200),
+    task_type = colDef(name = "Task Type"),
+    nrow = colDef(name = "# Rows"),
+    ncol = colDef(name = "# Cols")
   ),
   searchable = TRUE,
-  pagination = FALSE
+  pagination = FALSE,
+  highlight = TRUE
 )
 ```
 

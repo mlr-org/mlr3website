@@ -3,6 +3,8 @@ sidebar: false
 toc: false
 ---
 
+# Tuning Spaces
+
 {{< include _setup.qmd >}}
 
 ```{r}
@@ -14,9 +16,6 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 ```
 
-
-# Tuning Spaces
-
 The package `r ref_pkg("mlr3tuningspaces")` ships with some predefined tuning spaces for hyperparameter optimization.
 See the respective manual page for the article from which they were extracted.
 
@@ -24,25 +23,27 @@ See the respective manual page for the article from which they were extracted.
 #| echo: false
 #| column: page
 
-content = as.data.table(mlr_tuning_spaces, objects = TRUE)[, .(key, label, learner, n_values, object)]
-content[, object := NULL]
+content = as.data.table(mlr_tuning_spaces)[, .(key, label, learner, n_values)]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_tuning_spaces", value), text = value, format = "htmltools")
+}
+
+learner_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
+}
 
 reactable(content, columns = list(
-  key = colDef(name = "Key",
-    cell = function(value) {
-     mlr3book::ref(sprintf("%s_%s", "mlr_tuning_spaces", value), text = value, format = "htmltools")
-    }
-  ),
-  label = colDef(name = "Label"),
-  learner = colDef(name = "Learner",
-    cell = function(value) {
-      mlr3book::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
-    }
-  ),
-  n_values = colDef(name = "# Hyperparameters")
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label", minWidth = 150),
+    learner = colDef(name = "Learner", cell = learner_cell),
+    n_values = colDef(name = "# Hyperparameters")
   ),
   searchable = TRUE,
-  pagination = FALSE
+  pagination = FALSE,
+  highlight = TRUE
 )
 ```
 

@@ -23,23 +23,21 @@ The `r ref("Measure")` objects provide an abstraction for a plethora of performa
 
 content = as.data.table(mlr3::mlr_measures)[, .(key, label, task_type, packages)]
 content[is.na(task_type), task_type := "generic"]
+content[, packages := map(packages, function(value) setdiff(value, c("mlr3", "mlr3measures")))]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_measures", value), text = value, format = "htmltools")
+}
 
 reactable(content, columns = list(
-  key = colDef(
-    cell = function(value) {
-      mlr3book::ref(sprintf("%s_%s", "mlr_measures", value), text = value, format = "htmltools")
-    }
-  ),
-  label = colDef(name = "Label"),
-  packages = colDef(name = "Packages", cell = function(value) {
-    value = setdiff(value, c("mlr3", "mlr3measures"))
-    if (length(value)) {
-      tags$ul(map(value, function(x) tags$li(class = "object-table__list", mlr3book::ref_pkg(x, pkg = x, format = "htmltools"))))
-    }
-  }),
-  task_type = colDef(name = "Task Type")
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label", minWidth = 200),
+    packages = colDef(name = "Packages", cell = package_list_cell),
+    task_type = colDef(name = "Task Type")
   ),
   searchable = TRUE,
-  pagination = FALSE
+  pagination = FALSE,
+  highlight = TRUE
 )
 ```

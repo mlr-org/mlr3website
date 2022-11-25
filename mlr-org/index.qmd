@@ -4,6 +4,8 @@ toc: false
 page-layout: article
 ---
 
+{{< include _setup.qmd >}}
+
 <div class="center-text">
 # mlr(3): Machine Learning in R
 </div>
@@ -12,9 +14,7 @@ An open-source collection of R packages providing a unified interface for machin
 
 ```{r}
 #| echo: false
-library(mlr3misc)
-library(htmltools)
-library(data.table)
+
 content = rowwise_table(
     ~icon,          ~text,                                                    ~link,
     "code-square",  "A scientifically designed and easy to learn interface.", "index.html",
@@ -22,13 +22,13 @@ content = rowwise_table(
     "box",          "Light on dependencies.",                                 "index.html",
     "stack",        "Convenient parallelization with the future package.",    "https://futureverse.org/",
     "sliders",      "State-of-the-art optimization algorithms.",              "tuners.html",
-    "share",        "Dataflow programming with pipelines.",                   "https://mlr3pipelines.mlr-org.com/"
+    "share",        "Dataflow programming with pipelines.",                   "pipeops.html"
 )
 div(class = "feature-grid",
   pmap(content, function(icon, text, link) {
     div(class = "feature-grid__item",
         div(class="feature-grid__icon",
-          a(href = link, class = "feature-grid__a",
+          a(href = link, class = "feature-grid__link",
             tags$i(class = sprintf("bi-%s feature-grid__i", icon))
          )
        ),
@@ -38,20 +38,29 @@ div(class = "feature-grid",
 )
 ```
 
+## Get Started
+
+Install the full mlr3 universe at once.
+
+```{r}
+#| eval: false
+
+install.packages("mlr3verse")
+```
+
+Read our [book](book.html) or start with a [gallery post](gallery.html).
+
 ## Examples
 
-```{r, echo = FALSE}
+```{r}
 #| echo: false
-library(mlr3misc)
-library(htmltools)
-library(data.table)
 
 content = rowwise_table(
-  ~name,                    ~icon,      ~url,                                                                       ~text,                                                     ~objective,
-  "Basic Machine Learning", "pen",      "gallery/2020-03-18-iris-mlr3-basics/",                                     "Basic machine learning",                                   list(list("Learner", "Task", "Resampling")),
-  "Optimization",           "sliders",  "gallery/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins/",   "Hyperparameter tuning of a support vector machine",        list(list("Tuning Space", "Tuning", "Nested Resampling")),
-  "Pipelines",              "share",    "gallery/2020-03-11-mlr3pipelines-tutorial-german-credit/",                 "Preprocessing pipelines", list(list("Pipelines", "Missing Values", "Optimization")),
-  "Feature Selection",      "funnel",   "gallery/2020-09-14-mlr3fselect-basic/",                                    "Feature Selection on the Titanic data set", list(list("Sequential Feature Selection", "Nested Resampling"))
+  ~name,                    ~icon,      ~url,                                                                     ~text,
+  "Basic Machine Learning", "pen",      "gallery/2020-03-18-iris-mlr3-basics/",                                   "Get to know the basic building blocks of machine learning in mlr3. Train your first learner and estimate its performance with resampling. Compare the performance of learners with benchmarking.",
+  "Optimization",           "sliders",  "gallery/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins/", "Optimize the hyperparameters of a classification tree on the Palmer Penguins data set. Become familiar with search spaces and transformations. Fit a final model with optimized hyperparameters for predicting new data.",
+  "Pipelines",              "share",    "gallery/2020-03-11-mlr3pipelines-tutorial-german-credit/",               "Build a preprocessing pipeline for missing data in the German Credit data set. Optimize the parameters of the pipeline and stack multiple learners into an ensemble model. Learn about techniques to tackle challenging data sets.",
+  "Feature Selection",      "funnel",   "gallery/2020-09-14-mlr3fselect-basic/",                                  "Start a feature selection on the Titanic data set. Learn about different optimization algorithms and fit a final model. Estimate the performance of the optimized feature set with nested resampling."
 )
 
 div(class = "grid grid-two",
@@ -59,14 +68,10 @@ div(class = "grid grid-two",
       div(class = "grid__item",
         h3(class = "grid__title",
           tags$i(class = sprintf("bi-%s grid__title-icon", icon)),
-          HTML("&nbsp;"),
-          name
+          span(class = "grid__title-name", name)
         ),
-        p(paste0(text, ".")),
-        a(href = url, span(class = "grid__link-box")),
-        tags$ul(class = "grid__list",
-          map(objective, function(x) tags$li(x))
-        )
+        p(class = "grid__text", text),
+        a(href = url, span(class = "grid__link-box"))
       )
   })
 )

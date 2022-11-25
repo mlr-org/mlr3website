@@ -18,33 +18,27 @@ In a second step, features can be selected by either selecting a fixed absolute 
 
 The `r ref("mlr_pipeops_filter", text = "Filter PipeOp")` allows to use filters as a preprocessing step.
 
-
 ```{r}
 #| echo: false
 #| column: page
 
 content = as.data.table(mlr_filters, objects = TRUE)[, .(key, label, task_type, packages)]
+content[, packages := map(packages, function(value) setdiff(value, c("mlr3", "mlr3filters")))]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_filters", value), text = value, format = "htmltools")
+}
 
 reactable(content, columns = list(
-  key = colDef(name = "Key",
-    cell = function(value) {
-      mlr3book::ref(sprintf("%s_%s", "mlr_filters", value), text = value, format = "htmltools")
-    }
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label"),
+    task_type = colDef(name = "Task Type", cell = list_cell),
+    packages = colDef(name = "Packages", cell = package_list_cell)
   ),
-  label = colDef(name = "Label"),
-  task_type = colDef(name = "Task Type", cell = function(value) {
-    if (length(value)) {
-      tags$ul(map(value, function(x) tags$li(class = "object-table__list", x)))
-    }
-  }),
-  packages = colDef(name = "Packages", cell = function(value) {
-    value = setdiff(value, c("mlr3", "mlr3filters"))
-    if (length(value)) {
-      tags$ul(map(value, function(x) tags$li(class = "object-table__list", mlr3book::ref_pkg(x, pkg = x, format = "htmltools"))))
-    }
-  })),
   searchable = TRUE,
-  pagination = FALSE
+  pagination = FALSE,
+  highlight = TRUE
 )
 ```
 

@@ -15,15 +15,6 @@ library("mlr3learners")
 library("mlr3extralearners")
 ```
 
-```{r}
-#| include: false
-
-content = as.data.table(mlr_learners, objects = TRUE)
-content[, base_package := map(object, function(x) strsplit(x$man, "::", TRUE)[[1]][1])]
-content[, packages := pmap(list(packages, base_package), function(x, y) setdiff(x, c(y, "mlr3")))]
-content[, `:=`(object = NULL, task_type = NULL)]
-```
-
 To keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the `r ref_pkg("rpart")` package and some learners for debugging.
 A subjective selection of implementations for essential ML algorithms can be found in `r ref_pkg("mlr3learners")` package.
 Survival learners are provided by `r ref_pkg("mlr3proba")`, cluster learners via `r ref_pkg("mlr3cluster")`.
@@ -34,32 +25,28 @@ Additional learners, including some learners which are not yet to be considered 
 #| echo: false
 #| column: page
 
-to_list = function(value) {
-  if (length(value)) {
-    tags$ul(
-      map(value, function(x) tags$li(x))
-    )
-  } else character(1)
+content = as.data.table(mlr_learners, objects = TRUE)
+content[, base_package := map(object, function(x) strsplit(x$man, "::", TRUE)[[1]][1])]
+content[, packages := pmap(list(packages, base_package), function(x, y) setdiff(x, c(y, "mlr3")))]
+content[, `:=`(object = NULL, task_type = NULL)]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(
-  label = colDef(name = "Label"),
-  key = colDef(name = "Key",
-    cell = function(value) {
-      mlr3book::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
-    }
-  ),
-  base_package = colDef(name = "Base Package",
-    cell = function(value) {
-      mlr3book::ref_pkg(sprintf("%s_%s", "mlr_learners", value), pkg = value, format = "htmltools")
-    }
-  ),
-  feature_types = colDef(name = "Feature Types", cell = to_list),
-  predict_types = colDef(name =  "Predict Types", cell = to_list),
-  properties = colDef(name = "Properties", cell = to_list)
+    label = colDef(name = "Label"),
+    key = colDef(name = "Key", minWidth = 120, cell = ref_cell),
+    packages = colDef(name = "Packages", cell = package_list_cell),
+    base_package = colDef(name = "Base Package", minWidth = 120, cell = package_cell),
+    feature_types = colDef(name = "Feature Types", cell = list_cell),
+    predict_types = colDef(name =  "Predict Types", cell = list_cell),
+    properties = colDef(name = "Properties", cell = list_cell)
   ),
   searchable = TRUE,
-  pagination = FALSE
+  pagination = FALSE,
+  highlight = TRUE
 )
 ```
 

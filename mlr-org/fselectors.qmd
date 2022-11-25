@@ -23,31 +23,24 @@ The goal is to find the best subset of features with respect to a `r ref("Measur
 #| echo: false
 #| column: page
 
-content = as.data.table(mlr_fselectors, objects = TRUE)[, .(key, label, packages, properties, object)]
+content = as.data.table(mlr_fselectors)[, .(key, label, packages, properties)]
 content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
-content[, object := NULL]
+content[, packages := map(packages, function(value) setdiff(value, c("bbotk", "mlr3fselect")))]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_fselectors", value), text = value, format = "htmltools")
+}
 
 reactable(content, columns = list(
-  key = colDef(name = "Key",
-    cell = function(value) {
-      mlr3book::ref(sprintf("%s_%s", "mlr_fselectors", value), text = value, format = "htmltools")
-    }
-  ),
-  label = colDef(name = "Label"),
-  packages = colDef(name = "Packages", cell = function(value) {
-    value = setdiff(value, "bbotk")
-    if (length(value)) {
-      map(value, function(x) tags$li(class = "object-table__list", mlr3book::ref_pkg(x, pkg = x, format = "htmltools"), " "))
-    }
-  }),
-  properties = colDef(name = "Properties", cell = function(value) {
-    if (length(value)) {
-      tags$ul(map(value, function(x) tags$li(class = "object-table__list", x)))
-    }
-  })
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label"),
+    packages = colDef(name = "Packages", cell = package_list_cell),
+    properties = colDef(name = "Properties", cell = list_cell)
   ),
   searchable = TRUE,
-  pagination = FALSE
+  pagination = FALSE,
+  highlight = TRUE
 )
 ```
 
