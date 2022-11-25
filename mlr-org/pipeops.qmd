@@ -3,6 +3,8 @@ sidebar: false
 toc: false
 ---
 
+# Pipeline Operators
+
 {{< include _setup.qmd >}}
 
 ```{r}
@@ -10,8 +12,6 @@ toc: false
 
 library("mlr3verse")
 ```
-
-# Pipeline Operators
 
 Objects of class `r ref("PipeOp")` are the building blocks to compose linear machine learning pipelines and non-linear `r ref("Graph", text = "Graphs")`.
 The base objects are implemented in `r ref_pkg("mlr3pipelines")`.

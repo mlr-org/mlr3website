@@ -3,6 +3,8 @@ sidebar: false
 toc: false
 ---
 
+# Tasks
+
 {{< include _setup.qmd >}}
 
 ```{r}
@@ -12,8 +14,6 @@ library("mlr3spatiotempcv")
 requireNamespace("mlr3verse")
 lgr::get_logger("mlr3")$set_threshold("warn")
 ```
-
-# Tasks
 
 The mlr3 packages also ship with some data sets, readily usable as `r ref("Task")` objects.
 The goal of these tasks is to quickly demonstrate the capabilities of the packages.

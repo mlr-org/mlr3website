@@ -3,6 +3,8 @@ sidebar: false
 toc: false
 ---
 
+# Feature Selection Wrapper
+
 {{< include _setup.qmd >}}
 
 ```{r}
@@ -13,8 +15,6 @@ library(mlr3fselect)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 ```
-
-# Feature Selection Wrapper
 
 Feature selection wrappers can be found in the `r ref_pkg("mlr3fselect")` packages.
 The goal is to find the best subset of features with respect to a `r ref("Measure", text = "performance measure")` in an iterative fashion.

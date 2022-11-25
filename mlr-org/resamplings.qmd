@@ -3,6 +3,8 @@ sidebar: false
 toc: false
 ---
 
+# Resamplings
+
 {{< include _setup.qmd >}}
 
 ```{r}
@@ -11,8 +13,6 @@ toc: false
 requireNamespace("mlr3spatiotempcv")
 requireNamespace("mlr3verse")
 ```
-
-# Resamplings
 
 Resamplings split the observations multiple times into two sets: training and test.
 The former is used to fit the model, the latter is used to evaluate the predictions.

@@ -3,6 +3,8 @@ sidebar: false
 toc: false
 ---
 
+# Feature Selection Filter
+
 {{< include _setup.qmd >}}
 
 ```{r}
@@ -10,9 +12,6 @@ toc: false
 
 library(mlr3filters)
 ```
-
-
-# Feature Selection Filter
 
 `r ref("Filter", text = "Feature Filters")` quantify the importance of each feature of a `r ref("Task")` by assigning them a numerical score.
 In a second step, features can be selected by either selecting a fixed absolute or relative frequency of the best features, or by thresholding on the score value.
