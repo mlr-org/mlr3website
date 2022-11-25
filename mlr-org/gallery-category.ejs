@@ -1,0 +1,8 @@
+```{=html}
+<ul>
+<% console.log(items) %>
+<% for (const item of items) { %>
+  <li><a href="<%- item.href %>"><%= item.title %></a></li>
+<% } %>
+</ul>
+```

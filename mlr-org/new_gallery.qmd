@@ -1,0 +1,66 @@
+---
+sidebar: false
+toc: false
+page-layout: article
+listing:
+  - id: latest-gallery
+    template: gallery-latest.ejs
+    contents: gallery
+    sort: "date desc"
+  - id: basic-gallery
+    template: gallery.ejs
+    contents: basic-gallery.yml
+  - id: optimization-gallery
+    template: gallery.ejs
+    contents: optimization-gallery.yml
+  - id: pipelines-gallery
+    template: gallery.ejs
+    contents: pipelines-gallery.yml
+  - id: technical-gallery
+    template: gallery.ejs
+    contents: technical-gallery.yml
+  - id: series-gallery
+    template: gallery.ejs
+    contents: series-gallery.yml
+---
+
+# gallery
+
+## Latest
+
+::: {#latest-gallery}
+:::
+
+## Train Learners on Data
+
+::: {#basic-gallery}
+:::
+
+[See all posts]()
+
+## Optimize Models
+
+::: {#optimization-gallery}
+:::
+
+[See all posts](optimization-gallery.html)
+
+## Pipelines
+
+::: {#pipelines-gallery}
+:::
+
+[See all posts]()
+
+## Technical
+
+::: {#technical-gallery}
+:::
+
+[See all posts]()
+
+# Series
+
+::: {#series-gallery}
+:::
+
