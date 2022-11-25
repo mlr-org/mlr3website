@@ -5,27 +5,12 @@ toc: false
 
 # Feature Selection Filter
 
-```{r, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+{{< include _setup.qmd >}}
 
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
+```{r}
+#| include: false
+
 library(mlr3filters)
-
-content = as.data.table(mlr_filters, objects = TRUE)[, .(key, task_type, packages)]
-
-# add links
-content[, key := link_keys(key, prefix = "mlr_filters")]
-content[, packages := link_pkgs(packages, remove = c("mlr3", "mlr3filters"))]
-content[, task_type := map(task_type, strsplit, split = ",", fixed = TRUE)]
-
-# add line breaks to cells
-cols = c("packages", "task_type")
-content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
-
-setnames(content, c("Key", "Task Types", "Packages"))
 ```
 
 `r ref("Filter", text = "Feature Filters")` quantify the importance of each feature of a `r ref("Task")` by assigning them a numerical score.
@@ -34,13 +19,27 @@ In a second step, features can be selected by either selecting a fixed absolute 
 The `r ref("mlr_pipeops_filter", text = "Filter PipeOp")` allows to use filters as a preprocessing step.
 
 ```{r}
+#| echo: false
 #| column: page
-DT::datatable(
-  content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
-  rownames = FALSE)
+
+content = as.data.table(mlr_filters, objects = TRUE)[, .(key, label, task_type, packages)]
+content[, packages := map(packages, function(value) setdiff(value, c("mlr3", "mlr3filters")))]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_filters", value), text = value, format = "htmltools")
+}
+
+reactable(content, columns = list(
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label"),
+    task_type = colDef(name = "Task Type", cell = list_cell),
+    packages = colDef(name = "Packages", cell = package_list_cell)
+  ),
+  searchable = TRUE,
+  pagination = FALSE,
+  highlight = TRUE
+)
 ```
 
 ## Example Usage

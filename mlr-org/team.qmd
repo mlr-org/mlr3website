@@ -1,25 +1,14 @@
-```{r, echo = FALSE}
-library(mlr3misc)
-library(htmltools)
-library(data.table)
+---
+sidebar: false
+toc: false
+---
 
-team_grid = function(content) {
-  div(class = "grid-container-team",
-    pmap(content, function(name, image, url, text) {
-      div(class = "grid-item-team",
-        div(class = "grid-image-team",
-          img(src = image)
-        ),
-        div(class = "grid-text-team",
-          h3(
-            a(href = url, name)
-          ),
-          text
-        )
-      )
-    })
-  )
-}
+# Team
+
+{{< include _setup.qmd >}}
+
+```{r}
+#| echo: false
 
 content = rowwise_table(
   ~name, ~image, ~url, ~text,
@@ -33,5 +22,20 @@ content = rowwise_table(
   "Florian Pfisterer", "images/team/florian.jpg", "https://github.com/pfistfl", "PhD Student at LMU Munich. I am interested in projects on the intersection of Meta-Learning, AutoML and Algorithmic Fairness. Mainly working on mlr3pipelines and mlr3keras/mlr3torch"
 )
 
-team_grid(content)
+
+div(class = "team-grid",
+  pmap(content, function(name, image, url, text) {
+    div(class = "team-grid__item",
+      div(class = "team-grid__image-container",
+        img(class = "team-grid__image", src = image)
+      ),
+      div(class = "team-grid__text",
+        h3(class = "team-grid__name",
+          a(class = "team-grid__link", href = url, name)
+        ),
+        text
+      )
+    )
+  })
+)
 ```

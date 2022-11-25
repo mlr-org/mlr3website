@@ -5,31 +5,41 @@ toc: false
 
 # Tasks
 
-```{r setup, include=FALSE}
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
-library(mlr3spatiotempcv)
-library(DT)
+{{< include _setup.qmd >}}
+
+```{r}
+#| include: false
+
+library("mlr3spatiotempcv")
 requireNamespace("mlr3verse")
 lgr::get_logger("mlr3")$set_threshold("warn")
-
-content = as.data.table(mlr3::mlr_tasks)[, .(key, label, task_type, nrow, ncol)]
-content[, key := link_keys(key, prefix = "mlr_tasks")]
-setnames(content, c("Key", "Label", "Task Type", "# rows", "# cols"))
 ```
 
 The mlr3 packages also ship with some data sets, readily usable as `r ref("Task")` objects.
 The goal of these tasks is to quickly demonstrate the capabilities of the packages.
 
-```{r echo=FALSE}
+```{r}
+#| echo: false
 #| column: page
-DT::datatable(content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, info = FALSE),
-  rownames = FALSE)
+
+content = as.data.table(mlr3::mlr_tasks)[, .(key, label, task_type, nrow, ncol)]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_tasks", value), text = value, format = "htmltools")
+}
+
+reactable(content, columns = list(
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label", minWidth = 200),
+    task_type = colDef(name = "Task Type"),
+    nrow = colDef(name = "# Rows"),
+    ncol = colDef(name = "# Cols")
+  ),
+  searchable = TRUE,
+  pagination = FALSE,
+  highlight = TRUE
+)
 ```
 
 ## Example Usage

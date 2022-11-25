@@ -2,61 +2,78 @@
 sidebar: false
 toc: false
 page-layout: article
-listing:
-  - id: listings3
-    template: listings3.ejs
-    contents: listings3.yml
-  - id: listings4
-    template: listings4.ejs
-    contents: listings4.yml
 ---
 
-<div class="banner">
-  <img src="images/banner.png" class="banner" alt="">
-</div>
+{{< include _setup.qmd >}}
 
 <div class="center-text">
-# mlr(3): Machine Learning in R
+# mlr3: Machine Learning in R
 </div>
 An open-source collection of R packages providing a unified interface for machine learning in the R language.
-
-::: {#listings3}
-:::
+Successor of [mlr](https://mlr.mlr-org.com/).
 
 
-## Resources
+```{r}
+#| echo: false
 
-```{r, echo = FALSE}
-library(data.table)
-library(htmltools)
-library(mlr3misc)
-# Social buttons
-content = rbindlist(list(
-  list(name = "GitHub", url = "https://github.com/mlr-org/mlr3", icon = "github"),
-  list(name = "Mattermost", url = "https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/", icon = "chat-dots"),
-  list(name = "Book", url = "https://mlr3book.mlr-org.com/", icon = "book"),
-  list(name = "StackOverflow", url = "https://stackoverflow.com/questions/tagged/mlr3", icon = "stack-overflow")
-))
-
-div(class = 'btn-container',
-  pmap(content, function(name, url, icon) {
-    a(href = url, class="btn",
-      tags$i(class = sprintf("bi-%s", icon)),
-      name
+content = rowwise_table(
+    ~icon,          ~text,                                                    ~link,
+    "code-square",  "A scientifically designed and easy to learn interface.", "index.html",
+    "pen",          "More than 100 connected machine learning algorithms.",   "learners.html",
+    "box",          "Light on dependencies.",                                 "index.html",
+    "stack",        "Convenient parallelization with the future package.",    "https://futureverse.org/",
+    "sliders",      "State-of-the-art optimization algorithms.",              "tuners.html",
+    "share",        "Dataflow programming with pipelines.",                   "pipeops.html"
+)
+div(class = "feature-grid",
+  pmap(content, function(icon, text, link) {
+    div(class = "feature-grid__item",
+        div(class="feature-grid__icon",
+          a(href = link, class = "feature-grid__link",
+            tags$i(class = sprintf("bi-%s feature-grid__i", icon))
+         )
+       ),
+      text
     )
   })
 )
 ```
 
-## Quick Start
+## Get Started
 
-The mlr3verse meta-package installs mlr3 and some of the most important extension packages:
+Install the full mlr3 universe at once.
 
-```{r, eval=FALSE}
+```{r}
+#| eval: false
+
 install.packages("mlr3verse")
 ```
 
+Read our [book](book.html) or start with a [gallery post](gallery.html).
+
 ## Examples
 
-::: {#listings4}
-:::
+```{r}
+#| echo: false
+
+content = rowwise_table(
+  ~name,                    ~icon,      ~url,                                                                     ~text,
+  "Basic Machine Learning", "pen",      "gallery/2020-03-18-iris-mlr3-basics/",                                   "Get to know the basic building blocks of machine learning in mlr3. Train your first learner and estimate its performance with resampling. Compare the performance of learners with benchmarking.",
+  "Optimization",           "sliders",  "gallery/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins/", "Optimize the hyperparameters of a classification tree on the Palmer Penguins data set. Become familiar with search spaces and transformations. Fit a final model with optimized hyperparameters for predicting new data.",
+  "Pipelines",              "share",    "gallery/2020-03-11-mlr3pipelines-tutorial-german-credit/",               "Build a preprocessing pipeline for missing data in the German Credit data set. Optimize the parameters of the pipeline and stack multiple learners into an ensemble model. Learn about techniques to tackle challenging data sets.",
+  "Feature Selection",      "funnel",   "gallery/2020-09-14-mlr3fselect-basic/",                                  "Start a feature selection on the Titanic data set. Learn about different optimization algorithms and fit a final model. Estimate the performance of the optimized feature set with nested resampling."
+)
+
+div(class = "grid grid-two",
+  pmap(content, function(name, icon, url, text, objective) {
+      div(class = "grid__item",
+        h3(class = "grid__title",
+          tags$i(class = sprintf("bi-%s grid__title-icon", icon)),
+          span(class = "grid__title-name", name)
+        ),
+        p(class = "grid__text", text),
+        a(href = url, span(class = "grid__link-box"))
+      )
+  })
+)
+```

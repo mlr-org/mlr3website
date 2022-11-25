@@ -199,10 +199,10 @@
     },
     "Matrix": {
       "Package": "Matrix",
-      "Version": "1.5-1",
+      "Version": "1.5-3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "539dc0c0c05636812f1080f473d2c177",
+      "Hash": "4006dffe49958d2dd591c17e61e60591",
       "Requirements": [
         "lattice"
       ]
@@ -2378,17 +2378,19 @@
       "Version": "0.1",
       "Source": "GitHub",
       "RemoteType": "github",
-      "Remotes": "mlr-org/mlr3extralearners, mlr-org/mlr3mbo, mlr-org/mlr3proba,\n    mlr-org/mlr3spatiotempcv",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "mlr3book",
       "RemoteUsername": "mlr-org",
-      "RemoteRef": "main",
-      "RemoteSha": "c0d67c4e260c82f19d27be9c67b6e4cfb0037c9e",
-      "Hash": "4ba76b14b12edd9a2426a87e96f57d95",
+      "RemoteRepo": "mlr3book",
+      "RemoteRef": "htmltools",
+      "RemoteSha": "763fbbd9b68a3ca4566e620c2a6cec3d35803448",
+      "Remotes": "mlr-org/mlr3extralearners, mlr-org/mlr3proba",
+      "Hash": "7c5bb841348f9d9695a8a0d49dde5f23",
       "Requirements": [
         "bbotk",
         "checkmate",
         "data.table",
+        "htmltools",
+        "jsonlite",
         "mlr3",
         "mlr3benchmark",
         "mlr3cluster",
@@ -2505,10 +2507,15 @@
     },
     "mlr3fselect": {
       "Package": "mlr3fselect",
-      "Version": "0.8.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "352273cb3089e96054570835b7d87ffa",
+      "Version": "0.8.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mlr-org",
+      "RemoteRepo": "mlr3fselect",
+      "RemoteRef": "main",
+      "RemoteSha": "76c5254f46c57539e9dfacfeeb4bb1ab97c520ed",
+      "Hash": "2dffc2be7840cb83f3e5734c70bb9c91",
       "Requirements": [
         "R6",
         "bbotk",
@@ -2523,10 +2530,15 @@
     },
     "mlr3hyperband": {
       "Package": "mlr3hyperband",
-      "Version": "0.4.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "1d996faae4587dd41da0c5ab8ec84539",
+      "Version": "0.4.3.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mlr-org",
+      "RemoteRepo": "mlr3hyperband",
+      "RemoteRef": "main",
+      "RemoteSha": "124fd8937960a98b877cc26415743a24bab6bf64",
+      "Hash": "7cb1e52868c6861f379e4ba6d673d8c1",
       "Requirements": [
         "R6",
         "bbotk",
@@ -2631,13 +2643,13 @@
       "Version": "0.4.13",
       "Source": "GitHub",
       "RemoteType": "github",
+      "RemoteHost": "api.github.com",
       "RemoteUsername": "mlr-org",
       "RemoteRepo": "mlr3proba",
       "RemoteRef": "main",
-      "RemoteSha": "132291a6c746a5d5dd54447bbe7a83a1911a5973",
-      "RemoteHost": "api.github.com",
+      "RemoteSha": "cea646b560674d531e3f90e137b3b5734939284f",
       "Remotes": "alan-turing-institute/distr6, xoopR/param6, xoopR/set6, mlr-org/mlr3",
-      "Hash": "0de7bde93163dcd573975131457a8888",
+      "Hash": "101e30206df2d26e02294fa996e6c7c8",
       "Requirements": [
         "R6",
         "Rcpp",
@@ -2672,15 +2684,15 @@
     },
     "mlr3spatiotempcv": {
       "Package": "mlr3spatiotempcv",
-      "Version": "2.0.3.9000",
+      "Version": "2.0.3",
       "Source": "GitHub",
       "RemoteType": "github",
+      "RemoteHost": "api.github.com",
       "RemoteUsername": "mlr-org",
       "RemoteRepo": "mlr3spatiotempcv",
       "RemoteRef": "main",
-      "RemoteSha": "807c39a3242d7cd942690f8f0a460efecec6a843",
-      "RemoteHost": "api.github.com",
-      "Hash": "1500d1ae9ed7fe602a085f952ab61360",
+      "RemoteSha": "fe5f6857c25315be537ebd469e733f2f0d97d2e9",
+      "Hash": "f55faabbade236ce472863fa4b4b7f08",
       "Requirements": [
         "R6",
         "checkmate",
@@ -2693,10 +2705,10 @@
     },
     "mlr3tuning": {
       "Package": "mlr3tuning",
-      "Version": "0.16.0",
+      "Version": "0.17.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3807096768b5c2635dde5f6dc30963d9",
+      "Hash": "ab8be7deb81fe8ca17249b12b05db5bb",
       "Requirements": [
         "R6",
         "bbotk",
@@ -2711,9 +2723,14 @@
     "mlr3tuningspaces": {
       "Package": "mlr3tuningspaces",
       "Version": "0.3.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "295491360fc934a4d3734db733fc2ada",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mlr-org",
+      "RemoteRepo": "mlr3tuningspaces",
+      "RemoteRef": "aliases",
+      "RemoteSha": "db0d358da17f725c42f34ffcdf826c68b1972676",
+      "Hash": "d4738730c75906c7567ded03d6f92f13",
       "Requirements": [
         "R6",
         "checkmate",
@@ -2726,10 +2743,10 @@
     },
     "mlr3verse": {
       "Package": "mlr3verse",
-      "Version": "0.2.6",
+      "Version": "0.2.7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "712c5e3f216870cc15c286b34d7867a1",
+      "Hash": "14ad41474613a5b7e0963bc6999cb399",
       "Requirements": [
         "bbotk",
         "data.table",
@@ -2772,8 +2789,8 @@
       "RemoteUsername": "mlr-org",
       "RemoteRepo": "mlr3website",
       "RemoteRef": "main",
-      "RemoteSha": "ce408cc86741d9f25d74b0e84f8a5fcff16c46ef",
-      "Hash": "4ac276fb0c0becbb568611d7453cf189",
+      "RemoteSha": "174ffc5362f565a2f466b9eaa179ba5c568a42a4",
+      "Hash": "8dca256f4912d022fcadc1bf7bff60d5",
       "Requirements": [
         "checkmate",
         "data.table",
@@ -3527,6 +3544,30 @@
         "xopen"
       ]
     },
+    "reactR": {
+      "Package": "reactR",
+      "Version": "0.4.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "75389c8091eb14ee21c6bc87a88b3809",
+      "Requirements": [
+        "htmltools"
+      ]
+    },
+    "reactable": {
+      "Package": "reactable",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "377c52754f3e6c17673c79740e9296d7",
+      "Requirements": [
+        "digest",
+        "htmltools",
+        "htmlwidgets",
+        "jsonlite",
+        "reactR"
+      ]
+    },
     "readr": {
       "Package": "readr",
       "Version": "2.1.3",
@@ -3702,10 +3743,10 @@
     },
     "roxygen2": {
       "Package": "roxygen2",
-      "Version": "7.2.1",
+      "Version": "7.2.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "da1f278262e563c835345872f2fef537",
+      "Hash": "d0dbb227bab26a4b8af658d81bfb6b36",
       "Requirements": [
         "R6",
         "brew",

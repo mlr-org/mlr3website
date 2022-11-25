@@ -19,25 +19,6 @@ website:
     subtitle: "faa"
     border: false
     pinned: true
-    # alignment: "center"
-    # contents:
-    #   - index.qmd
-    #   - updates.qmd
-    #   - section: "**RStudio Products**"
-    #     contents:
-    #       - rsw.qmd
-    #       - rsc.qmd
-    #       - rspm.qmd
-    #       - shiny.qmd
-    #       - rsos.qmd
-    #   - section: "**Best Practices / How to**"
-    #     contents:
-    #       - rspm-snapshots.qmd
-    #       - renv.qmd
-    #       - git.qmd
-    #       - r-lts.qmd
-    #       - local-pkgs.qmd
-    #   - help.qmd
   navbar:
     # logo: "images/logo_color.png"
     background: "#fff"
@@ -48,7 +29,7 @@ website:
     right:
       - text: "Overview"
         menu:
-           - packages.qmd
+           - ecosystem.qmd
            - text: "---"
            - tasks.qmd
            - learners.qmd
@@ -68,36 +49,26 @@ website:
       - book.qmd
       - blog.qmd
       - gallery.qmd
-
-      # sorted by last name
-      - text: "Team"
-        menu:
-          - team/about-bernd.qmd
-          - team/about-marc.qmd
-          - team/about-sebastian.qmd
-          - team/about-michel.qmd
-          - team/about-lars.qmd
-          - team/about-patrick.qmd
-          - team/about-florian.qmd
-          - team/about-raphael.qmd
+      - team.qmd
       - text: "More"
         menu:
           - support.qmd
           - contributing.qmd
           - blogroll.qmd
 
-      - icon: mattermost
-        href: https://twitter.com/cynkra_com
       - icon: rss
         menu:
           - text: "Blog RSS"
             href: posts/index.xml
           - text: "Gallery RSS"
             href: gallery/index.xml
+      - icon: chat-dots
+        href: https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite
+      - icon: stack-overflow
+        href: https://stackoverflow.com/questions/tagged/mlr3
       - icon: github
         href: https://github.com/mlr-org
-      # - icon: globe
-      #   href: https://www.cynkra.com
+
   search:
     location: navbar
     type: "textbox"
@@ -113,9 +84,8 @@ format:
     mainfont: "Roboto"
     monofont: "JetBrains Mono"
     fontsize: "16px"
-    linkcolor: "#184fa9"
     monobackgroundcolor: "#f6f6f6"
-    code-color: "fff"
+    code-color: "#000"
     toc: true
 
 bibliography: publications.bib

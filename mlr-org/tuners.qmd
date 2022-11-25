@@ -5,33 +5,16 @@ toc: false
 
 # Tuners
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+{{< include _setup.qmd >}}
 
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
+```{r}
+#| include: false
+
 library(mlr3tuning)
 library(mlr3hyperband)
+
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
-
-content = as.data.table(mlr_tuners, objects = TRUE)[, .(key, label, packages, properties, param_classes, object)]
-
-# add links
-content[, key := link_keys(key, prefix = "mlr_tuners")]
-content[, packages := link_pkgs(packages)]
-
-# remove content
-content[, properties := map(properties, function(x) setdiff(x, "dependencies"))]
-
-# add line breaks to cells
-cols = c("param_classes", "properties", "packages")
-content[, (cols) := map(.SD, function(col) map_chr(col, function(x) paste0(x, collapse = "<br/>"))), .SDcols = cols]
-
-content[, object := NULL]
-setnames(content, c("Key", "Label", "Packages", "Properties", "Classes"))
 ```
 
 Popular black-box optimization techniques are implemented in the `r ref_pkg("bbotk")` package.
@@ -42,13 +25,29 @@ All tuners operator on box-constrained tuning spaces which have to be defined by
 Some popular spaces from literature are readily available as [tuning spaces](tuning_spaces.html).
 
 ```{r}
+#| echo: false
 #| column: page
-DT::datatable(
-  content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
-  rownames = FALSE)
+
+content = as.data.table(mlr_tuners, objects = TRUE)[, .(key, label, packages, properties, param_classes)]
+content[, properties := map(properties, function(value) setdiff(value, "dependencies"))]
+content[, packages := map(packages, function(value) setdiff(value, c("bbotk", "mlr3tuning")))]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_tuners", value), text = value, format = "htmltools")
+}
+
+reactable(content, columns = list(
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label"),
+    packages = colDef(name = "Packages", cell = package_list_cell),
+    properties = colDef(name = "Properties", cell = list_cell),
+    param_classes = colDef(name = "Classes", cell = list_cell)
+  ),
+  searchable = TRUE,
+  pagination = FALSE,
+  highlight = TRUE
+)
 ```
 
 ## Example Usage

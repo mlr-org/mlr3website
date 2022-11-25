@@ -5,39 +5,46 @@ toc: false
 
 # Tuning Spaces
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+{{< include _setup.qmd >}}
 
-library(mlr3website)
-library(htmltools)
-library(mlr3misc)
-library(data.table)
-library(mlr3tuningspaces)
+```{r}
+#| include: false
+
+library("mlr3tuningspaces")
+
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
-
-content = as.data.table(mlr_tuning_spaces, objects = TRUE)[, .(key, label, learner, n_values, object)]
-content[, learner := link_keys(learner, "mlr_learners")]
-
-# add links
-content[, collection := map_chr(object, function(x) intersect(x$tags, c("default", "rbv2")))]
-content[, key := pmap_chr(list(key, collection), function(k, c) as.character(a(href = sprintf("https://mlr3tuningspaces.mlr-org.com/reference/tuning_spaces_%s.html", c), k)))]
-
-content[, `:=`(object = NULL, collection = NULL)]
-setnames(content, c("Key", "Label", "Learner", "# hyperparameters"))
 ```
 
 The package `r ref_pkg("mlr3tuningspaces")` ships with some predefined tuning spaces for hyperparameter optimization.
 See the respective manual page for the article from which they were extracted.
 
 ```{r}
+#| echo: false
 #| column: page
-DT::datatable(
-  content,
-  style = "bootstrap",
-  escape = FALSE,
-  options = list(paging = FALSE, scrollX = TRUE, info = FALSE),
-  rownames = FALSE)
+
+content = as.data.table(mlr_tuning_spaces)[, .(key, label, learner, n_values)]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_tuning_spaces", value), text = value, format = "htmltools")
+}
+
+learner_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3book::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
+}
+
+reactable(content, columns = list(
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label", minWidth = 150),
+    learner = colDef(name = "Learner", cell = learner_cell),
+    n_values = colDef(name = "# Hyperparameters")
+  ),
+  searchable = TRUE,
+  pagination = FALSE,
+  highlight = TRUE
+)
 ```
 
 ## Example Usage
