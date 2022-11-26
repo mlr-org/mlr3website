@@ -16,10 +16,14 @@ listing:
   - id: pipelines-gallery
     template: gallery-top.ejs
     contents: gallery-top-pipelines.yml
+  - id: technical-gallery
+    template: gallery-top.ejs
+    contents: gallery-top-technical.yml
   - id: series-gallery
     template: gallery-top.ejs
     contents: gallery-top-series.yml
 ---
+
 
 # Gallery
 
@@ -37,7 +41,9 @@ listing:
 :::
 
 ```{=html}
-  <a href="gallery-all-latest.html">See all posts</a>
+  <span class="gallery__link">
+    <a href="gallery-all.html">See all posts</a>
+  </span>
   </div>
 </div>
 ```
@@ -56,7 +62,9 @@ listing:
 :::
 
 ```{=html}
-  <a href="gallery-all-basic.html">See all posts</a>
+  <span class="gallery__link">
+    <a href="gallery-all-basic.html">See all posts</a>
+  </span>
   </div>
 </div>
 ```
@@ -76,7 +84,9 @@ listing:
 :::
 
 ```{=html}
-  <a href="gallery-all-optimization.html">See all posts</a>
+  <span class="gallery__link">
+    <a href="gallery-all-optimization.html">See all posts</a>
+  </span>
   </div>
 </div>
 ```
@@ -95,7 +105,9 @@ listing:
 :::
 
 ```{=html}
-  <a href="gallery-all-pipelines.html">See all posts</a>
+  <span class="gallery__link">
+    <a href="gallery-all-pipelines.html">See all posts</a>
+  </span>
   </div>
 </div>
 ```
@@ -105,7 +117,7 @@ listing:
 ```{=html}
 <div class="gallery">
   <div class="gallery__icon-column">
-      <i class="bi-house-fill gallery__icon"> </i>
+      <i class="bi-wrench gallery__icon"> </i>
   </div>
   <div class="gallery__list-column">
 ```
@@ -114,7 +126,9 @@ listing:
 :::
 
 ```{=html}
-  <a href="gallery-all-technical.html">See all posts</a>
+  <span class="gallery__link">
+    <a href="gallery-all-technical.html">See all posts</a>
+  </span>
   </div>
 </div>
 ```
@@ -133,7 +147,9 @@ listing:
 :::
 
 ```{=html}
-  <a href="gallery-all-series.html">See all posts</a>
+  <span class="gallery__link">
+    <a href="gallery-all-series.html">See all posts</a>
+  </span>
   </div>
 </div>
 ```
