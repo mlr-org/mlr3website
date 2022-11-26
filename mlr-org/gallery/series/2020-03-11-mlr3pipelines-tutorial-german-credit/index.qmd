@@ -1,5 +1,5 @@
 ---
-title: mlr3pipelines Tutorial - German Credit
+title: German Credit Series - Pipelines
 categories:
   - mlr3pipelines
   - imputation
@@ -11,8 +11,7 @@ author:
   - name: Florian Pfisterer
 date: 03-11-2020
 description: |
-  In this use case, we continue working with the German credit dataset. We already used different Learners on it in previous posts and tried to optimize their hyperparameters. To make things interesting, we artificially introduce missing values into the dataset, perform imputation and filtering and stack Learners.
-image: thumbnail.png
+  Impute missing values, filter features and stack Learners.
 ---
 
 {{< include ../_setup.qmd >}}

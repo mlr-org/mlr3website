@@ -8,9 +8,8 @@ categories:
 author:
   - name: Florian Pfisterer
 description: |
-  This post shows how to build a Graph using the mlr3pipelines package on the "titanic" dataset.
+  Build a graph.
 date: 03-12-2020
-image: ../../images/logo_color.png
 ---
 
 {{< include ../_setup.qmd >}}
@@ -38,7 +37,7 @@ and showcases.
 This is because it requires many steps often required in real-world applications of machine
 learning techniques, such as **missing value imputation**, **handling factors** and others.
 
-Following features are illustrated in this use case section:
+The following features are illustrated in this use case section:
 
 * Summarizing the data set
 * Visualizing data
