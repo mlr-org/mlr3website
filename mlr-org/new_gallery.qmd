@@ -8,59 +8,133 @@ listing:
     contents: gallery
     sort: "date desc"
   - id: basic-gallery
-    template: gallery.ejs
-    contents: gallery-basic.yml
+    template: gallery-top.ejs
+    contents: gallery-top-basic.yml
   - id: optimization-gallery
-    template: gallery.ejs
-    contents: gallery-optimization.yml
+    template: gallery-top.ejs
+    contents: gallery-top-optimization.yml
   - id: pipelines-gallery
-    template: gallery.ejs
-    contents: gallery-pipelines.yml
-  - id: technical-gallery
-    template: gallery.ejs
-    contents: gallery-technical.yml
+    template: gallery-top.ejs
+    contents: gallery-top-pipelines.yml
   - id: series-gallery
-    template: gallery.ejs
-    contents: gallery-series.yml
+    template: gallery-top.ejs
+    contents: gallery-top-series.yml
 ---
 
-# gallery
+# Gallery
 
 ## Latest
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-clock-history gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
 
 ::: {#latest-gallery}
 :::
 
-## Train Learners on Data
+```{=html}
+  <a href="gallery-all-latest.html">See all posts</a>
+  </div>
+</div>
+```
+
+## Train and Evaluate Models
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-house-fill gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
 
 ::: {#basic-gallery}
 :::
 
-[See all posts]()
+```{=html}
+  <a href="gallery-all-basic.html">See all posts</a>
+  </div>
+</div>
+```
+
 
 ## Optimize Models
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-sliders gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
 
 ::: {#optimization-gallery}
 :::
 
-[See all posts](optimization-gallery.html)
+```{=html}
+  <a href="gallery-all-optimization.html">See all posts</a>
+  </div>
+</div>
+```
 
-## Pipelines
+## Build Pipelines
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-share gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
 
 ::: {#pipelines-gallery}
 :::
 
-[See all posts]()
+```{=html}
+  <a href="gallery-all-pipelines.html">See all posts</a>
+  </div>
+</div>
+```
 
-## Technical
+## Customize and Apply Technical Tools
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-house-fill gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
 
 ::: {#technical-gallery}
 :::
 
-[See all posts]()
+```{=html}
+  <a href="gallery-all-technical.html">See all posts</a>
+  </div>
+</div>
+```
 
-# Series
+## Learn in Bundled Series
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-house-fill gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
 
 ::: {#series-gallery}
 :::
+
+```{=html}
+  <a href="gallery-all-series.html">See all posts</a>
+  </div>
+</div>
+```
 
