@@ -223,6 +223,28 @@ $link-color: rgba(3, 99, 142, 1);
   text-decoration: none;
 }
 
+.gallery {
+  display: inline-grid;
+  grid-template-columns: 100px auto;
+
+
+  &__icon-column {
+    text-align: center;
+  }
+
+  &__list-column {
+
+  }
+
+  &__icon {
+    font-size: 3rem;
+  }
+
+  &__link {
+    padding-left: 1rem;
+  }
+}
+
 .rt-th {
   border-bottom: 1px solid $line-color !important;
 }
@@ -236,6 +258,8 @@ $link-color: rgba(3, 99, 142, 1);
 .object-table__list-item {
   list-style-type: none;
 }
+
+
 
 
 footer.footer .nav-footer,

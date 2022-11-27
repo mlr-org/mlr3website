@@ -1,0 +1,10 @@
+```{=html}
+<ul>
+  <% for (const item of items) { %>
+    <li>
+      <a href="<%- item.href %>"><%= item.title %></a>
+      <p><%= item.description %></p>
+    </li>
+  <% } %>
+</ul>
+```

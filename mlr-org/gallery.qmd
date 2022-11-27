@@ -1,15 +1,156 @@
 ---
-# Reference: https://quarto.org/docs/websites/website-listings.html#advanced-options
-title: "Gallery"
-listing:
-  contents: gallery
-  table-striped: true
-  type: default
-  grid-columns: 2
-  categories: numbered
-  date-format: YYYY-MM-DD
-  feed: true
-  sort: "date desc"
-  fields: [image, title, author, date]
 sidebar: false
+toc: false
+page-layout: article
+listing:
+  - id: latest-gallery
+    template: gallery-latest.ejs
+    contents: gallery
+    sort: "date desc"
+  - id: basic-gallery
+    template: gallery-top.ejs
+    contents: gallery-top-basic.yml
+  - id: optimization-gallery
+    template: gallery-top.ejs
+    contents: gallery-top-optimization.yml
+  - id: pipelines-gallery
+    template: gallery-top.ejs
+    contents: gallery-top-pipelines.yml
+  - id: technical-gallery
+    template: gallery-top.ejs
+    contents: gallery-top-technical.yml
+  - id: series-gallery
+    template: gallery-top.ejs
+    contents: gallery-top-series.yml
 ---
+
+
+# Gallery
+
+## Latest
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-clock-history gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
+
+::: {#latest-gallery}
+:::
+
+```{=html}
+  <span class="gallery__link">
+    <a href="gallery-all.html">See all posts</a>
+  </span>
+  </div>
+</div>
+```
+
+## Train and Evaluate Models
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-house-fill gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
+
+::: {#basic-gallery}
+:::
+
+```{=html}
+  <span class="gallery__link">
+    <a href="gallery-all-basic.html">See all posts</a>
+  </span>
+  </div>
+</div>
+```
+
+
+## Optimize Models
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-sliders gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
+
+::: {#optimization-gallery}
+:::
+
+```{=html}
+  <span class="gallery__link">
+    <a href="gallery-all-optimization.html">See all posts</a>
+  </span>
+  </div>
+</div>
+```
+
+## Build Pipelines
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-share gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
+
+::: {#pipelines-gallery}
+:::
+
+```{=html}
+  <span class="gallery__link">
+    <a href="gallery-all-pipelines.html">See all posts</a>
+  </span>
+  </div>
+</div>
+```
+
+## Customize and Apply Technical Tools
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-wrench gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
+
+::: {#technical-gallery}
+:::
+
+```{=html}
+  <span class="gallery__link">
+    <a href="gallery-all-technical.html">See all posts</a>
+  </span>
+  </div>
+</div>
+```
+
+## Learn in Bundled Series
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-house-fill gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
+
+::: {#series-gallery}
+:::
+
+```{=html}
+  <span class="gallery__link">
+    <a href="gallery-all-series.html">See all posts</a>
+  </span>
+  </div>
+</div>
+```
+

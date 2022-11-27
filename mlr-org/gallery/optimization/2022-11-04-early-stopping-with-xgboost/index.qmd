@@ -1,0 +1,194 @@
+---
+title: "Early Stopping with XGBoost"
+description: |
+  Simultaneously optimize hyperparameters and use early stopping.
+categories:
+  - tuning
+  - classification
+author:
+  - name: Marc Becker
+date: 2022-11-09
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r early-stopping-with-xgboost-001}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+future::plan("multisession")
+```
+
+# Scope
+
+In this post, we use early stopping to reduce overfitting when training an `r ref("mlr_learners_classif.xgboost", "XGBoost model")`.
+We start with a short recap on early stopping and overfitting.
+After that, we use the early stopping mechanism of XGBoost and train a model on the `r ref("mlr_tasks_spam", "Spam Classification")` data set.
+Finally we show how to simultaneously tune hyperparameters and use early stopping.
+The reader should be familiar with [tuning](https://mlr3gallery.mlr-org.com/posts/2021-03-09-practical-tuning-series-tune-a-support-vector-machine/) in the mlr3 ecosystem.
+
+# Early Stopping
+
+Early stopping is a technique used to reduce overfitting when fitting a model in an iterative process.
+Overfitting occurs when a model fits increasingly to the training data but the performance on unseen data decreases.
+This means the model's training error decreases, while its test performance deteriorates.
+When using early stopping, the performance is monitored on a test set, and the training stops when performance decreases in a specific number of iterations.
+
+# XGBoost with Early Stopping
+
+We initialize the random number generator with a fixed seed for reproducibility.
+The `r ref_pkg("mlr3verse")` package provides all functions required for this example.
+
+```{r early-stopping-with-xgboost-003}
+#| message: false
+set.seed(7832)
+
+library(mlr3verse)
+```
+
+When training an XGBoost model, we can use early stopping to find the optimal number of boosting rounds.
+The `r ref("partition()")` function splits the observations of the task into two disjoint sets.
+We use 80% of observations to train the model and the remaining 20% as the [test set](https://mlr3.mlr-org.com/reference/Task.html#active-bindings) to monitor the performance.
+
+```{r early-stopping-with-xgboost-004}
+task = tsk("spam")
+split = partition(task, ratio = 0.8)
+task$set_row_roles(split$test, "test")
+```
+
+The `early_stopping_set` parameter controls which set is used to monitor the performance.
+Additionally, we need to define the range in which the performance must increase with `early_stopping_rounds` and the maximum number of boosting rounds with `nrounds`.
+In this example, the training is stopped when the classification error is not decreasing for 100 rounds or 1000 rounds are reached.
+
+```{r early-stopping-with-xgboost-005}
+learner = lrn("classif.xgboost",
+  nrounds = 1000,
+  early_stopping_rounds = 100,
+  early_stopping_set = "test",
+  eval_metric = "error"
+)
+```
+
+We train the learner with early stopping.
+
+```{r early-stopping-with-xgboost-006}
+learner$train(task)
+```
+
+The `$evaluation_log` of the model stores the performance scores on the training and test set.
+Figure 1 shows that the classification error on the training set decreases, whereas the error on the test set increases after 20 rounds.
+
+```{r early-stopping-with-xgboost-007}
+#| code-fold: true
+#| fig-cap: Comparison between train and test set classification error.
+
+library(ggplot2)
+library(data.table)
+
+data = melt(
+  learner$model$evaluation_log,
+  id.vars = "iter",
+  variable.name = "set",
+  value.name = "error"
+)
+
+ggplot(data, aes(x = iter, y = error, group = set)) +
+  geom_line(aes(color = set)) +
+  geom_vline(aes(xintercept = learner$model$best_iteration), color = "grey") +
+  scale_colour_manual(values=c("#f8766d", "#00b0f6"), labels = c("Train", "Test")) +
+  labs(x = "Rounds", y = "Classification Error", color = "Set") +
+  theme_minimal()
+```
+
+The slot `$best_iteration` contains the optimal number of boosting rounds.
+
+```{r early-stopping-with-xgboost-008}
+learner$model$best_iteration
+```
+
+Note that, `learner$predict()` will use the model from the last iteration, not the best one.
+See the next section on how to fit a model with the optimal number of boosting rounds and hyperparameter configuration.
+
+# Tuning
+
+In this section, we want to tune the hyperparameters of an XGBoost model and find the optimal number of boosting rounds in one go.
+For this, we need the `r ref("mlr3tuning.early_stopping", "early stopping callback")` which handles early stopping during the tuning process.
+The performance of a hyperparameter configuration is evaluated with a resampling strategy while tuning e.g. 3-fold cross-validation.
+In each resampling iteration, a new XGBoost model is trained and early stopping is used to find the optimal number of boosting rounds.
+This results in three different optimal numbers of boosting rounds for one hyperparameter configuration when applying 3-fold cross-validation.
+The callback picks the maximum of the three values and writes it to the archive.
+It uses the maximum value because the final model is fitted on the complete data set.
+Now let's start with a practical example.
+
+First, we load the XGBoost learner and set the early stopping parameters.
+
+```{r early-stopping-with-xgboost-009}
+learner = lrn("classif.xgboost",
+  nrounds = 1000,
+  early_stopping_rounds = 100,
+  early_stopping_set = "test"
+)
+```
+
+Next, we load a predefined tuning space from the `r ref_pkg("mlr3tuningspaces")` package.
+The tuning space includes the most commonly tuned parameters of XGBoost.
+
+```{r early-stopping-with-xgboost-010}
+tuning_space = lts("classif.xgboost.default")
+as.data.table(tuning_space)
+```
+
+We argument the learner with the tuning space.
+
+```{r early-stopping-with-xgboost-012}
+learner = lts(learner)
+```
+
+The default tuning space contains the `nrounds` hyperparameter.
+We have to overwrite it with an upper bound for early stopping.
+
+```{r early-stopping-with-xgboost-013}
+#| output: false
+learner$param_set$set_values(nrounds = 1000)
+```
+
+We run a small batch of random hyperparameter configurations.
+
+```{r early-stopping-with-xgboost-014}
+instance = tune(
+  method = "random_search",
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.ce"),
+  term_evals = 4,
+  batch_size = 2,
+  callbacks = clbk("mlr3tuning.early_stopping")
+)
+```
+
+We can see that the optimal number of boosting rounds (`max_nrounds`) strongly depends on the other hyperparameters.
+
+```{r early-stopping-with-xgboost-017}
+#| column: page
+as.data.table(instance$archive)[, list(batch_nr, max_nrounds, eta, max_depth, colsample_bytree, colsample_bylevel, lambda, alpha, subsample)]
+```
+
+In the best hyperparameter configuration, the value of `nrounds` is replaced by `max_nrounds` and early stopping is deactivated.
+
+```{r early-stopping-with-xgboost-018}
+instance$result_learner_param_vals
+```
+
+Finally, fit the final model on the complete data set.
+
+```{r early-stopping-with-xgboost-019}
+learner = lrn("classif.xgboost")
+learner$param_set$values = instance$result_learner_param_vals
+learner$train(task)
+```
+
+The trained model can now be used to make predictions on new data.
+
+We can also use the `r ref("AutoTuner")` to get a tuned XGBoost model.
+Note that, early stopping is deactivated when the final model is fitted.
