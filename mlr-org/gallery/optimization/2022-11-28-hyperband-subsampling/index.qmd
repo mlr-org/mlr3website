@@ -1,0 +1,26 @@
+---
+title: "Hyperband and Data Set Subsampling"
+description: |
+  Optimize the hyperparameters of learners that lack a natural fidelity parameter.
+categories:
+  - tuning
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+date: 2022-11-28
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+
+future::plan("multisession")
+```
