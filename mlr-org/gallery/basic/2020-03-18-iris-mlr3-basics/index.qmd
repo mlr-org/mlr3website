@@ -135,13 +135,13 @@ print(cm)
 `r ref_pkg("mlr3learners")` ships out with a dozen different popular `r ref("Learner", "Learners")`.
 We can list them from the dictionary.
 If we want more, we can install an extension package, `r ref_pkg("mlr3extralearners")`, from GitHub.
-Note how after the installation the dictionary increases in size.
+Note how after the loading the mlr3extralearners package, the dictionary increases in size.
 
 ```{r 2020-03-18-iris-mlr3-basics-015, message = FALSE}
-# head(as.data.table(mlr_learners)[, c("key", "packages")])
+head(as.data.table(mlr_learners)[, c("key", "packages")])
 # remotes::install_github("mlr-org/mlr3extralearners")
-# library(mlr3extralearners)
-# print(as.data.table(mlr_learners)[, c("key", "packages")])
+library(mlr3extralearners)
+print(as.data.table(mlr_learners)[, c("key", "packages")])
 ```
 
 ## Benchmarking multiple learners
