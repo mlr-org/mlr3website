@@ -86,9 +86,12 @@ series, add it to the `series` directory.
 
 1.  Create a subdirectory in `mlr-org/gallery/{category}`.
 2.  Start with a new `index.qmd` file and write your post.
-3.  Commit your post once with the option `freeze: false` in YAML
+3.  Use only one sentence for the description and start with a verb. Do
+    not repeat the title. See the previously published articles for
+    examples.
+4.  Commit your post once with the option `freeze: false` in YAML
     header. This will render the post on the CI once.
-4.  Remove the freeze option and ask for a review.
+5.  Remove the freeze option and ask for a review.
 
 If your post needs a new package or package version:
 
