@@ -138,10 +138,10 @@ If we want more, we can install an extension package, `r ref_pkg("mlr3extralearn
 Note how after the loading the mlr3extralearners package, the dictionary increases in size.
 
 ```{r 2020-03-18-iris-mlr3-basics-015, message = FALSE}
-head(as.data.table(mlr_learners)[, c("key", "packages")])
+nrow(as.data.table(mlr_learners)])
 # remotes::install_github("mlr-org/mlr3extralearners")
 library(mlr3extralearners)
-print(as.data.table(mlr_learners)[, c("key", "packages")])
+nrow(as.data.table(mlr_learners)])
 ```
 
 ## Benchmarking multiple learners
