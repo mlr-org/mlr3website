@@ -11,9 +11,9 @@ output: github_document
 
 * `mlr3website` - The root directory contains the `mlr3website` R package.
 * `mlr-org/` - Quarto project.
-* `mlr-org/posts/` - Blog posts.
+* `mlr-org/posts` - Blog posts.
 * `mlr-org/gallery` - Gallery posts.
-* `.github/workflows` Contains workflows to build website and render gallery posts
+* `.github/workflows` Contains workflows to build the website and render gallery posts
 
 ## Setup
 
@@ -34,7 +34,7 @@ The website is rendered in the CI in the same virtual environment.
 
 **Freeze**
 
-The blog and gallery posts are freezed i.e. the documents are not re-rendered during a global project render.
+The blog and gallery posts are frozen i.e. the documents are not re-rendered during a global project render.
 Calling `quarto preview mlr-org/` or `quarto render mlr-org/` will not render the blog and gallery posts again.
 Calling `quarto render` on a single file or subdirectory will re-render the single file or all files in the subdirectory.
 
@@ -57,7 +57,7 @@ Blog posts are stored in `mlr-org/posts`.
 1. Start with a new `index.qmd` file and write your post.
 1. Download a suitable cover photo on [Unsplash](https://unsplash.com) in medium resolution.
    Square or landscape format photos look best in the overview.
-1. Open a pull request on github.
+1. Open a pull request on GitHub.
 1. Commit your post once with the option `freeze: false` in YAML header.
    This will render the post on the CI once.
 1. Remove the freeze option and ask for a review.
@@ -68,21 +68,40 @@ If your post needs a new package or package version:
 1. Call `renv::snapshot()` to record the package in `renv.lock`.
 1. Commit `renv.lock` with the new post.
 
+## How to Add a Gallery Post
 
-## How to change the website
+The gallery is divided into four broad categories `basic`, `optimization`, `pipelines` and `technical`.
+The posts are stored in the corresponding subdirectories in `mlr-org/gallery`.
+If you write a series, add it to the `series` directory.
 
-* The website consists of pages, blog and gallery posts.
-* Pages are `.Qmd` files located in the `mlr-org/` directory (e.g. `packages.Rmd`).
-* Blog posts are stored in `mlr-org/posts` and `blog.Rmd` automatically list them.
-* Gallery posts are stored in `mlr-org/gallery` and `gallery.Rmd` automatically list them.
-* Change the style only in `mlr-org/custom.scss` and add comments to all changes.
-* See [quarto.org](https://quarto.org) to learn more about Quarto.
+1. Create a subdirectory in `mlr-org/gallery/{category}`.
+1. Start with a new `index.qmd` file and write your post.
+1. Commit your post once with the option `freeze: false` in YAML header.
+   This will render the post on the CI once.
+1. Remove the freeze option and ask for a review.
+
+If your post needs a new package or package version:
+
+1. Install the package with `renv::install()` in the virtual environment.
+1. Call `renv::snapshot()` to record the package in `renv.lock`.
+1. Commit `renv.lock` with the new post.
+
+## How to Change the Website
+
+Pages are `.qmd` files located in the `mlr-org/` directory (e.g. `packages.Rmd`).
+See [quarto.org](https://quarto.org) to learn more about Quarto.
 
 ## Workflows
 
 **build-website.yml**
 
 Builds website.
-Website is pushed to `gh-pages` branch.
-Blog and gallery posts are freezed.
-New posts are rendered.
+On `main`, the website is pushed to `gh-pages` branch.
+On pull request, the website is previewed with Netlify.
+Blog and gallery posts are frozen.
+
+**gallery-weekly.yml**
+
+The workflow restores the renv virtual environment and updates all packages.
+Then all gallery posts are re-rerendered.
+Runs once a week.
