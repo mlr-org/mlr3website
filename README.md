@@ -54,7 +54,7 @@ The rss feed of the gallery is published on
 The global css rules are stored in `mlr-og/custom.scss`. When editing
 the file, try to stick to the BEM naming pattern and use SASS. We use
 the Bootswatch [Yeti](https://bootswatch.com/yeti/) theme. A few style
-options are specified in `mlr-org/_quarto.yml` the the `Theme` section.
+options are specified in `mlr-org/_quarto.yml` in the `Theme` section.
 
 ## How to Add a Blog Post
 
