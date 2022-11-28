@@ -76,6 +76,9 @@ If you write a series, add it to the `series` directory.
 
 1. Create a subdirectory in `mlr-org/gallery/{category}`.
 1. Start with a new `index.qmd` file and write your post.
+1. Use only one sentence for the description and start with a verb.
+   Do not repeat the title.
+   See the previously published articles for examples.
 1. Commit your post once with the option `freeze: false` in YAML header.
    This will render the post on the CI once.
 1. Remove the freeze option and ask for a review.
