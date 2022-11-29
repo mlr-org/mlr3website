@@ -24,3 +24,82 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 
 future::plan("multisession")
 ```
+
+# Scope
+
+Increasingly large data sets and search spaces make optimization a very time-consuming task.
+Hyperband solves this problem by allocating more resources to promising configurations and terminating low-performing ones.
+The resource can be the number of training epochs in a neural network, the number of trees in a gradient-boosting algorithm, or the size of the training data set.
+In this post, we use the size of the training data set to optimize the hyperparameters of a support vector machine with Hyperband.
+The time to train a support vector machine increases with the size of the data set.
+This makes the data set size a suitable fidelity parameter for Hyperband.
+We assume that you are already familiar with tuning in the mlr3 ecosystem.
+If not, you should start with the [Hyperparameter Optimization on the Palmer Penguins Data Set](gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
+
+# Hyperband
+
+```{r}
+#| message: false
+library("mlr3verse")
+library("mlr3hyperband")
+
+learner = lrn("classif.svm", id = "svm",
+  kernel    = to_tune(c("linear", "polynomial", "radial")),
+  cost      = to_tune(1e-4, 1e3, logscale = TRUE),
+  gamma     = to_tune(1e-4, 1e3, logscale = TRUE),
+  tolerance = to_tune(1e-4, 2, logscale = TRUE),
+  degree    = to_tune(2, 5),
+  type      = "C-classification"
+)
+```
+
+Increase training data set size from ~ 3.4% to 100%.
+
+```{r}
+graph_learner = as_learner(po("subsample") %>>% learner)
+
+graph_learner$param_set$set_values(
+  subsample.frac = to_tune(p_dbl(3^-2, 1, tags = "budget"))
+)
+```
+
+
+```{r}
+instance = tune(
+  method = tnr("hyperband"),
+  task = tsk("sonar"),
+  learner = graph_learner,
+  resampling = rsmp("holdout"),
+  measures = msr("classif.ce"),
+  eta = 3
+)
+```
+
+
+```{r}
+#| echo: false
+#| column: page
+library(htmltools)
+library(reactable)
+
+data = as.data.table(instance$archive)[, .(subsample.frac, svm.cost, svm.degree, svm.gamma, svm.kernel, svm.tolerance, classif.ce, stage, bracket)]
+
+reactable(data,
+  columns = list(
+    subsample.frac = colDef(
+      cell = function(value) {
+        width = paste0(value * 100, "%")
+        value = format(value, big.mark = ",")
+        value = format(value, width = 9, justify = "right")
+        bar = div(
+          class = "bar-chart",
+          style = list(marginRight = "0.375rem"),
+          div(class = "bar", style = list(width = width, backgroundColor = "#3fc1c9"))
+        )
+        div(class = "bar-cell", span(class = "number", value), bar)
+      }
+    )
+
+  ),
+  pagination = FALSE)
+```
