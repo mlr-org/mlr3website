@@ -38,6 +38,10 @@ If not, you should start with the [Hyperparameter Optimization on the Palmer Pen
 
 # Hyperband
 
+We optimize the hyperparameters of the support vector machine on the `r ref("mlr_tasks_sonar", "Sonar")` data set.
+The search space is taken from @kuehn_2018.
+
+
 ```{r}
 #| message: false
 library("mlr3verse")
@@ -53,7 +57,7 @@ learner = lrn("classif.svm", id = "svm",
 )
 ```
 
-Increase training data set size from ~ 3.4% to 100%.
+
 
 ```{r}
 graph_learner = as_learner(po("subsample") %>>% learner)
@@ -63,26 +67,31 @@ graph_learner$param_set$set_values(
 )
 ```
 
+Next, we define the fidelity parameter.
+Hyperband increases the size of the data set from 11 to 33% and finally to 100%.
+
+Increase training data set size from ~ 11.1% to 100%.
 
 ```{r}
 instance = tune(
-  method = tnr("hyperband"),
+  method = tnr("hyperband", eta = 3),
   task = tsk("sonar"),
   learner = graph_learner,
   resampling = rsmp("holdout"),
   measures = msr("classif.ce"),
-  eta = 3
 )
 ```
+
+Click on the batches to see the optimization path of Hyperband.
 
 
 ```{r}
 #| echo: false
-#| column: page
 library(htmltools)
 library(reactable)
 
-data = as.data.table(instance$archive)[, .(subsample.frac, svm.cost, svm.degree, svm.gamma, svm.kernel, svm.tolerance, classif.ce, stage, bracket)]
+data = as.data.table(instance$archive)[, .(subsample.frac, classif.ce, stage, bracket, batch_nr)]
+data[, subsample.frac := round(subsample.frac, 1)]
 
 reactable(data,
   columns = list(
@@ -94,12 +103,21 @@ reactable(data,
         bar = div(
           class = "bar-chart",
           style = list(marginRight = "0.375rem"),
-          div(class = "bar", style = list(width = width, backgroundColor = "#3fc1c9"))
+          div(class = "bar", style = list(width = width))
         )
         div(class = "bar-cell", span(class = "number", value), bar)
-      }
+      },
+      aggregate = "max"
+    ),
+    classif.ce = colDef(
+      cell = function(value) round(value, 2)
+    ),
+    batch_nr = colDef(
+      name = "Batch",
+      align = "left"
     )
-
   ),
-  pagination = FALSE)
+  pagination = FALSE,
+  groupBy = "batch_nr",
+  )
 ```

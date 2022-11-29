@@ -1,6 +1,7 @@
 ```{r setup}
 #| include: false
 library(mlr3website)
+library(mlr3book)
 library(data.table)
 future::plan("multicore")
 set.seed(0)
