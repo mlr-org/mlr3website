@@ -24,7 +24,7 @@ Not respecting this cyclical nature results in treating hours on a linear contin
 
 This results in a two-dimensional representation of the feature:
 
-```{r feature-engineering-of-date-time-variables-002, echo=FALSE, fig.height=5.5, fig.width=10}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-001, echo=FALSE, fig.height=5.5, fig.width=10}
 hours = 0:23
 hours_scaled = (2 * pi * hours) / 24
 hours_sin = sin(hours_scaled)
@@ -49,14 +49,14 @@ This is useful as most learners naturally cannot handle dates and `POSIXct` vari
 We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 The `r ref_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
-```{r feature-engineering-of-date-time-variables-003, message=FALSE}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-002, message=FALSE}
 library(mlr3verse)
 library(mlr3learners)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
 
-```{r feature-engineering-of-date-time-variables-004}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-003}
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 ```
@@ -70,24 +70,24 @@ After reading in the data, we fix some factor levels, and convert some data type
 The `r ref("mlr_tasks_bike_sharing", "Bike Sharing Dataset")` contains the hourly count of rental bikes between years 2011 and 2012 in Capital bikeshare system with the corresponding weather and seasonal information.
 We load the data set from the `r ref_pkg("mlr3data")` package.
 
-```{r feature-engineering-of-date-time-variables-005}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-004}
 data("bike_sharing", package = "mlr3data")
 ```
 
 Our goal will be to predict the total number of rented bikes on a given day: `cnt`.
 
-```{r feature-engineering-of-date-time-variables-006}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-005}
 skimr::skim(bike_sharing)
 ```
 
 The original dataset does not contain a `POSIXct` column, but we can easily generate one based on the other variables available (note that as no information regarding minutes and seconds is available, we set them to `:00:00`):
 
-```{r feature-engineering-of-date-time-variables-007}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-006}
 bike_sharing$date = as.POSIXct(paste0(bike_sharing$date, " ", bike_sharing$hour, ":00:00"),
   tz = "GMT", format = "%Y-%m-%d %H:%M:%S")
 ```
 
-```{r feature-engineering-of-date-time-variables-008, echo = FALSE, message = FALSE}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-007, echo = FALSE, message = FALSE}
 library("ggplot2")
 
 ggplot(bike_sharing, aes(x = date, y = count)) +
@@ -100,7 +100,7 @@ ggplot(bike_sharing, aes(x = date, y = count)) +
 
 We construct a new regression task and keep a [holdout set](https://mlr3book.mlr-org.com/tasks.html#tasks-roles).
 
-```{r feature-engineering-of-date-time-variables-009}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-008}
 task = as_task_regr(bike_sharing, target = "count")
 
 validation_set = sample(seq_len(task$nrow), size = 0.3 * task$nrow)
@@ -111,7 +111,7 @@ task$set_row_roles(validation_set, roles = "holdout")
 To estimate the performance on unseen data, we will use a 3-fold cross-validation.
 Note that this involves validating on past data, which is usually bad practice but should suffice for this example:
 
-```{r feature-engineering-of-date-time-variables-010}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-009}
 cv3 = rsmp("cv", folds = 3)
 ```
 
@@ -120,7 +120,7 @@ To obtain reliable estimates on how well our model generalizes to the future, we
 As our baseline model, we use a random forest, `r ref("mlr_learners_classif.ranger", "ranger learner")`.
 For the baseline, we drop`date`, our new `POSIXct` variable which we will only use later.
 
-```{r feature-engineering-of-date-time-variables-011}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-010}
 learner_ranger = lrn("regr.ranger")
 task_ranger = task$clone()
 task_ranger$select(setdiff(task$feature_names, c("date")))
@@ -128,7 +128,7 @@ task_ranger$select(setdiff(task$feature_names, c("date")))
 
 We can then use `r ref("resample()")` with 3-fold cross-validation:
 
-```{r feature-engineering-of-date-time-variables-012}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-011}
 rr_ranger = resample(task_ranger, learner = learner_ranger, resampling = cv3)
 
 rr_ranger$score(msr("regr.mse"))[, .(iteration, task_id, learner_id, resampling_id, regr.mse)]
@@ -136,7 +136,7 @@ rr_ranger$score(msr("regr.mse"))[, .(iteration, task_id, learner_id, resampling_
 
 We calculate the average RMSE.
 
-```{r feature-engineering-of-date-time-variables-016}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-012}
 rr_ranger$aggregate()
 ```
 
@@ -148,14 +148,14 @@ To engineer new features we use `r ref("PipeOpDateFeatures")`.
 This pipeline automatically dispatches on `POSIXct` columns of the data and by default adds plenty of new date-time related features.
 Here, we want to add all except for `minute` and `second`, because this information is not available. As we additionally want to use cyclical versions of the features we set `cyclic = TRUE`:
 
-```{r feature-engineering-of-date-time-variables-017}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-013}
 pipeop_date = po("datefeatures", cyclic = TRUE, minute = FALSE, second = FALSE)
 ```
 
 Training this pipeline will result in simply adding the new features (and removing the original `POSIXct` feature(s) used for the feature engineering, see also the `keep_date_var` parameter).
 In our task, we can now drop the features, `yr`, `mnth`, `hr`, and `weekday`, because our pipeline will generate these anyways:
 
-```{r feature-engineering-of-date-time-variables-018}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-014}
 task_ex = task$clone()
 task_ex$select(setdiff(task$feature_names,
   c("instant", "dteday", "yr", "mnth", "hr", "weekday", "casual", "registered")))
@@ -172,7 +172,7 @@ To combine this feature engineering step with a random forest, ranger learner, w
 We create a `r ref("GraphLearner")` consisting of the `r ref("PipeOpDateFeatures")` pipeline and a ranger learner.
 This `r ref("GraphLearner")` then behaves like any other `r ref("Learner")`:
 
-```{r feature-engineering-of-date-time-variables-019, fig.width=8, fig.height=10}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-015, fig.width=8, fig.height=10}
 graph = po("datefeatures", cyclic = TRUE, minute = FALSE, second = FALSE) %>>%
   lrn("regr.ranger")
 
@@ -183,7 +183,7 @@ plot(graph, html = FALSE)
 
 Using `r ref("resample()")` with 3-fold cross-validation on the task yields:
 
-```{r feature-engineering-of-date-time-variables-020}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-016}
 task_graph_learner = task$clone()
 task_graph_learner$select(setdiff(task$feature_names,
   c("instant", "dteday", "yr", "mnth", "hr", "weekday", "casual", "registered")))
@@ -193,13 +193,13 @@ rr_graph_learner = resample(task_graph_learner, learner = graph_learner, resampl
 rr_graph_learner$score(msr("regr.mse"))
 ```
 
-```{r feature-engineering-of-date-time-variables-023, echo = FALSE}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-017, echo = FALSE}
 DT::datatable(rr_graph_learner$score(msr("regr.mse"))[, .(iteration, task_id, learner_id, resampling_id, regr.mse)])
 ```
 
 We calculate the average RMSE.
 
-```{r feature-engineering-of-date-time-variables-024}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-018}
 rr_graph_learner$aggregate()
 ```
 
@@ -207,7 +207,7 @@ and therefore improved by almost 94%!
 
 Finally, we fit our `r ref("GraphLearner")` on the complete training set and predict on the validation set:
 
-```{r feature-engineering-of-date-time-variables-025}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-019}
 task$select(setdiff(task$feature_names, c("year", "month", "hour", "weekday")))
 
 graph_learner$train(task)
@@ -217,6 +217,6 @@ prediction = graph_learner$predict(task, row_ids = task$row_roles$validation)
 
 Where we can obtain the RMSE on the held-out validation data.
 
-```{r feature-engineering-of-date-time-variables-026}
+```{r 2020-05-02-feature-engineering-of-date-time-variables-020}
 prediction$score(msr("regr.mse"))
 ```

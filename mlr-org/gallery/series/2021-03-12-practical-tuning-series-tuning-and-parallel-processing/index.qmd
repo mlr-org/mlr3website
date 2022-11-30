@@ -37,7 +37,7 @@ The goal is to map *computational jobs* (e.g. evaluation of one configuration) t
 We load the `r ref_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
 Additionally, make sure you have installed the packages `r ref_pkg("future")` and `r ref_pkg("future.apply")`.
 
-```{r practical-tuning-series-tuning-and-parallel-processing-002, message = FALSE}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-001, message = FALSE}
 library(mlr3verse)
 ```
 
@@ -45,7 +45,7 @@ We decrease the verbosity of the logger to keep the output clearly represented.
 The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r ref_pkg("mlr3")` packages.
 The `r ref_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r ref_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r ref_pkg("mlr3tuning")` ).
 
-```{r practical-tuning-series-tuning-and-parallel-processing-003}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-002}
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -57,7 +57,7 @@ The workers are specified by the parallel backend which orchestrates starting up
 On a single machine, `multisession` and `multicore` are common backends.
 The `multisession` backend spawns new background R processes. It is available on all platforms.
 
-```{r practical-tuning-series-tuning-and-parallel-processing-004}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-003}
 future::plan("multisession")
 ```
 
@@ -65,7 +65,7 @@ The `multicore` backend uses forked R processes which allows the workers to acce
 This reduces the overhead since R objects are only copied in memory if they are modified.
 Unfortunately, forking processes is not supported on Windows and when running R from within RStudio.
 
-```{r practical-tuning-series-tuning-and-parallel-processing-005, eval = FALSE}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-004, eval = FALSE}
 future::plan("multicore")
 ```
 
@@ -73,7 +73,7 @@ Both backends support the `workers` argument that specifies the number of used c
 
 Use this code if your code should run with the `multicore` backend when possible.
 
-```{r practical-tuning-series-tuning-and-parallel-processing-006, eval=FALSE}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-005, eval=FALSE}
 if (future::supportsMulticore()) {
   future::plan(future::multicore)
 } else {
@@ -86,7 +86,7 @@ if (future::supportsMulticore()) {
 The `r ref("resample()")` and `r ref("benchmark()")` functions in `r ref_pkg("mlr3")` can be executed in parallel.
 The parallelization is triggered by simply declaring a plan via `r ref("future::plan()")`.
 
-```{r practical-tuning-series-tuning-and-parallel-processing-007}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-006}
 future::plan("multisession")
 
 task = tsk("pima")
@@ -102,7 +102,7 @@ The `r ref("benchmark()")` function  accepts  a design of experiments as input w
 For each experiment, resampling is performed.
 The nested loop over experiments and resampling iterations is flattened so that all resampling iterations of all experiments can be executed in parallel.
 
-```{r practical-tuning-series-tuning-and-parallel-processing-008}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-007}
 future::plan("multisession")
 
 tasks = list(tsk("pima"), tsk("iris"))
@@ -122,7 +122,7 @@ The `r ref_pkg("mlr3tuning")` package internally calls `r ref("benchmark()")` du
 If the tuner is capable of suggesting multiple configurations per iteration (such as random search,  grid search,  or hyperband), these configurations  represent  individual  experiments,  and  the  loop  flattening of `r ref("benchmark()")` is triggered.
 E.g., all resampling iterations of all hyperparameter configurations on a grid can be executed in parallel.
 
-```{r practical-tuning-series-tuning-and-parallel-processing-009}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-008}
 future::plan("multisession")
 
 learner = lrn("classif.rpart")
@@ -150,7 +150,7 @@ For this, an `r ref("AutoTuner")` is passed to `r ref("resample()")` or `r ref("
 We can choose different parallelization backends for the inner and outer resampling loop, respectively.
 We just have to pass a list of backends.
 
-```{r practical-tuning-series-tuning-and-parallel-processing-010}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-009}
 # Runs the outer loop in parallel and the inner loop sequentially
 future::plan(list("multisession", "sequential"))
 
@@ -175,7 +175,7 @@ rr = tune_nested(
 
 While nesting real parallelization backends is often unintended and causes unnecessary overhead, it is useful in some distributed computing setups. It can be achieved with future by forcing a fixed number of workers for each loop.
 
-```{r practical-tuning-series-tuning-and-parallel-processing-011}
+```{r 2021-03-12-practical-tuning-series-tuning-and-parallel-processing-010}
 # Runs both loops in parallel
 future::plan(list(future::tweak("multisession", workers = 2),
                   future::tweak("multisession", workers = 4)))

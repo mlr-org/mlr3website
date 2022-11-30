@@ -35,13 +35,13 @@ This post covers:
 
 We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
-```{r 2020-04-23-pipelines-selectors-branches-002, message=FALSE}
+```{r 2020-04-23-pipelines-selectors-branches-001, message=FALSE}
 library(mlr3verse)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
 
-```{r 2020-04-23-pipelines-selectors-branches-003}
+```{r 2020-04-23-pipelines-selectors-branches-002}
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -49,7 +49,7 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 
 The `r ref("mlr_tasks_pima", "Pima Indian Diabetes classification task")` will be used.
 
-```{r 2020-04-23-pipelines-selectors-branches-004}
+```{r 2020-04-23-pipelines-selectors-branches-003}
 task_pima = tsk("pima")
 skimr::skim(task_pima$data())
 ```
@@ -58,7 +58,7 @@ skimr::skim(task_pima$data())
 
 Several features of the `pima` task have missing values:
 
-```{r 2020-04-23-pipelines-selectors-branches-005}
+```{r 2020-04-23-pipelines-selectors-branches-004}
 task_pima$missings()
 ```
 
@@ -74,7 +74,7 @@ In the following subsections, we show two approaches to implement this.
 
 Using the `affect_columns` argument of a `r ref("PipeOp")` to define the variables on which a `r ref("PipeOp")` will operate with an appropriate `r ref("Selector")` function:
 
-```{r 2020-04-23-pipelines-selectors-branches-006}
+```{r 2020-04-23-pipelines-selectors-branches-005}
 # imputes values based on histogram
 imputer_hist = po("imputehist",
   affect_columns = selector_name(c("glucose", "mass", "pressure")))
@@ -87,7 +87,7 @@ miss_ind = po("missind")
 
 When `r ref("PipeOp")`s are constructed this way, they will perform the specified preprocessing step on the appropriate features and pass all the input features to the subsequent steps:
 
-```{r 2020-04-23-pipelines-selectors-branches-007}
+```{r 2020-04-23-pipelines-selectors-branches-006}
 # no missings in "glucose", "mass" and "pressure"
 imputer_hist$train(list(task_pima))[[1]]$missings()
 # no missings in "insulin" and "triceps"
@@ -99,7 +99,7 @@ Here, `imputer_hist` will impute the features "glucose", "mass" and "pressure", 
 In each preprocessing step, all the input features are passed to the next step.
 In the end, we obtain a data set without missing values:
 
-```{r 2020-04-23-pipelines-selectors-branches-008, fig.height = 10, fig.width = 10}
+```{r 2020-04-23-pipelines-selectors-branches-007, fig.height = 10, fig.width = 10}
 # combine the two impuation methods
 impute_graph = imputer_hist %>>% imputer_median
 impute_graph$plot(html = FALSE)
@@ -108,7 +108,7 @@ impute_graph$train(task_pima)[[1]]$missings()
 
 The `r ref("PipeOpMissInd")` operator replaces features with missing values with a missing value indicator:
 
-```{r 2020-04-23-pipelines-selectors-branches-009}
+```{r 2020-04-23-pipelines-selectors-branches-008}
 miss_ind$train(list(task_pima))[[1]]$data()
 ```
 
@@ -116,14 +116,14 @@ Obviously, this step can not be applied to the already imputed data as there are
 If we want to combine the previous two imputation steps with a third step that adds missing value indicators, we would need to `r ref("PipeOpCopy")` the data two times and supply the first copy to `impute_graph` and the second copy to `miss_ind` using `r ref("gunion()")`.
 Finally, the two outputs can be combined with `r ref("PipeOpFeatureUnion")`:
 
-```{r 2020-04-23-pipelines-selectors-branches-011, fig.height = 10, fig.width = 10}
+```{r 2020-04-23-pipelines-selectors-branches-009, fig.height = 10, fig.width = 10}
 impute_missind = po("copy", 2) %>>%
   gunion(list(impute_graph, miss_ind)) %>>%
   po("featureunion")
 impute_missind$plot(html = FALSE)
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-012}
+```{r 2020-04-23-pipelines-selectors-branches-010}
 impute_missind$train(task_pima)[[1]]$data()
 ```
 
@@ -131,7 +131,7 @@ impute_missind$train(task_pima)[[1]]$data()
 
 We can use the `r ref("PipeOpSelect")` to select the appropriate features and then apply the desired impute `r ref("PipeOp")` on them:
 
-```{r 2020-04-23-pipelines-selectors-branches-014, fig.height = 6, fig.width = 6}
+```{r 2020-04-23-pipelines-selectors-branches-011, fig.height = 6, fig.width = 6}
 imputer_hist_2 = po("select",
   selector = selector_name(c("glucose", "mass", "pressure")),
   id = "slct1") %>>% # unique id so we can combine it in a pipeline with other select PipeOps
@@ -140,11 +140,11 @@ imputer_hist_2 = po("select",
 imputer_hist_2$plot(html = FALSE)
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-015}
+```{r 2020-04-23-pipelines-selectors-branches-012}
 imputer_hist_2$train(task_pima)[[1]]$data()
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-017}
+```{r 2020-04-23-pipelines-selectors-branches-013}
 imputer_median_2 =
   po("select", selector = selector_name(c("insulin", "triceps")), id = "slct2") %>>%
   po("imputemedian")
@@ -156,7 +156,7 @@ To reproduce the result of the fist example (1.), we need to copy the data four 
 The fourth copy is required to select the features without missing values and to append it to the final result.
 We can do this as follows:
 
-```{r 2020-04-23-pipelines-selectors-branches-019, fig.height = 6, fig.width = 6}
+```{r 2020-04-23-pipelines-selectors-branches-014, fig.height = 6, fig.width = 6}
 other_features = task_pima$feature_names[task_pima$missings()[-1] == 0]
 
 imputer_missind_2 = po("copy", 4) %>>%
@@ -169,7 +169,7 @@ imputer_missind_2 = po("copy", 4) %>>%
 imputer_missind_2$plot(html = FALSE)
 ```
 
-```{r 2020-04-23-pipelines-selectors-branches-020}
+```{r 2020-04-23-pipelines-selectors-branches-015}
 #| column: page
 imputer_missind_2$train(task_pima)[[1]]$data()
 ```
@@ -177,7 +177,7 @@ imputer_missind_2$train(task_pima)[[1]]$data()
 Note that when there is one input channel, it is automatically copied as many times as needed for the downstream `r ref("PipeOp")`s.
 In other words, the code above works also without `po("copy", 4)`:
 
-```{r 2020-04-23-pipelines-selectors-branches-022}
+```{r 2020-04-23-pipelines-selectors-branches-016}
 #| column: page
 
 imputer_missind_3 = gunion(list(imputer_hist_2,
@@ -198,7 +198,7 @@ Maybe it would have been better to just use [`imputemedian`](https://mlr3pipelin
 We could investigate this assumption by adding an alternative path to the graph with the mentioned `imputemedian`.
 This is possible using the ["branch"](https://mlr3pipelines.mlr-org.com/reference/branch.html) `r ref("PipeOp")`:
 
-```{r 2020-04-23-pipelines-selectors-branches-024, fig.height = 7, fig.width = 7}
+```{r 2020-04-23-pipelines-selectors-branches-017, fig.height = 7, fig.width = 7}
 imputer_median_3 = po("imputemedian", id = "simple_median") # add the id so it does not clash with `imputer_median`
 
 branches = c("impute_missind", "simple_median") # names of the branches
@@ -214,7 +214,7 @@ graph_branch$plot(html = FALSE)
 
 To finalize the graph, we combine it with a rpart learner:
 
-```{r 2020-04-23-pipelines-selectors-branches-025, fig.height = 7, fig.width = 7}
+```{r 2020-04-23-pipelines-selectors-branches-018, fig.height = 7, fig.width = 7}
 graph = graph_branch %>>%
   lrn("classif.rpart")
 
@@ -223,14 +223,14 @@ graph$plot(html = FALSE)
 
 To define the parameters to be tuned, we first check the available ones in the graph:
 
-```{r 2020-04-23-pipelines-selectors-branches-026}
+```{r 2020-04-23-pipelines-selectors-branches-019}
 as.data.table(graph$param_set)[, .(id, class, lower, upper, nlevels)]
 ```
 
 
 We decide to jointly tune the `"branch.selection"`, `"classif.rpart.cp"` and `"classif.rpart.minbucket"` hyperparameters:
 
-```{r 2020-04-23-pipelines-selectors-branches-028}
+```{r 2020-04-23-pipelines-selectors-branches-020}
 search_space = ps(
   branch.selection = p_fct(c("impute_missind", "simple_median")),
   classif.rpart.cp = p_dbl(0.001, 0.1),
@@ -239,7 +239,7 @@ search_space = ps(
 
 In order to tune the graph, it needs to be converted to a learner:
 
-```{r 2020-04-23-pipelines-selectors-branches-029}
+```{r 2020-04-23-pipelines-selectors-branches-021}
 graph_learner = as_learner(graph)
 
 cv3 = rsmp("cv", folds = 3)
@@ -260,7 +260,7 @@ as.data.table(instance$archive, unnest = NULL, exclude_columns = c("x_domain", "
 
 The best performance in this short tuned experiment was achieved with:
 
-```{r 2020-04-23-pipelines-selectors-branches-031}
+```{r 2020-04-23-pipelines-selectors-branches-022}
 instance$result
 ```
 
