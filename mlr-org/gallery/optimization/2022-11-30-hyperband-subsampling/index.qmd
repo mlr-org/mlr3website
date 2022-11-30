@@ -1,0 +1,178 @@
+---
+title: "Hyperband and Data Set Subsampling"
+description: |
+  Optimize the hyperparameters of learners that lack a natural fidelity parameter.
+categories:
+  - tuning
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+date: 2022-11-30
+bibliography: bibliography.bib
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+
+future::plan("multisession")
+```
+
+# Scope
+
+Increasingly large data sets and search spaces make optimization a very time-consuming task.
+Hyperband [@li_2018] solves this problem by approximating the performance of a configuration on a small subset of the training data, with just a few training epochs in a neural network or with only a small number of trees in a gradient-boosting model.
+After drawing a population of configurations, Hyperband iteratively allocates more resources to promising configurations and terminates low-performing ones.
+This type of optimization is called *multi-fidelity* optimization.
+The fidelity parameter is part of the search space and influences the computational cost of fitting a learner.
+In this post, we will tune a support vector machine and use the size of the training data set as the fidelity parameter.
+The time to train a support vector machine increases with the size of the data set.
+This makes the data set size a suitable fidelity parameter for Hyperband.
+We assume that you are already familiar with tuning in the mlr3 ecosystem.
+If not, you should start with the [Hyperparameter Optimization on the Palmer Penguins Data Set](gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
+
+# Hyperparameter Optimization
+
+In this post, we will optimize the hyperparameters of the support vector machine on the `r ref("mlr_tasks_sonar", "Sonar")` data set.
+We begin by constructing a classification machine by setting `type` to `"C-classification"`.
+We truncate the id of the learner to `"svm"`.
+
+```{r}
+#| message: false
+library("mlr3verse")
+
+learner = lrn("classif.svm", id = "svm", type = "C-classification")
+```
+
+The `r ref_pkg("mlr3pipelines")` package features a `r ref("PipeOp")` for subsampling.
+
+```{r}
+po("subsample")
+```
+
+The `r ref("PipeOp")` controls the size of the training data set with the `frac` parameter.
+Hyperband is going to control the fidelity with the `frac` parameter.
+For this, we have to connect the `r ref("PipeOp")` with the learner.
+
+```{r}
+graph_learner = as_learner(
+  po("subsample") %>>%
+  learner
+)
+```
+
+The graph learner subsamples before passing the data to the learner.
+The parameter set of the graph learner is a combination of the `r ref("PipeOp")` and learner set.
+
+```{r}
+as.data.table(graph_learner$param_set)[, .(id, lower, upper, levels)]
+```
+
+Next, we create the search space.
+We use `r ref("TuneToken")` to indicate that a hyperparameter should be tuned.
+We have to prefix the hyperparameters with the id of the `r ref("PipeOp", "PipeOps")`.
+The fidelity parameter is tagged with `"budget"` in the search space.
+The data set size is increased from 12.5% to 100%.
+For the other hyperparameters, we took the search space for support vector machines from the @kuehn_2018 article.
+This search space works for a wide range of data sets.
+
+```{r}
+graph_learner$param_set$set_values(
+  subsample.frac  = to_tune(p_dbl(2^-3, 1, tags = "budget")),
+  svm.kernel      = to_tune(c("linear", "polynomial", "radial")),
+  svm.cost        = to_tune(1e-4, 1e3, logscale = TRUE),
+  svm.gamma       = to_tune(1e-4, 1e3, logscale = TRUE),
+  svm.tolerance   = to_tune(1e-4, 2, logscale = TRUE),
+  svm.degree      = to_tune(2, 5)
+)
+```
+
+Let's create the tuning instance.
+We use the `"none"` terminator because Hyperband controls the termination itself.
+
+```{r}
+instance = ti(
+  task = tsk("sonar"),
+  learner = graph_learner,
+  resampling = rsmp("holdout"),
+  measures = msr("classif.ce"),
+  terminator = trm("none")
+)
+instance
+```
+
+We load the Hyperband `r ref("Tuner")` and set `eta = 2`.
+The parameter `eta` controls how many configurations are terminated in each iteration.
+
+```{r}
+#| message: false
+library("mlr3hyperband")
+
+tuner = tnr("hyperband", eta = 2)
+```
+
+Using `eta = 2` and a lower bound of 12.5% for the data set size, results in the following schedule.
+
+```{r}
+hyperband_schedule(r_min = 2^-3, r_max = 1, eta = 2)
+```
+
+Now we are ready to start the tuning.
+
+```{r}
+tuner$optimize(instance)
+```
+
+Click on the batches to see the optimization path of Hyperband.
+The data set size is increased in four steps from 12.5% to 100%
+
+```{r}
+#| echo: false
+library(htmltools)
+library(reactable)
+
+data = as.data.table(instance$archive)[, .(subsample.frac, classif.ce, stage, bracket, batch_nr)]
+data[, subsample.frac := round(subsample.frac, 1)]
+
+reactable(data,
+  columns = list(
+    subsample.frac = colDef(
+      cell = function(value) {
+        width = paste0(value * 100, "%")
+        value = format(value, big.mark = ",")
+        value = format(value, width = 9, justify = "right")
+        bar = div(
+          class = "bar-chart",
+          style = list(marginRight = "0.375rem"),
+          div(class = "bar", style = list(width = width))
+        )
+        div(class = "bar-cell", span(class = "number", value), bar)
+      },
+      aggregate = "max"
+    ),
+    classif.ce = colDef(
+      cell = function(value) round(value, 2)
+    ),
+    batch_nr = colDef(
+      name = "Batch",
+      align = "left"
+    )
+  ),
+  pagination = FALSE,
+  groupBy = "batch_nr",
+  )
+```
+
+# Conclusion
+
+Subsampling makes it possible to tune learners with Hyperband that lack a natural fidelity parameter.
+
+# References
