@@ -30,9 +30,9 @@ future::plan("multisession")
 
 Increasingly large data sets and search spaces make optimization a very time-consuming task.
 Hyperband [@li_2018] solves this problem by approximating the performance of a configuration on a small subset of the training data, with just a few training epochs in a neural network or with only a small number of trees in a gradient-boosting model.
-After drawing a population of configurations, Hyperband iteratively allocates more resources to promising configurations and terminates low-performing ones.
+After sampling a random population of configurations, Hyperband iteratively allocates more resources to promising configurations and terminates low-performing ones.
 This type of optimization is called *multi-fidelity* optimization.
-The fidelity parameter is part of the search space and influences the computational cost of fitting a learner.
+The fidelity parameter is part of the search space and influences the computational cost of fitting a model.
 In this post, we will tune a support vector machine and use the size of the training data set as the fidelity parameter.
 The time to train a support vector machine increases with the size of the data set.
 This makes the data set size a suitable fidelity parameter for Hyperband.
@@ -59,8 +59,7 @@ po("subsample")
 ```
 
 The `r ref("PipeOp")` controls the size of the training data set with the `frac` parameter.
-Hyperband is going to control the fidelity with the `frac` parameter.
-For this, we have to connect the `r ref("PipeOp")` with the learner.
+We connect the `r ref("PipeOp")`  with the learner and get a `r ref("GraphLearner")`.
 
 ```{r}
 graph_learner = as_learner(
@@ -69,8 +68,8 @@ graph_learner = as_learner(
 )
 ```
 
-The graph learner subsamples before passing the data to the learner.
-The parameter set of the graph learner is a combination of the `r ref("PipeOp")` and learner set.
+The graph learner subsamples and then fits a support vector machine on the data subset.
+The parameter set of the graph learner is a combination of the parameter set of the `r ref("PipeOp")` and learner.
 
 ```{r}
 as.data.table(graph_learner$param_set)[, .(id, lower, upper, levels)]
@@ -79,7 +78,7 @@ as.data.table(graph_learner$param_set)[, .(id, lower, upper, levels)]
 Next, we create the search space.
 We use `r ref("TuneToken")` to indicate that a hyperparameter should be tuned.
 We have to prefix the hyperparameters with the id of the `r ref("PipeOp", "PipeOps")`.
-The fidelity parameter is tagged with `"budget"` in the search space.
+The `subsample.frac` is the fidelity parameter that must be tagged with `"budget"` in the search space.
 The data set size is increased from 12.5% to 100%.
 For the other hyperparameters, we took the search space for support vector machines from the @kuehn_2018 article.
 This search space works for a wide range of data sets.
@@ -110,7 +109,6 @@ instance
 ```
 
 We load the Hyperband `r ref("Tuner")` and set `eta = 2`.
-The parameter `eta` controls how many configurations are terminated in each iteration.
 
 ```{r}
 #| message: false
