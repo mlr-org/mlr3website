@@ -32,7 +32,7 @@ This includes the `r ref_pkg("mlr3verse")` package, as well as other packages fo
 
 Then, load the main packages we are going to use:
 
-```{r 2020-03-11-mlr3-basics-german-credit-002, message=FALSE, warning=FALSE}
+```{r 2020-03-11-basics-german-credit-001, message=FALSE, warning=FALSE}
 library("mlr3verse")
 library("mlr3learners")
 library("mlr3tuning")
@@ -75,7 +75,7 @@ The goal is to classify people by their credit risk (good or bad) using 20 perso
 
 The dataset we are going to use is a transformed version of this German credit dataset, as provided by the `r ref_pkg("rchallenge")` package (this transformed dataset was proposed by Ulrike Grömping, with factors instead of dummy variables and corrected features):
 
-```{r 2020-03-11-mlr3-basics-german-credit-003, message=FALSE}
+```{r 2020-03-11-basics-german-credit-002, message=FALSE}
 data("german", package = "rchallenge")
 ```
 
@@ -85,7 +85,7 @@ First, we'll do a thorough investigation of the dataset.
 
 We can get a quick overview of our dataset using R's summary function:
 
-```{r 2020-03-11-mlr3-basics-german-credit-004}
+```{r 2020-03-11-basics-german-credit-003}
 dim(german)
 str(german)
 ```
@@ -95,7 +95,7 @@ The variable we want to predict is `credit_risk` (either good or bad), i.e., we 
 
 We also recommend the `r ref_pkg("skimr")` package as it creates very well readable and understandable overviews:
 
-```{r 2020-03-11-mlr3-basics-german-credit-005}
+```{r 2020-03-11-basics-german-credit-004}
 skimr::skim(german)
 ```
 
@@ -142,7 +142,7 @@ For a regression problem, we define a regression task -- `r ref("TaskRegr")`.
 In our case it is clearly our objective to model or predict the binary `factor` variable `credit_risk`.
 Thus, we define a `r ref("TaskClassif")`:
 
-```{r 2020-03-11-mlr3-basics-german-credit-006}
+```{r 2020-03-11-basics-german-credit-005}
 task = as_task_classif(german, id = "GermanCredit", target = "credit_risk")
 ```
 
@@ -164,7 +164,7 @@ If you happen to write your own `r ref("Learner")` in `r ref_pkg("mlr3")`, we wo
 
 All available `r ref("Learner")`s (i.e. all which you have installed from `r ref_pkg("mlr3")`, `mlr3learners`, `mlr3extralearners`, or self-written ones) are registered in the dictionary `r ref("mlr_learners")`:
 
-```{r 2020-03-11-mlr3-basics-german-credit-007}
+```{r 2020-03-11-basics-german-credit-006}
 mlr_learners
 ```
 
@@ -176,7 +176,7 @@ Use `?mlr_learners_xxx` to open the help page of a learner named `xxx`.
 
 For example, a logistic regression can be initialized in the following manner (logistic regression uses R's `glm()` function and is provided by the `mlr3learners` package):
 
-```{r 2020-03-11-mlr3-basics-german-credit-008}
+```{r 2020-03-11-basics-german-credit-007}
 library("mlr3learners")
 learner_logreg = lrn("classif.log_reg")
 print(learner_logreg)
@@ -193,7 +193,7 @@ However, you will immediately see that the procedure generalizes to any learner 
 
 An initialized learner can be trained on data using `$train()`:
 
-```{r 2020-03-11-mlr3-basics-german-credit-009}
+```{r 2020-03-11-basics-german-credit-008}
 learner_logreg$train(task)
 ```
 
@@ -201,7 +201,7 @@ Typically, in machine learning, one does not use the full data which is availabl
 
 To efficiently perform a split of the data one could do the following:
 
-```{r 2020-03-11-mlr3-basics-german-credit-010}
+```{r 2020-03-11-basics-german-credit-009}
 train_set = sample(task$row_ids, 0.8 * task$nrow)
 test_set = setdiff(task$row_ids, train_set)
 ```
@@ -210,25 +210,25 @@ test_set = setdiff(task$row_ids, train_set)
 The remaining 20 percent are used for evaluation at a subsequent later point in time.
 `train_set` is an integer vector referring to the selected rows of the original dataset:
 
-```{r 2020-03-11-mlr3-basics-german-credit-011}
+```{r 2020-03-11-basics-german-credit-010}
 head(train_set)
 ```
 
 In `r ref_pkg("mlr3")` the training with a subset of the data can be declared by the additional argument `row_ids = train_set`:
 
-```{r 2020-03-11-mlr3-basics-german-credit-012}
+```{r 2020-03-11-basics-german-credit-011}
 learner_logreg$train(task, row_ids = train_set)
 ```
 
 The fitted model can be accessed via:
 
-```{r 2020-03-11-mlr3-basics-german-credit-013, eval=TRUE}
+```{r 2020-03-11-basics-german-credit-012, eval=TRUE}
 learner_logreg$model
 ```
 
 The stored object is a normal `glm` object and all its `S3` methods work as expected:
 
-```{r 2020-03-11-mlr3-basics-german-credit-014, eval=TRUE}
+```{r 2020-03-11-basics-german-credit-013, eval=TRUE}
 class(learner_logreg$model)
 summary(learner_logreg$model)
 ```
@@ -242,21 +242,21 @@ For this, we first need to define the learner and then actually train it.
 We now additionally supply the importance argument (`importance = "permutation"`).
 Doing so, we override the default and let the learner do feature importance determination based on permutation feature importance:
 
-```{r 2020-03-11-mlr3-basics-german-credit-015}
+```{r 2020-03-11-basics-german-credit-014}
 learner_rf = lrn("classif.ranger", importance = "permutation")
 learner_rf$train(task, row_ids = train_set)
 ```
 
 We can access the importance values using `$importance()`:
 
-```{r 2020-03-11-mlr3-basics-german-credit-016, eval=TRUE}
+```{r 2020-03-11-basics-german-credit-015, eval=TRUE}
 #| column: page
 learner_rf$importance()
 ```
 
 In order to obtain a plot for the importance values, we convert the importance to a `r ref_pkg("data.table")` and then process it with `r ref_pkg("ggplot2")`:
 
-```{r 2020-03-11-mlr3-basics-german-credit-017}
+```{r 2020-03-11-basics-german-credit-016}
 importance = as.data.table(learner_rf$importance(), keep.rownames = TRUE)
 colnames(importance) = c("Feature", "Importance")
 ggplot(importance, aes(x = reorder(Feature, Importance), y = Importance)) +
@@ -280,16 +280,16 @@ Based on these values, one can derive class predictions.
 
 First, we directly predict classes:
 
-```{r 2020-03-11-mlr3-basics-german-credit-018}
+```{r 2020-03-11-basics-german-credit-017}
 prediction_logreg = learner_logreg$predict(task, row_ids = test_set)
 prediction_rf = learner_rf$predict(task, row_ids = test_set)
 ```
 
-```{r 2020-03-11-mlr3-basics-german-credit-019}
+```{r 2020-03-11-basics-german-credit-018}
 prediction_logreg
 ```
 
-```{r 2020-03-11-mlr3-basics-german-credit-020}
+```{r 2020-03-11-basics-german-credit-019}
 prediction_rf
 ```
 
@@ -298,7 +298,7 @@ It can be converted to a `r ref("data.table")` if one wants to use it downstream
 
 We can also display the prediction results aggregated in a confusion matrix:
 
-```{r 2020-03-11-mlr3-basics-german-credit-021}
+```{r 2020-03-11-basics-german-credit-020}
 prediction_logreg$confusion
 prediction_rf$confusion
 ```
@@ -311,11 +311,11 @@ Sometimes this needs to be done *before* the learner is trained.
 Alternatively, we can directly create the learner with this option:
 `lrn("classif.log_reg", predict_type = "prob")`.
 
-```{r 2020-03-11-mlr3-basics-german-credit-022}
+```{r 2020-03-11-basics-german-credit-021}
 learner_logreg$predict_type = "prob"
 ```
 
-```{r 2020-03-11-mlr3-basics-german-credit-023}
+```{r 2020-03-11-basics-german-credit-022}
 learner_logreg$predict(task, row_ids = test_set)
 ```
 
@@ -329,7 +329,7 @@ Numerous resampling methods (cross-validation, bootstrap) repeat the splitting p
 
 Within `r ref_pkg("mlr3")`, we need to specify the resampling strategy using the `r ref("rsmp()")` function:
 
-```{r 2020-03-11-mlr3-basics-german-credit-024}
+```{r 2020-03-11-basics-german-credit-023}
 resampling = rsmp("holdout", ratio = 2/3)
 print(resampling)
 ```
@@ -337,14 +337,14 @@ print(resampling)
 Here, we use "holdout", a simple train-test split (with just one iteration).
 We use the `r ref("resample()")` function to undertake the resampling calculation:
 
-```{r 2020-03-11-mlr3-basics-german-credit-025}
+```{r 2020-03-11-basics-german-credit-024}
 res = resample(task, learner = learner_logreg, resampling = resampling)
 res
 ```
 
 The default score of the measure is included in the `$aggregate()` slot:
 
-```{r 2020-03-11-mlr3-basics-german-credit-026}
+```{r 2020-03-11-basics-german-credit-025}
 res$aggregate()
 ```
 
@@ -356,7 +356,7 @@ Most methods perform repeated train/predict cycles on different data subsets and
 Doing this manually would require us to write loops.
 `r ref_pkg("mlr3")` does the job for us:
 
-```{r 2020-03-11-mlr3-basics-german-credit-027}
+```{r 2020-03-11-basics-german-credit-026}
 resampling = rsmp("subsampling", repeats = 10)
 rr = resample(task, learner = learner_logreg, resampling = resampling)
 rr$aggregate()
@@ -364,7 +364,7 @@ rr$aggregate()
 
 Instead, we could also run cross-validation:
 
-```{r 2020-03-11-mlr3-basics-german-credit-028}
+```{r 2020-03-11-basics-german-credit-027}
 resampling = resampling = rsmp("cv", folds = 10)
 rr = resample(task, learner = learner_logreg, resampling = resampling)
 rr$aggregate()
@@ -374,7 +374,7 @@ rr$aggregate()
 Here, we apply `r ref("mlr_measures_classif.fpr")` for the false positive rate, and `r ref("mlr_measures_classif.fnr")` for the false negative rate.
 Multiple measures can be provided as a list of measures (which can directly be constructed via `r ref("msrs()")`:
 
-```{r 2020-03-11-mlr3-basics-german-credit-029}
+```{r 2020-03-11-basics-german-credit-028}
 # false positive rate
 rr$aggregate(msr("classif.fpr"))
 # false positive rate and false negative
@@ -385,7 +385,7 @@ rr$aggregate(measures)
 There are a few more resampling methods, and quite a few more measures (implemented in `r ref_pkg("mlr3measures")`).
 They are automatically registered in the respective dictionaries:
 
-```{r 2020-03-11-mlr3-basics-german-credit-030}
+```{r 2020-03-11-basics-german-credit-029}
 mlr_resamplings
 mlr_measures
 ```
@@ -402,7 +402,7 @@ However, `r ref("benchmark()")` automatically performs resampling evaluations fo
 `r ref("benchmark_grid()")` creates fully crossed designs:
 Multiple `r ref("Learner", "Learners")` for multiple `r ref("Task", "Tasks")` are compared w.r.t. multiple `r ref("Resampling", "Resamplings")`.
 
-```{r 2020-03-11-mlr3-basics-german-credit-031}
+```{r 2020-03-11-basics-german-credit-030}
 learners = lrns(c("classif.log_reg", "classif.ranger"), predict_type = "prob")
 grid = benchmark_grid(
   tasks = task,
@@ -416,14 +416,14 @@ Careful, large benchmarks may take a long time! This one should take less than a
 In general, we want to use parallelization to speed things up on multi-core machines.
 For parallelization, `r ref_pkg("mlr3")` relies on the `r ref_pkg("future")` package:
 
-```{r 2020-03-11-mlr3-basics-german-credit-032, eval=FALSE}
+```{r 2020-03-11-basics-german-credit-031, eval=FALSE}
 # future::plan("multicore") # uncomment for parallelization
 ```
 
 In the benchmark we can compare different measures.
 Here, we look at the `r ref("mlr_measures_classif.ce", text = "misclassification rate")` and the `r ref("mlr_measures_classif.auc", text = "AUC")`:
 
-```{r 2020-03-11-mlr3-basics-german-credit-033}
+```{r 2020-03-11-basics-german-credit-032}
 measures = msrs(c("classif.ce", "classif.auc"))
 performances = bmr$aggregate(measures)
 performances[, c("learner_id", "classif.ce", "classif.auc")]
@@ -439,7 +439,7 @@ While many R packages have carefully selected default settings, they will not pe
 Typically, we can select the values of such hyperparameters.
 The (hyper)parameters of a `r ref("Learner")` can be accessed and set via its `r ref("ParamSet")` `$param_set`:
 
-```{r 2020-03-11-mlr3-basics-german-credit-034, eval=TRUE}
+```{r 2020-03-11-basics-german-credit-033, eval=TRUE}
 learner_rf$param_set
 learner_rf$param_set$values = list(verbose = FALSE)
 ```
@@ -451,7 +451,7 @@ For now, we only want to compare a few models.
 
 To get an idea on which parameters can be manipulated, we can investigate the parameters of the original package version or look into the parameter set of the learner:
 
-```{r 2020-03-11-mlr3-basics-german-credit-035, eval=2}
+```{r 2020-03-11-basics-german-credit-034, eval=2}
 ?ranger::ranger
 as.data.table(learner_rf$param_set)[, .(id, class, lower, upper)]
 ```
@@ -468,7 +468,7 @@ In the following we aim to train three different learners:
 We will benchmark their performance on the German credit dataset.
 For this we construct the three learners and set the parameters accordingly:
 
-```{r 2020-03-11-mlr3-basics-german-credit-036}
+```{r 2020-03-11-basics-german-credit-035}
 rf_med = lrn("classif.ranger", id = "med", predict_type = "prob")
 
 rf_low = lrn("classif.ranger", id = "low", predict_type = "prob",
@@ -480,7 +480,7 @@ rf_high = lrn("classif.ranger", id = "high", predict_type = "prob",
 
 Once the learners are defined, we can benchmark them:
 
-```{r 2020-03-11-mlr3-basics-german-credit-037}
+```{r 2020-03-11-basics-german-credit-036}
 learners = list(rf_low, rf_med, rf_high)
 grid = benchmark_grid(
   tasks = task,
@@ -489,14 +489,14 @@ grid = benchmark_grid(
 )
 ```
 
-```{r 2020-03-11-mlr3-basics-german-credit-038}
+```{r 2020-03-11-basics-german-credit-037}
 bmr = benchmark(grid)
 print(bmr)
 ```
 
 We compare misclassification rate and AUC again:
 
-```{r 2020-03-11-mlr3-basics-german-credit-039}
+```{r 2020-03-11-basics-german-credit-038}
 measures = msrs(c("classif.ce", "classif.auc"))
 performances = bmr$aggregate(measures)
 performances[, .(learner_id, classif.ce, classif.auc)]
