@@ -41,14 +41,14 @@ The test set predictions of the level 1 learners are attached to input data used
 We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 The `r ref_pkg("mlr3learners")` package loads additional `r ref("Learner", "learners")`.
 
-```{r 2020-04-27-tuning-stacking-002, message=FALSE}
+```{r 2020-04-27-tuning-stacking-001, message=FALSE}
 library(mlr3verse)
 library(mlr3learners)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
 
-```{r 2020-04-27-tuning-stacking-003}
+```{r 2020-04-27-tuning-stacking-002}
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -56,7 +56,7 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 
 For the stacking example, we use the [sonar classification task](https://mlr3.mlr-org.com/reference/mlr_tasks_sonar.html):
 
-```{r 2020-04-27-tuning-stacking-004}
+```{r 2020-04-27-tuning-stacking-003}
 task_sonar = tsk("sonar")
 task_sonar$col_roles$stratum = task_sonar$target_names # stratification
 ```
@@ -67,7 +67,7 @@ task_sonar$col_roles$stratum = task_sonar$target_names # stratification
 
 As mentioned, the level 0 learners are `r ref("mlr_learners_classif.rpart", "rpart")`, `r ref("mlr_learners_classif.glmnet", "glmnet")` and `r ref("mlr_learners_classif.lda", "lda")`:
 
-```{r 2020-04-27-tuning-stacking-005}
+```{r 2020-04-27-tuning-stacking-004}
 learner_rpart = lrn("classif.rpart", predict_type = "prob")
 learner_glmnet = lrn("classif.glmnet", predict_type = "prob")
 learner_lda = lrn("classif.lda", predict_type = "prob")
@@ -75,7 +75,7 @@ learner_lda = lrn("classif.lda", predict_type = "prob")
 
 To create the learner out-of-bag predictions, we use `r ref("PipeOpLearnerCV")`:
 
-```{r 2020-04-27-tuning-stacking-006}
+```{r 2020-04-27-tuning-stacking-005}
 cv1_rpart = po("learner_cv", learner_rpart, id = "rprt_1")
 cv1_glmnet = po("learner_cv", learner_glmnet, id = "glmnet_1")
 cv1_lda = po("learner_cv", learner_lda, id = "lda_1")
@@ -83,7 +83,7 @@ cv1_lda = po("learner_cv", learner_lda, id = "lda_1")
 
 A sparser representation of the input data in level 0 is obtained using the following filters:
 
-```{r 2020-04-27-tuning-stacking-007}
+```{r 2020-04-27-tuning-stacking-006}
 anova = po("filter", flt("anova"), id = "filt1")
 mrmr = po("filter", flt("mrmr"), id = "filt2")
 find_cor = po("filter", flt("find_correlation"), id = "filt3")
@@ -92,7 +92,7 @@ find_cor = po("filter", flt("find_correlation"), id = "filt3")
 To summarize these steps into level 0, we use the `r ref("gunion()")` function.
 The out-of-bag predictions of all level 0 learners is attached using `r ref("PipeOpFeatureUnion")` along with the original data passed via `r ref("PipeOpNOP")`:
 
-```{r 2020-04-27-tuning-stacking-008}
+```{r 2020-04-27-tuning-stacking-007}
 level0 = gunion(list(
   anova %>>% cv1_rpart,
   mrmr %>>% cv1_glmnet,
@@ -103,7 +103,7 @@ level0 = gunion(list(
 
 We can have a look at the graph from level 0:
 
-```{r 2020-04-27-tuning-stacking-009, fig.width=12, fig.height = 12}
+```{r 2020-04-27-tuning-stacking-008, fig.width=12, fig.height = 12}
 level0$plot(html = FALSE)
 ```
 
@@ -111,7 +111,7 @@ level0$plot(html = FALSE)
 
 Now, we create the level 1 learners:
 
-```{r 2020-04-27-tuning-stacking-010}
+```{r 2020-04-27-tuning-stacking-009}
 cv2_rpart = po("learner_cv", learner_rpart, id = "rprt_2")
 cv2_glmnet = po("learner_cv", learner_glmnet, id = "glmnet_2")
 cv2_lda = po("learner_cv", learner_lda, id = "lda_2")
@@ -119,7 +119,7 @@ cv2_lda = po("learner_cv", learner_lda, id = "lda_2")
 
 All level 1 learners will use `r ref("PipeOpPCA")` transformed data as input:
 
-```{r 2020-04-27-tuning-stacking-011}
+```{r 2020-04-27-tuning-stacking-010}
 level1 = level0 %>>%
   po("copy", 4) %>>%
   gunion(list(
@@ -132,13 +132,13 @@ level1 = level0 %>>%
 
 We can have a look at the graph from level 1:
 
-```{r 2020-04-27-tuning-stacking-012, fig.width=12, fig.height = 14}
+```{r 2020-04-27-tuning-stacking-011, fig.width=12, fig.height = 14}
 level1$plot(html = FALSE)
 ```
 
 The out-of-bag predictions of the level 1 learners are attached to the input data from level 1 and a final ranger learner will be trained:
 
-```{r 2020-04-27-tuning-stacking-013, fig.width=12, fig.height = 14}
+```{r 2020-04-27-tuning-stacking-012, fig.width=12, fig.height = 14}
 ranger_lrn = lrn("classif.ranger", predict_type = "prob")
 
 ensemble = level1 %>>% ranger_lrn
@@ -149,7 +149,7 @@ ensemble$plot(html = FALSE)
 
 In order to tune the ensemble's hyperparameter jointly, we define the search space using [`ParamSet`](https://paradox.mlr-org.com/reference/ParamSet.html) from the [paradox](https://paradox.mlr-org.com/) package:
 
-```{r 2020-04-27-tuning-stacking-014}
+```{r 2020-04-27-tuning-stacking-013}
 search_space_ensemble = ps(
   filt1.filter.nfeat = p_int(5, 50),
   filt2.filter.nfeat = p_int(5, 50),
@@ -175,7 +175,7 @@ We compare the performance of the ensemble with a simple tuned `r ref("mlr_learn
 
 To proceed, we convert the `ensemble` pipeline as a `r ref("GraphLearner")`:
 
-```{r 2020-04-27-tuning-stacking-015}
+```{r 2020-04-27-tuning-stacking-014}
 learner_ensemble = as_learner(ensemble)
 learner_ensemble$id = "ensemble"
 learner_ensemble$predict_type = "prob"
@@ -183,7 +183,7 @@ learner_ensemble$predict_type = "prob"
 
 We define the search space for the simple ranger learner:
 
-```{r 2020-04-27-tuning-stacking-016}
+```{r 2020-04-27-tuning-stacking-015}
 search_space_ranger = ps(
   mtry = p_int(1, 10),
   sample.fraction = p_dbl(0.5, 1),
@@ -195,7 +195,7 @@ Here, we have two learners (the simple ranger learner and the ensemble) and one 
 Since we want to tune the simple ranger learner as well as the whole ensemble learner, we need to create an `r ref("AutoTuner")` for each learner to be compared.
 To do so, we need to define a resampling strategy for the tuning in the inner loop (we use 3-fold cross-validation) and for the final evaluation (outer loop) use use holdout validation:
 
-```{r 2020-04-27-tuning-stacking-017}
+```{r 2020-04-27-tuning-stacking-016}
 inner_resampling = rsmp("cv", folds = 3)
 
 # AutoTuner for the ensemble learner
@@ -230,11 +230,11 @@ design = benchmark_grid(
 )
 ```
 
-```{r 2020-04-27-tuning-stacking-018}
+```{r 2020-04-27-tuning-stacking-017}
 bmr = benchmark(design, store_models = TRUE)
 ```
 
-```{r 2020-04-27-tuning-stacking-021, eval = FALSE}
+```{r 2020-04-27-tuning-stacking-018, eval = FALSE}
 bmr$aggregate(msr("classif.auc"))[, .(nr, task_id, learner_id, resampling_id, iters, classif.auc)]
 ```
 

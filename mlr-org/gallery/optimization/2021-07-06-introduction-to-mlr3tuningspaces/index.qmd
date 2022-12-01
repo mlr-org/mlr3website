@@ -21,14 +21,14 @@ In this post, we show how to tune a `r ref("Learner", "mlr3 learners")` with the
 
 The packages `r ref_pkg("mlr3verse")` and `r ref_pkg("mlr3tuningspaces")` are required for this demonstration:
 
-```{r introduction-to-mlr3tuningspaces-002, message = FALSE}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-001, message = FALSE}
 library(mlr3verse)
 library(mlr3tuningspaces)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
 
-```{r introduction-to-mlr3tuningspaces-003}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-002}
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -37,7 +37,7 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 In the example, we use the `r ref("mlr_tasks_pima", text = "pima indian diabetes data set")` which is used to predict whether or not a patient has diabetes.
 The patients are characterized by 8 numeric features, some of them have missing values.
 
-```{r introduction-to-mlr3tuningspaces-004}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-003}
 # retrieve the task from mlr3
 task = tsk("pima")
 
@@ -51,7 +51,7 @@ For tuning, it is important to create a search space that defines the type and r
 A learner stores all information about its hyperparameters in the slot `$param_set`.
 Usually, we have to chose a subset of hyperparameters we want to tune.
 
-```{r introduction-to-mlr3tuningspaces-005}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-004}
 lrn("classif.rpart")$param_set
 ```
 
@@ -62,26 +62,26 @@ It stores a list of `r ref("TuneToken")`, helper functions and additional meta i
 The list of `r ref("TuneToken")` can be directly applied to the `$values` slot of a learner's `r ref("ParamSet")`.
 The search spaces are stored in the `r ref("mlr_tuning_spaces")` dictionary.
 
-```{r introduction-to-mlr3tuningspaces-006}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-005}
 as.data.table(mlr_tuning_spaces)
 ```
 
 We can use the sugar function `r ref("lts()")` to retrieve a `r ref("TuningSpace")`.
 
-```{r introduction-to-mlr3tuningspaces-007}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-006}
 tuning_space_rpart = lts("classif.rpart.default")
 tuning_space_rpart
 ```
 
 The `$values` slot contains the list of of `r ref("TuneToken")`.
 
-```{r introduction-to-mlr3tuningspaces-008}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-007}
 tuning_space_rpart$values
 ```
 
 We apply the search space and tune the `r ref("Learner", "learner")`.
 
-```{r introduction-to-mlr3tuningspaces-009}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-008}
 learner = lrn("classif.rpart")
 
 learner$param_set$values = tuning_space_rpart$values
@@ -99,21 +99,21 @@ instance$result
 
 We can also get the `r ref("Learner", "learner")` with search space already applied from the `r ref("TuningSpace")`.
 
-```{r introduction-to-mlr3tuningspaces-010}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-009}
 learner = tuning_space_rpart$get_learner()
 print(learner$param_set)
 ```
 
 This method also allows to set constant parameters.
 
-```{r introduction-to-mlr3tuningspaces-011}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-010}
 learner = tuning_space_rpart$get_learner(maxdepth = 15)
 print(learner$param_set)
 ```
 
 The `r ref("lts()")` function sets the default search space directly to a `r ref("Learner", "learner")`.
 
-```{r introduction-to-mlr3tuningspaces-012}
+```{r 2021-07-06-introduction-to-mlr3tuningspaces-011}
 learner = lts(lrn("classif.rpart", maxdepth = 15))
 print(learner$param_set)
 ```
