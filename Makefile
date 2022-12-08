@@ -8,7 +8,7 @@ help:
 
 
 install:
-	Rscript -e 'if (length(find.package("renv", quiet = TRUE)) == 0) install.packages("renv")' \
+	Rscript -e 'install.packages("renv")' \
 	        -e 'renv::activate("mlr-org")' \
             -e 'renv::restore("mlr-org", prompt = FALSE)'
 
