@@ -1,0 +1,16 @@
+all: install serve
+
+.PHONY: help
+
+help:
+	@echo "install : Install mlr3website, activate and restore the renv file."
+	@echo "serve : Activate renv, restore it and then serve the book. "
+
+
+install:
+	Rscript -e 'if (length(find.package("renv", quiet = TRUE)) == 0) install.packages("renv")' \
+	        -e 'renv::activate("mlr-org")' \
+            -e 'renv::restore("mlr-org", prompt = FALSE)'
+
+serve:
+	cd mlr-org && quarto preview .
