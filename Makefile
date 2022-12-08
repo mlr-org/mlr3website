@@ -13,4 +13,4 @@ install:
             -e 'renv::restore("mlr-org", prompt = FALSE)'
 
 serve:
-	cd mlr-org && quarto preview .
+	quarto preview mlr-org
