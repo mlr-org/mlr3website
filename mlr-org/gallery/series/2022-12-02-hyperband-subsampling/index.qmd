@@ -1,7 +1,7 @@
 ---
-title: "Hyperband Series II - Subsampling"
+title: "Hyperband Series - Data Set Subsampling"
 description: |
-  Optimize the hyperparameters of learners that lack a natural fidelity parameter.
+  Optimize the hyperparameters of a Support Vector Machine with Hyperband.
 categories:
   - tuning
   - classification
@@ -28,16 +28,22 @@ future::plan("multisession")
 
 # Scope
 
-Increasingly large data sets and search spaces make optimization a very time-consuming task.
-Hyperband [@li_2018] solves this problem by approximating the performance of a configuration on a small subset of the training data, with just a few training epochs in a neural network or with only a small number of trees in a gradient-boosting model.
-After sampling a random population of configurations, Hyperband iteratively allocates more resources to promising configurations and terminates low-performing ones.
-This type of optimization is called *multi-fidelity* optimization.
-The fidelity parameter is part of the search space and influences the computational cost of fitting a model.
+We continue working with the *Hyperband* optimization algorithm [@li_2018].
+The previous post used the number of boosting iterations of an XGBoost model as the resource.
+However, Hyperband is not limited to machine learning algorithms that are trained iteratively.
+The resource can also be the number of features, the training time of a model, or the size of the training data set.
 In this post, we will tune a support vector machine and use the size of the training data set as the fidelity parameter.
 The time to train a support vector machine increases with the size of the data set.
 This makes the data set size a suitable fidelity parameter for Hyperband.
-We assume that you are already familiar with tuning in the mlr3 ecosystem.
-If not, you should start with the [Hyperparameter Optimization on the Palmer Penguins Data Set](gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
+
+This is the second part of the Hyperband series.
+The other parts can be found here:
+
+* [Hyperband Series - Iterative Training](/gallery/series/2022-12-01-hyperband-xgboost)
+* Hyperband Series - Large-Scale Experiments
+
+If you don't know much about Hyperband, check out the first post which explains the algorithm in detail.
+A little knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
 
 # Hyperparameter Optimization
 
@@ -85,7 +91,7 @@ This search space works for a wide range of data sets.
 
 ```{r}
 graph_learner$param_set$set_values(
-  subsample.frac  = to_tune(p_dbl(2^-3, 1, tags = "budget")),
+  subsample.frac  = to_tune(p_dbl(3^-3, 1, tags = "budget")),
   svm.kernel      = to_tune(c("linear", "polynomial", "radial")),
   svm.cost        = to_tune(1e-4, 1e3, logscale = TRUE),
   svm.gamma       = to_tune(1e-4, 1e3, logscale = TRUE),
@@ -101,7 +107,7 @@ We use the `"none"` terminator because Hyperband controls the termination itself
 instance = ti(
   task = tsk("sonar"),
   learner = graph_learner,
-  resampling = rsmp("holdout"),
+  resampling = rsmp("cv", folds = 3),
   measures = msr("classif.ce"),
   terminator = trm("none")
 )
@@ -114,7 +120,7 @@ We load the Hyperband `r ref("Tuner")` and set `eta = 2`.
 #| message: false
 library("mlr3hyperband")
 
-tuner = tnr("hyperband", eta = 2)
+tuner = tnr("hyperband", eta = 3)
 ```
 
 Using `eta = 2` and a lower bound of 12.5% for the data set size, results in the following schedule.
@@ -168,6 +174,23 @@ The evaluation on 25% of the data set is only an approximation for the final per
 ```{r}
 as.data.table(instance$archive)[c(9, 26, 33), .(bracket, stage, subsample.frac, svm.cost, classif.ce)]
 ```
+
+```{r}
+library(ggplot2)
+
+data = as.data.table(instance$archive)[, i := .GRP, by = "svm.cost"]
+data[, i := as.factor(i)]
+#data = data[bracket == 2]
+
+ggplot(data, aes(x = subsample.frac, y = classif.ce, group = i)) +
+  geom_line(aes(color=i)) +
+  geom_point(aes(color=i), size = 5)
+```
+```{r}
+data[, .(i, bracket, stage, subsample.frac, svm.cost, classif.ce)]
+```
+
+
 
 # Conclusion
 
