@@ -24,6 +24,8 @@ knitr:
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 
+future::plan("multisession")
+
 set.seed(1)
 ```
 
@@ -44,7 +46,7 @@ This is the first part of the Hyperband series.
 The other parts can be found here:
 
 * [Hyperband Series - Data Set Subsampling](/gallery/series/2022-12-02-hyperband-subsampling)
-* Hyperband Series - Large-Scale Experiments
+* Hyperband Series - Large-Scale Experiments (Work in progress)
 
 # Hyperband
 

@@ -40,7 +40,7 @@ This is the second part of the Hyperband series.
 The other parts can be found here:
 
 * [Hyperband Series - Iterative Training](/gallery/series/2022-12-01-hyperband-xgboost)
-* Hyperband Series - Large-Scale Experiments
+* Hyperband Series - Large-Scale Experiments (Work in progress)
 
 If you don't know much about Hyperband, check out the first post which explains the algorithm in detail.
 A little knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
@@ -179,13 +179,14 @@ instance$result[, .(subsample.frac, svm.cost, svm.degree, svm.gamma, svm.kernel,
 ```
 
 The archive contains all evaluated configurations.
-We look at the configurations that were evaluated on the complete data set.
-The best configuration was sampled in bracket 2 with a starting budget of 33%.
-The performance was estimated to be
-The classification error improved to 19% on the complete data set.
+We look at the 8 configurations that were evaluated on the complete data set.
+The configuration with the best classification error on the full data set was sampled in bracket 2.
+The classification error was estimated to be 26% on 33% of the data set and increased to 19% on the full data set (see green line in @fig-hyperband).
 
 ```{r}
 #| echo: false
+#| label: fig-hyperband
+#| fig-cap: "Optimization path of the 8 configurations evaluated on the complete data set."
 library(ggplot2)
 
 data = as.data.table(instance$archive)[, i := factor(.GRP), by = "svm.cost"]
@@ -198,8 +199,10 @@ ggplot(data, aes(x = subsample.frac, y = classif.ce, group = i)) +
   geom_vline(xintercept = 0.333, colour = "grey85") +
   geom_vline(xintercept = 1, colour = "grey85") +
   geom_line(aes(color=i), show.legend = FALSE) +
-  geom_point(aes(color=i), size = 2, show.legend = FALSE) +
+  geom_point(aes(color=i), size = 3, show.legend = FALSE, position=position_jitter(height = 0.003, width = 0)) +
   scale_x_continuous(breaks = c(0.034, 0.11, 0.33, 1), labels = function(x) paste0(as.character(x *100), "%")) +
+  xlab("Training Data Set Size") +
+  ylab("Classification Error") +
   theme_minimal() +
   theme(panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank())
@@ -207,7 +210,6 @@ ggplot(data, aes(x = subsample.frac, y = classif.ce, group = i)) +
 
 # Conclusion
 
-Subsampling makes it possible to tune learners with Hyperband that lack a natural fidelity parameter.
-Moreover, we can reduce the time to optimize a learner on a large data set.
+
 
 # References
