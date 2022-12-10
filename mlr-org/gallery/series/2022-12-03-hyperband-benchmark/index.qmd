@@ -22,8 +22,24 @@ knitr:
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
+
+library(data.table)
 ```
 
 ```{r}
+instance = readRDS("instance.rds")
+```
 
+```{r}
+data = as.data.table(instance$archive)
+
+data[, runtime := as.numeric(difftime(timestamp, data$timestamp[1]))]
+data_100 = data[subsample.frac == 1]
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(data_100, aes(x = runtime, y = classif.bacc)) +
+  geom_point()
 ```
