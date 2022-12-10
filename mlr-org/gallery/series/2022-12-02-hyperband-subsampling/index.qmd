@@ -1,7 +1,7 @@
 ---
-title: "Hyperband Series II - Subsampling"
+title: "Hyperband Series - Data Set Subsampling"
 description: |
-  Optimize the hyperparameters of learners that lack a natural fidelity parameter.
+  Optimize the hyperparameters of a Support Vector Machine with Hyperband.
 categories:
   - tuning
   - classification
@@ -23,21 +23,27 @@ knitr:
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 
-future::plan("multisession")
+set.seed(2)
 ```
 
 # Scope
 
-Increasingly large data sets and search spaces make optimization a very time-consuming task.
-Hyperband [@li_2018] solves this problem by approximating the performance of a configuration on a small subset of the training data, with just a few training epochs in a neural network or with only a small number of trees in a gradient-boosting model.
-After sampling a random population of configurations, Hyperband iteratively allocates more resources to promising configurations and terminates low-performing ones.
-This type of optimization is called *multi-fidelity* optimization.
-The fidelity parameter is part of the search space and influences the computational cost of fitting a model.
+We continue working with the *Hyperband* optimization algorithm [@li_2018].
+The previous post used the number of boosting iterations of an XGBoost model as the resource.
+However, Hyperband is not limited to machine learning algorithms that are trained iteratively.
+The resource can also be the number of features, the training time of a model, or the size of the training data set.
 In this post, we will tune a support vector machine and use the size of the training data set as the fidelity parameter.
 The time to train a support vector machine increases with the size of the data set.
 This makes the data set size a suitable fidelity parameter for Hyperband.
-We assume that you are already familiar with tuning in the mlr3 ecosystem.
-If not, you should start with the [Hyperparameter Optimization on the Palmer Penguins Data Set](gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
+
+This is the second part of the Hyperband series.
+The other parts can be found here:
+
+* [Hyperband Series - Iterative Training](/gallery/series/2022-12-01-hyperband-xgboost)
+* Hyperband Series - Large-Scale Experiments (Work in progress)
+
+If you don't know much about Hyperband, check out the first post which explains the algorithm in detail.
+A little knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
 
 # Hyperparameter Optimization
 
@@ -85,13 +91,21 @@ This search space works for a wide range of data sets.
 
 ```{r}
 graph_learner$param_set$set_values(
-  subsample.frac  = to_tune(p_dbl(2^-3, 1, tags = "budget")),
+  subsample.frac  = to_tune(p_dbl(3^-3, 1, tags = "budget")),
   svm.kernel      = to_tune(c("linear", "polynomial", "radial")),
   svm.cost        = to_tune(1e-4, 1e3, logscale = TRUE),
   svm.gamma       = to_tune(1e-4, 1e3, logscale = TRUE),
   svm.tolerance   = to_tune(1e-4, 2, logscale = TRUE),
   svm.degree      = to_tune(2, 5)
 )
+```
+
+Fallback
+
+```{r}
+graph_learner$encapsulate = c(train = "evaluate", predict = "evaluate")
+graph_learner$timeout = c(train = 30, predict = 30)
+graph_learner$fallback = lrn("classif.featureless")
 ```
 
 Let's create the tuning instance.
@@ -101,7 +115,7 @@ We use the `"none"` terminator because Hyperband controls the termination itself
 instance = ti(
   task = tsk("sonar"),
   learner = graph_learner,
-  resampling = rsmp("holdout"),
+  resampling = rsmp("cv", folds = 3),
   measures = msr("classif.ce"),
   terminator = trm("none")
 )
@@ -114,10 +128,10 @@ We load the Hyperband `r ref("Tuner")` and set `eta = 2`.
 #| message: false
 library("mlr3hyperband")
 
-tuner = tnr("hyperband", eta = 2)
+tuner = tnr("hyperband", eta = 3)
 ```
 
-Using `eta = 2` and a lower bound of 12.5% for the data set size, results in the following schedule.
+Using `eta = 3` and a lower bound of 3.7% for the data set size, results in the following schedule.
 Configurations with the same data set size are evaluated in parallel.
 
 ```{r}
@@ -125,16 +139,15 @@ Configurations with the same data set size are evaluated in parallel.
 library(htmltools)
 library(reactable)
 
-data = hyperband_schedule(r_min = 2^-3, r_max = 1, eta = 2)
+data = hyperband_schedule(r_min = 3^-3, r_max = 1, eta = 3)
 setorder(data, cols = "budget")
-
 
 reactable(data[, .(budget, bracket, stage, n)],
   columns = list(
     budget = colDef(
       name = "Data Set Size",
       cell = function(value) {
-        width = paste0(value * 100, "%")
+        width = paste0(round(value, 3) * 100, "%")
         value = format(width, width = 9, justify = "right")
         bar = div(
           class = "bar-chart",
@@ -155,23 +168,48 @@ reactable(data[, .(budget, bracket, stage, n)],
 Now we are ready to start the tuning.
 
 ```{r}
+#| output: false
 tuner$optimize(instance)
 ```
 
 The best model is a support vector machine with a radial basis kernel.
-We are now looking at the best configuration across the stages.
-The configuration was sampled in the second bracket and thus started with a data set size of 25%.
-We observe that the performance increases with the size of the data set.
-The multi-fidelity idea can be seen here.
-The evaluation on 25% of the data set is only an approximation for the final performance on the full data set.
 
 ```{r}
-as.data.table(instance$archive)[c(9, 26, 33), .(bracket, stage, subsample.frac, svm.cost, classif.ce)]
+instance$result[, .(subsample.frac, svm.cost, svm.degree, svm.gamma, svm.kernel, svm.tolerance, classif.ce)]
+```
+
+The archive contains all evaluated configurations.
+We look at the 8 configurations that were evaluated on the complete data set.
+The configuration with the best classification error on the full data set was sampled in bracket 2.
+The classification error was estimated to be 26% on 33% of the data set and increased to 19% on the full data set (see green line in @fig-hyperband).
+
+```{r}
+#| echo: false
+#| label: fig-hyperband
+#| fig-cap: "Optimization path of the 8 configurations evaluated on the complete data set."
+library(ggplot2)
+
+data = as.data.table(instance$archive)[, i := factor(.GRP), by = "svm.cost"]
+top = data[subsample.frac == 1, i]
+data = data[list(top), , on = "i"]
+
+ggplot(data, aes(x = subsample.frac, y = classif.ce, group = i)) +
+  geom_vline(xintercept = 0.037, colour = "grey85") +
+  geom_vline(xintercept = 0.111, colour = "grey85") +
+  geom_vline(xintercept = 0.333, colour = "grey85") +
+  geom_vline(xintercept = 1, colour = "grey85") +
+  geom_line(aes(color=i), show.legend = FALSE) +
+  geom_point(aes(color=i), size = 3, show.legend = FALSE, position=position_jitter(height = 0.003, width = 0)) +
+  scale_x_continuous(breaks = c(0.034, 0.11, 0.33, 1), labels = function(x) paste0(as.character(x *100), "%")) +
+  xlab("Training Data Set Size") +
+  ylab("Classification Error") +
+  theme_minimal() +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())
 ```
 
 # Conclusion
 
-Subsampling makes it possible to tune learners with Hyperband that lack a natural fidelity parameter.
-Moreover, we can reduce the time to optimize a learner on a large data set.
+
 
 # References

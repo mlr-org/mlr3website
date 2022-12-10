@@ -1,5 +1,5 @@
 ---
-title: "Hyperband Series I - XGBoost"
+title: "Hyperband Series - Iterative Training"
 description: |
   Optimize the hyperparameters of an XGBoost model with Hyperband.
 categories:
@@ -25,21 +25,28 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 
 future::plan("multisession")
+
+set.seed(1)
 ```
 
 # Scope
 
 Increasingly large data sets and search spaces make hyperparameter optimization a very time-consuming task.
-Hyperband [@li_2018] solves this problem by approximating the performance of a configuration on a small subset of the training data, with just a few training epochs in a neural network, or with only a small number of trees in a gradient-boosting model.
+*Hyperband* [@li_2018] solves this problem by approximating the performance of a configuration on a small subset of the training data, with just a few training epochs in a neural network, or with only a small number of trees in a gradient-boosting model.
 After sampling random configurations, Hyperband iteratively allocates more resources to promising configurations and terminates low-performing ones.
 This type of optimization is called *multi-fidelity* optimization.
 The fidelity parameter is part of the search space and influences the computational cost of fitting a model.
-In the context of hyperband, the fidelity parameter is often called the budget parameter.
-In this post, we will optimize XGBoost and use the number of boosting iterations as the fidelity parameter.
-The time to train XGBoost increases with the number of boosting iterations.
 
+In this post, we will optimize XGBoost and use the number of boosting iterations as the fidelity parameter.
+The number of boosting iterations increases the time to train a model and is therefore suitable as a fidelity parameter.
 We assume that you are already familiar with tuning in the mlr3 ecosystem.
-If not, you should start with the [Hyperparameter Optimization on the Palmer Penguins Data Set](gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
+If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/optimization.html) or the [Hyperparameter Optimization on the Palmer Penguins Data Set](/gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
+
+This is the first part of the Hyperband series.
+The other parts can be found here:
+
+* [Hyperband Series - Data Set Subsampling](/gallery/series/2022-12-02-hyperband-subsampling)
+* Hyperband Series - Large-Scale Experiments (Work in progress)
 
 # Hyperband
 
@@ -55,13 +62,16 @@ Successive Halving has the disadvantage that is not clear whether we should choo
 
 Hyperband solves this problem by running Successive Halving with different numbers of stating configurations.
 The algorithm is initialized with the same parameters as Successive Halving but without $n$.
-Each run of Successive Halving is called a bracket and starts with a different budget $r{_{i}}$.
+Each run of Successive Halving is called a bracket and starts with a different budget $r{_{0}}$.
 A smaller starting budget means that more configurations can be tried out.
-The most explorative bracket $s = 3$ allocated the minimum budget $r{_{min}}$.
+The most explorative bracket allocated the minimum budget $r{_{min}}$.
 The next bracket increases the starting budget by a factor of $\eta$.
 In each bracket, the starting budget increases further until the last bracket $s = 0$ essentially performs a random search with the full budget $r{_{max}}$.
+The number of brackets $s{_{max}} + 1$ is calculated with $s{_{max}} = {\log_\eta \frac{r{_{max}} }{r{_{min}}}}$.
+Under the condition that $r{_{0}}$ increases by $\eta$ with each bracket, $r{_{min}}$ sometimes has to be adjusted slightly in order not to use more than $r{_{max}}$ resources in the last bracket.
 The number of configurations in the base stages is calculated so that each bracket uses approximately the same amount of budget.
-
+The following table shows a full run of the Hyperband algorithm.
+The bracket $s = 3$ is the most explorative bracket and $s = 0$ performance a random search on the full budget.
 
 |     |     |           |   $s = 3$ |     |           |   $s = 2$ |     |           |   $s = 1$ |     |           |   $s = 0$ |
 | --: | --- | --------: | --------: | --- | --------: | --------: | --- | --------: | --------: | --- | --------: | --------: |
@@ -73,10 +83,11 @@ The number of configurations in the base stages is calculated so that each brack
 
 : Hyperband schedule with $\eta = 2$ , $r{_{min}} = 1$ and $r{_{max}} = 8$ {#tbl-schedule}
 
-# XGBoost
+The Hyperband implementation in `r ref_pkg("mlr3hyperband")` evaluates configurations with the same budget in parallel.
+This results in all brackets finishing at approximately the same time.
+The colors in @tbl-schedule indicate a parallelly evaluated batch.
 
-
-# Optimization
+# Hyperparameter Optimization
 
 In this practical example, we will optimize the hyperparameters of XGBoost on the `r ref("mlr_tasks_spam", "Spam")` data set.
 We begin by loading the `r ref("mlr_learners_classif.xgboost", "XGBoost learner.")`.
@@ -123,7 +134,7 @@ instance = ti(
 instance
 ```
 
-We load the Hyperband `r ref("Tuner")` and set `eta = 2`.
+We load the Hyperband `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 2`.
 
 ```{r}
 #| message: false
@@ -135,7 +146,7 @@ tuner = tnr("hyperband", eta = 2)
 The Hyperband implementation in `r ref_pkg("mlr3hyperband")` evaluates configurations with the same budget in parallel.
 This results in all brackets finishing at approximately the same time.
 You can think of it as going diagonally through @tbl-schedule.
-Using `eta = 2` and a lower bound of 1 results in the following schedule.
+Using `eta = 2` and a range from 16 to 128 boosting iterations results in the following schedule.
 
 ```{r}
 #| echo: false
@@ -172,11 +183,16 @@ reactable(data[, .(budget, bracket, stage, n)],
 Now we are ready to start the tuning.
 
 ```{r}
+#| output: false
 tuner$optimize(instance)
 ```
 
 The result of a run is the configuration with the best performance.
-This does not necessarily have to be a configuration evaluated with the highest budget.
+This does not necessarily have to be a configuration evaluated with the highest budget since we can overfit the data with too many boosting iterations.
+
+```{r}
+instance$result[, .(nrounds, eta, max_depth, colsample_bytree, colsample_bylevel, lambda, alpha, subsample)]
+```
 
 The archive of a Hyperband run has the additional columns `"bracket"` and `"stage"`.
 
@@ -186,9 +202,11 @@ as.data.table(instance$archive)[, .(bracket, stage, classif.ce, eta, max_depth, 
 
 # Conclusion
 
-Performing an optimization with hyperband in `r ref_pkg("mlr3tuning")` hardly differs from using other methods.
-Choose a suitable range for the fidelity parameter and tag it with `"budget"`.
-Load the Hyperband tuner and start your optimization.
+The handling of Hyperband in mlr3tuning is very similar to that of other tuners.
+We only have to select an additional fidelity parameter and tag it with `"budget"`.
 We have tried to keep the runtime of the example low.
 For your optimization, you should use cross-validation and increase the maximum number of boosting rounds.
-@bischl_hyperparameter_2021 search space suggests 5000 boosting rounds.
+The @bischl_hyperparameter_2021 search space suggests 5000 boosting rounds.
+Check out our [next post](/gallery/series/2022-12-02-hyperband-subsampling) on Hyperband which uses the size of the training data set as the fidelity parameter.
+
+
