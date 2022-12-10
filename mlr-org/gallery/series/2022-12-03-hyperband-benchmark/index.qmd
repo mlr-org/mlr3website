@@ -1,0 +1,29 @@
+---
+title: "Hyperband Series III - Benchmarking"
+description: |
+  Benchmark Random Search and Hyperband on XGBoost.
+categories:
+  - tuning
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+date: 2022-12-02
+bibliography: bibliography.bib
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+```{r}
+
+```
