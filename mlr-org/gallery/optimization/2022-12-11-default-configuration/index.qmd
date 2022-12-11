@@ -1,0 +1,26 @@
+---
+title: "Default Hyperparameter Values"
+description: |
+  Test default hyperparameter values during tuning.
+categories:
+  - tuning
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+date: 2022-11-10
+bibliography: bibliography.bib
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+
+```
+
+# Scope
+
+@probst2019
