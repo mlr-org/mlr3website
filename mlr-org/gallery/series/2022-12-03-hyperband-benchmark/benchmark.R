@@ -17,31 +17,31 @@ eval_metric = function(preds, dtrain) {
   list(metric = "bacc", value = bacc)
 }
 
- callback = callback_tuning("custom.early_stopping",
-    label = "Early Stopping Callback",
-    on_optimization_begin = function(callback, context) {
-      # store models temporary
-      context$instance$objective$store_models = TRUE
-    },
+callback = callback_tuning("custom.early_stopping",
+  label = "Early Stopping Callback",
+  on_optimization_begin = function(callback, context) {
+    # store models temporary
+    context$instance$objective$store_models = TRUE
+  },
 
-    on_eval_after_benchmark = function(callback, context) {
-      callback$state$max_nrounds = mlr3misc::map_dbl(context$benchmark_result$resample_results$resample_result, function(rr) {
-          max(mlr3misc::map_dbl(mlr3misc::get_private(rr)$.data$learner_states(mlr3misc::get_private(rr)$.view), function(state) {
-            state$model$xgboost$model$best_iteration
-          }))
-      })
-    },
+  on_eval_after_benchmark = function(callback, context) {
+    callback$state$max_nrounds = mlr3misc::map_dbl(context$benchmark_result$resample_results$resample_result, function(rr) {
+        max(mlr3misc::map_dbl(mlr3misc::get_private(rr)$.data$learner_states(mlr3misc::get_private(rr)$.view), function(state) {
+          state$model$xgboost$model$best_iteration
+        }))
+    })
+  },
 
-    on_eval_before_archive = function(callback, context) {
-      data.table::set(context$aggregated_performance, j = "max_nrounds", value = callback$state$max_nrounds)
-      context$benchmark_result$discard(models = TRUE)
-    },
+  on_eval_before_archive = function(callback, context) {
+    data.table::set(context$aggregated_performance, j = "max_nrounds", value = callback$state$max_nrounds)
+    context$benchmark_result$discard(models = TRUE)
+  },
 
-    on_result = function(callback, context) {
-      context$result$learner_param_vals[[1]]$nrounds = context$instance$archive$best()$max_nrounds
-      context$instance$objective$store_models = FALSE
-    }
-  )
+  on_result = function(callback, context) {
+    context$result$learner_param_vals[[1]]$nrounds = context$instance$archive$best()$max_nrounds
+    context$instance$objective$store_models = FALSE
+  }
+)
 
 learner = lts(lrn("classif.xgboost",
   objective = "multi:softprob",
@@ -66,10 +66,6 @@ task = tsk("oml", data_id = 1596)
 task = po("encode", method = "one-hot")$train(list(task))[[1]]
 task$col_roles$stratum = task$target_names
 
-#task = tsk("penguins")
-#task = po("encode", method = "one-hot")$train(list(task))[[1]]
-#task$col_roles$stratum = task$target_names
-
 # ensure the same resampling splits for all optimizers
 resampling = rsmp("cv", folds = 3)
 resampling$instantiate(task)
@@ -79,11 +75,11 @@ instance = TuningInstanceSingleCrit$new(
   learner = learner,
   resampling = resampling,
   measure = msr("classif.bacc"),
-  terminator = trm("run_time", secs = 259200),
+  terminator = trm("run_time", secs = 3600 * 24),
   check_values = FALSE,
   store_benchmark_result = FALSE,
   store_models = FALSE,
-  callbacks = list(callback, clbk("mlr3tuning.backup", path = "bmr.rds"), clbk("bbotk.backup", path = "archive.rds"))
+  callbacks = callback
 )
 
 tuner = tnr("hyperband", eta = 3, repetitions = Inf)

@@ -1,0 +1,16 @@
+{
+  "hash": "98012183e2b689618c37808bf31211dd",
+  "result": {
+    "markdown": "---\ntitle: \"Hyperband Series - Benchmarking\"\ndescription: |\n  Benchmark Random Search and Hyperband on XGBoost.\ncategories:\n  - tuning\n  - classification\nauthor:\n  - name: Marc Becker\n    url: https://github.com/be-marc\ndate: 2022-12-02\nknitr:\n  opts_chunk:\n    R.options:\n      datatable.print.nrows: 6\n---\n\n\n\n::: {.cell layout-align=\"center\"}\n\n```{.r .cell-code}\nlibrary(data.table)\n\ninstance = readRDS(\"instance.rds\")\n```\n:::\n\n::: {.cell layout-align=\"center\"}\n\n```{.r .cell-code}\ndata = as.data.table(instance$archive)\n\ndata[, runtime := as.numeric(difftime(timestamp, data$timestamp[1]))/60]\ndata_100 = data[subsample.frac == 1]\ndata_100[, best_bacc := cummax(classif.bacc)]\n```\n:::\n\n::: {.cell layout-align=\"center\"}\n\n```{.r .cell-code}\nlibrary(ggplot2)\n\nggplot(data_100, aes(x = runtime, y = best_bacc)) +\n  geom_point() +\n  geom_line()\n```\n\n::: {.cell-output-display}\n![](index_files/figure-html/unnamed-chunk-3-1.png){fig-align='center' width=672}\n:::\n:::\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

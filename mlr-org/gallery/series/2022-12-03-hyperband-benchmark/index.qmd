@@ -1,5 +1,5 @@
 ---
-title: "Hyperband Series III - Benchmarking"
+title: "Hyperband Series - Benchmarking"
 description: |
   Benchmark Random Search and Hyperband on XGBoost.
 categories:
@@ -9,7 +9,6 @@ author:
   - name: Marc Becker
     url: https://github.com/be-marc
 date: 2022-12-02
-bibliography: bibliography.bib
 knitr:
   opts_chunk:
     R.options:
@@ -19,27 +18,23 @@ knitr:
 {{< include ../_setup.qmd >}}
 
 ```{r}
-#| include: false
-lgr::get_logger("mlr3")$set_threshold("warn")
-lgr::get_logger("bbotk")$set_threshold("warn")
-
 library(data.table)
-```
 
-```{r}
 instance = readRDS("instance.rds")
 ```
 
 ```{r}
 data = as.data.table(instance$archive)
 
-data[, runtime := as.numeric(difftime(timestamp, data$timestamp[1]))]
+data[, runtime := as.numeric(difftime(timestamp, data$timestamp[1]))/60]
 data_100 = data[subsample.frac == 1]
+data_100[, best_bacc := cummax(classif.bacc)]
 ```
 
 ```{r}
 library(ggplot2)
 
-ggplot(data_100, aes(x = runtime, y = classif.bacc)) +
-  geom_point()
+ggplot(data_100, aes(x = runtime, y = best_bacc)) +
+  geom_point() +
+  geom_line()
 ```
