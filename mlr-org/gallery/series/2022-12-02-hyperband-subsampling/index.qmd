@@ -37,12 +37,10 @@ The time to train a support vector machine increases with the size of the data s
 This makes the data set size a suitable fidelity parameter for Hyperband.
 
 This is the second part of the Hyperband series.
-The other parts can be found here:
-
-* [Hyperband Series - Iterative Training](/gallery/series/2022-12-01-hyperband-xgboost)
-* Hyperband Series - Large-Scale Experiments (Work in progress)
-
+The first part can be found here [Hyperband Series - Iterative Training](/gallery/series/2022-12-01-hyperband-xgboost).
 If you don't know much about Hyperband, check out the first post which explains the algorithm in detail.
+We assume that you are already familiar with tuning in the mlr3 ecosystem.
+If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/optimization.html) or the [Hyperparameter Optimization on the Palmer Penguins Data Set](/gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
 A little knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
 
 # Hyperparameter Optimization
@@ -122,7 +120,7 @@ instance = ti(
 instance
 ```
 
-We load the Hyperband `r ref("Tuner")` and set `eta = 2`.
+We load the Hyperband `r ref("Tuner")` and set `eta = 3`.
 
 ```{r}
 #| message: false
@@ -210,6 +208,9 @@ ggplot(data, aes(x = subsample.frac, y = classif.ce, group = i)) +
 
 # Conclusion
 
+Using the data set size as the budget parameter in Hyperband allows the tuning of machine learning models that are not trained iteratively.
+We have tried to keep the runtime of the example low.
+For your optimization, you should use cross-validation and run multiple iterations of Hyperband.
 
 
 # References
