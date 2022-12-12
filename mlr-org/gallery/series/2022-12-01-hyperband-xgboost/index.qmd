@@ -31,17 +31,17 @@ set.seed(1)
 
 # Scope
 
-Increasingly large data sets and search spaces make hyperparameter optimization a very time-consuming task.
-*Hyperband* [@li_2018] solves this problem by approximating the performance of a configuration on a small subset of the training data, with just a few training epochs in a neural network, or with only a small number of trees in a gradient-boosting model.
+Increasingly large data sets and search spaces make hyperparameter optimization a time-consuming task.
+*Hyperband* [@li_2018] solves this by approximating the performance of a configuration on a simplified version of the problem such as a small subset of the training data, with just a few training epochs in a neural network, or with only a small number of iterations in a gradient-boosting model.
 After sampling random configurations, Hyperband iteratively allocates more resources to promising configurations and terminates low-performing ones.
 This type of optimization is called *multi-fidelity* optimization.
-The fidelity parameter is part of the search space and influences the computational cost of fitting a model.
-
+The fidelity parameter is part of the search space and controls the tradeoff between the runtime and accuracy of the performance approximation.
 In this post, we will optimize XGBoost and use the number of boosting iterations as the fidelity parameter.
-The number of boosting iterations increases the time to train a model and is therefore suitable as a fidelity parameter.
+This means Hyperband will allocate more boosting iterations to well-performing configuration.
+The number of boosting iterations increases the time to train a model and improves the performance up to a certain point.
+It is therefore a suitable fidelity parameter.
 We assume that you are already familiar with tuning in the mlr3 ecosystem.
 If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/optimization.html) or the [Hyperparameter Optimization on the Palmer Penguins Data Set](/gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
-
 This is the first part of the Hyperband series.
 The second part can be found here [Hyperband Series - Data Set Subsampling](/gallery/series/2022-12-02-hyperband-subsampling).
 
@@ -70,19 +70,107 @@ The number of configurations in the base stages is calculated so that each brack
 The following table shows a full run of the Hyperband algorithm.
 The bracket $s = 3$ is the most explorative bracket and $s = 0$ performance a random search on the full budget.
 
-|     |     |           |   $s = 3$ |     |           |   $s = 2$ |     |           |   $s = 1$ |     |           |   $s = 0$ |
-| --: | --- | --------: | --------: | --- | --------: | --------: | --- | --------: | --------: | --- | --------: | --------: |
-| $i$ |     | $n{_{i}}$ | $r{_{i}}$ |     | $n{_{i}}$ | $r{_{i}}$ |     | $n{_{i}}$ | $r{_{i}}$ |     | $n{_{i}}$ | $r{_{i}}$ |
-|   0 |     |         8 |         1 |     |         6 |         2 |     |         4 |         4 |     |         8 |         4 |
-|   1 |     |         4 |         2 |     |         3 |         4 |     |         2 |         8 |     |           |           |
-|   2 |     |         2 |         4 |     |         1 |         8 |     |           |           |     |           |           |
-|   3 |     |         1 |         8 |     |           |           |     |           |           |     |           |           |
+```{r}
+#| echo: false
+#| fig-cap-location: top
+#| label: fig-schedule
+#| fig-cap: Hyperband schedule with $\eta = 2$ , $r{_{min}} = 1$ and $r{_{max}} = 8$
+#| column: body-outset
+library(reactable)
+library(colorspace)
+library(htmltools)
 
-: Hyperband schedule with $\eta = 2$ , $r{_{min}} = 1$ and $r{_{max}} = 8$ {#tbl-schedule}
+data = mlr3misc::rowwise_table(
+  ~i, ~ni_3,  ~ri_3,  ~ni_2,        ~ri_2,        ~ni_1,        ~ri_1,        ~ni_0,        ~ri_0,
+  0,  8,      1,      6,            2,            4,            4,            8,            4,
+  1,  4,      2,      3,            4,            2,            8,            NA_integer_,  NA_integer_,
+  2,  2,      4,      1,            8,            NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_,
+  3,  1,      8,      NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_
+)
+
+colors = sequential_hcl(4, palette = "Teal", rev = TRUE)
+colors = c(colors, rep("#fff", 4))
+
+reactable(data,
+  columns = list(
+    ni_3 = colDef(
+      style = function(value, index) {
+        list(background = colors[index])
+      },
+      header = function(value, name) {
+        tags$b("n", tags$sub("i"))
+      }
+    ),
+    ri_3 = colDef(
+      style = function(value, index) {
+        list(background = colors[index])
+      },
+      header = function(value, name) {
+        tags$b("r", tags$sub("i"))
+      }
+    ),
+    ni_2 = colDef(
+      style = function(value, index) {
+        list(background = colors[index + 1])
+      },
+      header = function(value, name) {
+        tags$b("n", tags$sub("i"))
+      }
+    ),
+    ri_2 = colDef(
+      style = function(value, index) {
+        list(background = colors[index + 1])
+      },
+      header = function(value, name) {
+        tags$b("r", tags$sub("i"))
+      }
+    ),
+    ni_1 = colDef(
+      style = function(value, index) {
+        list(background = colors[index + 2])
+      },
+      header = function(value, name) {
+        tags$b("n", tags$sub("i"))
+      }
+    ),
+    ri_1 = colDef(
+      style = function(value, index) {
+        list(background = colors[index + 2])
+      },
+      header = function(value, name) {
+        tags$b("r", tags$sub("i"))
+      }
+    ),
+    ni_0 = colDef(
+      style = function(value, index) {
+        list(background = colors[index + 3])
+      },
+      header = function(value, name) {
+        tags$b("n", tags$sub("i"))
+      }
+    ),
+    ri_0 = colDef(
+      style = function(value, index) {
+        list(background = colors[index + 3])
+      },
+      header = function(value, name) {
+        tags$b("r", tags$sub("i"))
+      }
+    )
+  ),
+  columnGroups = list(
+    colGroup(name = "s = 3", columns = c("ni_3", c("ri_3"))),
+    colGroup(name = "s = 2", columns = c("ni_2", c("ri_2"))),
+    colGroup(name = "s = 1", columns = c("ni_1", c("ri_1"))),
+    colGroup(name = "s = 0", columns = c("ni_0", c("ri_0")))
+  ),
+  borderless = TRUE
+)
+```
 
 The Hyperband implementation in `r ref_pkg("mlr3hyperband")` evaluates configurations with the same budget in parallel.
 This results in all brackets finishing at approximately the same time.
-The colors in @tbl-schedule indicate a parallelly evaluated batch.
+The colors in @fig-schedule indicate batches that are evaluated in parallel.
 
 # Hyperparameter Optimization
 
@@ -96,7 +184,7 @@ library("mlr3verse")
 learner = lrn("classif.xgboost")
 ```
 
-The next thing we do is define the search space.
+The next thing we do is defining the search space.
 The `nrounds` parameter controls the number of boosting iterations.
 We set a range from 16 to 128 boosting iterations.
 This is used as $r{_{min}}$ and $r{_{max}}$ by the Hyperband algorithm.
@@ -132,17 +220,20 @@ instance
 ```
 
 We load the Hyperband `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 2`.
+Hyperband can start from the beginning when the last bracket is evaluated.
+We control the number of Hyperband runs with the `repetition` argument.
+The setting `repetition = Inf` is useful when a terminator should stop the optimization.
 
 ```{r}
 #| message: false
 library("mlr3hyperband")
 
-tuner = tnr("hyperband", eta = 2)
+tuner = tnr("hyperband", eta = 2, repetitions = 1)
 ```
 
 The Hyperband implementation in `r ref_pkg("mlr3hyperband")` evaluates configurations with the same budget in parallel.
 This results in all brackets finishing at approximately the same time.
-You can think of it as going diagonally through @tbl-schedule.
+You can think of it as going diagonally through @fig-schedule.
 Using `eta = 2` and a range from 16 to 128 boosting iterations results in the following schedule.
 
 ```{r}

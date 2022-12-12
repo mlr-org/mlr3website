@@ -47,7 +47,6 @@ A little knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not nece
 
 In this post, we will optimize the hyperparameters of the support vector machine on the `r ref("mlr_tasks_sonar", "Sonar")` data set.
 We begin by constructing a classification machine by setting `type` to `"C-classification"`.
-We truncate the id of the learner to `"svm"`.
 
 ```{r}
 #| message: false
@@ -80,7 +79,7 @@ as.data.table(graph_learner$param_set)[, .(id, lower, upper, levels)]
 ```
 
 Next, we create the search space.
-We use `r ref("TuneToken")` to indicate that a hyperparameter should be tuned.
+We use `r ref("TuneToken")` to mark which hyperparameters should be tuned.
 We have to prefix the hyperparameters with the id of the `r ref("PipeOp", "PipeOps")`.
 The `subsample.frac` is the fidelity parameter that must be tagged with `"budget"` in the search space.
 The data set size is increased from 12.5% to 100%.
@@ -157,7 +156,7 @@ reactable(data[, .(budget, bracket, stage, n)],
     ),
     bracket = colDef(name = "Bracket"),
     stage = colDef(name = "Stage"),
-    n = colDef(name = "# Configruations")
+    n = colDef(name = "# Configurations")
   ),
   pagination = FALSE
   )
