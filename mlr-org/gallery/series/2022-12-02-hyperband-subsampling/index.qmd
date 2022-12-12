@@ -29,13 +29,12 @@ set.seed(2)
 # Scope
 
 We continue working with the *Hyperband* optimization algorithm [@li_2018].
-The previous post used the number of boosting iterations of an XGBoost model as the resource.
+The [previous post](/gallery/series/2022-12-01-hyperband-xgboost) used the number of boosting iterations of an XGBoost model as the resource.
 However, Hyperband is not limited to machine learning algorithms that are trained iteratively.
 The resource can also be the number of features, the training time of a model, or the size of the training data set.
 In this post, we will tune a support vector machine and use the size of the training data set as the fidelity parameter.
-The time to train a support vector machine increases with the size of the data set.
+The time to train a support vector machine and the performance increases with the size of the data set.
 This makes the data set size a suitable fidelity parameter for Hyperband.
-
 This is the second part of the Hyperband series.
 The first part can be found here [Hyperband Series - Iterative Training](/gallery/series/2022-12-01-hyperband-xgboost).
 If you don't know much about Hyperband, check out the first post which explains the algorithm in detail.
@@ -72,7 +71,7 @@ graph_learner = as_learner(
 ```
 
 The graph learner subsamples and then fits a support vector machine on the data subset.
-The parameter set of the graph learner is a combination of the parameter set of the `r ref("PipeOp")` and learner.
+The parameter set of the graph learner is a combination of the parameter sets of the `r ref("PipeOp")` and learner.
 
 ```{r}
 as.data.table(graph_learner$param_set)[, .(id, lower, upper, levels)]
@@ -82,7 +81,7 @@ Next, we create the search space.
 We use `r ref("TuneToken")` to mark which hyperparameters should be tuned.
 We have to prefix the hyperparameters with the id of the `r ref("PipeOp", "PipeOps")`.
 The `subsample.frac` is the fidelity parameter that must be tagged with `"budget"` in the search space.
-The data set size is increased from 12.5% to 100%.
+The data set size is increased from 3.7% to 100%.
 For the other hyperparameters, we took the search space for support vector machines from the @kuehn_2018 article.
 This search space works for a wide range of data sets.
 
@@ -97,7 +96,8 @@ graph_learner$param_set$set_values(
 )
 ```
 
-Fallback
+Support vector machines often crash or never finish the training with certain hyperparameter configurations.
+We set a timeout of 30 seconds and a fallback learner to handle these cases.
 
 ```{r}
 graph_learner$encapsulate = c(train = "evaluate", predict = "evaluate")
@@ -119,7 +119,7 @@ instance = ti(
 instance
 ```
 
-We load the Hyperband `r ref("Tuner")` and set `eta = 3`.
+We load the `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 3`.
 
 ```{r}
 #| message: false
@@ -169,7 +169,7 @@ Now we are ready to start the tuning.
 tuner$optimize(instance)
 ```
 
-The best model is a support vector machine with a radial basis kernel.
+The best model is a support vector machine with a polynomial kernel.
 
 ```{r}
 instance$result[, .(subsample.frac, svm.cost, svm.degree, svm.gamma, svm.kernel, svm.tolerance, classif.ce)]
@@ -210,6 +210,5 @@ ggplot(data, aes(x = subsample.frac, y = classif.ce, group = i)) +
 Using the data set size as the budget parameter in Hyperband allows the tuning of machine learning models that are not trained iteratively.
 We have tried to keep the runtime of the example low.
 For your optimization, you should use cross-validation and run multiple iterations of Hyperband.
-
 
 # References
