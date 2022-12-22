@@ -2420,15 +2420,15 @@
     },
     "mlr3cluster": {
       "Package": "mlr3cluster",
-      "Version": "0.1.5",
+      "Version": "0.1.5.9000",
       "Source": "GitHub",
       "RemoteType": "github",
+      "RemoteHost": "api.github.com",
       "RemoteUsername": "mlr-org",
       "RemoteRepo": "mlr3cluster",
       "RemoteRef": "main",
-      "RemoteSha": "03184ade073f1f08dde7ac8c1e51a5e1f4a02ce8",
-      "RemoteHost": "api.github.com",
-      "Hash": "ae37d8b1b3f6ad617192007d62519f84",
+      "RemoteSha": "1e8a49d5395808ef49c4d36d27c94452d5a3a583",
+      "Hash": "a5bf14ee058e445bcab5da8abc7493eb",
       "Requirements": [
         "R6",
         "backports",
@@ -2599,6 +2599,28 @@
         "checkmate",
         "data.table",
         "digest"
+      ]
+    },
+    "mlr3oml": {
+      "Package": "mlr3oml",
+      "Version": "0.6.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d78242382d5fb43c9a3e06e2332fea9b",
+      "Requirements": [
+        "R6",
+        "backports",
+        "checkmate",
+        "curl",
+        "data.table",
+        "jsonlite",
+        "lgr",
+        "mlr3",
+        "mlr3misc",
+        "paradox",
+        "stringi",
+        "uuid",
+        "withr"
       ]
     },
     "mlr3pipelines": {
@@ -2965,6 +2987,14 @@
       "Hash": "d84055adcb6bb1f4f0ce8c5f235bc328",
       "Requirements": []
     },
+    "pak": {
+      "Package": "pak",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e46787265cec1026a5f15c7b6d617f16",
+      "Requirements": []
+    },
     "palmerpenguins": {
       "Package": "palmerpenguins",
       "Version": "0.1.1",
@@ -2975,10 +3005,10 @@
     },
     "paradox": {
       "Package": "paradox",
-      "Version": "0.10.0",
+      "Version": "0.11.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "39f7690103afedb8c3271364bee46035",
+      "Hash": "6d9adea6d2a8dd387ddba72171e66688",
       "Requirements": [
         "R6",
         "backports",
@@ -4175,6 +4205,12 @@
       "Version": "3.4",
       "Source": "Repository",
       "Repository": "CRAN",
+      "RemoteType": "standard",
+      "RemotePkgRef": "sys",
+      "RemoteRef": "sys",
+      "RemoteRepos": "https://cran.rstudio.com/",
+      "RemotePkgPlatform": "aarch64-apple-darwin20",
+      "RemoteSha": "3.4",
       "Hash": "b227d13e29222b4574486cfcbde077fa",
       "Requirements": []
     },
