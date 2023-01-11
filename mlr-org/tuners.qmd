@@ -12,6 +12,7 @@ toc: false
 
 library(mlr3tuning)
 library(mlr3hyperband)
+library(mlr3mbo)
 
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
