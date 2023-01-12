@@ -1133,16 +1133,16 @@
     },
     "distr6": {
       "Package": "distr6",
-      "Version": "1.6.11",
+      "Version": "1.6.12",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "alan-turing-institute",
       "RemoteRepo": "distr6",
       "RemoteRef": "main",
-      "RemoteSha": "8cae431082393ec0f15823530e8a1c3a66d7e1fa",
+      "RemoteSha": "645995820e429fec3ca47a203d03b6698ed9d5b9",
       "Remotes": "xoopR/set6, xoopR/param6",
-      "Hash": "c0550d362b2bb775c595c742932e005e",
+      "Hash": "c511f3d0dc2c9e31e9913daa6d5c3d92",
       "Requirements": [
         "R6",
         "Rcpp",
@@ -1484,6 +1484,17 @@
         "zip"
       ]
     },
+    "ggdendro": {
+      "Package": "ggdendro",
+      "Version": "0.1.23",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3b5b879c6228531eb1c5fdb78c2024b3",
+      "Requirements": [
+        "MASS",
+        "ggplot2"
+      ]
+    },
     "ggfortify": {
       "Package": "ggfortify",
       "Version": "0.4.14",
@@ -1524,6 +1535,21 @@
         "stringr",
         "tibble",
         "tidyr"
+      ]
+    },
+    "ggparty": {
+      "Package": "ggparty",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "11f98669ee7ddc8eb6b6bb9b46642362",
+      "Requirements": [
+        "checkmate",
+        "ggplot2",
+        "gtable",
+        "partykit",
+        "rlang",
+        "survival"
       ]
     },
     "ggplot2": {
@@ -1889,6 +1915,16 @@
         "deldir"
       ]
     },
+    "inum": {
+      "Package": "inum",
+      "Version": "1.0-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2a997a29758c334d27bc5faea4391b11",
+      "Requirements": [
+        "libcoin"
+      ]
+    },
     "ipred": {
       "Package": "ipred",
       "Version": "0.9-13",
@@ -2108,6 +2144,16 @@
       "Hash": "dcd40e09bb097115d584d525850ea124",
       "Requirements": [
         "Rcpp"
+      ]
+    },
+    "libcoin": {
+      "Package": "libcoin",
+      "Version": "1.0-9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8400d6bc0318f0b9b082b0e75fa6dd90",
+      "Requirements": [
+        "mvtnorm"
       ]
     },
     "lifecycle": {
@@ -2639,16 +2685,16 @@
     },
     "mlr3proba": {
       "Package": "mlr3proba",
-      "Version": "0.4.13",
+      "Version": "0.4.16",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "mlr-org",
       "RemoteRepo": "mlr3proba",
       "RemoteRef": "main",
-      "RemoteSha": "cea646b560674d531e3f90e137b3b5734939284f",
-      "Remotes": "alan-turing-institute/distr6, xoopR/param6, xoopR/set6, mlr-org/mlr3",
-      "Hash": "b278d68ec185e0fd19a73300eb160396",
+      "RemoteSha": "e29d2c8da9cbd866b094adb67906f778598b0047",
+      "Remotes": "alan-turing-institute/distr6, xoopR/param6, xoopR/set6",
+      "Hash": "e923721caaead9b9ee71157979900e12",
       "Requirements": [
         "R6",
         "Rcpp",
@@ -2756,10 +2802,10 @@
     },
     "mlr3viz": {
       "Package": "mlr3viz",
-      "Version": "0.5.10",
+      "Version": "0.6.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "129909c3170d3476a5b4ea6809ed450a",
+      "Hash": "85f022e586bd16adbf8eafee0465ec02",
       "Requirements": [
         "checkmate",
         "data.table",
@@ -3049,6 +3095,21 @@
         "data.table",
         "dictionar6",
         "set6"
+      ]
+    },
+    "partykit": {
+      "Package": "partykit",
+      "Version": "1.2-16",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1cbac7e69488311fd0d2ea5e993e7d92",
+      "Requirements": [
+        "Formula",
+        "inum",
+        "libcoin",
+        "mvtnorm",
+        "rpart",
+        "survival"
       ]
     },
     "patchwork": {
