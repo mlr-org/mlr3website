@@ -18,12 +18,6 @@ Due to the high amount of packages in the mlr3 ecosystem, it is hard to keep up 
 This posts gives an overview by listing the recent release notes of mlr3 packages from the last quarter.
 Note that only CRAN packages are listed here and the sort order is alphabetically.
 
-# mlr3mbo 0.1.1
-
-**Description** Flexible Bayesian Optimization
-
-* Initial CRAN upload
-
 
 # mlr3cluster 0.1.6
 
@@ -86,6 +80,13 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * feat: Add missing parameters from `AutoFSelector` to `auto_fselect()`.
 * feat: Add `fsi()` function to create a `FSelectInstanceSingleCrit` or `FSelectInstanceMultiCrit`.
 * refactor: Remove `unnest` option from `as.data.table.ArchiveFSelect()` function.
+
+
+# mlr3mbo 0.1.1
+
+**Description** Flexible Bayesian Optimization
+
+* Initial CRAN upload
 
 
 # mlr3spatial 0.3.1
@@ -173,7 +174,6 @@ Note that only CRAN packages are listed here and the sort order is alphabeticall
 * docs: Examples use `branin_wu()` function now.
 
 
-package paradox failed
 # mlr3spatiotempcv 2.0.3
 
 **Description** Spatiotemporal Resampling Methods for 'mlr3'
@@ -193,7 +193,6 @@ package paradox failed
 - Updated reexports.
 
 
-FAIL(mlr3mbo)
 # mlr3 0.14.1
 
 **Description** Machine Learning in R - Next Generation
