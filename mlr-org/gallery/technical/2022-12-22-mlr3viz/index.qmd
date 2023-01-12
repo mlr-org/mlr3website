@@ -29,14 +29,14 @@ Finally, we show highly specialized plots e.g. for Filter oder Tuning.
 
 # Package
 
-The `autoplot()` function uses `r pkg_ref("ggplot2")` to draw a plot for almost any mlr3 object.
+The `autoplot()` function uses `r ref_pkg("ggplot2")` to draw a plot for almost any mlr3 object.
 The plots are styled with the `r ref("ggpplot2::theme_minimal()", "minimal theme")` and use the `r ref_pkg("viridis")` color scales.
 
 The goal of mlr3viz are pretty plots
 You can control the appearance to some extent using the `theme` argument.
 However, if you need to highly customize the plot e.g. for a publication, we encourage you to check our code on on [GitHub](https://github.com/mlr-org/mlr3viz).
 It is often easier to control the appearance to the last detail this way.
-The `foritfy()` are handy to transform the mlr3 objects to `data.frames` that are readable by `r pkg_ref("ggplot2")`.
+The `foritfy()` are handy to transform the mlr3 objects to `data.frames` that are readable by `r ref_pkg("ggplot2")`.
 
 
 
