@@ -1484,6 +1484,17 @@
         "zip"
       ]
     },
+    "ggdendro": {
+      "Package": "ggdendro",
+      "Version": "0.1.23",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3b5b879c6228531eb1c5fdb78c2024b3",
+      "Requirements": [
+        "MASS",
+        "ggplot2"
+      ]
+    },
     "ggfortify": {
       "Package": "ggfortify",
       "Version": "0.4.14",
@@ -1524,6 +1535,21 @@
         "stringr",
         "tibble",
         "tidyr"
+      ]
+    },
+    "ggparty": {
+      "Package": "ggparty",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "11f98669ee7ddc8eb6b6bb9b46642362",
+      "Requirements": [
+        "checkmate",
+        "ggplot2",
+        "gtable",
+        "partykit",
+        "rlang",
+        "survival"
       ]
     },
     "ggplot2": {
@@ -1889,6 +1915,16 @@
         "deldir"
       ]
     },
+    "inum": {
+      "Package": "inum",
+      "Version": "1.0-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2a997a29758c334d27bc5faea4391b11",
+      "Requirements": [
+        "libcoin"
+      ]
+    },
     "ipred": {
       "Package": "ipred",
       "Version": "0.9-13",
@@ -2108,6 +2144,16 @@
       "Hash": "dcd40e09bb097115d584d525850ea124",
       "Requirements": [
         "Rcpp"
+      ]
+    },
+    "libcoin": {
+      "Package": "libcoin",
+      "Version": "1.0-9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8400d6bc0318f0b9b082b0e75fa6dd90",
+      "Requirements": [
+        "mvtnorm"
       ]
     },
     "lifecycle": {
@@ -3049,6 +3095,21 @@
         "data.table",
         "dictionar6",
         "set6"
+      ]
+    },
+    "partykit": {
+      "Package": "partykit",
+      "Version": "1.2-16",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1cbac7e69488311fd0d2ea5e993e7d92",
+      "Requirements": [
+        "Formula",
+        "inum",
+        "libcoin",
+        "mvtnorm",
+        "rpart",
+        "survival"
       ]
     },
     "patchwork": {
