@@ -136,7 +136,7 @@ We can therefore only advise against using forward hotstarting during tuning.
 It is much more efficient to use the internal early-stopping mechanism of XGBoost.
 This eliminates the need to copy models to the worker.
 See the [gallery post](/gallery/optimization/2022-11-04-early-stopping-with-xgboost) on early stopping for an example.
-We might fix forward hotstarting in the future with workers that read hot start models from a database in parallel.
+We might fix forward hotstarting in the future with workers that read hotstart models from a database in parallel.
 However, the need for this seems to be rather small.
 Models that can be trained iteratively usually have a very efficient internal early-stopping mechanism.
 
