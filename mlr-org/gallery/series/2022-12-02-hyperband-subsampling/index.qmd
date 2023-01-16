@@ -1,0 +1,217 @@
+---
+title: "Hyperband Series - Data Set Subsampling"
+description: |
+  Optimize the hyperparameters of a Support Vector Machine with Hyperband.
+categories:
+  - tuning
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+  - name: Sebastian Fischer
+    url: https://github.com/sebffischer
+date: 2023-01-16
+bibliography: bibliography.bib
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+
+set.seed(2)
+```
+
+# Scope
+
+We continue working with the *Hyperband* optimization algorithm [@li_2018].
+The [previous post](/gallery/series/2022-12-01-hyperband-xgboost) used the number of boosting iterations of an XGBoost model as the resource.
+However, Hyperband is not limited to machine learning algorithms that are trained iteratively.
+The resource can also be the number of features, the training time of a model, or the size of the training data set.
+In this post, we will tune a support vector machine and use the size of the training data set as the fidelity parameter.
+The time to train a support vector machine and the performance increases with the size of the data set.
+This makes the data set size a suitable fidelity parameter for Hyperband.
+This is the second part of the Hyperband series.
+The first part can be found here [Hyperband Series - Iterative Training](/gallery/series/2022-12-01-hyperband-xgboost).
+If you don't know much about Hyperband, check out the first post which explains the algorithm in detail.
+We assume that you are already familiar with tuning in the mlr3 ecosystem.
+If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/optimization.html) or the [Hyperparameter Optimization on the Palmer Penguins Data Set](/gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
+A little knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
+
+# Hyperparameter Optimization
+
+In this post, we will optimize the hyperparameters of the support vector machine on the `r ref("mlr_tasks_sonar", "Sonar")` data set.
+We begin by constructing a classification machine by setting `type` to `"C-classification"`.
+
+```{r}
+#| message: false
+library("mlr3verse")
+
+learner = lrn("classif.svm", id = "svm", type = "C-classification")
+```
+
+The `r ref_pkg("mlr3pipelines")` package features a `r ref("PipeOp")` for subsampling.
+
+```{r}
+po("subsample")
+```
+
+The `r ref("PipeOp")` controls the size of the training data set with the `frac` parameter.
+We connect the `r ref("PipeOp")`  with the learner and get a `r ref("GraphLearner")`.
+
+```{r}
+graph_learner = as_learner(
+  po("subsample") %>>%
+  learner
+)
+```
+
+The graph learner subsamples and then fits a support vector machine on the data subset.
+The parameter set of the graph learner is a combination of the parameter sets of the `r ref("PipeOp")` and learner.
+
+```{r}
+as.data.table(graph_learner$param_set)[, .(id, lower, upper, levels)]
+```
+
+Next, we create the search space.
+We use `r ref("TuneToken")` to mark which hyperparameters should be tuned.
+We have to prefix the hyperparameters with the id of the `r ref("PipeOp", "PipeOps")`.
+The `subsample.frac` is the fidelity parameter that must be tagged with `"budget"` in the search space.
+The data set size is increased from 3.7% to 100%.
+For the other hyperparameters, we took the search space for support vector machines from the @kuehn_2018 article.
+This search space works for a wide range of data sets.
+
+```{r}
+graph_learner$param_set$set_values(
+  subsample.frac  = to_tune(p_dbl(3^-3, 1, tags = "budget")),
+  svm.kernel      = to_tune(c("linear", "polynomial", "radial")),
+  svm.cost        = to_tune(1e-4, 1e3, logscale = TRUE),
+  svm.gamma       = to_tune(1e-4, 1e3, logscale = TRUE),
+  svm.tolerance   = to_tune(1e-4, 2, logscale = TRUE),
+  svm.degree      = to_tune(2, 5)
+)
+```
+
+Support vector machines often crash or never finish the training with certain hyperparameter configurations.
+We set a timeout of 30 seconds and a [fallback learner](https://mlr3book.mlr-org.com/optimization.html#sec-encapsulation-fallback) to handle these cases.
+
+```{r}
+graph_learner$encapsulate = c(train = "evaluate", predict = "evaluate")
+graph_learner$timeout = c(train = 30, predict = 30)
+graph_learner$fallback = lrn("classif.featureless")
+```
+
+Let's create the tuning instance.
+We use the `"none"` terminator because Hyperband controls the termination itself.
+
+```{r}
+instance = ti(
+  task = tsk("sonar"),
+  learner = graph_learner,
+  resampling = rsmp("cv", folds = 3),
+  measures = msr("classif.ce"),
+  terminator = trm("none")
+)
+instance
+```
+
+We load the `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 3`.
+
+```{r}
+#| message: false
+library("mlr3hyperband")
+
+tuner = tnr("hyperband", eta = 3)
+```
+
+Using `eta = 3` and a lower bound of 3.7% for the data set size, results in the following schedule.
+Configurations with the same data set size are evaluated in parallel.
+
+```{r}
+#| echo: false
+library(htmltools)
+library(reactable)
+
+data = hyperband_schedule(r_min = 3^-3, r_max = 1, eta = 3)
+setorder(data, cols = "budget")
+
+reactable(data[, .(budget, bracket, stage, n)],
+  columns = list(
+    budget = colDef(
+      name = "Data Set Size",
+      cell = function(value) {
+        width = paste0(round(value, 3) * 100, "%")
+        value = format(width, width = 9, justify = "right")
+        bar = div(
+          class = "bar-chart",
+          style = list(marginRight = "0.375rem"),
+          div(class = "bar-chart__bar", style = list(width = width))
+        )
+        div(class = "bar-chart__bar-cell", span(class = "bar-chart__number", value), bar)
+      }
+    ),
+    bracket = colDef(name = "Bracket"),
+    stage = colDef(name = "Stage"),
+    n = colDef(name = "# Configurations")
+  ),
+  pagination = FALSE
+  )
+```
+
+Now we are ready to start the tuning.
+
+```{r}
+#| output: false
+tuner$optimize(instance)
+```
+
+The best model is a support vector machine with a polynomial kernel.
+
+```{r}
+instance$result[, .(subsample.frac, svm.cost, svm.degree, svm.gamma, svm.kernel, svm.tolerance, classif.ce)]
+```
+
+The archive contains all evaluated configurations.
+We look at the 8 configurations that were evaluated on the complete data set.
+The configuration with the best classification error on the full data set was sampled in bracket 2.
+The classification error was estimated to be 26% on 33% of the data set and increased to 19% on the full data set (see green line in @fig-hyperband).
+
+```{r}
+#| echo: false
+#| label: fig-hyperband
+#| fig-cap: "Optimization path of the 8 configurations evaluated on the complete data set."
+library(ggplot2)
+
+data = as.data.table(instance$archive)[, i := factor(.GRP), by = "svm.cost"]
+top = data[subsample.frac == 1, i]
+data = data[list(top), , on = "i"]
+
+ggplot(data, aes(x = subsample.frac, y = classif.ce, group = i)) +
+  geom_vline(xintercept = 0.037, colour = "grey85") +
+  geom_vline(xintercept = 0.111, colour = "grey85") +
+  geom_vline(xintercept = 0.333, colour = "grey85") +
+  geom_vline(xintercept = 1, colour = "grey85") +
+  geom_line(aes(color=i), show.legend = FALSE) +
+  geom_point(aes(color=i), size = 3, show.legend = FALSE, position=position_jitter(height = 0.003, width = 0)) +
+  scale_x_continuous(breaks = c(0.034, 0.11, 0.33, 1), labels = function(x) paste0(as.character(x *100), "%")) +
+  scale_color_viridis_d(alpha = 0.8) +
+  xlab("Training Data Set Size") +
+  ylab("Classification Error") +
+  theme_minimal() +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())
+```
+
+# Conclusion
+
+Using the data set size as the budget parameter in Hyperband allows the tuning of machine learning models that are not trained iteratively.
+We have tried to keep the runtime of the example low.
+For your optimization, you should use cross-validation and run multiple iterations of Hyperband.
+
+# References
