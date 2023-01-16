@@ -117,9 +117,10 @@ data_3[, id := factor(id)]
 ggplot(data_3, aes(x = runtime, y = batch_nr, group = id)) +
   geom_line(aes(color = id)) +
   geom_point(aes(color = id)) +
-  scale_colour_discrete(name = "hotstarting", labels = c("Activated", "Deactivated")) +
+  scale_colour_viridis_d(name = "hotstarting", labels = c("Activated", "Deactivated"), end = 0.8) +
   ylab("Batch") +
-  xlab("Time of Completion [seconds]")
+  xlab("Time of Completion [seconds]") +
+  theme_minimal()
 ```
 
 # Forward Hotstarting
@@ -148,7 +149,7 @@ We create a new learner with the same hyperparameters but double the number of b
 To activate hotstarting, we create a `HotstartStack` and copy it to the `$hotstart_stack` slot of the new learner.
 
 ```{r}
-#| message: false
+#| eval: false
 
 library(mlr3verse)
 task = tsk("spam")
@@ -159,6 +160,13 @@ learner_5000$train(task)
 learner_10000 = lrn("classif.xgboost", nrounds = 10000, eta = 0.1)
 learner_10000$hotstart_stack = HotstartStack$new(learner_5000)
 learner_10000$train(task)
+```
+
+```{r}
+#| echo: false
+
+learner_5000 = readRDS("learner_5000.rds")
+learner_10000 = readRDS("learner_10000.rds")
 ```
 
 Training the initial model took `r learner_5000$state$train_time` seconds.
@@ -173,8 +181,8 @@ Adding 5000 boosting rounds took `r learner_10000$state$train_time - learner_500
 learner_10000$state$train_time - learner_5000$state$train_time
 ```
 
-Training the model from the beginning would have taken about one minute.
-Without parallelization, we get the expected speed advantage.
+Training the model from the beginning would have taken about two minutes.
+This means, without parallelization, we get the expected speed advantage.
 
 # Conclusion
 
