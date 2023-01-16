@@ -52,7 +52,7 @@ Successive Halving is initialized with the number of starting configurations $n$
 The algorithm starts by sampling $n$ random configurations and allocating the minimum budget $r{_{min}}$ to them.
 The configurations are evaluated and $\frac{1}{\eta}$ of the worst-performing configurations are discarded.
 The remaining configurations are promoted to the next stage and evaluated on a larger budget.
-This continues until one or more configurations are evaluated on the maximum budget $r{_{max}}$.
+This continues until one or more configurations are evaluated on the maximum budget $r{_{max}}$ and the best performing configuration is selected.
 The number of stages is calculated so that each stage consumes approximately the same budget.
 This sometimes results in the minimum budget having to be slightly adjusted by the algorithm.
 Successive Halving has the disadvantage that is not clear whether we should choose a large $n$ and try many configurations on a small budget or choose a small $n$ and train more configurations on the full budget.
