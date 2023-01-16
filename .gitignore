@@ -1,7 +1,21 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
+# Created by https://www.toptal.com/developers/gitignore/api/windows,visualstudiocode,r,macos,linux
+# Edit at https://www.toptal.com/developers/gitignore?templates=windows,visualstudiocode,r,macos,linux
 
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,r
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,macos,r
+### Linux ###
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
 
 ### macOS ###
 # General
@@ -31,6 +45,10 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+### macOS Patch ###
+# iCloud generated files
+*.icloud
 
 ### R ###
 # History files
@@ -106,19 +124,67 @@ rsconnect/
 .history
 .ionide
 
-# Support for Project snippet scope
+### Windows ###
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,r
+# Dump file
+*.stackdump
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# End of https://www.toptal.com/developers/gitignore/api/windows,visualstudiocode,r,macos,linux
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+# R
+.Rprofile
+README.html
+src/*.o
+src/*.so
+src/*.dll
+
+# CRAN
+cran-comments.md
+CRAN-RELEASE
+CRAN-SUBMISSION
+
+# pkgdown
+docs/
+
+# renv
+renv/
+renv.lock
+
+# vscode
+.vscode
+
+# revdep
+revdep/
+
+# misc
+Meta/
+
+#quarto
 mlr-org/blog.xml
 mlr-org/site_libs
 mlr3website/renv/
 search.json
 *.rda
-/.Rprofile
-/.luarc.json
-.vscode
-README.html
-instance.rds
