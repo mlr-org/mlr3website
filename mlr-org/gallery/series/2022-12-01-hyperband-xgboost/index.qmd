@@ -8,7 +8,7 @@ categories:
 author:
   - name: Marc Becker
     url: https://github.com/be-marc
-date: 2022-12-01
+date: 2023-01-15
 bibliography: bibliography.bib
 knitr:
   opts_chunk:
@@ -219,7 +219,7 @@ instance = ti(
 instance
 ```
 
-We load the Hyperband `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 2`.
+We load the `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 2`.
 Hyperband can start from the beginning when the last bracket is evaluated.
 We control the number of Hyperband runs with the `repetition` argument.
 The setting `repetition = Inf` is useful when a terminator should stop the optimization.

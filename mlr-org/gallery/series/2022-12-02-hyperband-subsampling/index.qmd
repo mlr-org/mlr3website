@@ -10,7 +10,7 @@ author:
     url: https://github.com/be-marc
   - name: Sebastian Fischer
     url: https://github.com/sebffischer
-date: 2022-12-02
+date: 2023-01-16
 bibliography: bibliography.bib
 knitr:
   opts_chunk:
@@ -99,7 +99,7 @@ graph_learner$param_set$set_values(
 ```
 
 Support vector machines often crash or never finish the training with certain hyperparameter configurations.
-We set a timeout of 30 seconds and a fallback learner to handle these cases.
+We set a timeout of 30 seconds and a [fallback learner](https://mlr3book.mlr-org.com/optimization.html#sec-encapsulation-fallback) to handle these cases.
 
 ```{r}
 graph_learner$encapsulate = c(train = "evaluate", predict = "evaluate")
@@ -200,6 +200,7 @@ ggplot(data, aes(x = subsample.frac, y = classif.ce, group = i)) +
   geom_line(aes(color=i), show.legend = FALSE) +
   geom_point(aes(color=i), size = 3, show.legend = FALSE, position=position_jitter(height = 0.003, width = 0)) +
   scale_x_continuous(breaks = c(0.034, 0.11, 0.33, 1), labels = function(x) paste0(as.character(x *100), "%")) +
+  scale_color_viridis_d(alpha = 0.8) +
   xlab("Training Data Set Size") +
   ylab("Classification Error") +
   theme_minimal() +
