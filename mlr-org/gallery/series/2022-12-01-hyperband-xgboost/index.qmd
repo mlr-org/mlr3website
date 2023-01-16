@@ -33,7 +33,7 @@ set.seed(1)
 
 Increasingly large data sets and search spaces make hyperparameter optimization a time-consuming task.
 *Hyperband* [@li_2018] solves this by approximating the performance of a configuration on a simplified version of the problem such as a small subset of the training data, with just a few training epochs in a neural network, or with only a small number of iterations in a gradient-boosting model.
-After sampling random configurations, Hyperband iteratively allocates more resources to promising configurations and terminates low-performing ones.
+After starting randomly sampled configurations, Hyperband iteratively allocates more resources to promising configurations and terminates low-performing ones.
 This type of optimization is called *multi-fidelity* optimization.
 The fidelity parameter is part of the search space and controls the tradeoff between the runtime and accuracy of the performance approximation.
 In this post, we will optimize XGBoost and use the number of boosting iterations as the fidelity parameter.
