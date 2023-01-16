@@ -38,7 +38,7 @@ This type of optimization is called *multi-fidelity* optimization.
 The fidelity parameter is part of the search space and controls the tradeoff between the runtime and accuracy of the performance approximation.
 In this post, we will optimize XGBoost and use the number of boosting iterations as the fidelity parameter.
 This means Hyperband will allocate more boosting iterations to well-performing configurations.
-The number of boosting iterations increases the time to train a model and improves the performance up to a certain point.
+The number of boosting iterations increases the time to train a model and improves the performance until the model is overfitting to the training data.
 It is therefore a suitable fidelity parameter.
 We assume that you are already familiar with tuning in the mlr3 ecosystem.
 If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/optimization.html) or the [Hyperparameter Optimization on the Palmer Penguins Data Set](/gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
