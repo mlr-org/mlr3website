@@ -13,6 +13,8 @@ toc: false
 library("mlr3")
 library("mlr3learners")
 library("mlr3extralearners")
+library("mlr3proba")
+library("mlr3cluster")
 ```
 
 To keep the dependencies on other packages reasonable, the base package mlr3 only ships with with regression and classification trees from the `r ref_pkg("rpart")` package and some learners for debugging.
