@@ -1,0 +1,190 @@
+---
+title: "Hotstarting"
+description: |
+  Resume the training of learners.
+categories:
+  - tuning
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+  - name: Sebastian Fischer
+    url: https://github.com/sebffischer
+date: 2023-01-16
+bibliography: bibliography.bib
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+      datatable.print.trunc.cols: TRUE
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r 2023-01-16-hotstart-001}
+#| include: false
+
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(0)
+future::plan("multisession")
+```
+
+# Scope
+
+Hotstarting a learner resumes the training from an already fitted model.
+An example would be to train an already fit XGBoost model for an additional 500 boosting iterations.
+In mlr3, we call this process **Hotstarting**, where a learner has access to a cache of already trained models which is called a `r ref("mlr3::HoststartStack")`
+We distinguish between forward and backward hotstarting.
+We start this post with backward hotstarting and then talk about the less efficient forward hotstarting.
+
+# Backward Hotstarting
+
+In this example, we optimize the hyperparameters of a random forest and use hotstarting to reduce the runtime.
+Hotstarting a random forest backwards is very simple.
+The model remains unchanged and only a subset of the trees is used for prediction i.e. a new model is not fitted.
+For example, a random forest is trained with 1000 trees and a specific hyperparameter configuration.
+If another random forest with 500 trees but with the same hyperparameter configuration has to be trained, the model with 1000 trees is copied and only 500 trees are used for prediction.
+
+We load the `r ref("mlr_learners_classif.ranger", "ranger learner")` and set the search space from the @bischl_hyperparameter_2021 article.
+
+```{r 2023-01-16-hotstart-002}
+#| message: false
+
+library(mlr3verse)
+
+learner = lrn("classif.ranger",
+  mtry.ratio      = to_tune(0, 1),
+  replace         = to_tune(),
+  sample.fraction = to_tune(1e-1, 1),
+  num.trees       = to_tune(1, 2000)
+)
+```
+
+We activate hotstarting with the `allow_hotstart` option.
+When running a grid search with hotstarting, the grid is sorted by the hot start parameter.
+This means the models with 2000 trees are trained first.
+The models with less than 2000 trees hot start on the 2000 trees models which allows the training to be completed immediately.
+
+```{r 2023-01-16-hotstart-003}
+#| eval: false
+
+instance = tune(
+  method = tnr("grid_search", resolution = 5, batch_size = 5),
+  task = tsk("spam"),
+  learner = learner,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+  allow_hotstart = TRUE
+)
+```
+
+For comparison, we perform the same tuning without hotstarting.
+
+```{r 2023-01-16-hotstart-004}
+#| eval: false
+
+instance_2 = tune(
+  method = tnr("grid_search", resolution = 5, batch_size = 5),
+  task = tsk("spam"),
+  learner = learner,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+  allow_hotstart = FALSE
+)
+```
+
+We plot the time of completion of each batch (see @fig-time-batch).
+Each batch includes 5 configurations.
+We can see that tuning with hotstarting is slower at first.
+As soon as all models are fitted with 2000 trees, the tuning runs much faster and overtakes the tuning without hotstarting.
+
+```{r 2023-01-16-hotstart-005}
+#| echo: false
+#| fig-cap: Time of completion of each batch with and without hotstarting.
+#| label: fig-time-batch
+
+library(ggplot2)
+
+data = readRDS("data.rds")
+data_2 = readRDS("data_2.rds")
+
+data[, runtime := as.numeric(difftime(timestamp, data$timestamp[1]))]
+data_2[, runtime := as.numeric(difftime(timestamp, data_2$timestamp[1]))]
+
+data_3 = rbindlist(list(data, data_2), idcol = "id")
+data_3[, id := factor(id)]
+
+ggplot(data_3, aes(x = runtime, y = batch_nr, group = id)) +
+  geom_line(aes(color = id)) +
+  geom_point(aes(color = id)) +
+  scale_colour_viridis_d(name = "hotstarting", labels = c("Activated", "Deactivated"), end = 0.8) +
+  ylab("Batch") +
+  xlab("Time of Completion [seconds]") +
+  theme_minimal()
+```
+
+# Forward Hotstarting
+
+Forward hotstarting is currently only supported by XGBoost.
+However, we have observed that hotstarting only provides a speed advantage for very large datasets and models with more than 5000 boosting rounds.
+The reason is that copying the models from the main process to the workers is a major bottleneck.
+The parallelization package `r ref_pkg("future")` copies the models sequentially to the workers.
+Consequently, it takes a long time until the last worker can even start.
+Moreover, copying itself consumes a lot of time, and copying the model back from the worker blocks the main process again.
+During the development process, we overestimated the speed benefits of hotstarting and underestimated the overhead of parallelization.
+We can therefore only advise against using forward hotstarting during tuning.
+It is much more efficient to use the internal early-stopping mechanism of XGBoost.
+This eliminates the need to copy models to the worker.
+See the [gallery post](/gallery/optimization/2022-11-04-early-stopping-with-xgboost) on early stopping for an example.
+We might improve the efficiency of the hotstarting mechanism in the future, if there are convincing use cases.
+
+# Manual Hotstarting
+
+Nevertheless, forward hotstarting can be useful without parallelization.
+If you have an already trained model and want to add more boosting iteration to it.
+In this example, the `learner_5000` is the already trained model.
+We create a new learner with the same hyperparameters but double the number of boosting iteration.
+To activate hotstarting, we create a `HotstartStack` and copy it to the `$hotstart_stack` slot of the new learner.
+
+```{r 2023-01-16-hotstart-006}
+#| eval: false
+
+task = tsk("spam")
+
+learner_5000 = lrn("classif.xgboost", nrounds = 5000, eta = 0.1)
+learner_5000$train(task)
+
+learner_10000 = lrn("classif.xgboost", nrounds = 10000, eta = 0.1)
+learner_10000$hotstart_stack = HotstartStack$new(learner_5000)
+learner_10000$train(task)
+```
+
+```{r 2023-01-16-hotstart-007}
+#| echo: false
+
+learner_5000 = readRDS("learner_5000.rds")
+learner_10000 = readRDS("learner_10000.rds")
+```
+
+Training the initial model took `r learner_5000$state$train_time` seconds.
+
+```{r 2023-01-16-hotstart-008}
+learner_5000$state$train_time
+```
+
+Adding 5000 boosting rounds took `r learner_10000$state$train_time - learner_5000$state$train_time` seconds.
+
+```{r 2023-01-16-hotstart-009}
+learner_10000$state$train_time - learner_5000$state$train_time
+```
+
+Training the model from the beginning would have taken about two minutes.
+This means, without parallelization, we get the expected speed advantage.
+
+# Conclusion
+
+We have seen how mlr3 enables to reduce the training time, by building on a hotstart stack of already trained learners.
+One has to be careful, however, when using forward hotstarting during tuning because of the high parallelization overhead that arises from copying the models between the processes.
+If a model has an internal early stopping implementation, it should usually be relied upon instead of using the mlr3 hotstarting mechanism.
+However, manual forward hotstarting can be helpful in some situations when we do not want to train a large model from the beginning.
