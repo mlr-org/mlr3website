@@ -33,7 +33,7 @@ future::plan("multisession")
 # Scope
 
 Hotstarting a learner resumes the training from an already fitted model.
-For example, training an XGBoost model for additional 500 boosting iterations.
+An example would be to train an already fit XGBoost model for an additional 500 boosting iterations. 
 Hotstarting in mlr3 works with a cache of already trained models.
 This cache is called a `r ref("HotstartStack")` which is automatically created while tuning.
 We distinguish between forward and backward hotstarting.
