@@ -21,7 +21,7 @@ knitr:
 
 {{< include ../_setup.qmd >}}
 
-```{r}
+```{r 2023-01-16-hotstart-001}
 #| include: false
 
 lgr::get_logger("mlr3")$set_threshold("warn")
@@ -34,7 +34,7 @@ future::plan("multisession")
 
 Hotstarting a learner resumes the training from an already fitted model.
 An example would be to train an already fit XGBoost model for an additional 500 boosting iterations.
-In mlr3, we call this process **Hotstarting**, where a learner has access to a cache of already trained models which is called a `r ref("HoststartStack")`
+In mlr3, we call this process **Hotstarting**, where a learner has access to a cache of already trained models which is called a `r ref("mlr3::HoststartStack")`
 We distinguish between forward and backward hotstarting.
 We start this post with backward hotstarting and then talk about the less efficient forward hotstarting.
 
@@ -48,7 +48,7 @@ If another random forest with 500 trees but with the same hyperparameter configu
 
 We load the `r ref("mlr_learners_classif.ranger", "ranger learner")` and set the search space from the @bischl_hyperparameter_2021 article.
 
-```{r}
+```{r 2023-01-16-hotstart-002}
 #| message: false
 
 library(mlr3verse)
@@ -66,7 +66,7 @@ When running a grid search with hotstarting, the grid is sorted by the hot start
 This means the models with 2000 trees are trained first.
 The models with less than 2000 trees hot start on the 2000 trees models which allows the training to be completed immediately.
 
-```{r}
+```{r 2023-01-16-hotstart-003}
 #| eval: false
 
 instance = tune(
@@ -81,7 +81,7 @@ instance = tune(
 
 For comparison, we perform the same tuning without hotstarting.
 
-```{r}
+```{r 2023-01-16-hotstart-004}
 #| eval: false
 
 instance_2 = tune(
@@ -99,7 +99,7 @@ Each batch includes 5 configurations.
 We can see that tuning with hotstarting is slower at first.
 As soon as all models are fitted with 2000 trees, the tuning runs much faster and overtakes the tuning without hotstarting.
 
-```{r}
+```{r 2023-01-16-hotstart-005}
 #| echo: false
 #| fig-cap: Time of completion of each batch with and without hotstarting.
 #| label: fig-time-batch
@@ -147,10 +147,9 @@ In this example, the `learner_5000` is the already trained model.
 We create a new learner with the same hyperparameters but double the number of boosting iteration.
 To activate hotstarting, we create a `HotstartStack` and copy it to the `$hotstart_stack` slot of the new learner.
 
-```{r}
+```{r 2023-01-16-hotstart-006}
 #| eval: false
 
-library(mlr3verse)
 task = tsk("spam")
 
 learner_5000 = lrn("classif.xgboost", nrounds = 5000, eta = 0.1)
@@ -161,7 +160,7 @@ learner_10000$hotstart_stack = HotstartStack$new(learner_5000)
 learner_10000$train(task)
 ```
 
-```{r}
+```{r 2023-01-16-hotstart-007}
 #| echo: false
 
 learner_5000 = readRDS("learner_5000.rds")
@@ -170,13 +169,13 @@ learner_10000 = readRDS("learner_10000.rds")
 
 Training the initial model took `r learner_5000$state$train_time` seconds.
 
-```{r}
+```{r 2023-01-16-hotstart-008}
 learner_5000$state$train_time
 ```
 
 Adding 5000 boosting rounds took `r learner_10000$state$train_time - learner_5000$state$train_time` seconds.
 
-```{r}
+```{r 2023-01-16-hotstart-009}
 learner_10000$state$train_time - learner_5000$state$train_time
 ```
 
