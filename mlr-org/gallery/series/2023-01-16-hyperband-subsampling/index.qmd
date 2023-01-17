@@ -20,7 +20,7 @@ knitr:
 
 {{< include ../_setup.qmd >}}
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -49,7 +49,7 @@ A little knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not nece
 In this post, we will optimize the hyperparameters of the support vector machine on the `r ref("mlr_tasks_sonar", "Sonar")` data set.
 We begin by constructing a classification machine by setting `type` to `"C-classification"`.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-002}
 #| message: false
 library("mlr3verse")
 
@@ -58,14 +58,14 @@ learner = lrn("classif.svm", id = "svm", type = "C-classification")
 
 The `r ref_pkg("mlr3pipelines")` package features a `r ref("PipeOp")` for subsampling.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-003}
 po("subsample")
 ```
 
 The `r ref("PipeOp")` controls the size of the training data set with the `frac` parameter.
 We connect the `r ref("PipeOp")`  with the learner and get a `r ref("GraphLearner")`.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-004}
 graph_learner = as_learner(
   po("subsample") %>>%
   learner
@@ -75,7 +75,7 @@ graph_learner = as_learner(
 The graph learner subsamples and then fits a support vector machine on the data subset.
 The parameter set of the graph learner is a combination of the parameter sets of the `r ref("PipeOp")` and learner.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-005}
 as.data.table(graph_learner$param_set)[, .(id, lower, upper, levels)]
 ```
 
@@ -87,7 +87,7 @@ The data set size is increased from 3.7% to 100%.
 For the other hyperparameters, we took the search space for support vector machines from the @kuehn_2018 article.
 This search space works for a wide range of data sets.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-006}
 graph_learner$param_set$set_values(
   subsample.frac  = to_tune(p_dbl(3^-3, 1, tags = "budget")),
   svm.kernel      = to_tune(c("linear", "polynomial", "radial")),
@@ -101,7 +101,7 @@ graph_learner$param_set$set_values(
 Support vector machines often crash or never finish the training with certain hyperparameter configurations.
 We set a timeout of 30 seconds and a [fallback learner](https://mlr3book.mlr-org.com/optimization.html#sec-encapsulation-fallback) to handle these cases.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-007}
 graph_learner$encapsulate = c(train = "evaluate", predict = "evaluate")
 graph_learner$timeout = c(train = 30, predict = 30)
 graph_learner$fallback = lrn("classif.featureless")
@@ -110,7 +110,7 @@ graph_learner$fallback = lrn("classif.featureless")
 Let's create the tuning instance.
 We use the `"none"` terminator because Hyperband controls the termination itself.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-008}
 instance = ti(
   task = tsk("sonar"),
   learner = graph_learner,
@@ -123,7 +123,7 @@ instance
 
 We load the `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 3`.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-009}
 #| message: false
 library("mlr3hyperband")
 
@@ -133,7 +133,7 @@ tuner = tnr("hyperband", eta = 3)
 Using `eta = 3` and a lower bound of 3.7% for the data set size, results in the following schedule.
 Configurations with the same data set size are evaluated in parallel.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-010}
 #| echo: false
 library(htmltools)
 library(reactable)
@@ -166,14 +166,14 @@ reactable(data[, .(budget, bracket, stage, n)],
 
 Now we are ready to start the tuning.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-011}
 #| output: false
 tuner$optimize(instance)
 ```
 
 The best model is a support vector machine with a polynomial kernel.
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-012}
 instance$result[, .(subsample.frac, svm.cost, svm.degree, svm.gamma, svm.kernel, svm.tolerance, classif.ce)]
 ```
 
@@ -182,7 +182,7 @@ We look at the 8 configurations that were evaluated on the complete data set.
 The configuration with the best classification error on the full data set was sampled in bracket 2.
 The classification error was estimated to be 26% on 33% of the data set and increased to 19% on the full data set (see green line in @fig-hyperband).
 
-```{r}
+```{r 2023-01-16-hyperband-subsampling-013}
 #| echo: false
 #| label: fig-hyperband
 #| fig-cap: "Optimization path of the 8 configurations evaluated on the complete data set."

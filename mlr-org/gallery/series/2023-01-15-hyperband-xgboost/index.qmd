@@ -19,7 +19,7 @@ knitr:
 
 {{< include ../_setup.qmd >}}
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -70,7 +70,7 @@ The number of configurations in the base stages is calculated so that each brack
 The following table shows a full run of the Hyperband algorithm.
 The bracket $s = 3$ is the most explorative bracket and $s = 0$ performance a random search on the full budget.
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-002}
 #| echo: false
 #| fig-cap-location: top
 #| label: fig-schedule
@@ -177,7 +177,7 @@ The colors in @fig-schedule indicate batches that are evaluated in parallel.
 In this practical example, we will optimize the hyperparameters of XGBoost on the `r ref("mlr_tasks_spam", "Spam")` data set.
 We begin by loading the `r ref("mlr_learners_classif.xgboost", "XGBoost learner.")`.
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-003}
 #| message: false
 library("mlr3verse")
 
@@ -192,7 +192,7 @@ We need to tag the parameter with `"budget"` to identify it as a fidelity parame
 For the other hyperparameters, we take the search space for XGBoost from the @bischl_hyperparameter_2021 article.
 This search space works for a wide range of data sets.
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-004}
 learner$param_set$set_values(
   nrounds           = to_tune(p_int(16, 128, tags = "budget")),
   eta               = to_tune(1e-4, 1, logscale = TRUE),
@@ -208,7 +208,7 @@ learner$param_set$set_values(
 We construct the tuning instance.
 We use the `"none"` terminator because Hyperband terminates itself when all brackets are evaluated.
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-005}
 instance = ti(
   task = tsk("spam"),
   learner = learner,
@@ -224,7 +224,7 @@ Hyperband can start from the beginning when the last bracket is evaluated.
 We control the number of Hyperband runs with the `repetition` argument.
 The setting `repetition = Inf` is useful when a terminator should stop the optimization.
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-006}
 #| message: false
 library("mlr3hyperband")
 
@@ -236,7 +236,7 @@ This results in all brackets finishing at approximately the same time.
 You can think of it as going diagonally through @fig-schedule.
 Using `eta = 2` and a range from 16 to 128 boosting iterations results in the following schedule.
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-007}
 #| echo: false
 library(htmltools)
 library(reactable)
@@ -270,7 +270,7 @@ reactable(data[, .(budget, bracket, stage, n)],
 
 Now we are ready to start the tuning.
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-008}
 #| output: false
 tuner$optimize(instance)
 ```
@@ -278,13 +278,13 @@ tuner$optimize(instance)
 The result of a run is the configuration with the best performance.
 This does not necessarily have to be a configuration evaluated with the highest budget since we can overfit the data with too many boosting iterations.
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-009}
 instance$result[, .(nrounds, eta, max_depth, colsample_bytree, colsample_bylevel, lambda, alpha, subsample)]
 ```
 
 The archive of a Hyperband run has the additional columns `"bracket"` and `"stage"`.
 
-```{r}
+```{r 2023-01-15-hyperband-xgboost-010}
 as.data.table(instance$archive)[, .(bracket, stage, classif.ce, eta, max_depth, colsample_bytree)]
 ```
 
