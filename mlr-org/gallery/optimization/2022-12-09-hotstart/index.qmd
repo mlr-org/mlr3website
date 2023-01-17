@@ -138,7 +138,6 @@ It is much more efficient to use the internal early-stopping mechanism of XGBoos
 This eliminates the need to copy models to the worker.
 See the [gallery post](/gallery/optimization/2022-11-04-early-stopping-with-xgboost) on early stopping for an example.
 We might improve the efficiency of the hotstarting mechanism in the future, if there are convincing use cases.
-Models that can be trained iteratively usually have a very efficient internal early-stopping mechanism.
 
 # Manual Hotstarting
 
