@@ -33,7 +33,7 @@ future::plan("multisession")
 # Scope
 
 Hotstarting a learner resumes the training from an already fitted model.
-An example would be to train an already fit XGBoost model for an additional 500 boosting iterations. 
+An example would be to train an already fit XGBoost model for an additional 500 boosting iterations.
 In mlr3, we call this process **Hotstarting**, where a learner has access to a cache of already trained models which is called a `r ref("HoststartStack")`
 We distinguish between forward and backward hotstarting.
 We start this post with backward hotstarting and then talk about the less efficient forward hotstarting.
@@ -129,7 +129,7 @@ ggplot(data_3, aes(x = runtime, y = batch_nr, group = id)) +
 Forward hotstarting is currently only supported by XGBoost.
 However, we have observed that hotstarting only provides a speed advantage for very large datasets and models with more than 5000 boosting rounds.
 The reason is that copying the models from the main process to the workers is a major bottleneck.
-The parallelization package future copies the models sequentially to the workers.
+The parallelization package `r ref_pkg("future")` copies the models sequentially to the workers.
 Consequently, it takes a long time until the last worker can even start.
 Moreover, copying itself consumes a lot of time, and copying the model back from the worker blocks the main process again.
 During the development process, we overestimated the speed benefits of hotstarting and underestimated the overhead of parallelization.
@@ -188,6 +188,6 @@ This means, without parallelization, we get the expected speed advantage.
 # Conclusion
 
 We have seen how mlr3 enables to reduce the training time, by building on a hotstart stack of already trained learners.
-One has to be careful, however, when using forward hotstarting during tuning because of the high parallelization overhead that arises from copying the models between the processes. 
+One has to be careful, however, when using forward hotstarting during tuning because of the high parallelization overhead that arises from copying the models between the processes.
 If a model has an internal early stopping implementation, it should usually be relied upon instead of using the mlr3 hotstarting mechanism.
 However, manual forward hotstarting can be helpful in some situations when we do not want to train a large model from the beginning.
