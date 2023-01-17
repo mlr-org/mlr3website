@@ -1,7 +1,7 @@
 ---
-title: "Default Hyperparameter Values"
+title: "Default Hyperparameter Configuration"
 description: |
-  Test default hyperparameter values during tuning.
+  Run the default hyperparameter configuration of learners as a baseline.
 categories:
   - tuning
   - classification
@@ -10,29 +10,42 @@ author:
     url: https://github.com/be-marc
 date: 2023-01-19
 bibliography: bibliography.bib
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 10
+      datatable.print.class: FALSE
+      datatable.print.keys: FALSE
+      datatable.print.trunc.cols: TRUE
 ---
 
 {{< include ../_setup.qmd >}}
 
-```{r}
+```{r 2023-01-19-default-configuration-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(0)
 ```
 
 # Scope
 
 The predictive performance of modern machine learning algorithms is highly dependent on the choice of their hyperparameter configuration.
-One option is to use the default configuration of the algorithm.
-These configurations are often chosen to work well with a wide range of data sets.
+Options for setting hyperparameters are tuning, manual selection by the user, and using the default configuration of the algorithm.
+The default configurations are chosen to work with a wide range of data sets but they usually do not achieve the best predictive performance.
+When tuning a learner in mlr3, we can run the default configuration as a baseline.
+Seeing how well it performs will tell us whether tuning pays off.
+If the optimized configurations perform worse, we could expand the search space or try a different optimization algorithm.
+Of course, it could also be that tuning on the given data set is simply not worth it.
 
 # Example
 
 We tune the hyperparameters of the `r ref("mlr_learners_classif.ranger", "ranger learner")` on the `r ref("mlr_tasks_spam", "spam")` data set.
 The search space is taken from the @bischl_hyperparameter_2021 article.
 
+```{r 2023-01-19-default-configuration-002}
+#| message: false
 
-```{r}
 library(mlr3verse)
 
 learner = lrn("classif.ranger",
@@ -47,7 +60,7 @@ When creating the tuning instance, we set `evaluate_default = TRUE` to test the 
 The default configuration is evaluated in the first batch of the tuning run.
 The other batches contain randomly sampled hyperparameter configurations.
 
-```{r}
+```{r 2023-01-19-default-configuration-003}
 instance = tune(
   method = tnr("random_search", batch_size = 5),
   task = tsk("spam"),
@@ -60,16 +73,24 @@ instance = tune(
 ```
 
 The default configuration is recorded in the first row of the archive.
+The other rows contain the results of the random search.
 
-```{r}
-as.data.table(instance$archive)
+```{r 2023-01-19-default-configuration-004}
+as.data.table(instance$archive)[, .(batch_nr, mtry.ratio, replace, sample.fraction, num.trees, classif.ce)]
 ```
 
+We plot the performances of the evaluated hyperparameter configurations.
+The blue line connects the best configuration of each batch.
+We see that the default configuration already performs well and the optimized configurations can not beat it.
 
-```{r}
+```{r 2023-01-19-default-configuration-005}
 library(mlr3viz)
 
 autoplot(instance, type = "performance")
 ```
 
-@probst2019
+# Conlcusion
+
+The time required to test the default configuration is negligible compared to the time required to run the hyperparameter optimization.
+It gives us a valuable indication of whether our tuning is properly configured.
+Running the default configuration as a baseline is a good practice that should be used in every tuning run.
