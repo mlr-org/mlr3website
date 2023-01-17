@@ -18,11 +18,58 @@ bibliography: bibliography.bib
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
-
 ```
 
 # Scope
 
+The predictive performance of modern machine learning algorithms is highly dependent on the choice of their hyperparameter configuration.
+One option is to use the default configuration of the algorithm.
+These configurations are often chosen to work well with a wide range of data sets.
 
+# Example
+
+We tune the hyperparameters of the `r ref("mlr_learners_classif.ranger", "ranger learner")` on the `r ref("mlr_tasks_spam", "spam")` data set.
+The search space is taken from the @bischl_hyperparameter_2021 article.
+
+
+```{r}
+library(mlr3verse)
+
+learner = lrn("classif.ranger",
+  mtry.ratio      = to_tune(0, 1),
+  replace         = to_tune(),
+  sample.fraction = to_tune(1e-1, 1),
+  num.trees       = to_tune(1, 2000)
+)
+```
+
+When creating the tuning instance, we set `evaluate_default = TRUE` to test the default hyperparameter configuration.
+The default configuration is evaluated in the first batch of the tuning run.
+The other batches contain randomly sampled hyperparameter configurations.
+
+```{r}
+instance = tune(
+  method = tnr("random_search", batch_size = 5),
+  task = tsk("spam"),
+  learner = learner,
+  resampling = rsmp ("holdout"),
+  measures = msr("classif.ce"),
+  term_evals = 51,
+  evaluate_default = TRUE
+)
+```
+
+The default configuration is recorded in the first row of the archive.
+
+```{r}
+as.data.table(instance$archive)
+```
+
+
+```{r}
+library(mlr3viz)
+
+autoplot(instance, type = "performance")
+```
 
 @probst2019
