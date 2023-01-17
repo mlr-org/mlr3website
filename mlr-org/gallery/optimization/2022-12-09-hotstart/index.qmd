@@ -187,5 +187,6 @@ This means, without parallelization, we get the expected speed advantage.
 # Conclusion
 
 We have seen how mlr3 enables to reduce the training time, by building on a hotstart stack of already trained learners.
-Whereas forward hotstarting is less useful due to the parallelization overhead and the very efficient internal early stopping mechanisms.
+One has to be careful, however, when using forward hotstarting during tuning because of the high parallelization overhead that arises from copying the models between the processes. 
+If a model has an internal early stopping implementation, it should usually be relied upon instead of using the mlr3 hotstarting mechanism.
 However, manual forward hotstarting can be helpful in some situations when we do not want to train a large model from the beginning.
