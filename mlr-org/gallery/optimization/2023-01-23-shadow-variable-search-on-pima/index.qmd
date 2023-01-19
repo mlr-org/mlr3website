@@ -1,0 +1,132 @@
+---
+title: "Shadow Variable Search on the Pima Indian Diabetes Data Set"
+description: |
+  Select features with a few lines of code.
+categories:
+  - feature selection
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+date: 2023-01-23
+bibliography: ../../bibliography.bib
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r 2023-01-23-shadow-variable-search-on-pima-001}
+#| include: false
+
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(1)
+future::plan("multisession")
+```
+
+# Scope
+
+Feature selection is the process of finding an optimal set of features to improve the performance and robustness of machine learning algorithms.
+In this article, we introduce the `r ref("mlr3fselect::fselect()")` function and the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` algorithm [@wu_controlling_2007] for a quick and easy feature selection.
+As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set.
+We assume that you are already familiar with the basic building blocks of the mlr3 ecosystem.
+Some knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
+
+# Task and Learner
+
+The objective of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set is to predict whether a person has diabetes or not.
+The data set includes 768 patients with 8 measurements.
+
+```{r 2023-01-23-shadow-variable-search-on-pima-002}
+#| message: false
+
+library(mlr3verse)
+
+task = tsk("pima")
+```
+
+```{r 2023-01-23-shadow-variable-search-on-pima-003}
+#| code-fold: true
+#| column: page
+#| fig-width: 14
+#| fig-height: 4
+#| fig.cap: "Distribution of the features in the Pima Indian Diabetes data set."
+#| warning: false
+
+library(ggplot2)
+task = tsk("pima")
+data = melt(as.data.table(task), id.vars = task$target_names, measure.vars = task$feature_names)
+
+ggplot(data, aes(x = value, fill = diabetes)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~ variable, ncol = 8, scales = "free") +
+  scale_fill_viridis_d(end = 0.8) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank())
+```
+
+The data set contains missing values.
+
+```{r 2023-01-23-shadow-variable-search-on-pima-004}
+task$missings()
+```
+
+Support vector machines cannot handle missing values.
+We impute the missing values with the `r ref("mlr_pipeops_imputehist", "histogram imputation")` method.
+
+```{r 2023-01-23-shadow-variable-search-on-pima-005}
+learner = po("imputehist") %>>% lrn("classif.svm", predict_type = "prob")
+```
+
+# Feature Selection
+
+The `r ref("mlr3fselect::fselect()")` function controls and executes the feature selection.
+The function internally creates an `r ref("mlr3fselect::FSelectInstanceSingleCrit", "fselect instance")` and executes the feature selection directly.
+The `method` argument specifies the feature selection algorithm.
+We use the wrapper method `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")`.
+Shadow variable search adds permutated copies to the data set for each feature.
+While optimizing, it adds features until a shadow variable is selected.
+The result is the last feature set without a shadow variable.
+The `r ref("Resampling", text = "resampling strategy")` and `r ref("Measure", text = "performance measure")` determine how the performance of a model is evaluated.
+
+```{r 2023-01-23-shadow-variable-search-on-pima-006}
+instance = fselect(
+  method = fs("shadow_variable_search"),
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measures = msr("classif.auc")
+)
+```
+
+The `r ref("mlr3fselect::fselect()")` function returns an instance that includes an archive with all evaluated feature sets.
+Each feature has a corresponding shadow variable.
+We only show the variables age, glucose and insulin and their shadow variables here.
+
+```{r 2023-01-23-shadow-variable-search-on-pima-007}
+as.data.table(instance$archive)[, .(age, glucose, insulin, permuted__age, permuted__glucose, permuted__insulin, classif.auc)]
+```
+
+The best configuration and the corresponding measured performance can be retrieved from the instance.
+
+```{r 2023-01-23-shadow-variable-search-on-pima-008}
+instance$result
+```
+
+# Final Model
+
+The learner we use to make predictions on new data is called the final model.
+The final model is trained with the optimal feature set on the full data set.
+We subset the task to the optimal feature set and train the learner.
+
+```{r 2023-01-23-shadow-variable-search-on-pima-009}
+#| output: false
+
+task$select(instance$result_feature_set)
+learner$train(task)
+```
+
+The trained model can now be used to predict new, external data.
