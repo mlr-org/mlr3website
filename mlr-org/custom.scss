@@ -2,10 +2,19 @@
 $line-color: rgba(0, 0, 0, 0.2);
 $mlr-color:  rgba(3, 99, 142, 1);
 $link-color: rgba(3, 99, 142, 1);
+$mermaid-bg-color: rgb(255, 255, 255);
 
 /*-- scss:rules --*/
 @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono|JetBrains+Mono&display=swap");
+
+.cluster > rect {
+  fill:rgb(241, 241, 241) !important;
+}
+
+.node > rect {
+  fill:#39568CFF !important;
+}
 
 .grid {
   display: inline-grid;

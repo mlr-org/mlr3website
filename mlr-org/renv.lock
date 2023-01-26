@@ -4261,12 +4261,6 @@
       "Version": "3.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "RemoteType": "standard",
-      "RemotePkgRef": "sys",
-      "RemoteRef": "sys",
-      "RemoteRepos": "https://cran.rstudio.com/",
-      "RemotePkgPlatform": "aarch64-apple-darwin20",
-      "RemoteSha": "3.4",
       "Hash": "b227d13e29222b4574486cfcbde077fa",
       "Requirements": []
     },
@@ -4377,6 +4371,27 @@
         "rlang",
         "vctrs",
         "withr"
+      ]
+    },
+    "tidyterra": {
+      "Package": "tidyterra",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0e0079a3e35be2d30ed6e3a33f4eb012",
+      "Requirements": [
+        "cli",
+        "crayon",
+        "data.table",
+        "dplyr",
+        "ggplot2",
+        "magrittr",
+        "rlang",
+        "scales",
+        "sf",
+        "terra",
+        "tibble",
+        "tidyr"
       ]
     },
     "timeDate": {
