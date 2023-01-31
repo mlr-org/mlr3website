@@ -29,7 +29,7 @@ future::plan("multisession")
 
 # Scope
 
-Feature selection is the process of finding an optimal set of features to improve the performance and robustness of machine learning algorithms.
+Feature selection is the process of finding an optimal set of features to primarily improve the performance, interpretability and robustness of machine learning algorithms.
 In this article, we introduce the `r ref("mlr3fselect::fselect()")` function and the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` algorithm [@wu_controlling_2007] for a quick and easy feature selection.
 As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set.
 We assume that you are already familiar with the basic building blocks of the mlr3 ecosystem.
@@ -57,6 +57,7 @@ task = tsk("pima")
 #| warning: false
 
 library(ggplot2)
+
 task = tsk("pima")
 data = melt(as.data.table(task), id.vars = task$target_names, measure.vars = task$feature_names)
 
