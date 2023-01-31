@@ -65,7 +65,7 @@ learner = lrn("classif.ranger",
 
 When creating the tuning instance, we set `evaluate_default = TRUE` to test the default hyperparameter configuration.
 The default configuration is evaluated in the first batch of the tuning run.
-The other batches contain randomly sampled hyperparameter configurations.
+The other batches use the specified tuning method. 
 
 ```{r 2023-01-19-default-configuration-003}
 instance = tune(
