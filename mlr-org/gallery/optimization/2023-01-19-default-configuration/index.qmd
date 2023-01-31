@@ -38,6 +38,13 @@ Seeing how well it performs will tell us whether tuning pays off.
 If the optimized configurations perform worse, we could expand the search space or try a different optimization algorithm.
 Of course, it could also be that tuning on the given data set is simply not worth it.
 
+@probst_tunability_2019 studied the tunability of machine learning algorithms.
+They found that the tunability of algorithms varies widely.
+Algorithms like glmnet and XGBoost are highly tunable, while algorithms like random forests work well with their default configuration.
+The highly tunable algorithms should thus beat their baselines more easily with optimized hyperparameters.
+
+In this article, we will tune the hyperparameters of a random forest and compare the performance of the default configuration with the optimized configurations.
+
 # Example
 
 We tune the hyperparameters of the `r ref("mlr_learners_classif.ranger", "ranger learner")` on the `r ref("mlr_tasks_spam", "spam")` data set.
