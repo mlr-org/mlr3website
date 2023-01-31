@@ -41,7 +41,7 @@ Of course, it could also be that tuning on the given data set is simply not wort
 # Example
 
 We tune the hyperparameters of the `r ref("mlr_learners_classif.ranger", "ranger learner")` on the `r ref("mlr_tasks_spam", "spam")` data set.
-The search space is taken from the @bischl_hyperparameter_2021 article.
+The search space is taken from @bischl_hyperparameter_2021.
 
 ```{r 2023-01-19-default-configuration-002}
 #| message: false
