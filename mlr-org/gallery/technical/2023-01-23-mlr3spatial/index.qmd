@@ -24,9 +24,12 @@ future::plan("multisession")
 
 Working with spatial data in R requires a lot of data wrangling e.g. reading from different file formats, converting between spatial formats, creating tables from point layers, engineering new features and predicting spatial raster images.
 The `r ref_pkg("mlr3spatial")` package is a bridge between spatial data and the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
-The package simplifies the work steps: Load the training data, create a spatial task, train a learner with it, and predict the final raster image (see flowchart).
+The package simplifies the work steps: Load the training data, create a spatial task, train a learner with it, and predict the final raster image (see @fig-flowchart).
 In this article, we will perform a land cover classification for the city of Leipzig, Germany, as an example of the capabilities of the package.
+
 ```{mermaid}
+%%| label: fig-flowchart
+
 %%{ init: { 'flowchart': { 'curve': 'bump' } } }%%
 
 flowchart LR
@@ -51,8 +54,6 @@ flowchart LR
     prediction_raster[Raster Image]
     end
     learner --> prediction_raster
-
-
 ```
 
 # Land Cover Classification
@@ -104,8 +105,9 @@ ggplot() +
   theme_minimal()
 ```
 
-To create a spatial task from the point layer, call `r ref("as_task_classif_st()")`.
-The spatial classification task additionally stores the coordinates of the training points.
+The `r ref("as_task_classif_st()")` directly creates a spatial task from the point layer.
+This makes it unnecessary to transform the point layer to a `data.frame` with coordinates.
+Spatial tasks additionally store the coordinates of the training points.
 
 ```{r 2023-01-23-mlr3spatial-006}
 task = as_task_classif_st(leipzig_vector, target = "land_cover")
