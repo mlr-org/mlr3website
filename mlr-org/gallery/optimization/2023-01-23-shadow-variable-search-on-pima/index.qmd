@@ -57,6 +57,7 @@ task = tsk("pima")
 #| warning: false
 
 library(ggplot2)
+library(data.table)
 
 task = tsk("pima")
 data = melt(as.data.table(task), id.vars = task$target_names, measure.vars = task$feature_names)
