@@ -1,0 +1,16 @@
+{
+  "hash": "c42918048510b4e9195b21b3f5346d45",
+  "result": {
+    "markdown": "---\ntitle: \"Raster Images\"\ndescription: |\n  Predict large raster images.\nauthor:\n  - name: Marc Becker\n    orcid: 0000-0002-8115-0400\n    url: https://github.com/be-marc\ndate: 2027-01-23\n---\n\n\n\n\n\n\n# Scope\n\nWorking with spatial data is of great importance in many scientific fields.\nBut working with larger raster images in R often leads to memory issues and long processing times.\nThe [mlr3spatial](https://mlr3spatial.mlr-org.com) package implements a robust memory management system and parallelizes the prediction of raster files.\nIn this article, we will demonstrate the use of [mlr3spatial](https://mlr3spatial.mlr-org.com)...\n\n\n# Predicting in Chunks\n\n\n::: {.cell layout-align=\"center\"}\n\n```{.r .cell-code}\nlibrary(mlr3verse)\nlibrary(mlr3spatial)\nlibrary(terra, exclude = \"resample\")\nlibrary(sf)\n\nleipzig_raster = rast(system.file(\"extdata\", \"leipzig_raster.tif\", package = \"mlr3spatial\"))\n```\n:::\n\n::: {#fig-chunks .cell layout-ncol=\"2\" layout-align=\"center\"}\n\n```{.r .cell-code  code-fold=\"true\"}\nlibrary(ggplot2)\nlibrary(tidyterra, exclude = \"filter\")\n\nleipzig_raster_1 = leipzig_raster\nleipzig_raster_2 = leipzig_raster\nleipzig_raster_3 = leipzig_raster\nleipzig_raster_4 = leipzig_raster\n\nleipzig_raster_1[52:206, ] = NA\nleipzig_raster_2[c(1:52, 105:206), ] = NA\nleipzig_raster_3[c(1:105, 157:206), ] = NA\nleipzig_raster_4[c(1:157), ] = NA\n\nggplot() +\n  geom_spatraster_rgb(data = leipzig_raster_1, r = 3, g = 2, b = 1, max_col_value = 5451) +\n  coord_sf() +\n  theme_minimal()\n\nggplot() +\n  geom_spatraster_rgb(data = leipzig_raster_2, r = 3, g = 2, b = 1, max_col_value = 5451) +\n  theme_minimal()\n\nggplot() +\n  geom_spatraster_rgb(data = leipzig_raster_3, r = 3, g = 2, b = 1, max_col_value = 5451) +\n  theme_minimal()\n\nggplot() +\n  geom_spatraster_rgb(data = leipzig_raster_4, r = 3, g = 2, b = 1, max_col_value = 5451) +\n  theme_minimal()\n```\n\n::: {.cell-output-display}\n![Chunk 1](index_files/figure-html/fig-chunks-1.png){#fig-chunks-1 fig-align='center' width=672}\n:::\n\n::: {.cell-output-display}\n![Chunk 2](index_files/figure-html/fig-chunks-2.png){#fig-chunks-2 fig-align='center' width=672}\n:::\n\n::: {.cell-output-display}\n![Chunk 3](index_files/figure-html/fig-chunks-3.png){#fig-chunks-3 fig-align='center' width=672}\n:::\n\n::: {.cell-output-display}\n![Chunk 4](index_files/figure-html/fig-chunks-4.png){#fig-chunks-4 fig-align='center' width=672}\n:::\n\nSentinal-2 scene in four chunks.\n:::\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

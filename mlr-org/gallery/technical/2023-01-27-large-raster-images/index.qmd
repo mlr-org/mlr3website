@@ -1,0 +1,100 @@
+---
+title: "Raster Images"
+description: |
+  Predict large raster images.
+author:
+  - name: Marc Becker
+    orcid: 0000-0002-8115-0400
+    url: https://github.com/be-marc
+date: 2027-01-23
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r 2023-01-23-mlr3spatial-001}
+#| include: false
+
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(0)
+future::plan("multisession")
+```
+
+# Scope
+
+Working with spatial data is of great importance in many scientific fields.
+But working with larger raster images in R often leads to memory issues and long processing times.
+The `r ref_pkg("mlr3spatial")` package implements a robust memory management system and parallelizes the prediction of raster files.
+In this article, we will demonstrate the use of `r ref_pkg("mlr3spatial")`...
+
+
+# Predicting in Chunks
+
+```{r 2023-01-23-mlr3spatial-002}
+#| message: false
+
+library(mlr3verse)
+library(mlr3spatial)
+library(terra, exclude = "resample")
+library(sf)
+```
+
+We repeat the land cover classification from the previous article.
+
+```{r 2023-01-23-mlr3spatial-003}
+leipzig_raster = rast(system.file("extdata", "leipzig_raster.tif", package = "mlr3spatial"))
+leipzig_vector = read_sf(system.file("extdata", "leipzig_points.gpkg", package = "mlr3spatial"), stringsAsFactors = TRUE)
+
+task = as_task_classif_st(leipzig_vector, target = "land_cover")
+learner = lrn("classif.rpart")
+learner$train(task)
+```
+
+
+
+```{r}
+ predict_spatial(leipzig_raster, learner, chunksize = 100)
+```
+
+
+
+```{r 2023-01-23-mlr3spatial-005}
+#| code-fold: true
+#| layout-ncol: 2
+#| label: fig-chunks
+#| fig-cap: Sentinal-2 scene in four chunks.
+#| fig-subcap:
+#|   - "Chunk 1"
+#|   - "Chunk 2"
+#|   - "Chunk 3"
+#|   - "Chunk 4"
+library(ggplot2)
+library(tidyterra, exclude = "filter")
+
+leipzig_raster_1 = leipzig_raster
+leipzig_raster_2 = leipzig_raster
+leipzig_raster_3 = leipzig_raster
+leipzig_raster_4 = leipzig_raster
+
+leipzig_raster_1[52:206, ] = NA
+leipzig_raster_2[c(1:52, 105:206), ] = NA
+leipzig_raster_3[c(1:105, 157:206), ] = NA
+leipzig_raster_4[c(1:157), ] = NA
+
+ggplot() +
+  geom_spatraster_rgb(data = leipzig_raster_1, r = 3, g = 2, b = 1, max_col_value = 5451) +
+  coord_sf() +
+  theme_minimal()
+
+ggplot() +
+  geom_spatraster_rgb(data = leipzig_raster_2, r = 3, g = 2, b = 1, max_col_value = 5451) +
+  theme_minimal()
+
+ggplot() +
+  geom_spatraster_rgb(data = leipzig_raster_3, r = 3, g = 2, b = 1, max_col_value = 5451) +
+  theme_minimal()
+
+ggplot() +
+  geom_spatraster_rgb(data = leipzig_raster_4, r = 3, g = 2, b = 1, max_col_value = 5451) +
+  theme_minimal()
+```
