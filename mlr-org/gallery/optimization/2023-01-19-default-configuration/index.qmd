@@ -42,7 +42,6 @@ Of course, it could also be that tuning on the given data set is simply not wort
 They found that the tunability of algorithms varies widely.
 Algorithms like glmnet and XGBoost are highly tunable, while algorithms like random forests work well with their default configuration.
 The highly tunable algorithms should thus beat their baselines more easily with optimized hyperparameters.
-
 In this article, we will tune the hyperparameters of a random forest and compare the performance of the default configuration with the optimized configurations.
 
 # Example
@@ -65,7 +64,8 @@ learner = lrn("classif.ranger",
 
 When creating the tuning instance, we set `evaluate_default = TRUE` to test the default hyperparameter configuration.
 The default configuration is evaluated in the first batch of the tuning run.
-The other batches use the specified tuning method. 
+The other batches use the specified tuning method.
+In this example, they are randomly drawn configurations.
 
 ```{r 2023-01-19-default-configuration-003}
 instance = tune(
