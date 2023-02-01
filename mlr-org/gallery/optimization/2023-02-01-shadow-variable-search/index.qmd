@@ -44,7 +44,7 @@ Some knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessar
 
 Adding shadow variables to a data set is a well known method in machine learning [@wu_controlling_2007; @thomas_probing_2017].
 The idea is to add permutated copies of the original features to the data set.
-These permutated copies are called shadow variables or pseudovariables and the permutation makes them unrelated to the target variable.
+These permutated copies are called shadow variables or pseudovariables and the permutation breaks any relationship with the target variable, making them useless for prediction.
 The subsequent search is similar to the sequential forward selection algorithm.
 Features are added to the model one at a time based on the highest performance improvement.
 The difference is that the termination criterion is the selection of a shadow variable.
