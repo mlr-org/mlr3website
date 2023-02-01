@@ -37,7 +37,7 @@ Wrapper methods iteratively add features to the model that optimize a performanc
 As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set.
 We focus on the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` algorithm and the application with the `r ref("mlr3fselect::fselect()")` function.
 We assume that you are already familiar with the basic building blocks of the mlr3 ecosystem.
-If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/feature-selection.html) of the mlr3book.
+If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/feature-selection.html) of the mlr3book first.
 Some knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
 
 # Shadow Variable Search
