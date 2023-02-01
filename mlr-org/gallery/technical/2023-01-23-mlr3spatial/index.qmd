@@ -1,5 +1,5 @@
 ---
-title: "Spatial Data in mlr3"
+title: "Spatial Data"
 description: |
   Train with spatial data and predict maps.
 author:
@@ -26,6 +26,7 @@ Working with spatial data in R requires a lot of data wrangling e.g. reading fro
 The `r ref_pkg("mlr3spatial")` package is a bridge between spatial data and the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
 The package simplifies the work steps: Load the training data, create a spatial task, train a learner with it, and predict the final raster image (see @fig-flowchart).
 In this article, we will perform a land cover classification for the city of Leipzig, Germany, as an example of the capabilities of the package.
+If you are unf
 
 ```{mermaid}
 %%| label: fig-flowchart
@@ -80,7 +81,7 @@ leipzig_raster = rast(system.file("extdata", "leipzig_raster.tif", package = "ml
 leipzig_raster
 ```
 
-The training data is a GeoPackage point layer with land cover labels and the spectral features.
+The training data is a GeoPackage point layer with land cover labels and spectral features.
 We load the file and create a simple feature point layer (`r ref("sf::sf")`).
 
 ```{r 2023-01-23-mlr3spatial-004}
@@ -122,7 +123,9 @@ learner = lrn("classif.rpart")
 learner$train(task)
 ```
 
-As a last step, we predict the whole raster image.
+To get a complete land cover classification of Leipzig, we have to predict on each pixel and return a raster image with these predictions.
+The `$predict()` method of the learner only works for tabular data.
+To predict a raster image, we use the `r ref("mlr3spatial::predict_spatial()")` function.
 
 ```{r 2023-01-23-mlr3spatial-008}
 # predict land cover map
