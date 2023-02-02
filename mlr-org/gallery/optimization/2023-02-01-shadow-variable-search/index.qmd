@@ -45,14 +45,14 @@ Adding shadow variables to a data set is a well-known method in machine learning
 The idea is to add permutated copies of the original features to the data set.
 These permutated copies are called shadow variables or pseudovariables and the permutation breaks any relationship with the target variable, making them useless for prediction.
 The subsequent search is similar to the sequential forward selection algorithm, where one new feature is added in each iteration of the algorithm.
-This new feature is selected as the one that improves the performance of the model the most. 
+This new feature is selected as the one that improves the performance of the model the most.
 This selection is computationally expensive, as one model for each of the not yet included features has to be trained.
-The difference between *Shadow Variable Search* and *Sequential Forward Selection* is that the former uses the selection of a shadow variable as the termination criterion.
+The difference between shadow variable search and sequential forward selection is that the former uses the selection of a shadow variable as the termination criterion.
 Selecting a shadow variable means that the best improvement is achieved by adding a feature that is unrelated to the target variable.
 Consequently, the variables not yet selected are most likely also correlated to the target variable only by chance.
 Therefore, only the previously selected features have a true influence on the target variable.
 
-`r ref_pkg("mlr3fselect")` is the feature selection package for the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
+`r ref_pkg("mlr3fselect")` is the feature selection package of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
 It implements the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` algorithm.
 We load all packages of the ecosystem with the `r ref("mlr3verse")` package.
 
@@ -115,7 +115,7 @@ learner = po("imputehist") %>>% lrn("classif.svm", predict_type = "prob")
 
 # Feature Selection
 
-Now we construct the feature selection problem by using the `r ref("fsi()")` function to construct an `r ref("FSelectInstanceSingleCrit")`.
+Now we define the feature selection problem by using the `r ref("fsi()")` function that constructs an `r ref("FSelectInstanceSingleCrit")`.
 In addition to the task and learner, we have to select a `r ref("Resampling", text = "resampling strategy")` and `r ref("Measure", text = "performance measure")` to determine how the performance of a feature subset is evaluated.
 We pass the `"none"` terminator because the shadow variable search algorithm terminates by itself.
 
@@ -139,7 +139,7 @@ optimizer$optimize(instance)
 The optimizer returns the best feature set and the corresponding estimated performance.
 
 @fig-optimization-path shows the optimization path of the feature selection.
-The feature age was selected first and in the following iterations glucose, insulin and mass.
+The feature glucose was selected first and in the following iterations age, mass and pedigree.
 Then a shadow variable was selected and the feature selection was terminated.
 
 ```{r 2023-02-01-shadow-variable-search-010}
@@ -152,7 +152,7 @@ library(ggplot2)
 library(mlr3misc)
 library(viridisLite)
 
-data = as.data.table(instance$archive)[, head(.SD, 1), by = batch_nr]
+data = as.data.table(instance$archive)[order(-classif.auc), head(.SD, 1), by = batch_nr][order(batch_nr)]
 data[, features := map_chr(features, str_collapse)]
 data[, batch_nr := as.character(batch_nr)]
 
@@ -201,5 +201,6 @@ The trained model can now be used to predict new, external data.
 # Conclusion
 
 The shadow variable search is a fast feature selection method that is easy to use.
-If you want to know more about feature selection, we recommend having a look at our [book](https://mlr3book.mlr-org.com/feature-selection.html#introduction).
+More information on the theoretical background can be found in @wu_controlling_2007 and @thomas_probing_2017.
+If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/feature-selection.html.
 
