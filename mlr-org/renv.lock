@@ -560,10 +560,10 @@
     },
     "bbotk": {
       "Package": "bbotk",
-      "Version": "0.7.0",
+      "Version": "0.7.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "808ef313066059f5d4ec376b24741860",
+      "Hash": "7d04d128391d34150d9b290f6e14976f",
       "Requirements": [
         "R6",
         "checkmate",
@@ -2545,10 +2545,15 @@
     },
     "mlr3fselect": {
       "Package": "mlr3fselect",
-      "Version": "0.8.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b19ecd5f8aacabec5cf3bb2084db4b9f",
+      "Version": "0.9.1.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mlr-org",
+      "RemoteRepo": "mlr3fselect",
+      "RemoteRef": "data",
+      "RemoteSha": "cd386307da5c61295c76a2f52771885fe69d5467",
+      "Hash": "27aa3d12adfdf09a2d24346d83a7cdfe",
       "Requirements": [
         "R6",
         "bbotk",
@@ -2557,7 +2562,6 @@
         "lgr",
         "mlr3",
         "mlr3misc",
-        "mlr3pipelines",
         "paradox"
       ]
     },
@@ -2712,10 +2716,15 @@
     },
     "mlr3spatial": {
       "Package": "mlr3spatial",
-      "Version": "0.3.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "90f9397c9b0d099dcd7adaa772e4a033",
+      "Version": "0.3.1.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mlr-org",
+      "RemoteRepo": "mlr3spatial",
+      "RemoteRef": "main",
+      "RemoteSha": "0b519e0ed8f0ce0cc28dc5a3c804aa2a0889039e",
+      "Hash": "39da0babc210083e4ffd73300ea7851a",
       "Requirements": [
         "R6",
         "checkmate",
@@ -2804,7 +2813,22 @@
       "Package": "mlr3viz",
       "Version": "0.6.1",
       "Source": "Repository",
-      "Requirements": []
+      "Repository": "CRAN",
+      "RemoteType": "standard",
+      "RemotePkgRef": "mlr3viz",
+      "RemoteRef": "mlr3viz",
+      "RemoteRepos": "https://cloud.r-project.org",
+      "RemotePkgPlatform": "source",
+      "RemoteSha": "0.6.1",
+      "Hash": "1cfe66ec9b62f470e554ff16087491b2",
+      "Requirements": [
+        "checkmate",
+        "data.table",
+        "ggplot2",
+        "mlr3misc",
+        "scales",
+        "viridis"
+      ]
     },
     "mlr3website": {
       "Package": "mlr3website",
@@ -4362,6 +4386,27 @@
         "rlang",
         "vctrs",
         "withr"
+      ]
+    },
+    "tidyterra": {
+      "Package": "tidyterra",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0e0079a3e35be2d30ed6e3a33f4eb012",
+      "Requirements": [
+        "cli",
+        "crayon",
+        "data.table",
+        "dplyr",
+        "ggplot2",
+        "magrittr",
+        "rlang",
+        "scales",
+        "sf",
+        "terra",
+        "tibble",
+        "tidyr"
       ]
     },
     "timeDate": {
