@@ -47,7 +47,7 @@ These permutated copies are called shadow variables or pseudovariables and the p
 The subsequent search is similar to the sequential forward selection algorithm, where one new feature is added in each iteration of the algorithm.
 This new feature is selected as the one that improves the performance of the model the most. 
 This selection is computationally expensive, as one model for each of the not yet included features has to be trained.
-The difference is that the termination criterion is the selection of a shadow variable.
+The difference between *Shadow Variable Search* and *Sequential Forward Selection* is that the former uses the selection of a shadow variable as the termination criterion.
 Selecting a shadow variable means that the best improvement is achieved by adding a feature that is unrelated to the target variable.
 Consequently, the variables not yet selected are most likely also correlated to the target variable only by chance.
 Therefore, only the previously selected features have a true influence on the target variable.
