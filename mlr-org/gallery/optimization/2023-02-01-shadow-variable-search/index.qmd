@@ -45,7 +45,8 @@ Adding shadow variables to a data set is a well-known method in machine learning
 The idea is to add permutated copies of the original features to the data set.
 These permutated copies are called shadow variables or pseudovariables and the permutation breaks any relationship with the target variable, making them useless for prediction.
 The subsequent search is similar to the sequential forward selection algorithm, where one new feature is added in each iteration of the algorithm.
-Features are added to the model one at a time based on the highest performance improvement.
+This new feature is selected as the one that improves the performance of the model the most. 
+This selection is computationally expensive, as one model for each of the not yet included features has to be trained.
 The difference is that the termination criterion is the selection of a shadow variable.
 Selecting a shadow variable means that the best improvement is achieved by adding a feature that is unrelated to the target variable.
 Consequently, the variables not yet selected are most likely also correlated to the target variable only by chance.
