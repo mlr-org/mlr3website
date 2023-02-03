@@ -224,6 +224,7 @@ $link-color: rgba(3, 99, 142, 1);
 .gallery {
   display: inline-grid;
   grid-template-columns: 100px auto;
+  margin-bottom: 3rem;
 
 
   &__icon-column {
@@ -239,7 +240,10 @@ $link-color: rgba(3, 99, 142, 1);
   }
 
   &__link {
-    padding-left: 1rem;
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-bottom: 3em;
+    font-size: large;
   }
 }
 
