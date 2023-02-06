@@ -1,0 +1,277 @@
+---
+title: "Recursive Feature Elimination on the Sonar Data Set"
+description: |
+  Utilize the built-in feature importance of models.
+categories:
+  - feature selection
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+date: 2023-02-07
+bibliography: ../../bibliography.bib
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r 2023-02-07- recursive-feature-elimination-001}
+#| include: false
+
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(1)
+future::plan("multisession")
+```
+
+# Scope
+
+Feature selection is the process of finding an optimal set of features to improve the performance, interpretability and robustness of machine learning algorithms.
+In this article, we introduce the *Recursive Feature Elimination* algorithm which is a [wrapper method](https://mlr3book.mlr-org.com/feature-selection.html#fs-wrapper) for feature selection.
+Wrapper methods iteratively add features to the model that optimize a performance measure.
+As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.gbm", "gradient boosting machine")` and `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_pima", text = "Sonar")` data set.
+We assume that you are already familiar with the basic building blocks of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
+If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/feature-selection.html) of the mlr3book first.
+
+```{r 2023-02-07- recursive-feature-elimination-002}
+#| message: false
+
+library(mlr3verse)
+```
+
+# Recursive Feature Elimination
+
+Recursive Feature Elimination (RFE) is a widely used feature selection method in high-dimensional data sets.
+The idea is to iteratively remove the weakest feature from a model until the desired number of features is reached.
+The weakest feature is determined by the built-in feature importance method of the model.
+Currently, RFE works with support vector machines, decision tree algorithms and gradient boosting machines.
+Supported learners are tagged with the `"importance"` property.
+For a full list of supported learners, see the learner page on the [mlr-org website](https://mlr-org.com/learners.html)  and search for `"importance"`.
+
+@guyon_gene_2002 developed the RFE algorithm for support vector machines (SVM-RFE) to select informative genes in cancer classification.
+The importance of the features is given by the weight vector of a linear support vector machine.
+This method was later extended to other machine learning algorithms.
+The only requirement is that the models can internally measure the feature importance.
+The random forest algorithm offers multiple options for measuring feature importance.
+The commonly used methods are the mean decrease in accuracy (MDA) and the mean decrease in impurity (MDI).
+The MDA measures the decrease in accuracy for a feature if it was randomly permuted in the out-of-bag sample.
+The MDI is the total reduction in node impurity when the feature is used for splitting.
+Gradient boosting algorithms like `r ref("mlr_learners_classif.xgboost", "XGBoost")`, `r ref("mlr_learners_classif.lightgbm", "LightGBM")` and `r ref("mlr_learners_classif.gbm", "GBM")` use similar methods to measure the importance of the features.
+
+`r ref_pkg("mlr3fselect")` is the feature selection package of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
+It implements the `r ref("mlr_fselectors_shadow_variable_search", "RFE")` algorithm.
+We load all packages of the ecosystem with the `r ref("mlr3verse")` package.
+
+```{r 2023-02-01-shadow-variable-search-002}
+#| message: false
+
+library(mlr3verse)
+```
+
+We retrieve the `r ref("mlr_fselectors_shadow_variable_search", "RFE")` optimizer with the `r ref("fs()")` function.
+
+```{r 2023-02-07- recursive-feature-elimination-003}
+optimizer = fs("rfe", n_features = 1, feature_number = 1)
+```
+
+The algorithm has multiple control parameters.
+The optimizer stops when the number of features equals `n_features`.
+The parameters `feature_number`, `feature_fraction` and `subset_size` determine the number of features that are removed in each iteration.
+The `feature_number` option removes a fixed number of features in each iteration, whereas `feature_fraction` removes a fraction of the features.
+The `subset_size` argument is a vector that specifies exactly how many features are removed in each iteration.
+The parameters are mutually exclusive and the default is `feature_fraction = 0.5`.
+Usually, RFE fits a new model in each iteration and calculates the feature importance again.
+We can deactivate this behavior by setting `recursive = FALSE`.
+
+# Task
+
+The objective of the `r ref("mlr_tasks_sonar", text = "Sonar")` data set is to predict whether a sonar signal bounced off a metal cylinder or a rock.
+The data set includes 60 numerical features (see @fig-features).
+
+```{r 2023-02-07- recursive-feature-elimination-004}
+task = tsk("sonar")
+```
+
+```{r 2023-02-07- recursive-feature-elimination-005}
+#| code-fold: true
+#| column: page
+#| fig-width: 14
+#| fig-height: 14
+#| label: fig-features
+#| fig-cap: "Distribution of the features in the Sonar data set."
+#| warning: false
+
+library(ggplot2)
+library(data.table)
+
+data = melt(as.data.table(task), id.vars = task$target_names, measure.vars = task$feature_names)
+
+ggplot(data, aes(x = value, fill = Class)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~ variable, ncol = 6, scales = "free") +
+  scale_fill_viridis_d(end = 0.8) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank())
+```
+
+# Gradient Boosting Machine
+
+We start with the gradient-boosting learner and set the predict type to `"prob"` to obtain class probabilities.
+
+```{r 2023-02-07- recursive-feature-elimination-006}
+learner = lrn("classif.gbm", distribution = "bernoulli", predict_type = "prob")
+```
+
+Now we define the feature selection problem by using the `r ref("fsi()")` function that constructs an `r ref("FSelectInstanceSingleCrit")`.
+In addition to the task and learner, we have to select a `r ref("Resampling", text = "resampling strategy")` and `r ref("Measure", text = "performance measure")` to determine how the performance of a feature subset is evaluated.
+We pass the `"none"` terminator because the `n_features` parameter of the optimizer determines when the feature selection stops.
+
+```{r 2023-02-07- recursive-feature-elimination-007}
+instance = fsi(
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 6),
+  measures = msr("classif.auc"),
+  terminator = trm("none"),
+  store_models = TRUE)
+```
+
+We are now ready to start the recursive feature elimination.
+To do this, we simply pass the instance to the `$optimize()` method of the optimizer.
+
+```{r 2023-02-07- recursive-feature-elimination-008}
+optimizer$optimize(instance)
+```
+
+The optimizer returns the best feature set and the corresponding estimated performance.
+
+@fig-gbm shows the optimization path of the feature selection.
+We observe that the performance increases first as the number of features decreases.
+As soon as informative features are removed, the performance drops again.
+
+```{r 2023-02-07- recursive-feature-elimination-009}
+#| code-fold: true
+#| label: fig-gbm
+#| fig-cap: "Optimization path of the feature selection."
+
+library(viridisLite)
+library(mlr3misc)
+
+data = as.data.table(instance$archive)
+data[, n:= map_int(importance, length)]
+
+ggplot(data, aes(x = n, y = classif.auc)) +
+  geom_line(
+    color = viridis(1, begin = 0.5),
+    linewidth = 1) +
+  geom_point(
+    fill = viridis(1, begin = 0.5),
+    shape = 21,
+    size = 3,
+    stroke = 0.5,
+    alpha = 0.8) +
+  xlab("Number of Features") +
+  scale_x_reverse() +
+  theme_minimal()
+```
+
+# Support Vector Machine
+
+```{r 2023-02-07- recursive-feature-elimination-010}
+learner = lrn("classif.svm", type = "C-classification", kernel = "linear", predict_type = "prob")
+```
+
+```{r 2023-02-07- recursive-feature-elimination-011}
+instance = fsi(
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 6),
+  measures = msr("classif.auc"),
+  terminator = trm("none"),
+  callback = clbk("mlr3fselect.svm_rfe"),
+  store_models = TRUE)
+```
+
+```{r 2023-02-07- recursive-feature-elimination-012}
+optimizer$optimize(instance)
+```
+
+
+```{r 2023-02-07- recursive-feature-elimination-013}
+library(mlr3viz)
+
+autoplot(instance, type = "performance")
+```
+
+
+```{r 2023-02-07- recursive-feature-elimination-014}
+#| code-fold: true
+#| label: fig-svm
+#| fig-cap: "Optimization path of the feature selection."
+
+library(viridisLite)
+library(mlr3misc)
+
+data = as.data.table(instance$archive)
+data[, n:= map_int(importance, length)]
+
+ggplot(data, aes(x = n, y = classif.auc)) +
+  geom_line(
+    color = viridis(1, begin = 0.5),
+    linewidth = 1) +
+  geom_point(
+    fill = viridis(1, begin = 0.5),
+    shape = 21,
+    size = 3,
+    stroke = 0.5,
+    alpha = 0.8) +
+  xlab("Number of Features") +
+  scale_x_reverse() +
+  theme_minimal()
+```
+
+For datasets with a lot of features, it is more efficient to remove several features per iteration. We show an example where 25% of the features are removed in each iteration.
+
+```{r 2023-02-07- recursive-feature-elimination-015}
+optimizer = fs("rfe", n_features = 1, feature_fraction = 0.75)
+
+instance = fsi(
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 6),
+  measures = msr("classif.auc"),
+  terminator = trm("none"),
+  callback = clbk("mlr3fselect.svm_rfe"),
+  store_models = TRUE)
+
+optimizer$optimize(instance)
+```
+
+```{r 2023-02-07- recursive-feature-elimination-016}
+#| code-fold: true
+#| label: fig-svm-2
+#| fig-cap: "Optimization path of the feature selection."
+
+library(viridisLite)
+library(mlr3misc)
+
+data = as.data.table(instance$archive)
+data[, n:= map_int(importance, length)]
+
+ggplot(data, aes(x = n, y = classif.auc)) +
+  geom_line(
+    color = viridis(1, begin = 0.5),
+    linewidth = 1) +
+  geom_point(
+    fill = viridis(1, begin = 0.5),
+    shape = 21,
+    size = 3,
+    stroke = 0.5,
+    alpha = 0.8) +
+  xlab("Number of Features") +
+  scale_x_reverse() +
+  theme_minimal()
+```
