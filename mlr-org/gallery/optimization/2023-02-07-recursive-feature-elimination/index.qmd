@@ -36,12 +36,6 @@ As an example, we will search for the optimal set of features for a `r ref("mlr_
 We assume that you are already familiar with the basic building blocks of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
 If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/feature-selection.html) of the mlr3book first.
 
-```{r 2023-02-07- recursive-feature-elimination-002}
-#| message: false
-
-library(mlr3verse)
-```
-
 # Recursive Feature Elimination
 
 Recursive Feature Elimination (RFE) is a widely used feature selection method in high-dimensional data sets.
@@ -62,7 +56,7 @@ The MDI is the total reduction in node impurity when the feature is used for spl
 Gradient boosting algorithms like `r ref("mlr_learners_classif.xgboost", "XGBoost")`, `r ref("mlr_learners_classif.lightgbm", "LightGBM")` and `r ref("mlr_learners_classif.gbm", "GBM")` use similar methods to measure the importance of the features.
 
 `r ref_pkg("mlr3fselect")` is the feature selection package of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
-It implements the `r ref("mlr_fselectors_shadow_variable_search", "RFE")` algorithm.
+It implements the `r ref("mlr_fselectors_rfe", "RFE")` algorithm.
 We load all packages of the ecosystem with the `r ref("mlr3verse")` package.
 
 ```{r 2023-02-01-shadow-variable-search-002}
@@ -71,7 +65,7 @@ We load all packages of the ecosystem with the `r ref("mlr3verse")` package.
 library(mlr3verse)
 ```
 
-We retrieve the `r ref("mlr_fselectors_shadow_variable_search", "RFE")` optimizer with the `r ref("fs()")` function.
+We retrieve the `r ref("mlr_fselectors_rfe", "RFE")` optimizer with the `r ref("fs()")` function.
 
 ```{r 2023-02-07- recursive-feature-elimination-003}
 optimizer = fs("rfe", n_features = 1, feature_number = 1)
@@ -143,10 +137,12 @@ We are now ready to start the recursive feature elimination.
 To do this, we simply pass the instance to the `$optimize()` method of the optimizer.
 
 ```{r 2023-02-07- recursive-feature-elimination-008}
+#| output: false
+
 optimizer$optimize(instance)
 ```
 
-The optimizer returns the best feature set and the corresponding estimated performance.
+The optimizer saves the best feature set and the corresponding estimated performance in `instance$result`.
 
 @fig-gbm shows the optimization path of the feature selection.
 We observe that the performance increases first as the number of features decreases.
@@ -180,9 +176,21 @@ ggplot(data, aes(x = n, y = classif.auc)) +
 
 # Support Vector Machine
 
+Now we will select the optimal feature set for a support vector machine.
+
 ```{r 2023-02-07- recursive-feature-elimination-010}
 learner = lrn("classif.svm", type = "C-classification", kernel = "linear", predict_type = "prob")
 ```
+
+Since the feature importance can only be calculated with a linear SVM, the learner does not support the calculation at first.
+This can be seen by the missing `"importance"` property.
+
+```{r}
+learner$properties
+```
+
+Using the `"mlr3fselect.svm_rfe"` callback however makes it possible to use a linear SVM with the `r ref("mlr_fselectors_rfe", "RFE")` optimizer.
+We load the callback with the `r ref("clbk()")` function and pass it to the `callback` argument of the `r ref("fsi()")` function.
 
 ```{r 2023-02-07- recursive-feature-elimination-011}
 instance = fsi(
@@ -196,14 +204,9 @@ instance = fsi(
 ```
 
 ```{r 2023-02-07- recursive-feature-elimination-012}
+#| output: false
+
 optimizer$optimize(instance)
-```
-
-
-```{r 2023-02-07- recursive-feature-elimination-013}
-library(mlr3viz)
-
-autoplot(instance, type = "performance")
 ```
 
 
@@ -236,6 +239,8 @@ ggplot(data, aes(x = n, y = classif.auc)) +
 For datasets with a lot of features, it is more efficient to remove several features per iteration. We show an example where 25% of the features are removed in each iteration.
 
 ```{r 2023-02-07- recursive-feature-elimination-015}
+#| output: false
+
 optimizer = fs("rfe", n_features = 1, feature_fraction = 0.75)
 
 instance = fsi(
@@ -275,3 +280,6 @@ ggplot(data, aes(x = n, y = classif.auc)) +
   scale_x_reverse() +
   theme_minimal()
 ```
+
+# Conclusion
+
