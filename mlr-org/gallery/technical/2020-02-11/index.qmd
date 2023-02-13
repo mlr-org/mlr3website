@@ -1,0 +1,514 @@
+---
+title: "Benchmarking mlr3"
+description: |
+  Benchmark mlr3.
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+date: 2023-02-11
+bibliography: ../../bibliography.bib
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+---
+
+{{< include ../_setup.qmd >}}
+
+# Scope
+
+Running a machine learning task in a framework comes with an overhead.
+
+```{r}
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+
+options("mlr3.debug" = TRUE)
+
+library(microbenchmark)
+library(mlr3verse)
+library(ranger)
+library(mlr3misc)
+```
+
+# Linear Model
+
+## Train
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+
+task = tsk("mtcars")
+learner = lrn("regr.lm")
+data = task$data()
+
+microbenchmark(
+  lm(mpg ~ ., data),
+  learner$train(task),
+  unit = "ms"
+)
+```
+
+Using `mlr3` is slower by a factor of 10 when fitting a very simple model on a small data set.
+
+## Predict
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+
+task = tsk("mtcars")
+learner = lrn("regr.lm")$train(task)
+
+data = task$data()
+model = lm(mpg ~ ., data)
+
+microbenchmark(
+  predict(model, data),
+  learner$predict(task),
+  unit = "ms"
+)
+```
+
+## Resample
+
+Now we resample with a 3-fold cross-validation.
+
+```{r}
+#| warnings: false
+
+task = tsk("mtcars")
+learner = lrn("regr.lm")
+resampling = rsmp("cv", folds = 3)
+data = task$data()
+
+base_cv = function(data, folds) {
+  ids = seq(nrow(data))
+  splits = split(ids, sample(0:(length(ids) -1) %% folds + 1L))
+
+  lapply(splits, function(i) {
+    train_data = data[-i, ]
+    model = lm(mpg ~ ., train_data)
+    test_data = data[i, ]
+    predict(model, test_data)
+  })
+}
+
+microbenchmark(
+  resample(task, learner, resampling),
+  base_cv(data, 3),
+  unit = "ms"
+)
+```
+
+# Ranger 10 trees
+
+## Train
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+library(ranger)
+
+task = tsk("spam")
+learner = lrn("classif.ranger", num.trees = 10, num.threads = 1)
+data = task$data()
+
+microbenchmark(
+  ranger(type ~ ., data, num.trees = 10, num.threads = 1),
+  learner$train(task),
+  unit = "ms"
+)
+```
+
+Using `mlr3` is slower by a factor of 10 when fitting a very simple model on a small data set.
+
+## Predict
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+
+task = tsk("spam")
+learner = lrn("classif.ranger", num.trees = 10, num.threads = 1)$train(task)
+
+data = task$data()
+model = ranger(type ~ ., data, num.trees = 10, num.threads = 1)
+
+microbenchmark(
+  predict(model, data, num.threads = 1),
+  learner$predict(task),
+  unit = "ms"
+)
+```
+
+## Resample
+
+Now we resample with a 3-fold cross-validation.
+
+```{r}
+#| warnings: false
+
+task = tsk("spam")
+learner = lrn("classif.ranger", num.trees = 10, num.threads = 1)
+resampling = rsmp("cv", folds = 3)
+data = task$data()
+
+base_cv = function(data, folds) {
+  ids = seq(nrow(data))
+  splits = split(ids, sample(0:(length(ids) -1) %% folds + 1L))
+
+  lapply(splits, function(i) {
+    train_data = data[-i, ]
+    model = ranger(type ~ ., train_data, num.trees = 10, num.threads = 1)
+    test_data = data[i, ]
+    predict(model, test_data, num.threads = 1)
+  })
+}
+
+microbenchmark(
+  resample(task, learner, resampling),
+  base_cv(data, 3),
+  unit = "ms"
+)
+```
+
+with data.table
+
+```{r}
+library(mlr3misc)
+
+data_table_cv = function(data, folds) {
+  ids = seq(nrow(data))
+  splits = data.table(
+    row_id = ids,
+    fold = shuffle(seq_along0(ids) %% as.integer(folds) + 1L),
+    key = "fold"
+  )
+
+  lapply(seq(folds), function(i) {
+    train_data = data[splits[!list(i), "row_id", on = "fold"][[1L]], ]
+    model = ranger(type ~ ., train_data, num.trees = 10, num.threads = 1)
+    test_data = data[splits[list(i), "row_id", on = "fold"][[1L]], ]
+    predict(model, test_data, num.threads = 1)
+  })
+}
+
+microbenchmark(
+  resample(task, learner, resampling),
+  data_table_cv(data, 3),
+  base_cv(data, 3),
+  unit = "ms",
+  times = 10
+)
+```
+
+```{r}
+p = profvis::profvis(data_table_cv(data, 3))
+
+htmlwidgets::saveWidget(p, "profile_base_10.html")
+```
+
+```{r}
+p = profvis::profvis(resample(task, learner, resampling))
+
+htmlwidgets::saveWidget(p, "profile_mlr3_10.html")
+```
+
+
+# Ranger 50 trees
+
+## Train
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+library(ranger)
+
+task = tsk("spam")
+learner = lrn("classif.ranger", num.trees = 50, num.threads = 1)
+data = task$data()
+
+microbenchmark(
+  ranger(type ~ ., data, num.trees = 50, num.threads = 1),
+  learner$train(task),
+  unit = "ms"
+)
+```
+
+Using `mlr3` is slower by a factor of 10 when fitting a very simple model on a small data set.
+
+## Predict
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+
+task = tsk("spam")
+learner = lrn("classif.ranger", num.trees = 50, num.threads = 1)$train(task)
+
+data = task$data()
+model = ranger(type ~ ., data, num.trees = 50, num.threads = 1)
+
+microbenchmark(
+  predict(model, data, num.threads = 1),
+  learner$predict(task),
+  unit = "ms"
+)
+```
+
+## Resample
+
+Now we resample with a 3-fold cross-validation.
+
+```{r}
+#| warnings: false
+
+task = tsk("spam")
+learner = lrn("classif.ranger", num.trees = 50, num.threads = 1)
+resampling = rsmp("cv", folds = 3)
+data = task$data()
+
+base_cv = function(data, folds) {
+  ids = seq(nrow(data))
+  splits = split(ids, sample(0:(length(ids) -1) %% folds + 1L))
+
+  lapply(splits, function(i) {
+    train_data = data[i, ]
+    model = ranger(type ~ ., train_data, num.trees = 50, num.threads = 1)
+    test_data = data[-i, ]
+    predict(model, test_data, num.threads = 1)
+  })
+}
+
+microbenchmark(
+  resample(task, learner, resampling),
+  base_cv(data, 3),
+  unit = "ms",
+  times = 10
+)
+```
+
+```{r}
+p = profvis::profvis(data_table_cv(data, 3))
+
+htmlwidgets::saveWidget(p, "profile_base_50.html")
+```
+
+```{r}
+p = profvis::profvis(resample(task, learner, resampling))
+
+htmlwidgets::saveWidget(p, "profile_mlr3_50.html")
+```
+
+# Ranger 500 trees
+
+## Train
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+library(ranger)
+
+task = tsk("spam")
+learner = lrn("classif.ranger", num.trees = 500, num.threads = 1)
+data = task$data()
+
+microbenchmark(
+  ranger(type ~ ., data, num.trees = 500, num.threads = 1),
+  learner$train(task),
+  unit = "ms",
+  times = 5
+)
+```
+
+Using `mlr3` is slower by a factor of 10 when fitting a very simple model on a small data set.
+
+## Predict
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+
+task = tsk("spam")
+learner = lrn("classif.ranger", num.trees = 500, num.threads = 1)$train(task)
+
+data = task$data()
+model = ranger(type ~ ., data, num.trees = 500, num.threads = 1)
+
+microbenchmark(
+  predict(model, data, num.threads = 1),
+  learner$predict(task),
+  unit = "ms",
+  times = 5
+)
+```
+
+## Resample
+
+Now we resample with a 3-fold cross-validation.
+
+```{r}
+#| warnings: false
+
+task = tsk("spam")
+learner = lrn("classif.ranger", num.trees = 500, num.threads = 1)
+resampling = rsmp("cv", folds = 3)
+data = task$data()
+
+base_cv = function(data, folds) {
+  ids = seq(nrow(data))
+  splits = split(ids, sample(0:(length(ids) -1) %% folds + 1L))
+
+  lapply(seq(folds), function(i) {
+    train_data = data[-i, ]
+    model = ranger(type ~ ., train_data, num.trees = 500, num.threads = 1)
+    test_data = data[i, ]
+    predict(model, test_data, num.threads = 1)$predictions
+  })
+}
+
+data_table_cv = function(data, folds) {
+  ids = seq(nrow(data))
+  splits = data.table(
+    row_id = ids,
+    fold = shuffle(seq_along0(ids) %% as.integer(folds) + 1L),
+    key = "fold"
+  )
+
+  lapply(seq(folds), function(i) {
+    train_data = data[splits[!list(i), "row_id", on = "fold"][[1L]], ]
+    model = ranger(type ~ ., train_data, num.trees = 500, num.threads = 1)
+    test_data = data[splits[list(i), "row_id", on = "fold"][[1L]], ]
+    predict(model, test_data, num.threads = 1)
+  })
+}
+
+microbenchmark(
+  resample(task, learner, resampling),
+  data_table_cv(data, 3),
+  base_cv(data, 3),
+  unit = "ms",
+  times = 5
+)
+```
+
+```{r}
+p = profvis::profvis(data_table_cv(data, 3))
+
+htmlwidgets::saveWidget(p, "profile_base_500.html")
+```
+
+```{r}
+p = profvis::profvis(resample(task, learner, resampling))
+
+htmlwidgets::saveWidget(p, "profile_mlr3_500.html")
+```
+
+
+# Sys.sleep
+
+## Train
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+library(ranger)
+
+task = tsk("spam")
+learner = lrn("classif.debug", sleep_train = function() 1, sleep_predict = function() 1)
+data = task$data()
+
+microbenchmark(
+  Sys.sleep(1),
+  learner$train(task),
+  unit = "ms",
+  times = 5
+)
+```
+
+Using `mlr3` is slower by a factor of 10 when fitting a very simple model on a small data set.
+
+## Predict
+
+```{r}
+library(microbenchmark)
+library(mlr3verse)
+
+task = tsk("spam")
+learner = lrn("classif.debug", sleep_train = function() 1, sleep_predict = function() 1)$train(task)
+
+microbenchmark(
+  Sys.sleep(1),
+  learner$predict(task),
+  unit = "ms",
+  times = 5
+)
+```
+
+## Resample
+
+Now we resample with a 3-fold cross-validation.
+
+```{r}
+#| warnings: false
+
+task = tsk("spam")
+learner = lrn("classif.debug", sleep_train = function() 1, sleep_predict = function() 1)
+resampling = rsmp("cv", folds = 3)
+data = task$data()
+
+base_cv = function(data, folds, sleep) {
+  ids = seq(nrow(data))
+  splits = split(ids, sample(0:(length(ids) -1) %% folds + 1L))
+
+  lapply(seq(folds), function(i) {
+    train_data = data[-i, ]
+    Sys.sleep(sleep)
+    test_data = data[i, ]
+    Sys.sleep(sleep)
+  })
+}
+
+data_table_cv = function(data, folds, sleep) {
+  ids = seq(nrow(data))
+  splits = data.table(
+    row_id = ids,
+    fold = shuffle(seq_along0(ids) %% as.integer(folds) + 1L),
+    key = "fold"
+  )
+
+  lapply(seq(folds), function(i) {
+    train_data = data[splits[!list(i), "row_id", on = "fold"][[1L]], ]
+    Sys.sleep(sleep)
+    test_data = data[splits[list(i), "row_id", on = "fold"][[1L]], ]
+    Sys.sleep(sleep)
+  })
+}
+
+microbenchmark(
+  mlr3_1000 = resample(task, lrn("classif.debug", sleep_train = function() 1, sleep_predict = function() 1), resampling),
+  base_1000 = base_cv(data, 3, 1),
+  mlr3_100 = resample(task, lrn("classif.debug", sleep_train = function() 0.1, sleep_predict = function() 0.1), resampling),
+  base_100 = base_cv(data, 3, 0.1),
+  mlr3_10 = resample(task, lrn("classif.debug", sleep_train = function() 0.01, sleep_predict = function() 0.01), resampling),
+  base_10 = base_cv(data, 3, 0.01),
+  dt_10 = data_table_cv(data, 3, 0.01),
+  unit = "ms",
+  times = 10
+)
+```
+
+
+```{r}
+p = profvis::profvis(base_cv(data, 3), interval = 0.005)
+
+htmlwidgets::saveWidget(p, "profile_base_sleep.html")
+```
+
+```{r}
+p = profvis::profvis(resample(task, learner, resampling), interval = 0.005)
+
+htmlwidgets::saveWidget(p, "profile_mlr3_sleep.html")
+```
