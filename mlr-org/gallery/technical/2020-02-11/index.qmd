@@ -17,8 +17,6 @@ knitr:
 
 # Scope
 
-Running a machine learning task in a framework comes with an overhead.
-
 ```{r}
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
