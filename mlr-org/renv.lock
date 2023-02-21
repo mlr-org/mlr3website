@@ -803,10 +803,10 @@
     },
     "class": {
       "Package": "class",
-      "Version": "7.3-20",
+      "Version": "7.3-21",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "da09d82223e669d270e47ed24ac8686e",
+      "Hash": "8ae0d4328e2eb3a582dfd5391a3663b7",
       "Requirements": [
         "MASS"
       ]
@@ -867,10 +867,10 @@
     },
     "codetools": {
       "Package": "codetools",
-      "Version": "0.2-18",
+      "Version": "0.2-19",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "019388fc48e48b3da0d3a76ff94608a8",
+      "Hash": "c089a619a7fae175d149d89164f8c7d8",
       "Requirements": []
     },
     "collections": {
@@ -2319,6 +2319,14 @@
         "nlme"
       ]
     },
+    "microbenchmark": {
+      "Package": "microbenchmark",
+      "Version": "1.4.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7001412b0204877d34dd8f46b04fde62",
+      "Requirements": []
+    },
     "mime": {
       "Package": "mime",
       "Version": "0.12",
@@ -2386,9 +2394,14 @@
     "mlr3": {
       "Package": "mlr3",
       "Version": "0.14.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "a05ede9ea2ffebee758c425154d2f46d",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mlr-org",
+      "RemoteRepo": "mlr3",
+      "RemoteRef": "main",
+      "RemoteSha": "2fd41be81874f13d4b0090272834f34f892e9f39",
+      "Hash": "a94020ea73b1785d297e5c8f874ed7f6",
       "Requirements": [
         "R6",
         "backports",
@@ -2545,15 +2558,10 @@
     },
     "mlr3fselect": {
       "Package": "mlr3fselect",
-      "Version": "0.9.1.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "mlr-org",
-      "RemoteRepo": "mlr3fselect",
-      "RemoteRef": "data",
-      "RemoteSha": "cd386307da5c61295c76a2f52771885fe69d5467",
-      "Hash": "27aa3d12adfdf09a2d24346d83a7cdfe",
+      "Version": "0.10.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3f8a88864369f52acafd76b60f76d575",
       "Requirements": [
         "R6",
         "bbotk",
