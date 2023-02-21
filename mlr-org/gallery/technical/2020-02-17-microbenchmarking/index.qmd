@@ -15,28 +15,37 @@ knitr:
 
 {{< include ../_setup.qmd >}}
 
+```{r 2020-02-17-microbenchmarking-001}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(0)
+future::plan("sequential")
+```
+
 # Scope
 
 Frameworks significantly speed up and simplify the development process of machine learning models.
-
+However, this does not come for free but is paid with additional runtime.
 Estimating the performance of models with resampling is a fundamental task in machine learning.
-In this article, we will benchmark the `resample()` function of `r ref_pkg("mlr3")` against an implementation in base R.
+In this article, we will benchmark the `r ref("resample()")` function of `r ref_pkg("mlr3")` against a base R implementation.
 
-```{r}
-lgr::get_logger("mlr3")$set_threshold("warn")
-lgr::get_logger("bbotk")$set_threshold("warn")
+# Setup
+
+We will use the `r ref_pkg("microbenchmark")` package to measure the run time.
+
+```{r 2020-02-17-microbenchmarking-002}
+#| message: false
 
 library(microbenchmark)
 library(mlr3verse)
 ```
 
-# Cross-Validation
+We run the benchmark on the `r ref("mlr_tasks_penguins", text = "Palmer Penguins")` data set.
+It is a medium-sized data set with 7 features.
+For the base R implementation, we extract the data from the task.
 
-We run the benchmark on the Palmer Penguins data set.
-It is a medium-sized data set.
-For the base R implemtation, we extract the data from the task.
-
-```{r}
+```{r 2020-02-17-microbenchmarking-003}
 task = tsk("penguins")
 data = task$data()
 ```
@@ -45,7 +54,7 @@ The cross-validation in base R splits the data set into folds and then iterates 
 Instead of fitting a model on the train set and predicting on the test set, we suspend the execution for a specific time interval.
 We can simulate different training times this way.
 
-```{r}
+```{r 2020-02-17-microbenchmarking-004}
 base_cv = function(data, folds, sleep) {
   ids = seq(nrow(data))
   splits = split(ids, sample(0:(length(ids) -1) %% folds + 1L))
@@ -60,17 +69,23 @@ base_cv = function(data, folds, sleep) {
 ```
 
 Running a 3-fold cross-validation looks like this.
-We simulate a train and predict time of 1 second.
+We simulate a total time for training and prediction of 1 second.
 
-```{r}
+```{r 2020-02-17-microbenchmarking-005}
+#| output: false
+
 base_cv(data, folds = 3, sleep = 1)
 ```
 
 The counterpart to the base R version looks like this in mlr3.
 We use the `r ref("mlr_learners_classif.debug", "debug learner")` that can be also stopped for a specific time interval.
 
-```{r}
-learner = lrn("classif.debug", sleep_train = function() 0.5, sleep_predict = function() 0.5)
+```{r 2020-02-17-microbenchmarking-006}
+#| output: false
+
+learner = lrn("classif.debug",
+  sleep_train = function() 0.5,
+  sleep_predict = function() 0.5)
 resampling = rsmp("cv", folds = 3)
 
 resample(task, learner, resampling)
@@ -81,17 +96,155 @@ resample(task, learner, resampling)
 We run a benchmark with the base R and mlr3 implementation on different training times.
 The process is repeated 10 times to get reliable timings.
 
-```{r}
+```{r 2020-02-17-microbenchmarking-007}
+#| eval: false
+
 bmr = microbenchmark(
-  mlr3_cv3_1000 = resample(task, lrn("classif.debug", sleep_train = function() 0.5, sleep_predict = function() 0.5), rsmp("cv", folds = 3)),
-  base_cv3_1000 = base_cv(data, 3, 1),
-  mlr3_cv3_100 = resample(task, lrn("classif.debug", sleep_train = function() 0.05, sleep_predict = function() 0.05), rsmp("cv", folds = 3)),
-  base_cv3_100 = base_cv(data, 3, 0.1),
-  mlr3_cv3_10 = resample(task, lrn("classif.debug", sleep_train = function() 0.005, sleep_predict = function() 0.005), rsmp("cv", folds = 3)),
-  base_cv3_10 = base_cv(data, 3, 0.01),
-  mlr3_cv3_1 = resample(task, lrn("classif.debug", sleep_train = function() 0.0005, sleep_predict = function() 0.0005), rsmp("cv", folds = 3)),
-  base_cv3_1 = base_cv(data, 3, 0.001),
+  mlr3_cv5_1000 = resample(task, lrn("classif.debug", sleep_train = function() 0.5, sleep_predict = function() 0.5), rsmp("cv", folds = 5)),
+  base_cv5_1000 = base_cv(data, 5, 1),
+  mlr3_cv5_100 = resample(task, lrn("classif.debug", sleep_train = function() 0.05, sleep_predict = function() 0.05), rsmp("cv", folds = 5)),
+  base_cv5_100 = base_cv(data, 5, 0.1),
+  mlr3_cv5_10 = resample(task, lrn("classif.debug", sleep_train = function() 0.005, sleep_predict = function() 0.005), rsmp("cv", folds = 5)),
+  base_cv5_10 = base_cv(data, 5, 0.01),
+  mlr3_cv5_1 = resample(task, lrn("classif.debug", sleep_train = function() 0.0005, sleep_predict = function() 0.0005), rsmp("cv", folds = 5)),
+  base_cv5_1 = base_cv(data, 5, 0.001),
   unit = "ms",
   times = 10
 )
 ```
+
+```{r 2020-02-17-microbenchmarking-008}
+#| include: false
+bmr = readRDS("bmr.rds")
+```
+
+The runtime of a 3-fold cross-validation is about ten times longer with mlr3 if the time for training is 1 ms.
+If the time for training is 10 ms, mlr3 takes about 3 times as long.
+With a training time of 1 second, the overhead is slowly negligible.
+It amounts to only 3 percent.
+
+```{r 2020-02-17-microbenchmarking-009}
+#| code-fold: true
+
+library(data.table)
+
+data = data.table(
+  train_time = rep(c(1000, 100, 10, 1), each = 2),
+  framework = rep(c("mlr3", "base"), 4),
+  mean_run_time = summary(bmr)$median)
+
+data[, factor := lapply(.SD, function(x) x[1] / x[2]), by = "train_time", .SDcols = "mean_run_time"]
+
+data
+```
+
+```{r 2020-02-17-microbenchmarking-010}
+#| code-fold: true
+#| fig-cap: Runtime of the base R and mlr3 cross-validation with different training times.
+#| label: fig-runtime
+
+library(ggplot2)
+
+ggplot(data, aes(x = train_time, y = mean_run_time, color = framework)) +
+  geom_line() +
+  geom_point() +
+  scale_color_viridis_d(alpha = 0.8, end = 0.8, name = "Framework") +
+  xlab("Train and Predict Time [ms]") +
+  ylab("Run Time 3-fold Cross-Validation [ms]") +
+  theme_minimal()
+```
+
+Let's look at the typical training times of well-known machine learning models on different task sizes.
+
+```{r 2020-02-17-microbenchmarking-011}
+#| eval: false
+
+library(ranger)
+library(e1071)
+library(rpart)
+
+task = tsk("spam")
+task$filter(sample(seq(task$nrow), 4000))
+data_4000 = task$data()
+task$filter(sample(seq(task$nrow), 400))
+data_400 = task$data()
+
+bmr = microbenchmark(
+  svm_4000 = svm(type ~ ., data_4000),
+  ranger_4000 = ranger(type ~ ., data_4000, num.trees = 1000),
+  rpart_4000 = rpart(type ~ ., data_4000),
+  lm_4000 = lm(type ~ ., data_4000),
+  svm_400 = svm(type ~ ., data_400),
+  ranger_400 = ranger(type ~ ., data_400, num.trees = 1000),
+  rpart_400 = rpart(type ~ ., data_400),
+  lm_400 = lm(type ~ ., data_400),
+  unit = "ms",
+  times = 10
+)
+```
+
+```{r 2020-02-17-microbenchmarking-012}
+#| include: false
+bmr = readRDS("bmr_2.rds")
+```
+
+Training an SVM with 4000 observations takes about one second.
+That means we would hardly notice any overhead.
+Resampling a random forest or decision tree would also create an acceptable overhead of 10 to 40 percent.
+If we train on a small dataset with 400 observations, we have to expect mlr3 to take up to three times longer than a Base R implementation.
+A particularly high overhead is to be expected for linear models on small datasets.
+
+```{r 2020-02-17-microbenchmarking-013}
+#| code-fold: true
+
+data = data.table(
+  task_size = rep(c(4000, 400), each = 4),
+  learner = rep(c("smv", "ranger", "rpart", "lm"), 2),
+  mean_train_time = summary(bmr)$median)
+
+data
+```
+
+What happens if we increase the number of folds?
+
+```{r 2020-02-17-microbenchmarking-014}
+#| eval: false
+
+bmr = microbenchmark(
+  mlr3_cv5_1000 = resample(task, lrn("classif.debug", sleep_train = function() 0.5, sleep_predict = function() 0.5), rsmp("cv", folds = 5)),
+  base_cv5_1000 = base_cv(data, 5, 1),
+  mlr3_cv5_10 = resample(task, lrn("classif.debug", sleep_train = function() 0.005, sleep_predict = function() 0.005), rsmp("cv", folds = 5)),
+  base_cv5_10 = base_cv(data, 5, 0.01),
+  mlr3_cv10_1000 = resample(task, lrn("classif.debug", sleep_train = function() 0.5, sleep_predict = function() 0.5), rsmp("cv", folds = 10)),
+  base_cv10_1000 = base_cv(data, 10, 1),
+  mlr3_cv10_10 = resample(task, lrn("classif.debug", sleep_train = function() 0.005, sleep_predict = function() 0.005), rsmp("cv", folds = 10)),
+  base_cv10_10 = base_cv(data, 10, 0.01),
+  unit = "ms",
+  times = 10
+)
+```
+
+```{r 2020-02-17-microbenchmarking-015}
+#| include: false
+bmr = readRDS("bmr_3.rds")
+```
+
+The overhead slightly decreases when the number of folds increases.
+
+```{r 2020-02-17-microbenchmarking-016}
+#| code-fold: true
+
+data = data.table(
+  train_time = rep(c(1000, 1000, 10, 10), 2),
+  cv = rep(c(5, 10), each = 4),
+  framework = rep(c("mlr3", "base", "mlr3", "base"), 2),
+  mean_run_time = summary(bmr)$median)
+
+data[, factor := lapply(.SD, function(x) x[1] / x[2]), by = c("train_time", "cv"), .SDcols = "mean_run_time"]
+
+data
+```
+
+# Conclusion
+
+Building a machine learning workflow with a framework comes with additional runtime.
