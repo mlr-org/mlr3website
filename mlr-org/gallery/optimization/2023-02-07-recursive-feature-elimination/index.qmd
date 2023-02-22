@@ -40,7 +40,7 @@ If you are new to feature selection, we recommend reading the [feature selection
 
 Recursive Feature Elimination (RFE) is a widely used feature selection method for high-dimensional data sets.
 The idea is to iteratively remove the least predictive feature from a model until the desired number of features is reached.
-The weakest feature is determined by the built-in feature importance method of the model.
+This feature is determined by the built-in feature importance method of the model.
 Currently, RFE works with support vector machines (SVM), decision tree algorithms and gradient boosting machines (GBM).
 Supported learners are tagged with the `"importance"` property.
 For a full list of supported learners, see the learner page on the [mlr-org website](https://mlr-org.com/learners.html) and search for `"importance"`.
