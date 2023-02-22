@@ -29,7 +29,7 @@ future::plan("multisession")
 
 # Scope
 
-Feature selection is the process of finding an optimal set of features to improve the performance, interpretability and robustness of machine learning algorithms.
+Feature selection is the process of finding an optimal subset of features in order to improve the performance, interpretability and robustness of machine learning algorithms.
 In this article, we introduce the wrapper feature selection method *Recursive Feature Elimination*.
 [Wrapper methods](https://mlr3book.mlr-org.com/feature-selection.html#fs-wrapper) iteratively select features that optimize a performance measure.
 As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.gbm", "gradient boosting machine")` and `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_pima", text = "Sonar")` data set.
