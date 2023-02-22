@@ -88,6 +88,7 @@ The `subset_size` argument is a vector that specifies exactly how many features 
 The parameters are mutually exclusive and the default is `feature_fraction = 0.5`.
 Usually, RFE fits a new model in each resampling iteration and calculates the feature importance again.
 We can deactivate this behavior by setting `recursive = FALSE`.
+The selection of feature subsets in all iterations is then based solely on the importance scores of the first model trained with all features.
 When running an RFE with a resampling strategy like cross-validation, multiple models and importance scores are generated.
 The `aggregation` parameter determines how the importance scores are aggregated.
 The option `"rank"` ranks the importance scores in each iteration and then averages the ranks of the features.
