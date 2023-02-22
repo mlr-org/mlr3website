@@ -111,13 +111,14 @@ task = tsk("sonar")
 #| fig-width: 14
 #| fig-height: 14
 #| label: fig-features
-#| fig-cap: "Distribution of the features in the Sonar data set."
+#| fig-cap: "Distribution of the first 5 features in the Sonar dataset."
 #| warning: false
 
 library(ggplot2)
 library(data.table)
 
 data = melt(as.data.table(task), id.vars = task$target_names, measure.vars = task$feature_names)
+data = data[c("V1", "V10", "V11", "V12", "V13", "V14"), , on = "variable"]
 
 ggplot(data, aes(x = value, fill = Class)) +
   geom_density(alpha = 0.5) +
