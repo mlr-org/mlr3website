@@ -84,7 +84,7 @@ library(htmltools)
 
 data = mlr3misc::rowwise_table(
   ~i, ~ni_3,  ~ri_3,  ~ni_2,        ~ri_2,        ~ni_1,        ~ri_1,        ~ni_0,        ~ri_0,
-  0,  8,      1,      6,            2,            4,            4,            8,            4,
+  0,  8,      1,      6,            2,            4,            4,            4,            8,
   1,  4,      2,      3,            4,            2,            8,            NA_integer_,  NA_integer_,
   2,  2,      4,      1,            8,            NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_,
   3,  1,      8,      NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_
