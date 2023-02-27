@@ -22,7 +22,7 @@ The `r ref("mlr_pipeops_filter", text = "Filter PipeOp")` allows to use filters 
 #| echo: false
 #| column: page
 
-content = as.data.table(mlr_filters, objects = TRUE)[, .(key, label, task_type, packages)]
+content = as.data.table(mlr_filters, objects = TRUE)[, .(key, label, task_types, packages)]
 content[, packages := map(packages, function(value) setdiff(value, c("mlr3", "mlr3filters")))]
 
 ref_cell = function(value) {
@@ -33,7 +33,7 @@ ref_cell = function(value) {
 reactable(content, columns = list(
     key = colDef(name = "Key", cell = ref_cell),
     label = colDef(name = "Label"),
-    task_type = colDef(name = "Task Type", cell = list_cell),
+    task_types = colDef(name = "Task Types", cell = list_cell),
     packages = colDef(name = "Packages", cell = package_list_cell)
   ),
   searchable = TRUE,

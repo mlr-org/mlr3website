@@ -2,19 +2,15 @@
 $line-color: rgba(0, 0, 0, 0.2);
 $mlr-color:  rgba(3, 99, 142, 1);
 $link-color: rgba(3, 99, 142, 1);
-$mermaid-bg-color: rgb(255, 255, 255);
+$mermaid-fg-color--lightest: rgb(241, 241, 241, 1);
+$mermaid-fg-color--lighter: rgba(0, 0, 0, 0.175);
+$mermaid-bg-color: rgb(255, 255, 255, 1);
+$mermaid-node-bg-color: #80aabb;
+$mermaid-node-fg-color: rgba(0, 0, 0, 0.175);
 
 /*-- scss:rules --*/
 @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono|JetBrains+Mono&display=swap");
-
-.cluster > rect {
-  fill:rgb(241, 241, 241) !important;
-}
-
-.node > rect {
-  fill:#39568CFF !important;
-}
 
 .grid {
   display: inline-grid;
@@ -233,6 +229,7 @@ $mermaid-bg-color: rgb(255, 255, 255);
 .gallery {
   display: inline-grid;
   grid-template-columns: 100px auto;
+  margin-bottom: 3rem;
 
 
   &__icon-column {
@@ -248,7 +245,10 @@ $mermaid-bg-color: rgb(255, 255, 255);
   }
 
   &__link {
-    padding-left: 1rem;
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-bottom: 3em;
+    font-size: large;
   }
 }
 

@@ -560,10 +560,10 @@
     },
     "bbotk": {
       "Package": "bbotk",
-      "Version": "0.7.0",
+      "Version": "0.7.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "808ef313066059f5d4ec376b24741860",
+      "Hash": "7d04d128391d34150d9b290f6e14976f",
       "Requirements": [
         "R6",
         "checkmate",
@@ -803,10 +803,10 @@
     },
     "class": {
       "Package": "class",
-      "Version": "7.3-20",
+      "Version": "7.3-21",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "da09d82223e669d270e47ed24ac8686e",
+      "Hash": "8ae0d4328e2eb3a582dfd5391a3663b7",
       "Requirements": [
         "MASS"
       ]
@@ -867,10 +867,10 @@
     },
     "codetools": {
       "Package": "codetools",
-      "Version": "0.2-18",
+      "Version": "0.2-19",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "019388fc48e48b3da0d3a76ff94608a8",
+      "Hash": "c089a619a7fae175d149d89164f8c7d8",
       "Requirements": []
     },
     "collections": {
@@ -2319,6 +2319,14 @@
         "nlme"
       ]
     },
+    "microbenchmark": {
+      "Package": "microbenchmark",
+      "Version": "1.4.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7001412b0204877d34dd8f46b04fde62",
+      "Requirements": []
+    },
     "mime": {
       "Package": "mime",
       "Version": "0.12",
@@ -2386,9 +2394,14 @@
     "mlr3": {
       "Package": "mlr3",
       "Version": "0.14.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "a05ede9ea2ffebee758c425154d2f46d",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mlr-org",
+      "RemoteRepo": "mlr3",
+      "RemoteRef": "main",
+      "RemoteSha": "2fd41be81874f13d4b0090272834f34f892e9f39",
+      "Hash": "a94020ea73b1785d297e5c8f874ed7f6",
       "Requirements": [
         "R6",
         "backports",
@@ -2529,10 +2542,10 @@
     },
     "mlr3filters": {
       "Package": "mlr3filters",
-      "Version": "0.6.0",
+      "Version": "0.7.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "9cd606a85c201438fea659d1789e1ae8",
+      "Hash": "b2d1e6ef8106d3410614e5c69de9e3bd",
       "Requirements": [
         "R6",
         "backports",
@@ -2545,10 +2558,10 @@
     },
     "mlr3fselect": {
       "Package": "mlr3fselect",
-      "Version": "0.8.1",
+      "Version": "0.10.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b19ecd5f8aacabec5cf3bb2084db4b9f",
+      "Hash": "3f8a88864369f52acafd76b60f76d575",
       "Requirements": [
         "R6",
         "bbotk",
@@ -2557,7 +2570,6 @@
         "lgr",
         "mlr3",
         "mlr3misc",
-        "mlr3pipelines",
         "paradox"
       ]
     },
@@ -2807,10 +2819,16 @@
     },
     "mlr3viz": {
       "Package": "mlr3viz",
-      "Version": "0.6.0",
+      "Version": "0.6.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "85f022e586bd16adbf8eafee0465ec02",
+      "RemoteType": "standard",
+      "RemotePkgRef": "mlr3viz",
+      "RemoteRef": "mlr3viz",
+      "RemoteRepos": "https://cloud.r-project.org",
+      "RemotePkgPlatform": "source",
+      "RemoteSha": "0.6.1",
+      "Hash": "1cfe66ec9b62f470e554ff16087491b2",
       "Requirements": [
         "checkmate",
         "data.table",

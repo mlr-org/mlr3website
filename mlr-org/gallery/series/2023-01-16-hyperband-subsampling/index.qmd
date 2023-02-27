@@ -16,6 +16,8 @@ knitr:
   opts_chunk:
     R.options:
       datatable.print.nrows: 6
+aliases:
+  - ../../../gallery/series/2022-12-02-hyperband-subsampling/index.html
 ---
 
 {{< include ../_setup.qmd >}}
@@ -38,7 +40,7 @@ In this post, we will tune a support vector machine and use the size of the trai
 The time to train a support vector machine and the performance increases with the size of the data set.
 This makes the data set size a suitable fidelity parameter for Hyperband.
 This is the second part of the Hyperband series.
-The first part can be found here [Hyperband Series - Iterative Training](/gallery/series/2022-12-01-hyperband-xgboost).
+The first part can be found here [Hyperband Series - Iterative Training](/gallery/series/2023-01-15-hyperband-xgboost).
 If you don't know much about Hyperband, check out the first post which explains the algorithm in detail.
 We assume that you are already familiar with tuning in the mlr3 ecosystem.
 If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/optimization.html) or the [Hyperparameter Optimization on the Palmer Penguins Data Set](/gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.

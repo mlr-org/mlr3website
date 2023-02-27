@@ -15,6 +15,8 @@ knitr:
     R.options:
       datatable.print.nrows: 6
       datatable.print.trunc.cols: TRUE
+aliases:
+  - ../../../gallery/series/2022-12-01-hyperband-xgboost/index.html
 ---
 
 {{< include ../_setup.qmd >}}
@@ -43,7 +45,7 @@ It is therefore a suitable fidelity parameter.
 We assume that you are already familiar with tuning in the mlr3 ecosystem.
 If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/optimization.html) or the [Hyperparameter Optimization on the Palmer Penguins Data Set](/gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
 This is the first part of the Hyperband series.
-The second part can be found here [Hyperband Series - Data Set Subsampling](/gallery/series/2022-12-02-hyperband-subsampling).
+The second part can be found here [Hyperband Series - Data Set Subsampling](/gallery/series/2023-01-16-hyperband-subsampling).
 
 # Hyperband
 
@@ -82,7 +84,7 @@ library(htmltools)
 
 data = mlr3misc::rowwise_table(
   ~i, ~ni_3,  ~ri_3,  ~ni_2,        ~ri_2,        ~ni_1,        ~ri_1,        ~ni_0,        ~ri_0,
-  0,  8,      1,      6,            2,            4,            4,            8,            4,
+  0,  8,      1,      6,            2,            4,            4,            4,            8,
   1,  4,      2,      3,            4,            2,            8,            NA_integer_,  NA_integer_,
   2,  2,      4,      1,            8,            NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_,
   3,  1,      8,      NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_,  NA_integer_
@@ -295,6 +297,6 @@ We only have to select an additional fidelity parameter and tag it with `"budget
 We have tried to keep the runtime of the example low.
 For your optimization, you should use cross-validation and increase the maximum number of boosting rounds.
 The @bischl_hyperparameter_2021 search space suggests 5000 boosting rounds.
-Check out our [next post](/gallery/series/2022-12-02-hyperband-subsampling) on Hyperband which uses the size of the training data set as the fidelity parameter.
+Check out our [next post](/gallery/series/2023-01-16-hyperband-subsampling) on Hyperband which uses the size of the training data set as the fidelity parameter.
 
 

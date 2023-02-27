@@ -1,0 +1,206 @@
+---
+title: "Shadow Variable Search on the Pima Indian Diabetes Data Set"
+description: |
+  Run a feature selection with permutated features.
+categories:
+  - feature selection
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+  - name: Sebastian Fischer
+    url: https://github.com/sebffischer
+date: 2023-02-01
+bibliography: ../../bibliography.bib
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r 2023-02-01-shadow-variable-search-001}
+#| include: false
+
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(1)
+future::plan("multisession")
+```
+
+# Scope
+
+Feature selection is the process of finding an optimal set of features to improve the performance, interpretability and robustness of machine learning algorithms.
+In this article, we introduce the *Shadow Variable Search* algorithm which is a [wrapper method](https://mlr3book.mlr-org.com/feature-selection.html#fs-wrapper) for feature selection.
+Wrapper methods iteratively add features to the model that optimize a performance measure.
+As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set.
+We assume that you are already familiar with the basic building blocks of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
+If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/feature-selection.html) of the mlr3book first.
+Some knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
+
+# Shadow Variable Search
+
+Adding shadow variables to a data set is a well-known method in machine learning [@wu_controlling_2007; @thomas_probing_2017].
+The idea is to add permutated copies of the original features to the data set.
+These permutated copies are called shadow variables or pseudovariables and the permutation breaks any relationship with the target variable, making them useless for prediction.
+The subsequent search is similar to the sequential forward selection algorithm, where one new feature is added in each iteration of the algorithm.
+This new feature is selected as the one that improves the performance of the model the most.
+This selection is computationally expensive, as one model for each of the not yet included features has to be trained.
+The difference between shadow variable search and sequential forward selection is that the former uses the selection of a shadow variable as the termination criterion.
+Selecting a shadow variable means that the best improvement is achieved by adding a feature that is unrelated to the target variable.
+Consequently, the variables not yet selected are most likely also correlated to the target variable only by chance.
+Therefore, only the previously selected features have a true influence on the target variable.
+
+`r ref_pkg("mlr3fselect")` is the feature selection package of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
+It implements the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` algorithm.
+We load all packages of the ecosystem with the `r ref("mlr3verse")` package.
+
+```{r 2023-02-01-shadow-variable-search-002}
+#| message: false
+
+library(mlr3verse)
+```
+
+We retrieve the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` optimizer with the `r ref("fs()")` function.
+The algorithm has no control parameters.
+
+```{r 2023-02-01-shadow-variable-search-003}
+optimizer = fs("shadow_variable_search")
+```
+
+# Task and Learner
+
+The objective of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set is to predict whether a person has diabetes or not.
+The data set includes 768 patients with 8 measurements (see @fig-features).
+
+```{r 2023-02-01-shadow-variable-search-004}
+task = tsk("pima")
+```
+
+```{r 2023-02-01-shadow-variable-search-005}
+#| code-fold: true
+#| column: page
+#| fig-width: 14
+#| fig-height: 3
+#| label: fig-features
+#| fig-cap: "Distribution of the features in the Pima Indian Diabetes data set."
+#| warning: false
+
+library(ggplot2)
+library(data.table)
+
+data = melt(as.data.table(task), id.vars = task$target_names, measure.vars = task$feature_names)
+
+ggplot(data, aes(x = value, fill = diabetes)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~ variable, ncol = 8, scales = "free") +
+  scale_fill_viridis_d(end = 0.8) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank())
+```
+
+The data set contains missing values.
+
+```{r 2023-02-01-shadow-variable-search-006}
+task$missings()
+```
+
+Support vector machines cannot handle missing values.
+We impute the missing values with the `r ref("mlr_pipeops_imputehist", "histogram imputation")` method.
+
+```{r 2023-02-01-shadow-variable-search-007}
+learner = po("imputehist") %>>% lrn("classif.svm", predict_type = "prob")
+```
+
+# Feature Selection
+
+Now we define the feature selection problem by using the `r ref("fsi()")` function that constructs an `r ref("FSelectInstanceSingleCrit")`.
+In addition to the task and learner, we have to select a `r ref("Resampling", text = "resampling strategy")` and `r ref("Measure", text = "performance measure")` to determine how the performance of a feature subset is evaluated.
+We pass the `"none"` terminator because the shadow variable search algorithm terminates by itself.
+
+```{r 2023-02-01-shadow-variable-search-008}
+instance = fsi(
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measures = msr("classif.auc"),
+  terminator = trm("none")
+)
+```
+
+We are now ready to start the shadow variable search.
+To do this, we simply pass the instance to the `$optimize()` method of the optimizer.
+
+```{r 2023-02-01-shadow-variable-search-009}
+optimizer$optimize(instance)
+```
+
+The optimizer returns the best feature set and the corresponding estimated performance.
+
+@fig-optimization-path shows the optimization path of the feature selection.
+The feature glucose was selected first and in the following iterations age, mass and pedigree.
+Then a shadow variable was selected and the feature selection was terminated.
+
+```{r 2023-02-01-shadow-variable-search-010}
+#| code-fold: true
+#| label: fig-optimization-path
+#| fig-cap: "Optimization path of the shadow variable search."
+
+library(data.table)
+library(ggplot2)
+library(mlr3misc)
+library(viridisLite)
+
+data = as.data.table(instance$archive)[order(-classif.auc), head(.SD, 1), by = batch_nr][order(batch_nr)]
+data[, features := map_chr(features, str_collapse)]
+data[, batch_nr := as.character(batch_nr)]
+
+ggplot(data, aes(x = batch_nr, y = classif.auc)) +
+  geom_bar(
+    stat = "identity",
+    width = 0.5,
+    fill = viridis(1, begin = 0.5),
+    alpha = 0.8) +
+  geom_text(
+    data = data,
+    mapping = aes(x = batch_nr, y = 0, label = features),
+    hjust = 0,
+    nudge_y = 0.05,
+    color = "white",
+    size = 5
+    ) +
+  coord_flip() +
+  xlab("Iteration") +
+  theme_minimal()
+```
+
+The archive contains all evaluated feature sets.
+We can see that each feature has a corresponding shadow variable.
+We only show the variables age, glucose and insulin and their shadow variables here.
+
+```{r 2023-02-01-shadow-variable-search-011}
+as.data.table(instance$archive)[, .(age, glucose, insulin, permuted__age, permuted__glucose, permuted__insulin, classif.auc)]
+```
+
+# Final Model
+
+The learner we use to make predictions on new data is called the final model.
+The final model is trained with the optimal feature set on the full data set.
+We subset the task to the optimal feature set and train the learner.
+
+```{r 2023-02-01-shadow-variable-search-012}
+#| output: false
+
+task$select(instance$result_feature_set)
+learner$train(task)
+```
+
+The trained model can now be used to predict new, external data.
+
+# Conclusion
+
+The shadow variable search is a fast feature selection method that is easy to use.
+More information on the theoretical background can be found in @wu_controlling_2007 and @thomas_probing_2017.
+If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/feature-selection.html).
+
