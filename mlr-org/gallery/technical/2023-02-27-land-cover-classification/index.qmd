@@ -118,6 +118,7 @@ ggplot() +
 The `r ref("as_task_classif_st()")` function directly creates a spatial task from the point layer.
 This makes it unnecessary to transform the point layer to a `data.frame` with coordinates.
 Spatial tasks additionally store the coordinates of the training points.
+The coordinates are useful when estimating the performance of the model with [spatial resampling](https://mlr3book.mlr-org.com/special.html#spatiotemp-cv).
 
 ```{r 2023-01-23-mlr3spatial-006}
 task = as_task_classif_st(leipzig_vector, target = "land_cover")
