@@ -65,6 +65,7 @@ If you are interested in spatial resampling, check out the book chapter on [spat
 Land cover is the physical material or vegetation that covers the surface of the earth, including both natural and human-made features.
 Understanding land cover patterns and changes over time is critical for addressing global environmental challenges, such as climate change, land degradation, and loss of biodiversity.
 Land cover classification is the process of assigning land cover classes to pixels in a raster image.
+With mlr3spatial, we can easily perform a land cover classification within the mlr3 ecosystem.
 
 Before we can start the land cover classification, we need to load the necessary packages.
 The `r ref_pkg("mlr3spatial")` package relies on `r ref_pkg("terra")` for processing raster data and `r ref_pkg("sf")` for vector data.
@@ -125,6 +126,7 @@ task
 
 Now we can train a model with the task.
 We use a simple decision tree learner from the `r ref_pkg("rpart")` package.
+The `"classif_st"` task is a specialization of the `"classif"` task and therefore works with all `"classif"` learners.
 
 ```{r 2023-01-23-mlr3spatial-007}
 learner = lrn("classif.rpart")
