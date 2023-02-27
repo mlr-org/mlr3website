@@ -24,7 +24,7 @@ future::plan("multisession")
 
 Working with spatial data in R requires a lot of data wrangling e.g. reading from different file formats, converting between spatial formats, creating tables from point layers, and predicting spatial raster images.
 The goal of `r ref_pkg("mlr3spatial")` is to simplify these tasks within the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
-As a practical example, we will perform a land cover classification for the city of Leipzig, Germany.
+As a practical example, we will perform a [land cover classification](https://en.wikipedia.org/wiki/Land_cover_maps) for the city of Leipzig, Germany.
 @fig-flowchart illustrates the typical workflow for this type of task: Load the training data, create a spatial task, train a learner with it, and predict the final raster image.
 
 ```{mermaid}
@@ -56,13 +56,13 @@ flowchart LR
     learner --> prediction_raster
 ```
 
-We assume that you are familiar with the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
+We assume that you are familiar with the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html) and know the basic concepts of [remote sensing](https://en.wikipedia.org/wiki/Remote_sensing).
 If not, we recommend reading the [mlr3book](https://mlr3book.mlr-org.com/) first.
 If you are interested in spatial resampling, check out the book chapter on [spatial analysis](https://mlr3book.mlr-org.com/special.html#spatiotemporal).
 
 # Land Cover Classification
 
-Land cover is the physical material or vegetation that covers the surface of the earth, including both natural and human-made features.
+[Land cover](https://en.wikipedia.org/wiki/Land_cover) is the physical material or vegetation that covers the surface of the earth, including both natural and human-made features.
 Understanding land cover patterns and changes over time is critical for addressing global environmental challenges, such as climate change, land degradation, and loss of biodiversity.
 Land cover classification is the process of assigning land cover classes to pixels in a raster image.
 With mlr3spatial, we can easily perform a land cover classification within the mlr3 ecosystem.
@@ -81,7 +81,7 @@ library(terra, exclude = "resample")
 library(sf)
 ```
 
-We will work with a Sentinel-2 scene of the city of Leipzig which consists of 7 bands with a 10 or 20m spatial resolution and an NDVI band.
+We will work with a Sentinel-2 scene of the city of Leipzig which consists of 7 bands with a 10 or 20m spatial resolution and an [NDVI](https://de.wikipedia.org/wiki/Normalized_Difference_Vegetation_Index) band.
 The data is included in the `r ref_pkg("mlr3spatial")` package.
 We use the `r ref("terra::rast()")` to load the TIFF raster file.
 
@@ -156,5 +156,5 @@ ggplot() +
 # Conclusion
 
 Working with spatial data in R is very easy with the `r ref_pkg("mlr3spatial")` package.
-Quickly train a model with a point layer and predict a raster image.
-In the next article, we will show you how to predict large survey areas fast and without memory issues.
+You can quickly train a model with a point layer and predict a raster image.
+The `r ref_pkg("mlr3spatial")` package is still in development and we are looking forward to your feedback and contributions.
