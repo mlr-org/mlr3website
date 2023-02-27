@@ -23,7 +23,7 @@ future::plan("multisession")
 # Scope
 
 Working with spatial data in R requires a lot of data wrangling e.g. reading from different file formats, converting between spatial formats, creating tables from point layers, and predicting spatial raster images.
-The goal of `r ref_pkg("mlr3spatial")` is to simplify these tasks within the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
+The goal of `r ref_pkg("mlr3spatial")` is to simplify these workflows within the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
 As a practical example, we will perform a [land cover classification](https://en.wikipedia.org/wiki/Land_cover_maps) for the city of Leipzig, Germany.
 @fig-flowchart illustrates the typical workflow for this type of task: Load the training data, create a spatial task, train a learner with it, and predict the final raster image.
 
