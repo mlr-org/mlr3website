@@ -2,5 +2,7 @@
 #| include: false
 library(mlr3website)
 library(data.table)
-future::plan("multicore")
+future::plan("multisession")
+
+set.seed(1)
 ```

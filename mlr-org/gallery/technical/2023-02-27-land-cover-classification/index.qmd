@@ -9,7 +9,7 @@ author:
 date: 2023-02-27
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 ```{r 2023-01-23-mlr3spatial-001}
 #| include: false
@@ -17,7 +17,6 @@ date: 2023-02-27
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 set.seed(0)
-future::plan("multisession")
 ```
 
 # Scope

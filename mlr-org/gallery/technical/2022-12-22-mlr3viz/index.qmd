@@ -11,14 +11,13 @@ author:
 date: 2022-12-22
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 ```{r 2022-12-22-mlr3viz-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 set.seed(0)
-future::plan("multisession")
 ```
 
 # Scope

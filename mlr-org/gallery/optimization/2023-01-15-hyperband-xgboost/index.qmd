@@ -20,16 +20,12 @@ aliases:
   - ../../../gallery/series/2023-01-15-hyperband-xgboost/index.html
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 ```{r 2023-01-15-hyperband-xgboost-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
-
-future::plan("multisession")
-
-set.seed(1)
 ```
 
 # Scope

@@ -12,13 +12,12 @@ aliases:
   - ../../../gallery/2022-11-04-early-stopping-with-xgboost/index.html
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 ```{r 2022-11-04-early-stopping-with-xgboost-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
-future::plan("multisession")
 ```
 
 # Scope
