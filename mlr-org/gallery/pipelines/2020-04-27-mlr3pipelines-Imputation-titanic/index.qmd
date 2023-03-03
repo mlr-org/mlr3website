@@ -14,7 +14,7 @@ aliases:
   - ../../../gallery/2020-04-27-mlr3pipelines-Imputation-titanic/index.html
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 This is the second post of the titanic use case series.
 You can find the first use case [here](https://mlr3gallery.mlr-org.com/posts/2020-03-12-intro-pipelines-titanic/).
@@ -38,6 +38,7 @@ We initialize the random number generator with a fixed seed for reproducibility,
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
+future::plan("multicore")
 ```
 
 As in the basics chapter, we use the titanic data set.

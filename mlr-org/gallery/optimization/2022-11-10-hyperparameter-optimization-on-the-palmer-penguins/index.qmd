@@ -15,14 +15,13 @@ aliases:
   - ../../../gallery/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins/index.html
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 ```{r 2022-11-10-hyperparameter-optimization-on-the-palmer-penguins-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 options(datatable.print.nrows = 6)
-future::plan("multisession")
 ```
 
 ```{r 2022-11-10-hyperparameter-optimization-on-the-palmer-penguins-002}

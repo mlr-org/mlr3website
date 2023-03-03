@@ -19,15 +19,13 @@ knitr:
       datatable.print.trunc.cols: TRUE
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 ```{r 2023-01-16-hotstart-001}
 #| include: false
 
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
-set.seed(0)
-future::plan("multisession")
 ```
 
 # Scope

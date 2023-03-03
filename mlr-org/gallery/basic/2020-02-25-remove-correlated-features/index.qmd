@@ -16,7 +16,7 @@ aliases:
   - ../../../gallery/2020-02-25-remove-correlated-features/index.html
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 The following example describes a situation where we aim to remove **correlated features**.
 This in essence means, that we drop features until no features have a correlation higher than a given `cutoff`.

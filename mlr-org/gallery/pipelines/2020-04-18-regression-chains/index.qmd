@@ -13,7 +13,7 @@ aliases:
   - ../../../gallery/2020-04-18-regression-chains/index.html
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 In this tutorial we demonstrate how to use `r ref_pkg("mlr3pipelines")` to handle multi-target regression by arranging regression models as a chain, i.e., creating a linear sequence of regression models.
 

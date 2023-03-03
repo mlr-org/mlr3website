@@ -13,7 +13,7 @@ aliases:
   - ../../../gallery/2020-05-02-feature-engineering-of-date-time-variables/index.html
 ---
 
-{{< include ../_setup.qmd >}}
+{{< include ../../_setup.qmd >}}
 
 In this tutorial, we demonstrate how `r ref_pkg("mlr3pipelines")` can be used to easily engineer features based on date-time variables.
 Relying on the [Bike Sharing Dataset](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) and the `r ref("mlr_learners_regr.ranger", "ranger learner")` we compare the root mean square error (RMSE) of a random forest using the original features (baseline), to the RMSE of a random forest using newly engineered features on top of the original ones.
