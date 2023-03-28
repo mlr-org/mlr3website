@@ -4,7 +4,6 @@
 \name{reexports}
 \alias{reexports}
 \alias{ref_pkg}
-\alias{ref}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -12,6 +11,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{mlr3book}{\code{\link[mlr3book]{ref}}, \code{\link[mlr3book]{ref_pkg}}}
+  \item{mlr3book}{\code{\link[mlr3book]{ref_pkg}}}
 }}
 
