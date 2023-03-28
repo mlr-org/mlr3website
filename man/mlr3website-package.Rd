@@ -6,6 +6,8 @@
 \alias{mlr3website-package}
 \title{mlr3website: R Package to Build the Website of the mlr3 Ecosystem via Quarto}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Use this package to install helper files required to build the mlr3 website.
 }
 \seealso{
