@@ -36,6 +36,14 @@
       "Hash": "b2866e62bab9378c3cc9476a1954226b",
       "Requirements": []
     },
+    "DEoptimR": {
+      "Package": "DEoptimR",
+      "Version": "1.0-11",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b18b34cfbf932e17803c2e3e4b1a2d2a",
+      "Requirements": []
+    },
     "DT": {
       "Package": "DT",
       "Version": "0.25",
@@ -857,14 +865,6 @@
       "Hash": "5edbbabab6ce0bf7900a74fd4358628e",
       "Requirements": []
     },
-    "clusterCrit": {
-      "Package": "clusterCrit",
-      "Version": "1.2.8",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "844057883f804924aff76421f7c5cd75",
-      "Requirements": []
-    },
     "codetools": {
       "Package": "codetools",
       "Version": "0.2-19",
@@ -1103,6 +1103,14 @@
       "Hash": "bf1cd206a5d170d132ef75c7537b9bdb",
       "Requirements": []
     },
+    "diptest": {
+      "Package": "diptest",
+      "Version": "0.76-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bbd10b5bf75e6addef50928ffcc591ee",
+      "Requirements": []
+    },
     "distill": {
       "Package": "distill",
       "Version": "1.5",
@@ -1133,16 +1141,16 @@
     },
     "distr6": {
       "Package": "distr6",
-      "Version": "1.6.12",
+      "Version": "1.6.15",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "alan-turing-institute",
       "RemoteRepo": "distr6",
       "RemoteRef": "main",
-      "RemoteSha": "645995820e429fec3ca47a203d03b6698ed9d5b9",
+      "RemoteSha": "f51470267744d13cc61384727b4c0d42ad56bfea",
       "Remotes": "xoopR/set6, xoopR/param6",
-      "Hash": "c511f3d0dc2c9e31e9913daa6d5c3d92",
+      "Hash": "ddea9bb6db45ba799815c20efb17c918",
       "Requirements": [
         "R6",
         "Rcpp",
@@ -1371,6 +1379,18 @@
       "Hash": "09fb526c49460c4933bc077db6eba924",
       "Requirements": []
     },
+    "flexmix": {
+      "Package": "flexmix",
+      "Version": "2.3-19",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0cb3c4b251c2d3fd5923d3e7e6021ee2",
+      "Requirements": [
+        "lattice",
+        "modeltools",
+        "nnet"
+      ]
+    },
     "fontawesome": {
       "Package": "fontawesome",
       "Version": "0.3.0",
@@ -1417,6 +1437,24 @@
       "Repository": "CRAN",
       "Hash": "4e43a8846712a6d5991b19b9bd5f9199",
       "Requirements": []
+    },
+    "fpc": {
+      "Package": "fpc",
+      "Version": "2.2-10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2d4e8c6b3ee8cbba359e105f4141c7cb",
+      "Requirements": [
+        "MASS",
+        "class",
+        "cluster",
+        "diptest",
+        "flexmix",
+        "kernlab",
+        "mclust",
+        "prabclus",
+        "robustbase"
+      ]
     },
     "fs": {
       "Package": "fs",
@@ -2479,18 +2517,18 @@
     },
     "mlr3cluster": {
       "Package": "mlr3cluster",
-      "Version": "0.1.6",
+      "Version": "0.1.8",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "8a3f725266c8cfcddc4a4da2610c7476",
+      "Hash": "3b76a6e26ab07eb97b88997a80b54f07",
       "Requirements": [
         "R6",
         "backports",
         "checkmate",
         "clue",
         "cluster",
-        "clusterCrit",
         "data.table",
+        "fpc",
         "mlr3",
         "mlr3misc",
         "paradox"
@@ -2521,16 +2559,16 @@
     },
     "mlr3extralearners": {
       "Package": "mlr3extralearners",
-      "Version": "0.5.49-000",
+      "Version": "0.6.1-9000",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "mlr-org",
       "RemoteRepo": "mlr3extralearners",
       "RemoteRef": "main",
-      "RemoteSha": "c877a8277a47d926cf34ce932890269025d480ae",
-      "Remotes": "alan-turing-institute/distr6, binderh/CoxBoost, mlr-org/mlr3proba,\n    RaphaelS1/survivalmodels, xoopR/param6, xoopR/set6",
-      "Hash": "1e0db10d3f7d6679ea65e562ebad0dc3",
+      "RemoteSha": "8b76674ad7efee89294bd68a74c731716a5263a2",
+      "Remotes": "alan-turing-institute/distr6,\n    catboost/catboost/catboost/R-package@*release, binderh/CoxBoost,\n    mlr-org/mlr3proba, RaphaelS1/survivalmodels, xoopR/param6, xoopR/set6",
+      "Hash": "65f6bd86203a9008158989e974fad0bc",
       "Requirements": [
         "R6",
         "checkmate",
@@ -2697,16 +2735,16 @@
     },
     "mlr3proba": {
       "Package": "mlr3proba",
-      "Version": "0.4.16",
+      "Version": "0.5.2",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "mlr-org",
       "RemoteRepo": "mlr3proba",
       "RemoteRef": "main",
-      "RemoteSha": "e29d2c8da9cbd866b094adb67906f778598b0047",
+      "RemoteSha": "e263908e594e5a84c8fab3d5ba7efdbf804ad1b5",
       "Remotes": "alan-turing-institute/distr6, xoopR/param6, xoopR/set6",
-      "Hash": "e923721caaead9b9ee71157979900e12",
+      "Hash": "4a5661c5fe3cdfcd81f7844ab6b98d63",
       "Requirements": [
         "R6",
         "Rcpp",
@@ -2899,6 +2937,14 @@
         "parallelMap",
         "smoof"
       ]
+    },
+    "modeltools": {
+      "Package": "modeltools",
+      "Version": "0.2-23",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f5a957c02222589bdf625a67be68b2a9",
+      "Requirements": []
     },
     "multcompView": {
       "Package": "multcompView",
@@ -3371,6 +3417,17 @@
       "Hash": "ceb5c2a59ba33d42d051285a3e8a5118",
       "Requirements": []
     },
+    "prabclus": {
+      "Package": "prabclus",
+      "Version": "2.3-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cede8f99ed507aeb7d9e742f54d856f1",
+      "Requirements": [
+        "MASS",
+        "mclust"
+      ]
+    },
     "praise": {
       "Package": "praise",
       "Version": "1.0.0",
@@ -3822,6 +3879,16 @@
         "digest"
       ]
     },
+    "robustbase": {
+      "Package": "robustbase",
+      "Version": "0.95-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "50e6b6ad7801416766716d9fa853e23d",
+      "Requirements": [
+        "DEoptimR"
+      ]
+    },
     "roxygen2": {
       "Package": "roxygen2",
       "Version": "7.2.2",
@@ -4254,16 +4321,16 @@
     },
     "survivalmodels": {
       "Package": "survivalmodels",
-      "Version": "0.1.15",
+      "Version": "0.1.16",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "RaphaelS1",
       "RemoteRepo": "survivalmodels",
       "RemoteRef": "main",
-      "RemoteSha": "b95ee3c36022f99c4d0ac4d0c9c2106d0b7d62f6",
+      "RemoteSha": "9d59b0c93780a71ae8a6c9904eed72a360a1c2d6",
       "Remotes": "alan-turing-institute/distr6, RaphaelS1/param6, RaphaelS1/set6",
-      "Hash": "68a278541d7d425f69a0fa0f9d8b6965",
+      "Hash": "7990a71f1fc467b4638879396f5ffbcd",
       "Requirements": [
         "Rcpp"
       ]
