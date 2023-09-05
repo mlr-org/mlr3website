@@ -27,7 +27,7 @@ jobs:
         uses: pat-s/always-upload-cache@v3
         with:
           path: ~/.cache/R/renv
-          key: ${{ runner.os }}-r-${{ steps.setup.outputs.installed-r-version }}-weekly-lock-${{ hashFiles('book/renv.lock') }}
+          key: ${{ runner.os }}-r-${{ steps.setup.outputs.installed-r-version }}-weekly-lock-${{ hashFiles('mlr-org/renv.lock') }}
           restore-keys: ${{ runner.os }}-r-${{ steps.setup.outputs.installed-r-version }}-weekly-lock-
 
       - name: Install System Dependencies
