@@ -32,7 +32,7 @@ jobs:
       - id: install-mlr3website
         name:  Install mlr3website
         run: R CMD install .
-        shell: Rscript{0}
+        shell: Rscript {0}
 
       - name: Render site
         run: quarto render mlr-org/
