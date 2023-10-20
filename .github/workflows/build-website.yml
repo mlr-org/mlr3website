@@ -31,7 +31,7 @@ jobs:
 
       - id: install-mlr3website
         name:  Install mlr3website
-        run: R CMD install .
+        run: R CMD INSTALL .
         shell: Rscript {0}
 
       - name: Render site
