@@ -29,6 +29,10 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
 
+      - id: install mlr3website
+        run: R CMD INSTALL .
+        shell: Rscript{0}
+
       - name: Render site
         run: quarto render mlr-org/
 
