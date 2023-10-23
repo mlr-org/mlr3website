@@ -30,7 +30,7 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
 
       - id: install-mlr3website
-        name:  Install mlr3website
+        name:  Install mlr3website package
         run: R CMD INSTALL .
 
       - name: Render site
