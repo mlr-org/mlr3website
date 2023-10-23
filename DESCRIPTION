@@ -21,7 +21,10 @@ Imports:
 Suggests:
     bbotk,
     data.table,
+    miesmuschel,
     mlr3cluster,
+    mlr3batchmark,
+    mlr3benchmark,
     mlr3data,
     mlr3fda,
     mlr3filters,
@@ -31,13 +34,16 @@ Suggests:
     mlr3mbo,
     mlr3misc,
     mlr3oml,
+    mlr3spatial,
+    mlr3spatiotempcv,
     mlr3pipelines,
     mlr3proba,
     mlr3tuning,
     mlr3tuningspaces,
     mlr3viz,
     paradox,
-    rmarkdown
+    rmarkdown,
+    reactable
 Remotes:
     mlr-org/mlr3fda,
     mlr-org/mlr3proba,
