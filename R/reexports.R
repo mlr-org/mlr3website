@@ -1,6 +1,32 @@
-#' @importFrom mlr3book ref_pkg
+#' @title Hyperlink to Package
+#'
+#' @description
+#' Links either to respective mlr3 website or to CRAN page.
+#'
+#' @param pkg Name of the package.
+#' @param runiverse If `TRUE` (default) then creates R-universe link instead of GH
+#' @inheritParams ref
+#'
+#' @return (`character(1)`) markdown link.
 #' @export
-mlr3book::ref_pkg
+ref_pkg = function(pkg, runiverse = TRUE, format = "markdown") {
+  checkmate::assert_string(pkg, pattern = "(^[[:alnum:]._-]+$)|(^[[:alnum:]_-]+/[[:alnum:]._-]+$)")
+  checkmate::assert_choice(format, c("markdown", "html", "htmltools"))
+  pkg = trimws(pkg)
+
+  if (grepl("/", pkg, fixed = TRUE)) {
+    if (runiverse) {
+      ru_pkg(pkg, format = format)
+    } else {
+      gh_pkg(pkg, format = format)
+    }
+
+  } else if (pkg %in% db$hosted) {
+    mlr_pkg(pkg, format = format)
+  } else {
+    cran_pkg(pkg, format = format)
+  }
+}
 
 #' @title Hyperlink to Function Reference
 #'
