@@ -29,7 +29,7 @@ content = rowwise_table(
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3book::ref(sprintf("%s_%s", "mlr_graphs", value), text = value, format = "htmltools")
+  mlrmlr3website:ref(sprintf("%s_%s", "mlr_graphs", value), text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(

@@ -27,12 +27,12 @@ content = as.data.table(mlr_tuning_spaces)[, .(key, label, learner, n_values)]
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3book::ref(sprintf("%s_%s", "mlr_tuning_spaces", value), text = value, format = "htmltools")
+  mlr3website::ref(sprintf("%s_%s", "mlr_tuning_spaces", value), text = value, format = "htmltools")
 }
 
 learner_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3book::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
+  mlr3website::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(

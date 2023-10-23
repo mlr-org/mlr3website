@@ -25,7 +25,7 @@ content = as.data.table(mlr_terminators)[, .(key, label, properties, unit)]
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3book::ref(sprintf("%s_%s", "mlr_terminators", value), text = value, format = "htmltools")
+  mlr3website::ref(sprintf("%s_%s", "mlr_terminators", value), text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(

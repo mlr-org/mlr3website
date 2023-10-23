@@ -17,5 +17,5 @@ package_list_cell = function(value) {
 #' @export
 package_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3book::ref_pkg(value, pkg = value, format = "htmltools")
+  mlr3website::ref_pkg(value, pkg = value, format = "htmltools")
 }
