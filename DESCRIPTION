@@ -14,13 +14,11 @@ Depends:
 Imports:
     checkmate,
     data.table,
-    mlr3book,
     mlr3misc,
     rprojroot,
     stringi
 Suggests:
     bbotk,
-    data.table,
     htmltools,
     miesmuschel,
     mlr3cluster,
@@ -33,7 +31,6 @@ Suggests:
     mlr3hyperband,
     mlr3learners,
     mlr3mbo,
-    mlr3misc,
     mlr3oml,
     mlr3spatial,
     mlr3spatiotempcv,
@@ -47,8 +44,7 @@ Suggests:
     reactable
 Remotes:
     mlr-org/mlr3fda,
-    mlr-org/mlr3proba,
-    mlr-org/mlr3book
+    mlr-org/mlr3proba
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
