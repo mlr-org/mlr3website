@@ -4,16 +4,14 @@
 \alias{ref_pkg}
 \title{Hyperlink to Package}
 \usage{
-ref_pkg(pkg, runiverse = TRUE, index = FALSE, aside = FALSE)
+ref_pkg(pkg, runiverse = TRUE, format = "markdown")
 }
 \arguments{
 \item{pkg}{Name of the package.}
 
 \item{runiverse}{If \code{TRUE} (default) then creates R-universe link instead of GH}
 
-\item{index}{If \code{TRUE} calls \code{index}}
-
-\item{aside}{Passed to \code{index}}
+\item{format}{Either markdown or HTML.}
 }
 \value{
 (\code{character(1)}) markdown link.

@@ -4,17 +4,17 @@
 \alias{ref}
 \title{Hyperlink to Function Reference}
 \usage{
-ref(topic, index = FALSE, aside = FALSE)
+ref(topic, text = topic, format = "markdown")
 }
 \arguments{
 \item{topic}{Name of the topic to link against.}
 
-\item{index}{If \code{TRUE} calls \code{index}}
+\item{text}{Text to use for the link. Defaults to the topic name.}
 
-\item{aside}{Passed to \code{index}}
+\item{format}{Either markdown or HTML.}
 }
 \value{
-(\code{character(1)}) markdown link.
+\code{character(1)} | \code{shiny.tag}
 }
 \description{
 Creates a markdown link to a function reference.

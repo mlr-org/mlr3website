@@ -1,6 +1,7 @@
 #' @title mlr3website: A package to build the website of the mlr3 ecosystem via Quarto
 #' @import data.table
 #' @import mlr3
+#' @import mlr3misc
 #' @importFrom utils head hsearch_db
 "_PACKAGE"
 
@@ -20,5 +21,5 @@ lgr = NULL
 
 update_db()
 for (pkg in db$hosted) {
-  assign(pkg, mlr_pkg(pkg, index = TRUE))
+  assign(pkg, mlr_pkg(pkg))
 }
