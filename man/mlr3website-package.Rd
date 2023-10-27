@@ -4,7 +4,7 @@
 \name{mlr3website-package}
 \alias{mlr3website}
 \alias{mlr3website-package}
-\title{mlr3website: R Package to Build the Website of the mlr3 Ecosystem via Quarto}
+\title{mlr3website: A package to build the website of the mlr3 ecosystem via Quarto}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 

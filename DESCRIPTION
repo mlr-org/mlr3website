@@ -14,10 +14,47 @@ Depends:
 Imports:
     checkmate,
     data.table,
-    mlr3book,
     mlr3misc,
     rprojroot,
     stringi
+Suggests:
+    apcluster,
+    bbotk,
+    htmltools,
+    miesmuschel,
+    mlr3cluster,
+    mlr3batchmark,
+    mlr3benchmark,
+    mlr3data,
+    mlr3db,
+    mlr3extralearners,
+    mlr3fairness,
+    mlr3fda,
+    mlr3filters,
+    mlr3fselect,
+    mlr3hyperband,
+    mlr3learners,
+    mlr3mbo,
+    mlr3measures,
+    mlr3oml,
+    mlr3spatial,
+    mlr3spatiotempcv,
+    mlr3pipelines,
+    mlr3proba,
+    mlr3tuning,
+    mlr3tuningspaces,
+    mlr3verse,
+    mlr3viz,
+    paradox,
+    precrec,
+    ranger,
+    rmarkdown,
+    reactable
+Remotes:
+    mlr-org/mlr3fda,
+    mlr-org/mlr3proba,
+    mlr-org/mlr3extralearners,
+    precrec
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
