@@ -1,0 +1,14 @@
+---
+title: Test
+author:
+  - name: Marc Becker
+date: 01-30-2020
+description: |
+  Test renv env.
+---
+
+{{< include ../../_setup.qmd >}}
+
+```{r}
+renv::project()
+```

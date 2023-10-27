@@ -29,6 +29,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
 
+      - id: disable renv
+        run: rm mlr-org/.Rprofile
+
       - id: install-mlr3website
         name:  Install mlr3website package
         run: R CMD INSTALL .
