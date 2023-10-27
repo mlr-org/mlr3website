@@ -27,7 +27,7 @@ This includes fully parametric AFT and Weibull models and the semi-parametric Co
 - The first non-parametric implementation of BART for survival data [@Sparapani2016]
 - `BART` R package tutorial [@Sparapani2021]
 
-We incorporated the survival `BART` model in `mlr3extralearners` and in this tutorial we will demonstrate how we can use packages like `mlr3`, `mlr3proba` and `distr6` to more easily manipulate the output predictions, evaluate the learner's performance and graphically display them.
+We incorporated the survival `BART` model in `mlr3extralearners` and in this tutorial we will demonstrate how we can use packages like `mlr3`, `mlr3proba` and `distr6` to more easily manipulate the output predictions to assess model convergence, validate our model (via several survival metrics), as well as perform model interpretation via PDPs (Partial Dependence Plots).
 
 ## Libraries
 
@@ -186,13 +186,14 @@ We choose 10 random patients from the train set to evaluate the MCMC convergence
 # predictions on the train set
 p_train = learner$predict(task, row_ids = part$train)
 
-z_list = list()
-# choose 10 patients from the train set randomly
-for (patient_id in sample(length(part$train), 10)) {
+# choose 10 patients from the train set randomly and make a list
+ids = as.list(sample(length(part$train), 10))
+
+z_list = lapply(ids, function(id) {
   # matrix with columns => time points and rows => posterior draws
-  post_surv = 1 - t(distr6::gprm(p_train$distr[patient_id], "cdf")[1,,])
-  z_list[[patient_id]] = BART::gewekediag(post_surv)$z # get the z-scores
-}
+  post_surv = 1 - t(distr6::gprm(p_train$distr[id], "cdf")[1,,])
+  BART::gewekediag(post_surv)$z # get the z-scores
+})
 
 # plot the z scores vs time for all patients
 dplyr::bind_rows(z_list) %>% 
