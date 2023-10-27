@@ -7,12 +7,6 @@ author:
     orcid: 0000-0002-3609-8674
     url: https://github.com/bblodfon
 date: 2023-10-25
-format:
-  html:
-    page-layout: full
-toc: true
-bibliography: "references.bib"
-freeze: false
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -22,7 +16,7 @@ freeze: false
 Here are some interesting reads regarding BART:
 
 - The first BART paper [@Chipman2010].
-- The first implementation of BART for survival data [@Bonato2011]. 
+- The first implementation of BART for survival data [@Bonato2011].
 This includes fully parametric AFT and Weibull models and the semi-parametric CoxPH regression model.
 - The first non-parametric implementation of BART for survival data [@Sparapani2016]
 - `BART` R package tutorial [@Sparapani2021]
@@ -60,7 +54,7 @@ task_lung$label = "Lung Cancer"
 ```
 
 :::{.callout-note}
-1. The original `BART` implementation supports categorical features (factors). 
+1. The original `BART` implementation supports categorical features (factors).
 This results in different importance scores per each dummy level which doesn't work well with `mlr3`.
 So features of type `factor` or `character` are not allowed and we leave it to the user to encode them as they please.
 2. The original `BART` implementation supports features with missing values.
@@ -195,15 +189,15 @@ for (patient_id in sample(length(part$train), 10)) {
 }
 
 # plot the z scores vs time for all patients
-dplyr::bind_rows(z_list) %>% 
+dplyr::bind_rows(z_list) %>%
   tidyr::pivot_longer(cols = everything()) %>%
   mutate(name = as.numeric(name)) %>%
-  ggplot(aes(x = name, y = value)) + 
+  ggplot(aes(x = name, y = value)) +
   geom_point() +
   labs(x = "Time (months)", y = "Z-scores") +
   # add critical values for a = 0.05
-  geom_hline(yintercept = 1.96, linetype = 'dashed', color = "red") + 
-  geom_hline(yintercept = -1.96, linetype = 'dashed', color = "red") + 
+  geom_hline(yintercept = 1.96, linetype = 'dashed', color = "red") +
+  geom_hline(yintercept = -1.96, linetype = 'dashed', color = "red") +
   theme_bw(base_size = 14)
 ```
 
@@ -353,7 +347,7 @@ surv_tbl %>%
   geom_step(aes(color = patient_id), linewidth = 1) +
   xlab('Time (Months)') +
   ylab('Survival Probability') +
-  geom_ribbon(aes(ymin = low, ymax = high, fill = patient_id), 
+  geom_ribbon(aes(ymin = low, ymax = high, fill = patient_id),
     alpha = 0.3, show.legend = F) +
   geom_vline(xintercept = death_times[1], linetype = 'dashed', color = my_colors[1]) +
   geom_vline(xintercept = death_times[2], linetype = 'dashed', color = my_colors[2]) +
@@ -368,10 +362,10 @@ surv_tbl %>%
 We will use a Partial Dependence Plot (PDP) [@Friedman2001] to visualize how much different are males vs females in terms of their average survival predictions across time.
 
 :::{.callout-note}
-PDPs assume that features are independent. 
+PDPs assume that features are independent.
 In our case we need to check that `sex` doesn't correlate with any of the other features used for training the `BART` learner.
 Since `sex` is a categorical feature, we fit a linear model using as target variable every other feature in the data ($lm(feature \sim sex)$) and conduct an ANOVA (ANalysis Of VAriance) to get the variance explained or $R^2$.
-The square root of that value is the correlation measure we want. 
+The square root of that value is the correlation measure we want.
 :::
 
 ```{r}
@@ -409,26 +403,26 @@ surv_males   = p_males$distr$survival(months) # patients x times
 surv_females = p_females$distr$survival(months) # patients x times
 
 # tidy up data: average and quantiles across patients
-data_males = 
+data_males =
   apply(surv_males, 1, function(row) {
     tibble(
-      low = quantile(row, probs = 0.025), 
-      avg = mean(row), 
+      low = quantile(row, probs = 0.025),
+      avg = mean(row),
       high = quantile(row, probs = 0.975)
     )
   }) %>%
-  bind_rows() %>% 
+  bind_rows() %>%
   add_column(sex = 'male', month = months, .before = 1)
 
-data_females = 
+data_females =
   apply(surv_females, 1, function(row) {
     tibble(
-      low = quantile(row, probs = 0.025), 
-      avg = mean(row), 
+      low = quantile(row, probs = 0.025),
+      avg = mean(row),
       high = quantile(row, probs = 0.975)
     )
   }) %>%
-  bind_rows() %>% 
+  bind_rows() %>%
   add_column(sex = 'female', month = months, .before = 1)
 
 pdp_tbl = bind_rows(data_males, data_females)
@@ -449,7 +443,7 @@ pdp_tbl %>%
   xlab('Time (Months)') +
   ylab('Survival Probability') +
   geom_ribbon(aes(ymin = low, ymax = high, fill = sex), alpha = 0.2, show.legend = F) +
-  theme_bw(base_size = 14) + 
+  theme_bw(base_size = 14) +
   scale_color_manual(values = my_colors) +
   scale_fill_manual(values = my_colors)
 ```
