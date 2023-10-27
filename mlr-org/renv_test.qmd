@@ -7,8 +7,6 @@ description: |
   Test renv env.
 ---
 
-{{< include ../../_setup.qmd >}}
-
 ```{r}
 renv::project()
 ```
