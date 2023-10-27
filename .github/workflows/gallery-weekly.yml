@@ -1,5 +1,12 @@
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
   schedule:
     - cron: "0 13 * * 2"
 
@@ -38,6 +45,7 @@ jobs:
       - name: Restore renv environment
         run: |
           cd mlr-org
+          echo "source(\"renv/activate.R\")" > .Rprofile
           R -q -e 'options(Ncpus = 2); install.packages("renv", repos = "cloud.r-project.org"); renv::restore()'
 
       - name: Update renv environment
