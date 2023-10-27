@@ -28,7 +28,7 @@ content[, packages := map(packages, function(value) setdiff(value, "mlr3pipeline
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3book::ref(sprintf("%s_%s", "mlr_pipeops", value), text = value, format = "htmltools")
+  mlr3website::ref(sprintf("%s_%s", "mlr_pipeops", value), text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(
