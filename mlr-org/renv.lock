@@ -115,6 +115,17 @@
       ],
       "Hash": "e9e53a559ef99e0c02bc2f9a944f0bee"
     },
+    "Formula": {
+      "Package": "Formula",
+      "Version": "1.2-5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "stats"
+      ],
+      "Hash": "7a29697b75e027767a53fde6c903eca7"
+    },
     "GGally": {
       "Package": "GGally",
       "Version": "2.1.2",
@@ -1441,6 +1452,25 @@
       ],
       "Hash": "c883525d360469c2f324102ae5aecd33"
     },
+    "ggparty": {
+      "Package": "ggparty",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "checkmate",
+        "ggplot2",
+        "grid",
+        "gtable",
+        "methods",
+        "partykit",
+        "rlang",
+        "survival",
+        "utils"
+      ],
+      "Hash": "11f98669ee7ddc8eb6b6bb9b46642362"
+    },
     "ggplot2": {
       "Package": "ggplot2",
       "Version": "3.4.4",
@@ -1761,6 +1791,18 @@
       ],
       "Hash": "80401cb5ec513e8ddc56764d03f63669"
     },
+    "inum": {
+      "Package": "inum",
+      "Version": "1.0-5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "libcoin",
+        "stats"
+      ],
+      "Hash": "baa4e298aa0fe48568c951d2fcc5d7c2"
+    },
     "ipred": {
       "Package": "ipred",
       "Version": "0.9-14",
@@ -1967,6 +2009,18 @@
         "R6"
       ],
       "Hash": "a6bc51765d7e9eeb2b225a11805527aa"
+    },
+    "libcoin": {
+      "Package": "libcoin",
+      "Version": "1.0-10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "mvtnorm",
+        "stats"
+      ],
+      "Hash": "3f3775a14588ff5d013e5eab4453bf28"
     },
     "lifecycle": {
       "Package": "lifecycle",
@@ -2962,6 +3016,27 @@
         "set6"
       ],
       "Hash": "5e7165321aca392d486e9b0dd4932ad5"
+    },
+    "partykit": {
+      "Package": "partykit",
+      "Version": "1.2-20",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "Formula",
+        "R",
+        "grDevices",
+        "graphics",
+        "grid",
+        "inum",
+        "libcoin",
+        "mvtnorm",
+        "rpart",
+        "stats",
+        "survival",
+        "utils"
+      ],
+      "Hash": "8551bfc8d1d6ab813e2e5c8917268cd4"
     },
     "pbkrtest": {
       "Package": "pbkrtest",
