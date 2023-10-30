@@ -1,0 +1,20 @@
+---
+title: "Runtime Comparison of tidymodels and mlr3"
+description: |
+  Benchmark the runtime of tidymodels and mlr3.
+author:
+  - name: Marc Becker
+    orcid: 0000-0002-8115-0400
+    url: https://github.com/be-marc
+date: 2023-10-30
+bibliography: ../../bibliography.bib
+---
+
+{{< include ../../_setup.qmd >}}
+
+```{r 2022-12-22-mlr3viz-001}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(0)
+```
