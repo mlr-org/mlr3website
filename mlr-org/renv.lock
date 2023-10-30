@@ -9,6 +9,22 @@
     ]
   },
   "Packages": {
+    "BART": {
+      "Package": "BART",
+      "Version": "2.9.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "nlme",
+        "nnet",
+        "parallel",
+        "survival",
+        "tools"
+      ],
+      "Hash": "6a6047c0359531ca0ab0a42b96a3ada3"
+    },
     "BBmisc": {
       "Package": "BBmisc",
       "Version": "1.13",
@@ -1377,6 +1393,24 @@
         "methods"
       ],
       "Hash": "15e9634c0fcd294799e9b2e929ed1b86"
+    },
+    "ggfortify": {
+      "Package": "ggfortify",
+      "Version": "0.4.16",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "dplyr",
+        "ggplot2",
+        "grid",
+        "gridExtra",
+        "methods",
+        "scales",
+        "stringr",
+        "tibble",
+        "tidyr"
+      ],
+      "Hash": "ae0e011aa23b95682e2872fd7a7e5682"
     },
     "ggmap": {
       "Package": "ggmap",
