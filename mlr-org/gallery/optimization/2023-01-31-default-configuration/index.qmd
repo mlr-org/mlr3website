@@ -69,7 +69,7 @@ In this example, they are randomly drawn configurations.
 
 ```{r 2023-01-31-default-configuration-003}
 instance = tune(
-  method = tnr("random_search", batch_size = 5),
+  tuner = tnr("random_search", batch_size = 5),
   task = tsk("spam"),
   learner = learner,
   resampling = rsmp ("holdout"),

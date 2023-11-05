@@ -17,6 +17,11 @@ aliases:
 
 {{< include ../../_setup.qmd >}}
 
+```{r}
+#| include: false
+requireNamespace("farff")
+```
+
 This use case shows how to easily work with datasets available via [OpenML](https://www.openml.org/) into an `r ref_pkg("mlr3")` workflow.
 
 The following operations are illustrated:

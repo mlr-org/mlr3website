@@ -224,7 +224,7 @@ We define a tuning instance and use grid search since we want to try all encode 
 
 ```{r 2021-03-10-practical-tuning-series-tune-a-preprocessing-pipeline-019, results = 'hide'}
 instance = tune(
-  method = "grid_search",
+  tuner = tnr("grid_search"),
   task = task,
   learner = graph_learner,
   resampling = rsmp("cv", folds = 3),

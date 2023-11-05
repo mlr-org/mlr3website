@@ -72,7 +72,7 @@ tuner = tnr("random_search", batch_size = 10)
 
 # hyperparameter tuning on the palmer penguins data set
 instance = tune(
-  method = tuner,
+  tuner = tuner,
   task = task,
   learner = learner,
   resampling = rsmp("holdout"),
