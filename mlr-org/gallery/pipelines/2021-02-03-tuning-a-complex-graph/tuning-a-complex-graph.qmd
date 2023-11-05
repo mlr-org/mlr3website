@@ -17,6 +17,12 @@ aliases:
 
 {{< include ../../_setup.qmd >}}
 
+```{r}
+# include: false
+requireNamespace("bst")
+requireNamespace("fastICA")
+```
+
 In this use case we show how to tune a rather complex graph consisting of different preprocessing steps and different learners where each preprocessing step and learner itself has parameters that can be tuned.
 You will learn the following:
 

@@ -92,7 +92,7 @@ content = rowwise_table(
     "utils",         "mlr3batchmark",     "experimental", "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools"
 )
 # add CRAN link
-content[, on_cran := name %in% rownames(available.packages())]
+content[, on_cran := name %in% rownames(available.packages(repos = "https://cloud.r-project.org"))]
 # index by categoty
 # sort by status: stable first, then experimental, then planned
 content[, status := factor(status, levels = c("stable", "experimental", "planned"), ordered = TRUE)]

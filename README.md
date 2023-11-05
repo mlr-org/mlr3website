@@ -14,23 +14,20 @@
 
 ## Setup
 
-Before you can edit the website, you need to install a virtual
-environment with renv. This ensures that we all edit the website with
-the same package versions. The website is rendered in the CI in the same
-virtual environment.
+The website is rendered in a virtual environment. The `renv` package is
+used to manage the virtual environment. This ensures that we all edit
+the website with the same package versions.
 
 1.  Clone the `mlr-org/mlr3website` repository.
+2.  Call `renv::restore(project = "mlr-org/")` to download and install
+    all required packages.
+3.  Run the following command from your terminal to preview the website:
 
-2.  Start a new R session in the `mlr-org/` directory.
+<!-- end list -->
 
-3.  Call `renv::activate()` and then `renv::restore()` to download and
-    install all required packages.
-
-4.  Run the following command from your terminal to preview the website:
-    
-    ``` bash
-    quarto preview mlr-org/
-    ```
+``` bash
+quarto preview mlr-org/
+```
 
 ## Notes
 
@@ -66,9 +63,6 @@ series, add it to the `series` directory.
 3.  Use only one sentence for the description and start with a verb. Do
     not repeat the title. See the previously published articles for
     examples.
-4.  Commit your post once with the option `freeze: false` in YAML
-    header. This will render the post on the CI once.
-5.  Remove the freeze option and ask for a review.
 
 If your post needs a new package or package version:
 

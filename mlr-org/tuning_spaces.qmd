@@ -65,7 +65,7 @@ tuner = tnr("random_search", batch_size = 10)
 
 # hyperparameter tuning on the pima data set
 instance = tune(
-  method = tnr("grid_search", resolution = 5, batch_size = 25),
+  tuner = tnr("grid_search", resolution = 5, batch_size = 25),
   task = task,
   learner = learner,
   resampling = rsmp("holdout"),
