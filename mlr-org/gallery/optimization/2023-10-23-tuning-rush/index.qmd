@@ -35,12 +35,12 @@ So far, `r ref("mlr3tuning")` has taken the approach
 
 
 that the tuner proposes a batch of hyperparameter configurations, which are then evaluated in parallel with `r ref("benchmark()")`.
-The benchmark function uses the `r ref("future")` package to evaluate the configurations in parallel on different workers.
+The benchmark function uses the `r ref_pkg("future")` package to evaluate the configurations in parallel on different workers.
 However, this kind of parallelization excludes some novel optimization algorithms and does not improve the runtime performance in all situations as expected.
 If the runtime of the configurations is heterogeneous, the system may wait for the last configuration to finish, while the other workers are idle.
 This is referred to as synchronization overhead and can reduce the runtime performance of the tuner drastically.
 This blocking behavior also excludes newer algorithms that want to react immediately to a single evaluated configuration.
-We address these issues with the `r ref("rush")` package.
+We address these issues with the `r ref_pkg("rush")` package.
 The package implements a non-blocking parallelization strategy that is based on a [Redis](https://redis.io/) server.
 
 ```{r}
@@ -54,12 +54,12 @@ remotes::install_github(c(
 
 # Batch Parallelization
 
-The current strategy of `r ref("mlr3tuning")` parallelizes the evaluation of hyperparameter configurations.
+The current strategy of `r ref_pkg("mlr3tuning")` parallelizes the evaluation of hyperparameter configurations.
 The tuner proposes a batch of configurations, which are then evaluated in parallel with `r ref("benchmark()")`.
 The process waits until all configurations are evaluated and then continues with the next batch.
 This approach has several disadvantages.
-The `r ref("benchmark()")` function uses the `r ref("future")` package to evaluate the configurations in parallel on different workers.
-The `r ref("future")` package has to serialize the learner, task and resampling in each tuning iteration.
+The `r ref("benchmark()")` function uses the `r ref_pkg("future")` package to evaluate the configurations in parallel on different workers.
+The `r ref_pkg("future")` package has to serialize the learner, task and resampling in each tuning iteration.
 This adds a significant overhead to each tuning iteration especially if the runtime of the configurations is short.
 
 Another problem is that the tuning process is blocked until the last configuration of a batch is evaluated.
@@ -79,6 +79,58 @@ Waiting for the last configuration to finish would make the algorithm inefficien
 
 We have also observed that the main process is quickly overloaded when a large number of fast-fitting models are evaluated.
 This makes it necessary to subdivide batches even further.
+
+```{r}
+#| echo: false
+library(data.table)
+library(mlr3misc)
+library(ggplot2)
+library(patchwork)
+
+res = readRDS("/home/marc/repositories/mlr3website/mlr-org/gallery/optimization/2023-10-23-tuning-rush/sleep_benchmark.rds")
+
+for (workers in c(3, 30)) {
+  plots = map(unique(res$sleep_train), function(sleep) {
+    data = res[sleep_train == sleep & workers == workers, ]
+
+    ggplot(data, aes(x = sleep_train, y = experiment, fill = result)) +
+      geom_tile(alpha = 0.3) +
+      geom_text(aes(label = result)) +
+      scale_fill_distiller(palette = "BuGn", trans = "log") +
+      theme_minimal() +
+      theme(
+        legend.position = "none",
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle=45),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+    })
+
+  plots[[1]] = plots[[1]] +
+    ylab("Tuner Configuration") +
+    scale_y_discrete(labels = c(
+      "Batch 1 Chunk 1",
+      "Batch 10 Chunk 10",
+      "Batch 100 Chunk 1",
+      "Batch 100 Chunk 10",
+      "Batch 100 Chunk 100",
+      "Rush")) +
+    theme(
+      axis.title.y = element_text(size = 14, angle = 90),
+      axis.text.y = element_text())
+
+
+  plots[[3]] = plots[[3]] +
+    xlab("Sleep Time") +
+    theme(
+      axis.title.x = element_text(hjust = 2.5, size = 14)
+      )
+
+  wrap_plots(plots, ncol = 6)
+}
+```
 
 # Rush Parallelization
 
@@ -193,7 +245,7 @@ We recommend running the tuning on a single worker if reproducibility is importa
 
 The logging on the workers is not synchronized with the main process.
 This means that the logging messages of the workers are not displayed in the console.
-The logging messages are stored in the Redis database and can be retrieved with the `r ref("read_log()")` function.
+The logging messages are stored in the Redis database and can be retrieved with the `read_log()` function.
 This is useful for debugging purposes.
 To activate the logging on the workers, the `lgr_thresholds`  must be set when the workers are started.
 
@@ -205,7 +257,7 @@ instanceh$start_workers(
 
 This example sets the logging threshold of the `mlr3` package to `info` and the logging threshold of the `bbotk` and `rush` package to `warn`.
 See the chapter on [logging](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-logging) for details on logging in `mlr3`.
-To retrieve the logging messages, the `r ref("read_log()")` function of the rush controller must be called.
+To retrieve the logging messages, the `read_log()` function of the rush controller must be called.
 
 ```{r}
 #| eval: false
