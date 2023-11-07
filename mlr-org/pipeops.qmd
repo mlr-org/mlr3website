@@ -11,6 +11,7 @@ toc: false
 #| include: false
 
 library("mlr3verse")
+library("mlr3proba")
 ```
 
 Objects of class `r ref("PipeOp")` are the building blocks to compose linear machine learning pipelines and non-linear `r ref("Graph", text = "Graphs")`.
@@ -24,9 +25,10 @@ content = as.data.table(mlr_pipeops, objects = TRUE)[, .(key, label, packages, t
 content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
 content[, packages := map(packages, function(value) setdiff(value, "mlr3pipelines"))]
 
+
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3book::ref(sprintf("%s_%s", "mlr_pipeops", value), text = value, format = "htmltools")
+  mlr3website::ref(sprintf("%s_%s", "mlr_pipeops", value), text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(
