@@ -203,7 +203,7 @@ inner_resampling = rsmp("cv", folds = 3)
 
 # AutoTuner for the ensemble learner
 at_1 = auto_tuner(
-  method = "random_search",
+  tuner = tnr("random_search"),
   learner = learner_ensemble,
   resampling = inner_resampling,
   measure = msr("classif.auc"),
@@ -212,7 +212,7 @@ at_1 = auto_tuner(
 
 # AutoTuner for the simple ranger learner
 at_2 = auto_tuner(
-  method = "random_search",
+  tuner = tnr("random_search"),
   learner = ranger_lrn,
   resampling = inner_resampling,
   measure = msr("classif.auc"),

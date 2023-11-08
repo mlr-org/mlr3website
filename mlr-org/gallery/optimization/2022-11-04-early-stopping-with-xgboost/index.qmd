@@ -158,13 +158,12 @@ We run a small batch of random hyperparameter configurations.
 
 ```{r 2022-11-04-early-stopping-with-xgboost-012}
 instance = tune(
-  method = "random_search",
+  tuner = tnr("random_search", batch_size = 2),
   task = task,
   learner = learner,
   resampling = rsmp("cv", folds = 3),
   measure = msr("classif.ce"),
   term_evals = 4,
-  batch_size = 2,
   callbacks = clbk("mlr3tuning.early_stopping")
 )
 ```

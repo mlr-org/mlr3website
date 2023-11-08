@@ -67,7 +67,7 @@ We start the tuning and compare the results of the search space to the results i
 
 ```{r 2021-01-19-integer-hyperparameters-in-tuners-for-real-valued-search-spaces-006}
 instance = tune(
-  method = "gensa",
+  tuner = tnr("gensa"),
   task = tsk("iris"),
   learner = learner,
   resampling = rsmp("holdout"),

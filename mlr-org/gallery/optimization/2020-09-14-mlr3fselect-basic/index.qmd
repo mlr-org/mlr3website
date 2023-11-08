@@ -289,7 +289,7 @@ Selecting a feature subset can be shortened by using the `r ref("fselect()")`-sh
 
 ```{r 2020-09-14-mlr3fselect-basic-026, eval = FALSE}
 instance = fselect(
-  method = "random_search",
+  tuner = tnr( "random_search",
   task = tsk("iris"),
   learner = lrn("classif.log_reg"),
   resampling = rsmp("cv", folds = 3),
@@ -302,7 +302,7 @@ Applying nested resampling can be shortened by using the `r ref("fselect_nested(
 
 ```{r 2020-09-14-mlr3fselect-basic-027, eval = FALSE}
 rr = fselect_nested(
-  method = "random_search",
+  tuner = tnr("random_search"),
   task = tsk("iris"),
   learner = lrn("classif.log_reg"),
   inner_resampling = rsmp ("cv", folds = 3),

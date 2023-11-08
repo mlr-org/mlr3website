@@ -69,7 +69,7 @@ The models with less than 2000 trees hot start on the 2000 trees models which al
 #| eval: false
 
 instance = tune(
-  method = tnr("grid_search", resolution = 5, batch_size = 5),
+  tuner = tnr("grid_search", resolution = 5, batch_size = 5),
   task = tsk("spam"),
   learner = learner,
   resampling = rsmp("holdout"),
@@ -84,7 +84,7 @@ For comparison, we perform the same tuning without hotstarting.
 #| eval: false
 
 instance_2 = tune(
-  method = tnr("grid_search", resolution = 5, batch_size = 5),
+  tuner = tnr("grid_search", resolution = 5, batch_size = 5),
   task = tsk("spam"),
   learner = learner,
   resampling = rsmp("holdout"),

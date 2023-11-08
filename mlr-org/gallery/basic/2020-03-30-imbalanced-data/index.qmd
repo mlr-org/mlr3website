@@ -21,6 +21,7 @@ citation: true
 ```{r 2020-03-30-imbalanced-data-001}
 #| include: false
 future::plan(list("sequential", "multisession"))
+requireNamespace("smotefamily")
 ```
 
 # Intro
@@ -190,28 +191,25 @@ measure = msr("classif.fbeta")
 
 learns = list(
   auto_tuner(
-    method = "grid_search",
+    tuner = tnr("grid_search", resolution = 6),
     learner = learner_under,
     resampling = inner_cv3,
     measure = measure,
-    search_space = search_space_under,
-    resolution = 6
+    search_space = search_space_under
   ),
   auto_tuner(
-    method = "grid_search",
+    tuner = tnr("grid_search", resolution = 6),
     learner = learner_over,
     resampling = inner_cv3,
     measure = measure,
-    search_space = search_space_over,
-    resolution = 6
+    search_space = search_space_over
   ),
   auto_tuner(
-    method = "grid_search",
+    tuner = tnr("grid_search", resolution = 6),
     learner = learner_smote,
     resampling = inner_cv3,
     measure = measure,
-    search_space = search_space_smote,
-    resolution = 6
+    search_space = search_space_smote
   )
 )
 ```

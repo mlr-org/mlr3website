@@ -22,6 +22,11 @@ citation: true
 
 {{< include ../../_setup.qmd >}}
 
+```{r}
+#| include: false
+requireNamespace("MASS")
+```
+
 # Preamble
 
 The following examples were created as part of the Introduction to Machine Learning Lecture at LMU Munich.
@@ -252,7 +257,7 @@ The following table shows the final dataset and the transformations we applied.
 Different from `log` or other transformation, `scaling` depends on the data themselves.
 Scaling data before data are split leads to data leakage, were information of train and test set are shared.
 As Data Leakage causes higher performance, scaling should always be applied in each data split induced by the ML workflow separately.
-Therefore we strongly recommend the usage of `r mlr3book::ref("PipeOpScale")` in such cases.
+Therefore we strongly recommend the usage of `r ref("PipeOpScale")` in such cases.
 
 |Variable               |Transformation             |
 |:----------------------|:--------------------------|
@@ -355,7 +360,7 @@ We employed 5-fold cross-validation for the inner loop of the nested resampling.
 ```{r 2020-09-11-liver-patient-classification-014}
 # AutoTuner for k-NN, CART and random forest
 learners$learner_knn = auto_tuner(
-  method = "random_search",
+  tuner = tnr("random_search"),
   learner = learners$learner_knn,
   resampling = rsmp("cv", folds = 5L),
   measure = msr("classif.auc"),
@@ -365,7 +370,7 @@ learners$learner_knn = auto_tuner(
 learners$learner_knn$predict_sets = c("train", "test")
 
 learners$learner_rpart = auto_tuner(
-  method = "random_search",
+  tuner = tnr("random_search"),
   learner = learners$learner_rpart,
   resampling = rsmp("cv", folds = 5L),
   measure = msr("classif.auc"),
@@ -375,7 +380,7 @@ learners$learner_rpart = auto_tuner(
 learners$learner_rpart$predict_sets = c("train", "test")
 
 learners$learner_rf = auto_tuner(
-  method = "random_search",
+  tuner = tnr("random_search"),
   learner = learners$learner_rf,
   resampling = rsmp("cv", folds = 5L),
   measure = msr("classif.auc"),

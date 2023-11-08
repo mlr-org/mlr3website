@@ -70,6 +70,7 @@ content = rowwise_table(
     "data",          "mlr3data",          "stable",       "https://mlr3data.mlr-org.com/",              "Data sets and tasks",
     "learners",      "mlr3learners",      "stable",       "https://mlr3learners.mlr-org.com/",          "Essential learners for mlr3, maintained by the mlr-org team",
     "learners",      "mlr3extralearners", "stable",       "https://mlr3extralearners.mlr-org.com/",     "Extra learners for mlr3, implemented by the community",
+    "learners",      "mlr3torch",         "experimental", "https://github.com/mlr-org/mlr3torch/",      "Deep learning with Torch",
     "learners",      "mlr3keras",         "experimental", "https://github.com/mlr-org/mlr3keras/",      "Deep learning with Keras",
     "visualization", "mlr3viz",           "stable",       "https://mlr3viz.mlr-org.com/",               "Visualizations for tasks, predictions, resample results and benchmarks",
     "pipelines",     "mlr3pipelines",     "stable",       "https://mlr3pipelines.mlr-org.com/",         "Dataflow programming toolkit",
@@ -91,7 +92,7 @@ content = rowwise_table(
     "utils",         "mlr3batchmark",     "experimental", "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools"
 )
 # add CRAN link
-content[, on_cran := name %in% rownames(available.packages())]
+content[, on_cran := name %in% rownames(available.packages(repos = "https://cloud.r-project.org"))]
 # index by categoty
 # sort by status: stable first, then experimental, then planned
 content[, status := factor(status, levels = c("stable", "experimental", "planned"), ordered = TRUE)]

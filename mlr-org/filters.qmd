@@ -27,7 +27,7 @@ content[, packages := map(packages, function(value) setdiff(value, c("mlr3", "ml
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3book::ref(sprintf("%s_%s", "mlr_filters", value), text = value, format = "htmltools")
+  mlr3website::ref(sprintf("%s_%s", "mlr_filters", value), text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(
@@ -44,7 +44,7 @@ reactable(content, columns = list(
 
 ## Example Usage
 
-Use the $-\log_10()$-transformed $p$-values of a Kruskal-Wallis rank sum test (implemented in `r ref("kruskal.test()")`) for filtering features of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` tasks.
+Use the $-\log_{10}()$-transformed $p$-values of a Kruskal-Wallis rank sum test (implemented in `r ref("kruskal.test()")`) for filtering features of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` tasks.
 
 ```{r, echo=TRUE}
 library("mlr3verse")

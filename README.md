@@ -8,41 +8,36 @@
   - `mlr3website` - The root directory contains the `mlr3website` R
     package.
   - `mlr-org/` - Quarto project.
-  - `mlr-org/posts` - Blog posts.
   - `mlr-org/gallery` - Gallery posts.
   - `.github/workflows` Contains workflows to build the website and
     render gallery posts
 
 ## Setup
 
-Before you can edit the website, you need to install a virtual
-environment with renv. This ensures that we all edit the website with
-the same package versions. The website is rendered in the CI in the same
-virtual environment.
+The website is rendered in a virtual environment. The `renv` package is
+used to manage the virtual environment. This ensures that we all edit
+the website with the same package versions.
 
 1.  Clone the `mlr-org/mlr3website` repository.
+2.  Call `renv::restore(project = "mlr-org/")` to download and install
+    all required packages.
+3.  Run the following command from your terminal to preview the website:
 
-2.  Start a new R session in the `mlr-org/` directory.
+<!-- end list -->
 
-3.  Call `renv::activate()` and then `renv::restore()` to download and
-    install all required packages.
-
-4.  Run the following command from your terminal to preview the website:
-    
-    ``` bash
-    quarto preview mlr-org/
-    ```
+``` bash
+quarto preview mlr-org/
+```
 
 ## Notes
 
 **Freeze**
 
-The blog and gallery posts are frozen i.e. the documents are not
-re-rendered during a global project render. Calling `quarto preview
-mlr-org/` or `quarto render mlr-org/` will not render the blog and
-gallery posts again. Calling `quarto render` on a single file or
-subdirectory will re-render the single file or all files in the
-subdirectory.
+The gallery posts are frozen i.e. the documents are not re-rendered
+during a global project render. Calling `quarto preview mlr-org/` or
+`quarto render mlr-org/` will not render the gallery posts again.
+Calling `quarto render` on a single file or subdirectory will re-render
+the single file or all files in the subdirectory.
 
 **RSS**
 
@@ -56,27 +51,6 @@ the file, try to stick to the BEM naming pattern and use SASS. We use
 the Bootswatch [Yeti](https://bootswatch.com/yeti/) theme. A few style
 options are specified in `mlr-org/_quarto.yml` in the `Theme` section.
 
-## How to Add a Blog Post
-
-Blog posts are stored in `mlr-org/posts`.
-
-1.  Create a subdirectory in `mlr-org/posts`.
-2.  Start with a new `index.qmd` file and write your post.
-3.  Download a suitable cover photo on [Unsplash](https://unsplash.com)
-    in medium resolution. Square or landscape format photos look best in
-    the overview.
-4.  Open a pull request on GitHub.
-5.  Commit your post once with the option `freeze: false` in YAML
-    header. This will render the post on the CI once.
-6.  Remove the freeze option and ask for a review.
-
-If your post needs a new package or package version:
-
-1.  Install the package with `renv::install()` in the virtual
-    environment.
-2.  Call `renv::snapshot()` to record the package in `renv.lock`.
-3.  Commit `renv.lock` with the new post.
-
 ## How to Add a Gallery Post
 
 The gallery is divided into four broad categories `basic`,
@@ -89,9 +63,6 @@ series, add it to the `series` directory.
 3.  Use only one sentence for the description and start with a verb. Do
     not repeat the title. See the previously published articles for
     examples.
-4.  Commit your post once with the option `freeze: false` in YAML
-    header. This will render the post on the CI once.
-5.  Remove the freeze option and ask for a review.
 
 If your post needs a new package or package version:
 
@@ -111,8 +82,10 @@ more about Quarto.
 **build-website.yml**
 
 Builds website. On `main`, the website is pushed to `gh-pages` branch.
-On pull request, the website is previewed with Netlify. Blog and gallery
-posts are frozen.
+On pull request, the website is previewed with Netlify. The gallery is
+frozen. Note that this does not use the `renv` file but instead uses
+only the dependencies from the `mlr3website` package. This e.g. ensures
+that the overview lists are up to date.
 
 **gallery-weekly.yml**
 

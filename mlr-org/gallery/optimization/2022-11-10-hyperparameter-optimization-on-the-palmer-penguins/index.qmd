@@ -135,12 +135,11 @@ We choose a `r ref("mlr_resamplings_cv", "3-fold cross-validation")`  and use th
 
 ```{r 2022-11-10-hyperparameter-optimization-on-the-palmer-penguins-010}
 instance = tune(
-  method = "grid_search",
+  tuner = tnr("grid_search", resolution = 5),
   task = tsk("penguins"),
   learner = lts(lrn("classif.rpart")),
   resampling = rsmp("cv", folds = 3),
-  measure = msr("classif.ce"),
-  resolution = 5
+  measure = msr("classif.ce")
 )
 ```
 

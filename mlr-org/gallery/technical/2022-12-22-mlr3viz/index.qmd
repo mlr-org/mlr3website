@@ -19,6 +19,11 @@ citation: true
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 set.seed(0)
+requireNamespace("ggparty")
+requireNamespace("glmnet")
+requireNamespace("ggfortify")
+requireNamespace("partykit")
+requireNamespace("ggdendro")
 ```
 
 # Scope
@@ -461,7 +466,7 @@ library(mlr3tuningspaces)
 library(mlr3learners)
 
 instance = tune(
-  method = tnr("gensa"),
+  tuner = tnr("gensa"),
   task = tsk("sonar"),
   learner = lts(lrn("classif.rpart")),
   resampling = rsmp("holdout"),

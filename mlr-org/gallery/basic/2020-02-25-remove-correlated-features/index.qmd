@@ -91,7 +91,7 @@ Now we tune over different values for `cutoff`.
 
 ```{r 2020-02-25-remove-correlated-features-006}
 instance = tune(
-  method = "grid_search",
+  tuner = tnr("grid_search"),
   task = tsk("iris"),
   learner = graph_learner,
   resampling = rsmp("cv", folds = 3L),

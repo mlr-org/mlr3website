@@ -24,6 +24,10 @@ citation: true
 
 {{< include ../../_setup.qmd >}}
 
+```{r}
+requireNamespace("DiceKriging")
+```
+
 # Scope
 
 This is the first part of the practical tuning series.
@@ -180,12 +184,11 @@ learner$param_set$values$cost = to_tune(0.1, 10)
 learner$param_set$values$gamma = to_tune(0, 5)
 
 instance = tune(
-  method = "grid_search",
+  tuner = tnr("grid_search", resolution = 5),
   task = tsk("iris"),
   learner = learner,
   resampling = rsmp ("holdout"),
-  measure = msr("classif.ce"),
-  resolution = 5
+  measure = msr("classif.ce")
 )
 ```
 
@@ -224,12 +227,11 @@ We use the `r ref("tune()")`-shortcut to run the tuning.
 
 ```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-018}
 instance = tune(
-  method = "grid_search",
+  tuner = tnr("grid_search", resolution = 5),
   task = task,
   learner = learner,
   resampling = resampling,
-  measure = measure,
-  resolution = 5
+  measure = measure
 )
 ```
 
@@ -302,12 +304,11 @@ We use the `r ref("tune()")`-shortcut to run the tuning.
 
 ```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-026}
 instance = tune(
-  method = "grid_search",
+  tuner = tnr("grid_search", resolution = 3),
   task = task,
   learner = learner,
   resampling = resampling,
-  measure = measure,
-  resolution = 3
+  measure = measure
 )
 ```
 
@@ -405,13 +406,12 @@ learner$param_set$values$kernel = to_tune(c("polynomial", "radial"))
 learner$param_set$values$degree = to_tune(1, 4)
 
 rr = tune_nested(
-  method = "grid_search",
+  tuner = tnr("grid_search", resolution = 3),
   task = tsk("iris"),
   learner = learner,
   inner_resampling = rsmp ("cv", folds = 3),
   outer_resampling = rsmp("cv", folds = 3),
   measure = msr("classif.ce"),
-  resolution = 3
 )
 ```
 

@@ -144,7 +144,7 @@ search_space = ps(
 )
 
 instance = tune(
-  method = "grid_search",
+  tuner = tnr("grid_search"),
   task = task,
   learner = graph_learner,
   resampling = inner_cv2,
@@ -159,7 +159,7 @@ But: Via this approach we can now get unbiased performance results via nested re
 
 ```{r 2020-02-01-tuning-multiplexer-009}
 at = auto_tuner(
-  method = "grid_search",
+  tuner = tnr("grid_search"),
   learner = graph_learner,
   resampling = inner_cv2,
   measure = msr("classif.ce"),
@@ -219,7 +219,7 @@ And now use random search.
 
 ```{r 2020-02-01-tuning-multiplexer-014}
 instance = tune(
-  method = "random_search",
+  tuner = tnr("random_search"),
   task = task,
   learner = graph_learner,
   resampling = inner_cv2,
@@ -241,7 +241,7 @@ Nested resampling, now really needed:
 
 ```{r 2020-02-01-tuning-multiplexer-016}
 rr = tune_nested(
-  method = "grid_search",
+  tuner = tnr("grid_search"),
   task = task,
   learner = graph_learner,
   inner_resampling = inner_cv2,

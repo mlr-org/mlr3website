@@ -20,6 +20,13 @@ citation: true
 
 {{< include ../../_setup.qmd >}}
 
+```{r}
+#| include: false
+requireNamespace("patchwork")
+requireNamespace("kknn")
+requireNamespace("ranger")
+```
+
 ## Outline
 
 This is the third part of a serial of use cases with the German credit dataset.
@@ -193,7 +200,7 @@ The tuning procedure may take some time:
 
 ```{r 2020-03-11-mlr3pipelines-tutorial-german-credit-017}
 instance = tune(
-  method = "grid_search",
+  tuner = tnr("grid_search"),
   task,
   learner = fpipe %>>% lrn("classif.ranger"),
   resampling = cv10,
