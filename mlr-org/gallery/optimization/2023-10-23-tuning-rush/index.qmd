@@ -14,7 +14,6 @@ knitr:
   opts_chunk:
     R.options:
       datatable.print.nrows: 12
-freeze: true
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -28,10 +27,11 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 set.seed(1)
 ```
 
+
 # Scope
 
 Parallel processing is a powerful tool to speed up the tuning of machine learning algorithms.
-So far, `r ref("mlr3tuning")` has taken the approach
+So far, `r ref("mlr3tuning")` has taken the approach to evaluating a batch of hyperparameter configurations in parallel.
 
 
 that the tuner proposes a batch of hyperparameter configurations, which are then evaluated in parallel with `r ref("benchmark()")`.
@@ -51,6 +51,7 @@ remotes::install_github(c(
   "mlr-org/bbotk@rush",
   "mlr-org/mlr3tuning@rush"))
 ```
+
 
 # Batch Parallelization
 
@@ -80,8 +81,16 @@ Waiting for the last configuration to finish would make the algorithm inefficien
 We have also observed that the main process is quickly overloaded when a large number of fast-fitting models are evaluated.
 This makes it necessary to subdivide batches even further.
 
+# Benchmark
+
 ```{r}
 #| echo: false
+#| label: fig-sleep-benchmark
+#| fig-cap: "Runtime of a random search in seconds depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a homogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
+#| fig-subcap:
+#|   - "Random Search on 100 hyperparameter configuration with a 3-fold cross-validation on 3 workers."
+#|   - "Random Search on 1000 hyperparameter configuration with a 3-fold cross-validation on 30 workers."
+#| layout-ncol: 1
 library(data.table)
 library(mlr3misc)
 library(ggplot2)
@@ -89,47 +98,87 @@ library(patchwork)
 
 res = readRDS("/home/marc/repositories/mlr3website/mlr-org/gallery/optimization/2023-10-23-tuning-rush/sleep_benchmark.rds")
 
-for (workers in c(3, 30)) {
-  plots = map(unique(res$sleep_train), function(sleep) {
-    data = res[sleep_train == sleep & workers == workers, ]
+# plot 3 workers
+plots = map(unique(res$sleep_train), function(sleep) {
+  data = res[sleep_train == sleep & workers == 3, ]
 
-    ggplot(data, aes(x = sleep_train, y = experiment, fill = result)) +
-      geom_tile(alpha = 0.3) +
-      geom_text(aes(label = result)) +
-      scale_fill_distiller(palette = "BuGn", trans = "log") +
-      theme_minimal() +
-      theme(
-        legend.position = "none",
-        axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(angle=45),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank())
-    })
-
-  plots[[1]] = plots[[1]] +
-    ylab("Tuner Configuration") +
-    scale_y_discrete(labels = c(
-      "Batch 1 Chunk 1",
-      "Batch 10 Chunk 10",
-      "Batch 100 Chunk 1",
-      "Batch 100 Chunk 10",
-      "Batch 100 Chunk 100",
-      "Rush")) +
+  ggplot(data, aes(x = sleep_train, y = experiment, fill = result)) +
+    geom_tile(alpha = 0.3) +
+    geom_text(aes(label = result)) +
+    scale_fill_distiller(palette = "BuGn", trans = "log") +
+    theme_minimal() +
     theme(
-      axis.title.y = element_text(size = 14, angle = 90),
-      axis.text.y = element_text())
+      legend.position = "none",
+      axis.title.y = element_blank(),
+      axis.text.y = element_blank(),
+      axis.title.x = element_blank(),
+      axis.text.x = element_text(angle=45),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank())
+})
+
+plots[[1]] = plots[[1]] +
+  ylab("Tuner Configuration") +
+  scale_y_discrete(labels = c(
+    "Batch 1 Chunk 1",
+    "Batch 10 Chunk 10",
+    "Batch 100 Chunk 1",
+    "Batch 100 Chunk 10",
+    "Batch 100 Chunk 100",
+    "Rush")) +
+  theme(
+    axis.title.y = element_text(size = 10, angle = 90, vjust = 3),
+    axis.text.y = element_text())
 
 
-  plots[[3]] = plots[[3]] +
-    xlab("Sleep Time") +
+plots[[3]] = plots[[3]] +
+  xlab("Sleep Time") +
+  theme(
+    axis.title.x = element_text(size = 10, hjust = 2.5)
+    )
+
+wrap_plots(plots, ncol = 6)
+
+# plot 30 workers
+plots = map(unique(res$sleep_train), function(sleep) {
+  data = res[sleep_train == sleep & workers == 30, ]
+
+  ggplot(data, aes(x = sleep_train, y = experiment, fill = result)) +
+    geom_tile(alpha = 0.3) +
+    geom_text(aes(label = result)) +
+    scale_fill_distiller(palette = "BuGn", trans = "log") +
+    theme_minimal() +
     theme(
-      axis.title.x = element_text(hjust = 2.5, size = 14)
-      )
+      legend.position = "none",
+      axis.title.y = element_blank(),
+      axis.text.y = element_blank(),
+      axis.title.x = element_blank(),
+      axis.text.x = element_text(angle=45),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank())
+})
 
-  wrap_plots(plots, ncol = 6)
-}
+plots[[1]] = plots[[1]] +
+  ylab("Tuner Configuration") +
+  scale_y_discrete(labels = c(
+    "Batch 10 Chunk 1",
+    "Batch 100 Chunk 10",
+    "Batch 1000 Chunk 1",
+    "Batch 1000 Chunk 10",
+    "Batch 1000 Chunk 100",
+    "Rush")) +
+  theme(
+    axis.title.y = element_text(size = 10, angle = 90),
+    axis.text.y = element_text())
+
+
+plots[[3]] = plots[[3]] +
+  xlab("Sleep Time") +
+  theme(
+    axis.title.x = element_text(size = 10, hjust = 2.5)
+    )
+
+wrap_plots(plots, ncol = 6)
 ```
 
 # Rush Parallelization
@@ -151,6 +200,7 @@ The overhead per configuration is in the range of 1 to 2 milliseconds.
 # Rush Examples
 
 ```{r}
+#| eval: false
 library(rush)
 library(mlr3tuning)
 
@@ -161,6 +211,7 @@ rush
 The `ti()` function returns a `TuningInstanceRushSingleCrit` instead of a `TuningInstanceSingleCrit` when a `rush` controller is passed.
 
 ```{r}
+#| eval: false
 instance = ti(
   task = tsk("pima"),
   learner = lrn("classif.rpart", cp = to_tune(0.01, 0.1), minsplit = to_tune(1, 100)),
@@ -175,6 +226,7 @@ The new instance has a new method `$start_workers()` to start the workers.
 The `await_workers` argument determines if the main process waits until all workers are ready.
 
 ```{r}
+#| eval: false
 future::plan("multisession", workers = 2L)
 
 instance$start_workers(await_workers = TRUE)
@@ -186,12 +238,14 @@ Just use the tuners as normal.
 Internally a slightly different algorithm is used when parallelizing with rush.
 
 ```{r}
+#| eval: false
 tuner = tnr("random_search")
 ```
 
 The optimization is started as always with the `$optimize()` method.
 
 ```{r}
+#| eval: false
 tuner$optimize(instance)
 ```
 
@@ -301,8 +355,6 @@ The hotstart mechanism of mlr3 can now finally be used effectively in tuning.
 How to implement seeds?
 How to implement auto tuner? When call `start_workers()`? Set start options before?
 Check hotstart stacks.
-
-
 
 
 
