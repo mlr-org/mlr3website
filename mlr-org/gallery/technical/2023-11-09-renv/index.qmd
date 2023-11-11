@@ -1,0 +1,54 @@
+---
+title: "mlr3 and renv"
+description: |
+  Fix renv to work with mlr3.
+categories:
+  - tuning
+  - classification
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+  - name: Sebastian Fischer
+    url: https://github.com/sebffischer
+date: 2023-11-09
+knitr:
+  opts_chunk:
+    R.options:
+      datatable.print.nrows: 6
+      datatable.print.trunc.cols: TRUE
+---
+
+{{< include ../../_setup.qmd >}}
+
+```{r}
+options("install.opts" = "--without-keep.source")
+```
+
+Reproducibility is the ability to generate the same results given the same input data and code.
+In data science, this also includes the software environment.
+The `r ref_pkg("renv")` package is widely used to create reproducible environments in R.
+We recommend using `renv` for all your `mlr3` projects.
+However, the `r ref_pkg("renv")` team recently changed the installation process of packages.
+This change affects the saving of results obtained with `mlr3` e.g. saving a `r ref("Learner")` or `r ref("BenchmarkResult")` object.
+When the object is loaded to an R Session, the memory usage
+
+```{r}
+#| eval: false
+renv::init()
+renv::install("mlr3")
+
+library(mlr3)
+
+task = tsk("sonar")
+learner = lrn("classif.rpart")
+
+learner$train(task)
+
+pryr::object_size(learner)
+
+saveRDS(learner, "learner.rds")
+
+learner = readRDS("learner.rds")
+
+
+
