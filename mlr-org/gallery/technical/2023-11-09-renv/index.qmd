@@ -1,7 +1,7 @@
 ---
-title: "mlr3 and renv"
+title: "Why is mlr3 Eating my Disk"
 description: |
-  Fix renv to work with mlr3.
+    Possible explanations for exuberant memory usage of mlr3 objects.
 categories:
   - tuning
   - classification
@@ -20,35 +20,137 @@ knitr:
 
 {{< include ../../_setup.qmd >}}
 
+When saving and loading `mlr3` objects it can happen that the sizes of the objects are much larger than expected.
+While we are trying our best to keep such cases from happening, there are things that are beyond our control.
+This gallery post serves as a trouble-shooting guide that we will update as new issues come to our attention.
+We will list and explain various problems and give suggestions on how they can be solved or mitigated if possible.
+
+
+## Duplication of Data afer deserialization
+
+One source of increased object sizes that happens after serializing and unserializeing `mlr3` objects is the duplication of data.
+The example below illustrates this issue.
+
 ```{r}
-options("install.opts" = "--without-keep.source")
+library("mlr3verse")
+library("pryr")
+
+# train a decision tree on the mtcars dataset
+learner = lrn("regr.rpart")
+task = tsk("mtcars")
+learner$train(task)
+state = learner$state
+
+path = tempfile()
+saveRDS(learner$state, path)
+state_reloaded = readRDS(path)
+
+object_size(state)
+object_size(state_reloaded)
 ```
 
-Reproducibility is the ability to generate the same results given the same input data and code.
-In data science, this also includes the software environment.
-The `r ref_pkg("renv")` package is widely used to create reproducible environments in R.
-We recommend using `renv` for all your `mlr3` projects.
-However, the `r ref_pkg("renv")` team recently changed the installation process of packages.
-This change affects the saving of results obtained with `mlr3` e.g. saving a `r ref("Learner")` or `r ref("BenchmarkResult")` object.
-When the object is loaded to an R Session, the memory usage
+The example shows how the size of the state object increases when saving and reading the object.
+
+This is not related to `mlr3` but is because of the way objects are serialized in R.
+Because of R's copy-on-write semantics, data is only copied when it is modified.
+In the code below, `lx` has the same size as `lxy` because `x` and `y` all point to the same underlying data.
 
 ```{r}
-#| eval: false
-renv::init()
-renv::install("mlr3")
+x = rnorm(1000000)
+y = x
+lx = list(x)
+lxy = list(x, y)
+object_size(lx)
+object_size(lxy)
+```
 
-library(mlr3)
+However, when serializing `lxy`, both `x` and `y` are serialized independently and when loading the object again, its size in memory is doubled.
 
-task = tsk("sonar")
-learner = lrn("classif.rpart")
 
-learner$train(task)
+```{r}
+saveRDS(lxy, path)
+lxy_reloaded = readRDS(path)
+object_size(lxy_reloaded)
+```
 
-pryr::object_size(learner)
+While we have some mechanisms (like `mlr3misc::leanify`) in place to counteract this issue, the problem is still present to some degree.
 
-saveRDS(learner, "learner.rds")
 
-learner = readRDS("learner.rds")
+## Serializing Closures
 
+Another possible source of increased object sizes is the serialization of closures.
+Some objects in `mlr3` can be configured with closures.
+One example for this is `PipeOpColApply` that has a parameter `applicator` that is applied to the columns of a task.
+Let's say we want to use it to center the columns of a task.
+
+```{r}
+center = function(x) x - mean(x)
+po_center = po("colapply", applicator = function(x) center)
+```
+
+The graph has one of its parameters now set to a closure.
+This means that when saving the parameter values, which we usually want to do, so we know afterwards how the model was trained, the enviornment of the closure is also serialized.
+However this is not the case if the enclosing enviornment is either a package environment or the `.GlobalEnv`.
+In your scripts, however, the enclosing enviornment of a function might neither be a package environment nor the global environment.
+In order to show the effect we will construct the closure using a function factory.
+
+```{r}
+make_center_large = function() {
+  some_stuff = rnorm(1000000)
+
+  function(x) {
+    x - mean(x)
+  }
+}
+center_large = make_center_large()
+```
+
+Even thogh the `center` function itself is quite small w.r.t. source code, its enclosing enviornment is not.
+
+```{r}
+object_size(center_large)
+object_size(environment(center_large)$some_stuff)
+```
+
+The size of the earlier defined `center` function is neglibible, because the enclosing enviornment is the global enviornment.
+
+```{r}
+object_size(center)
+```
+
+This can be especially problematic when running large benchmark experiments, e.g. via `r mlr3batchmark`, where the learner states (which includes the parameter values) of each resample iteration are written to disk independently.
+
+```{r}
+library("mlr3batchmark")
+library("batchtools")
+
+reg = makeExperimentRegistry(NA, seed = 1)
+
+glrn_large = as_learner(
+  po("colapply", applicator = center_large) %>>%
+    lrn("regr.rpart")
+)
+glrn_large$id = "large"
+
+glrn = as_learner(
+  po("colapply", applicator = function(x) x - mean(x)) %>>%
+    lrn("regr.rpart")
+)
+
+design = benchmark_grid(task, list(glrn, glrn_large), rsmp("cv"))
+
+batchmark(design)
+submitJobs()
+```
+
+We can compare the sizes of the resulting benchmark results are re-reassembling and notice a tremendous difference.
+
+```{r}
+object_size(reduceResultsBatchmark(1:10))
+object_size(reduceResultsBatchmark(11:20))
+```
+
+
+## Sourcerefs
 
 
