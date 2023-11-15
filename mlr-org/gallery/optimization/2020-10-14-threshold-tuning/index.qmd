@@ -16,6 +16,11 @@ aliases:
 
 {{< include ../../_setup.qmd >}}
 
+```{r}
+#| include: false
+requireNamespace("GenSA")
+```
+
 ## Intro
 
 Predicting probabilities in classification tasks allows us to adjust the probability thresholds required for assigning an observation to a certain class.
@@ -130,7 +135,7 @@ We now create a `r ref("AutoTuner")`, which automatically tunes the supplied lea
 
 ```{r 2020-10-14-threshold-tuning-010}
 at = auto_tuner(
-  method = "random_search",
+  tuner = tnr("random_search"),
   learner = l,
   resampling = rsmp("cv", folds = 3L),
   measure = msr("classif.ce"),
@@ -164,7 +169,7 @@ Again, we create a `r ref("AutoTuner")`, which automatically tunes the supplied 
 
 ```{r 2020-10-14-threshold-tuning-012}
 at_2 = auto_tuner(
-  method = "random_search",
+  tuner = tnr("random_search"),
   learner = l,
   resampling = rsmp("cv", folds = 3L),
   measure = msr("classif.ce"),

@@ -20,6 +20,9 @@ knitr:
 
 ```{r 2023-02-07-recursive-feature-elimination-001}
 #| include: false
+requireNamespace("gbm")
+
+future::plan("sequential")
 
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")

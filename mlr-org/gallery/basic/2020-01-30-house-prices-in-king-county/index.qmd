@@ -14,6 +14,12 @@ aliases:
   - ../../../gallery/2020-01-30-house-prices-in-king-county/index.html
 ---
 
+```{r}
+#| include: false
+requireNamespace("xgboost")
+requireNamespace("praznik")
+```
+
 {{< include ../../_setup.qmd >}}
 
 The use-case illustrated below touches on the following concepts:
@@ -315,13 +321,12 @@ search_space = ps(
   nrounds = p_int(lower = 1L, upper = 25))
 
 at = auto_tuner(
-  method = "random_search",
+  tuner = tnr("random_search", batch_size = 40),
   learner = lrn_xgb,
   resampling = rsmp("holdout"),
   measure = msr("regr.rmse"),
   search_space = search_space,
-  term_evals = 10,
-  batch_size = 40)
+  term_evals = 10)
 ```
 
 ```{r 2020-01-30-house-prices-in-king-county-027}
