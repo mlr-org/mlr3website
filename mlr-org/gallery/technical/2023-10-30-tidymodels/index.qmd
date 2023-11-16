@@ -669,6 +669,7 @@ res_3_ranger[, time := time / 1e+9]
 Finally, we measure the runtime of the tune functions with parallelization.
 The parallelization runs on 3 cores.
 We use the largest possible chunk size for `mlr3`.
+This means the workers get all points at once which minimizes the parallelization overhead.
 The `tidymodels` package uses the same chunk size but sets it internally.
 
 ```{r}
