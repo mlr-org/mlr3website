@@ -522,7 +522,7 @@ The grid contains 200 points for the `rpart` model and 200 points for the `range
 ```{r}
 #| eval: false
 
-# tidymodels tune
+# tidymodels
 tm_mod = decision_tree(
   cost_complexity = tune()) %>%
   set_engine("rpart",
@@ -532,7 +532,7 @@ tm_mod = decision_tree(
 tm_design = data.table(
   cost_complexity = seq(0.1, 0.2, length.out = 200))
 
-# mlr3 tune
+# mlr3
 learner = lrn("classif.rpart",
   xval = 0,
   cp = to_tune())
@@ -593,7 +593,7 @@ mlr3tuning::tune(
   store_benchmark_result = FALSE)
 ```
 
-Repeating the benchmark 100 times yields the following results.
+Running the tuning sequentially is faster with `mlr3` (@tbl-tune-sequential-rpart and @tbl-tune-sequential-ranger).
 
 :::{layout-ncol="2"}
 
@@ -624,8 +624,6 @@ knitr::kable(
 ```
 
 :::
-
-Running the tuning sequentially is faster with `mlr3` (@tbl-tune-sequential-rpart and @tbl-tune-sequential-ranger).
 
 ```{r}
 #| echo: false
