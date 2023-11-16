@@ -18,17 +18,45 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 set.seed(0)
 
-bm_rpart = readRDS("/home/marc/repositories/mlr3website/mlr-org/gallery/technical/2023-10-30-tidymodels/rpart_sonar_snapshot_2023_09_27.rds")
-bm_ranger = readRDS("/home/marc/repositories/mlr3website/mlr-org/gallery/technical/2023-10-30-tidymodels/ranger_sonar_snapshot_2023_09_27.rds")
+options("datatable.print.class" = FALSE)
+
+library("mlr3verse")
+library("tidymodels")
+library("microbenchmark")
+library("ggplot2")
+library("cowplot")
+library("mlr3misc")
+library("stringr")
+
+bm_rpart = readRDS("rpart_sonar_resample.rds")
+bm_ranger = readRDS("ranger_sonar_resample.rds")
 ```
 
 # Scope
 
-In this benchmark, we compare the runtime of `r ref_pkg("tidymodels")` and `r ref_pkg("mlr3")` when training, resampling and tuning a model.
-We use `r ref("rpart::rpart()")` and `r ref("ranger::ranger()")`  on the `r ref("mlr_tasks_sonar", "Sonar")` data set.
-The runtimes are measured with the `r ref_pkg("microbenchmark")` package.
+Machine learning frameworks simplify and quicken the development of machine learning workflows.
+The `r ref_pkg("tidymodels")` and `r ref_pkg("mlr3")` packages are two popular frameworks for R.
+They provide a unified interface for data preprocessing, model training, resampling and tuning.
+The faster development comes at the cost of runtime performance.
+In this article, we compare the runtime performance of `tidymodels` and `mlr3`.
+We measure the time it takes to train, resample and tune an `r ref("rpart::rpart()")` and `r ref("ranger::ranger()")` model on the `r ref("mlr_tasks_sonar", "Sonar")` data set.
+Moreover, we analyze the runtime overhead by comparing the runtime of the frameworks with the base R Call.
+
+# Setup
+
+We measure the time it takes to train, resample and tune a model with the `r ref_pkg("microbenchmark")` package.
+All function calls are repeated 100 times in random order.
+The benchmark is performed on the `r ref("mlr_tasks_sonar", "Sonar")` data set with `rpart` and `ranger`.
+The `microbenchmark` package returns the median and lower and upper quartile of the runtimes.
+We run the benchmark on a cluster and repeat each run of `microbenchmark` 100 times with different seeds.
+Each worker has 3 cores and 12 GB of RAM.
+This means each command is called 10,000 times.
+The cluster is not optimized for single-core performance, so a run on a local machine might be faster.
+The code chunks only show examples of the executed code.
+The whole experiment can be found in our repository [mlr-org/mlr-benchmark](https://github.com/mlr-org/mlr-benchmark/tree/main/tidymodels)
 
 ```{r}
+#| eval: false
 library("mlr3verse")
 library("tidymodels")
 library("microbenchmark")
@@ -38,23 +66,25 @@ library("microbenchmark")
 
 ## Train the Models
 
-We load the learners.
-The left side shows the initialization of the `r ref("rpart::rpart")` with `r ref_pkg("mlr3")` and `r ref_pkg("tidymodels)`.
-The right side is the initialization of the `r ref("ranger::ranger()")`.
-Additionally, we train the models with the base R call.
+We start with the simplest operation, training a model.
+The left side shows the initialization of `rpart` with `mlr3` and `tidymodels`.
+The right side is the initialization of `ranger`.
+We try to use the same parameters for both frameworks.
 
-:::{layout-ncol="2" .column-body-outset}
+:::{layout-ncol="2"}
 
 ```{r}
 #| eval: false
 
 # tidymodels
 tm_mod = decision_tree() %>%
-  set_engine("rpart", xval = 0L) %>%
+  set_engine("rpart",
+    xval = 0L) %>%
   set_mode("classification")
 
 # mlr3
-learner = lrn("classif.rpart", xval = 0L)
+learner = lrn("classif.rpart",
+  xval = 0L)
 ```
 
 ```{r}
@@ -62,7 +92,9 @@ learner = lrn("classif.rpart", xval = 0L)
 
 # tidymodels
 tm_mod = rand_forest(trees = 1000L) %>%
-  set_engine("ranger", num.threads = 1L, seed = 1) %>%
+  set_engine("ranger",
+    num.threads = 1L,
+    seed = 1) %>%
   set_mode("classification")
 
 # mlr3
@@ -76,7 +108,9 @@ learner = lrn("classif.ranger",
 
 :::
 
-We train the learner with `tidymodels`, `mlr3` and the base R call.
+We measure the runtime of the train functions.
+Additionally, the base R function is called to get a lower limit of the runtime.
+Both frameworks return the trained model.
 
 ```{r}
 #| eval: false
@@ -88,28 +122,50 @@ fit(resample_tm_mod, formula, data = data)
 learner$train(task)
 ```
 
-:::{layout-ncol="2" .column-body-outset}
+Training an `rpart` model is slightly faster with `tidymodels` (@tbl-train-rpart).
+The `mlr3` package takes twice as long as the base R call.
+We observe that the relative overhead of using a framework is high for `rpart` because the training time is short.
+The runtime of `ranger` is similar for both frameworks (@tbl-train-ranger).
+The relative overhead with `ranger` becomes negligible because the training time is longer.
+
+:::{layout-ncol="2"}
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_rpart$bm_1_1))[1:2, list(expr, min, median, max)], row.names = FALSE)
+#| label: tbl-train-rpart
+#| tbl-cap: "Average runtime in milliseconds of training rpart depending on the framework."
+table = setDT(summary(bm_rpart$bm_1_1))[1:3]
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+
+knitr::kable(
+  x = table[, list(framework, lq, median, uq)],
+  digits = 0,
+  col.names = c("Framework", "LQ", "Median", "UQ"))
 ```
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_ranger$bm_1_1))[1:2, list(expr, min, median, max)], row.names = FALSE)
+#| label: tbl-train-ranger
+#| tbl-cap: "Average runtime in milliseconds of training ranger depending on the framework."
+table = setDT(summary(bm_ranger$bm_1_1))[1:3]
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+
+knitr::kable(
+  x = table[, list(framework, lq, median, uq)],
+  digits = 0,
+  col.names = c("Framework", "LQ", "Median", "UQ"))
 ```
 
 :::
 
 ## Resample Sequential
 
-We run the resample function of `tidymodels` and `mlr3` with different resampling strategies.
-The resampling splits for a 3-, 6- and 9-fold cross-validation are generated before the benchmark.
-In addition, we ran a repeated 3-fold cross-validation with 100 repetitions.
-Both packages use the same resampling splits.
-Since `tidymodels` always performs a resample and score, we do the same with mlr3.
-Both runs save the predictions.
+Next, we measure the runtime of the resample functions without parallelization.
+We generate resampling splits for a 3-, 6- and 9-fold cross-validation.
+In addition, we ran a 100 times repeated 3-fold cross-validation.
+Both frameworks use the same resampling splits.
+Since `tidymodels` always scores the resampling result, we do the same with `mlr3`.
+We activate the saving of predictions in `tidymodels` because `mlr3` always saves them.
 
 ```{r}
 #| eval: false
@@ -127,43 +183,59 @@ rr = resample(task, learner, resampling)
 rr$score(measure)
 ```
 
-Repeating the benchmark 100 times yields the following results.
+The resampling of the fast-fitting `rpart` model is faster with `mlr3` (@tbl-resample-sequential-rpart).
+Both frameworks show a linear increase in runtime with the number of folds (@fig-resample-sequential).
+The runtime of the `ranger` models is almost the same for both frameworks (@tbl-resample-sequential-ranger).
 
-:::{layout-ncol="2" .column-body-outset}
+:::{layout-ncol="2"}
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_rpart$bm_1_1))[3:10, list(expr, min, median, max)], row.names = FALSE)
+#| label: tbl-resample-sequential-rpart
+#| tbl-cap: "Average runtime in milliseconds of rpart depending on the framework and resampling strategy."
+table = setDT(summary(bm_rpart$bm_1_1))[4:11]
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
+
+knitr::kable(
+  x = table[, list(framework, resampling, lq, median, uq)],
+  digits = 0,
+  col.names = c("Framework", "Resampling", "LQ", "Median", "UQ"))
 ```
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_ranger$bm_1_1))[3:10, list(expr, min, median, max)], row.names = FALSE)
+#| label: tbl-resample-sequential-ranger
+#| tbl-cap: "Average runtime in milliseconds of ranger depending on the framework and resampling strategy."
+table = setDT(summary(bm_ranger$bm_1_1))[4:11]
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
+
+knitr::kable(
+  x = table[, list(framework, resampling, lq, median, uq)],
+  digits = 0,
+  col.names = c("Framework", "Resampling", "LQ", "Median", "UQ"))
 ```
 
 :::
 
 ```{r}
-#| layout-ncol: 2
-#| column: page
 #| echo: false
-#| fig-cap: "Runtime in milliseconds for rpart (left) and ranger (right) depending on the number of folds."
-library(ggplot2)
-library(cowplot)
+#| label: fig-resample-sequential
+#| fig-cap: "Average runtime in milliseconds of a cross-validation of rpart (left) and ranger (right) depending on the framework and number of folds."
+res_1_rpart = as.data.table(bm_rpart$bm_1_1)
+res_1_rpart[c("mlr3_cv3", "tidymodels_cv3"), folds := 3, on = "expr"]
+res_1_rpart[c("mlr3_cv6", "tidymodels_cv6"), folds := 6, on = "expr"]
+res_1_rpart[c("mlr3_cv9", "tidymodels_cv9"), folds := 9, on = "expr"]
+res_1_rpart[c("mlr3_rcv100", "tidymodels_rcv100"), folds := 100, on = "expr"]
+res_1_rpart[c("mlr3_cv3", "mlr3_cv6",  "mlr3_cv9", "mlr3_rcv100"), framework := "mlr3", on = "expr"]
+res_1_rpart[c("tidymodels_cv3", "tidymodels_cv6",  "tidymodels_cv9", "tidymodels_rcv100"), framework := "tidymodels", on = "expr"]
+res_1_rpart[, folds := factor(folds)]
+res_1_rpart[, framework := factor(framework)]
+res_1_rpart = res_1_rpart[, list(time = median(time)), by = c("expr", "framework", "folds")]
+res_1_rpart[, time := time / 1e+6]
 
-res_1 = as.data.table(bm_rpart$bm_1_1)
-res_1[c("mlr3_cv3", "tidymodels_cv3"), folds := 3, on = "expr"]
-res_1[c("mlr3_cv6", "tidymodels_cv6"), folds := 6, on = "expr"]
-res_1[c("mlr3_cv9", "tidymodels_cv9"), folds := 9, on = "expr"]
-res_1[c("mlr3_rcv100", "tidymodels_rcv100"), folds := 100, on = "expr"]
-res_1[c("mlr3_cv3", "mlr3_cv6",  "mlr3_cv9", "mlr3_rcv100"), framework := "mlr3", on = "expr"]
-res_1[c("tidymodels_cv3", "tidymodels_cv6",  "tidymodels_cv9", "tidymodels_rcv100"), framework := "tidymodels", on = "expr"]
-res_1[, folds := factor(folds)]
-res_1[, framework := factor(framework)]
-res_1 = res_1[, list(time = median(time)), by = c("expr", "framework", "folds")]
-res_1[, time := time / 1e+6]
-
-p1 = ggplot(res_1[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_cv6", "mlr3_cv9", "tidymodels_cv9"), , on = "expr"],
+p1 = ggplot(res_1_rpart[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_cv6", "mlr3_cv9", "tidymodels_cv9"), , on = "expr"],
   aes(x = folds, y = time, color = framework, group = framework)) +
   geom_point() +
   geom_line() +
@@ -172,19 +244,19 @@ p1 = ggplot(res_1[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_cv6", 
   labs(color = "Framework") +
   theme_minimal()
 
-res_1 = as.data.table(bm_ranger$bm_1_1)
-res_1[c("mlr3_cv3", "tidymodels_cv3"), folds := 3, on = "expr"]
-res_1[c("mlr3_cv6", "tidymodels_cv6"), folds := 6, on = "expr"]
-res_1[c("mlr3_cv9", "tidymodels_cv9"), folds := 9, on = "expr"]
-res_1[c("mlr3_rcv100", "tidymodels_rcv100"), folds := 100, on = "expr"]
-res_1[c("mlr3_cv3", "mlr3_cv6",  "mlr3_cv9", "mlr3_rcv100"), framework := "mlr3", on = "expr"]
-res_1[c("tidymodels_cv3", "tidymodels_cv6",  "tidymodels_cv9", "tidymodels_rcv100"), framework := "tidymodels", on = "expr"]
-res_1[, folds := factor(folds)]
-res_1[, framework := factor(framework)]
-res_1 = res_1[, list(time = median(time)), by = c("expr", "framework", "folds")]
-res_1[, time := time / 1e+6]
+res_1_ranger = as.data.table(bm_ranger$bm_1_1)
+res_1_ranger[c("mlr3_cv3", "tidymodels_cv3"), folds := 3, on = "expr"]
+res_1_ranger[c("mlr3_cv6", "tidymodels_cv6"), folds := 6, on = "expr"]
+res_1_ranger[c("mlr3_cv9", "tidymodels_cv9"), folds := 9, on = "expr"]
+res_1_ranger[c("mlr3_rcv100", "tidymodels_rcv100"), folds := 100, on = "expr"]
+res_1_ranger[c("mlr3_cv3", "mlr3_cv6",  "mlr3_cv9", "mlr3_rcv100"), framework := "mlr3", on = "expr"]
+res_1_ranger[c("tidymodels_cv3", "tidymodels_cv6",  "tidymodels_cv9", "tidymodels_rcv100"), framework := "tidymodels", on = "expr"]
+res_1_ranger[, folds := factor(folds)]
+res_1_ranger[, framework := factor(framework)]
+res_1_ranger = res_1_ranger[, list(time = median(time)), by = c("expr", "framework", "folds")]
+res_1_ranger[, time := time / 1e+6]
 
-p2 = ggplot(res_1[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_cv6", "mlr3_cv9", "tidymodels_cv9"), , on = "expr"],
+p2 = ggplot(res_1_ranger[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_cv6", "mlr3_cv9", "tidymodels_cv9"), , on = "expr"],
   aes(x = folds, y = time, color = framework, group = framework)) +
   geom_point() +
   geom_line() +
@@ -201,7 +273,9 @@ legend = get_legend(
 
 prow = plot_grid(
   p1 + theme(legend.position="none"),
-  p2 + theme(legend.position="none")
+  p2 + theme(
+    legend.position="none",
+    axis.title.y = element_blank())
 )
 
 plot_grid(prow, legend, ncol = 1, rel_heights = c(1, .1))
@@ -209,66 +283,125 @@ plot_grid(prow, legend, ncol = 1, rel_heights = c(1, .1))
 
 ## Resample Parallel
 
-We compare the parallelization of the resample functions.
-We use the same resampling strategies as before.
+We run the resampling functions again but this time with parallelization.
+The `doFuture` and `doParallel` packages are the best-supported parallelization packages for `tidymodels`.
 The `mlr3` package uses the `future` package for parallelization.
-For `tidymodels` we use the `doParallel` and `doFuture` packages.
 
-The results for `mlr3` with `future`.
+The average runtime of the `mlr3` resampling function with `future` parallelization is shown in @tbl-resample-parallel-mlr3-future-rpart and @tbl-resample-parallel-mlr3-future-ranger.
+The runtime only increases slightly when the number of folds is doubled.
+This means that we see a large parallelization overhead for starting the workers.
+For `rpart`, the parallelization overhead exceeds the speedup (left @fig-resample-parallel).
+For `ranger`, parallelization is faster than the sequential version (right @fig-resample-parallel).
 
-:::{layout-ncol="2" .column-body-outset}
+
+:::{layout-ncol="2"}
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_rpart$bm_2_1))[, list(expr, min, median, max)], row.names = FALSE)
+#| label: tbl-resample-parallel-mlr3-future-rpart
+#| tbl-cap: "Average runtime in milliseconds of mlr3 with future and rpart depending on the resampling strategy."
+table = setDT(summary(bm_rpart$bm_2_1))
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
+
+knitr::kable(
+  x = table[, list(resampling, lq, median, uq)],
+  digits = 0,
+  col.names = c("Resampling", "LQ", "Median", "UQ"))
 ```
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_ranger$bm_2_1))[, list(expr, min, median, max)], row.names = FALSE)
-```
+#| label: tbl-resample-parallel-mlr3-future-ranger
+#| tbl-cap: "Average runtime in milliseconds of mlr3 with future and ranger depending on the resampling strategy."
+table = setDT(summary(bm_ranger$bm_2_1))
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
 
-:::
-
-The results for `tidymodels` with `doFuture`.
-
-:::{layout-ncol="2" .column-body-outset}
-
-```{r}
-#| echo: false
-print(setDT(summary(bm_rpart$bm_2_2))[, list(expr, min, median, max)], row.names = FALSE)
-```
-
-```{r}
-#| echo: false
-print(setDT(summary(bm_ranger$bm_2_2))[, list(expr, min, median, max)], row.names = FALSE)
-```
-
-:::
-
-The result for `tidymodels` with `doParallel`.
-
-:::{layout-ncol="2" .column-body-outset}
-
-```{r}
-#| echo: false
-print(setDT(summary(bm_rpart$bm_2_3))[, list(expr, min, median, max)], row.names = FALSE)
-```
-
-```{r}
-#| echo: false
-print(setDT(summary(bm_ranger$bm_2_3))[, list(expr, min, median, max)], row.names = FALSE)
+knitr::kable(
+  x = table[, list(resampling, lq, median, uq)],
+  digits = 0,
+  col.names = c("Resampling", "LQ", "Median", "UQ"))
 ```
 
 :::
 
-```{r}
-#| layout-ncol: 2
-#| column: page
-#| echo: false
-#| fig-cap: "Runtime in milliseconds depending on the number of folds."
-library(mlr3misc)
+The `tidymodels` package with `doFuture` is much slower than `mlr3` with `future` (@tbl-resample-parallel-tidymodels-future-rpart and @tbl-resample-parallel-tidymodels-future-ranger).
+We observed that `tidymodels` exports more data to the workers than `mlr3`.
+This might be the reason for the slower runtime.
 
+
+:::{layout-ncol="2"}
+
+```{r}
+#| echo: false
+#| label: tbl-resample-parallel-tidymodels-future-rpart
+#| tbl-cap: "Average runtime in milliseconds of tidymodels with doFuture and rpart depending on the resampling strategy."
+table = setDT(summary(bm_rpart$bm_2_2))
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
+
+knitr::kable(
+  x = table[, list(resampling, lq, median, uq)],
+  digits = 0,
+  col.names = c("Resampling", "LQ", "Median", "UQ"))
+```
+
+```{r}
+#| echo: false
+#| label: tbl-resample-parallel-tidymodels-future-ranger
+#| tbl-cap: "Average runtime in milliseconds of tidymodels with doFuture and ranger depending on the resampling strategy."
+table = setDT(summary(bm_ranger$bm_2_2))
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
+
+knitr::kable(
+  x = table[, list(resampling, lq, median, uq)],
+  digits = 0,
+  col.names = c("Resampling", "LQ", "Median", "UQ"))
+```
+
+:::
+
+The `doParallel` package works better for these rather small resampling tasks.
+The resampling is always a bit faster than `mlr3` but for `rpart` it can also not beat the sequential version (left @fig-resample-parallel).
+
+:::{layout-ncol="2"}
+
+```{r}
+#| echo: false
+#| label: tbl-resample-parallel-tidymodels-parallel-rpart
+#| tbl-cap: "Average runtime in milliseconds of tidymodels with doParallel and rpart depending on the resampling strategy."
+table = setDT(summary(bm_rpart$bm_2_3))
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
+
+knitr::kable(
+  x = table[, list(resampling, lq, median, uq)],
+  digits = 0,
+  col.names = c("Resampling", "LQ", "Median", "UQ"))
+```
+
+```{r}
+#| echo: false
+#| label: tbl-resample-parallel-tidymodels-parallel-ranger
+#| tbl-cap: "Average runtime in milliseconds of tidymodels with doParallel and ranger depending on the resampling strategy."
+table = setDT(summary(bm_ranger$bm_2_3))
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
+
+knitr::kable(
+  x = table[, list(resampling, lq, median, uq)],
+  digits = 0,
+  col.names = c("Resampling", "LQ", "Median", "UQ"))
+```
+
+:::
+
+```{r}
+#| echo: false
+#| label: fig-resample-parallel
+#| fig-cap: "Average runtime in milliseconds of a cross-validation of rpart (left) and ranger (right) depending on the framework, number of folds and parallelization."
 res_2 = setNames(map(list(bm_rpart$bm_2_1, bm_rpart$bm_2_2, bm_rpart$bm_2_3), as.data.table), c("mlr3_future", "tidymodels_future", "tidymodels_parallel"))
 res_2 = rbindlist(res_2, idcol = "framework")
 res_2[c("mlr3_cv3", "tidymodels_cv3"), folds := 3, on = "expr"]
@@ -281,19 +414,18 @@ res_2 = res_2[, list(time = median(time)), by = c("expr", "framework", "folds")]
 res_2[, time := time / 1e+6]
 
 res_rpart_1_2 = rbindlist(list(
-  sequential = res_1,
+  sequential = res_1_rpart,
   parallel = res_2),
   use.names = TRUE, idcol = "mode")
 
-ggplot(res_rpart_1_2[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_cv6", "mlr3_cv9", "tidymodels_cv9"), , on = "expr"],
+p1 = ggplot(res_rpart_1_2[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_cv6", "mlr3_cv9", "tidymodels_cv9"), , on = "expr"],
   aes(x = folds, y = time, color = framework, group = framework)) +
   geom_point() +
   geom_line(aes(linetype = mode)) +
   xlab("Number of Folds") +
   ylab("Runtime (ms)") +
   labs(color = "Framework", linetype = "Mode") +
-  theme_minimal()  +
-  theme(legend.position = "left")
+  theme_minimal()
 
 res_2 = setNames(map(list(bm_ranger$bm_2_1, bm_ranger$bm_2_2, bm_ranger$bm_2_3), as.data.table), c("mlr3_future", "tidymodels_future", "tidymodels_parallel"))
 res_2 = rbindlist(res_2, idcol = "framework")
@@ -307,66 +439,123 @@ res_2 = res_2[, list(time = median(time)), by = c("expr", "framework", "folds")]
 res_2[, time := time / 1e+6]
 
 res_ranger_1_2 = rbindlist(list(
-  sequential = res_1,
+  sequential = res_1_ranger,
   parallel = res_2),
   use.names = TRUE, idcol = "mode")
 
-ggplot(res_ranger_1_2[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_cv6", "mlr3_cv9", "tidymodels_cv9"), , on = "expr"],
+p2 = ggplot(res_ranger_1_2[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_cv6", "mlr3_cv9", "tidymodels_cv9"), , on = "expr"],
   aes(x = folds, y = time, color = framework, group = framework)) +
   geom_point() +
   geom_line(aes(linetype = mode)) +
   xlab("Number of Folds") +
   ylab("Runtime (ms)") +
   labs(color = "Framework", linetype = "Mode") +
-  theme_minimal() +
-  theme(legend.position = "right")
+  theme_minimal()
 
-ggplot(res_rpart_1_2[c("tidymodels_rcv100", "mlr3_rcv100"), on = "expr"],
+legend = get_legend(
+  p1 +
+  guides(color = guide_legend(nrow = 2)) +
+  theme(legend.position = "bottom")
+)
+
+prow = plot_grid(
+  p1 + theme(legend.position="none"),
+  p2 + theme(
+    legend.position="none",
+    axis.title.y = element_blank())
+)
+
+plot_grid(prow, legend, ncol = 1, rel_heights = c(1, .1))
+```
+
+For repeated cross-validation, it is beneficial to use parallelization (@fig-resample-parallel-2).
+All frameworks are faster with parallelization.
+For these larger resamplings, the `doFuture` package is faster than `doParallel`.
+
+```{r}
+#| echo: false
+#| label: fig-resample-parallel-2
+#| fig-cap: "Average runtime in seconds of a 100 times repeated 3-fold cross-validation of rpart (left) and ranger (right) depending on the framework and parallelization."
+p1 = ggplot(res_rpart_1_2[c("tidymodels_rcv100", "mlr3_rcv100"), on = "expr"][, time := time / 1000],
   aes(x = framework, y = time, fill = mode)) +
   geom_col() +
   xlab("Framework") +
-  ylab("Runtime (ms)") +
+  ylab("Runtime (s)") +
   labs(fill = "Mode") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90))
 
-ggplot(res_ranger_1_2[c("tidymodels_rcv100", "mlr3_rcv100"), on = "expr"],
+p2 = ggplot(res_ranger_1_2[c("tidymodels_rcv100", "mlr3_rcv100"), on = "expr"][, time := time / 1000],
   aes(x = framework, y = time, fill = mode)) +
   geom_col() +
   xlab("Framework") +
-  ylab("Runtime (ms)") +
+  ylab("Runtime (s)") +
   labs(fill = "Mode") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90))
+
+legend = get_legend(
+  p1 +
+  guides(color = guide_legend(nrow = 1)) +
+  theme(legend.position = "bottom")
+)
+
+prow = plot_grid(
+  p1 + theme(legend.position="none"),
+  p2 + theme(
+    legend.position="none",
+    axis.title.y = element_blank())
+)
+
+plot_grid(prow, legend, ncol = 1, rel_heights = c(1, .1))
 ```
 
 ## Tune Seuqential
 
-We load the learners and define the design.
-We evaluate 200 points.
+Now we measure the runtime of the tune functions.
+The `tidymodels` package evaluates a predefined grid of points.
+We use the `"design_points"` tuner of the `mlr3tuning` package to evaluate the same grid.
+The grid contains 200 points for the `rpart` model and 200 points for the `ranger` model.
 
-:::{layout-ncol="2" .column-body-outset}
+:::{layout-ncol="2"}
 
 ```{r}
 #| eval: false
-#|
-tm_mod = decision_tree(cost_complexity = tune()) %>%
-  set_engine("rpart", xval = 0) %>%
+
+# tidymodels
+tm_mod = decision_tree(
+  cost_complexity = tune()) %>%
+  set_engine("rpart",
+    xval = 0) %>%
   set_mode("classification")
 
-learner = lrn("classif.rpart", xval = 0, cp = to_tune())
+tm_design = data.table(
+  cost_complexity = seq(0.1, 0.2, length.out = 200))
 
-tm_design = data.table(cost_complexity = seq(0.1, 0.2, length.out = 200))
-mlr3_design = data.table(cp = seq(0.1, 0.2, length.out = 200))
+# mlr3
+learner = lrn("classif.rpart",
+  xval = 0,
+  cp = to_tune())
+
+mlr3_design = data.table(
+  cp = seq(0.1, 0.2, length.out = 200))
 ```
 
 ```{r}
 #| eval: false
 
-tm_mod = rand_forest(trees = tune()) %>%
-  set_engine("ranger", num.threads = 1L, seed = 1) %>%
+# tidymodels
+tm_mod = rand_forest(
+  trees = tune()) %>%
+  set_engine("ranger",
+    num.threads = 1L,
+    seed = 1) %>%
   set_mode("classification")
 
+tm_design = data.table(
+  trees = seq(1000, 1199))
+
+# mlr3
 learner = lrn("classif.ranger",
   num.trees = to_tune(1, 10000),
   num.threads = 1L,
@@ -374,82 +563,112 @@ learner = lrn("classif.ranger",
   verbose = FALSE,
   predict_type = "prob")
 
-tm_design = data.table(trees = seq(1000, 1199))
-mlr3_design = data.table(num.trees = seq(1000, 1199))
+mlr3_design = data.table(
+  num.trees = seq(1000, 1199))
 ```
 
 :::
 
-We compare the tune functions of `tidymodels` and `mlr3`.
+We measure the runtime of the tune functions.
+Both runs return the best hyperparameter configuration.
 
 ```{r}
 #| eval: false
-library(data.table)
 
 # tidymodels tune
-tune::tune_grid(tm_wf, resamples = resamples, grid = design, metrics = metrics)
+tune::tune_grid(
+  tm_wf,
+  resamples = resamples,
+  grid = design,
+  metrics = metrics)
 
 # mlr3 tune
 tuner = tnr("design_points", design = design, batch_size = nrow(design))
-mlr3tuning::tune(tuner = tuner, task = task,  learner = learner,  resampling = resampling, measures = measure, store_benchmark_result = FALSE)
+mlr3tuning::tune(
+  tuner = tuner,
+  task = task,
+  learner = learner,
+  resampling = resampling,
+  measures = measure,
+  store_benchmark_result = FALSE)
 ```
 
 Repeating the benchmark 100 times yields the following results.
 
-:::{layout-ncol="2" .column-body-outset}
+:::{layout-ncol="2"}
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_rpart$bm_3_1))[, list(expr, min, median, max)], row.names = FALSE)
+#| label: tbl-tune-sequential-rpart
+#| tbl-cap: "Average runtime in seconds of tuning 200 points of rpart depending on the framework."
+table = setDT(summary(bm_rpart$bm_3_1))[, list(expr, sapply(.SD, function(x) x / 1000)), .SDcols = is.numeric]
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+
+knitr::kable(
+  x = table[, list(framework, lq, median, uq)],
+  digits = 0,
+  col.names = c("Framework", "LQ", "Median", "UQ"))
 ```
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_ranger$bm_3_1))[, list(expr, min, median, max)], row.names = FALSE)
+#| label: tbl-tune-sequential-ranger
+#| tbl-cap: "Average runtime in seconds of tuning 200 points of ranger depending on the framework."
+table = setDT(summary(bm_ranger$bm_3_1))[, list(expr, sapply(.SD, function(x) x / 1000)), .SDcols = is.numeric]
+table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+
+knitr::kable(
+  x = table[, list(framework, lq, median, uq)],
+  digits = 0,
+  col.names = c("Framework", "LQ", "Median", "UQ"))
 ```
 
 :::
 
+Running the tuning sequentially is faster with `mlr3` (@tbl-tune-sequential-rpart and @tbl-tune-sequential-ranger).
 
 ```{r}
-#| layout-ncol: 2
-#| column: page
 #| echo: false
-#| fig-cap: "Runtime in milliseconds depending on framework."
-res_3 = as.data.table(bm_rpart$bm_3_1)
-res_3[c("mlr3_200_point"), framework := "mlr3", on = "expr"]
-res_3[c("tidymodels_200_point"), framework := "tidymodels", on = "expr"]
-res_3[, framework := factor(framework)]
-res_3 = res_3[, list(time = median(time)), by = c("expr", "framework")]
-res_3[, time := time / 1e+6]
+#| label: fig-tune-sequential
+#| fig-cap: "Average runtime in seconds of tuning 200 points of rpart (left) and ranger (right) depending on the framework."
+res_3_rpart = as.data.table(bm_rpart$bm_3_1)
+res_3_rpart[c("mlr3_200_point"), framework := "mlr3", on = "expr"]
+res_3_rpart[c("tidymodels_200_point"), framework := "tidymodels", on = "expr"]
+res_3_rpart[, framework := factor(framework)]
+res_3_rpart = res_3_rpart[, list(time = median(time)), by = c("expr", "framework")]
+res_3_rpart[, time := time / 1e+9]
 
-ggplot(res_3,
-  aes(x = framework, y = time)) +
-  geom_col(fill = "#F8766D") +
-  xlab("Framework") +
-  ylab("Runtime (ms)") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90))
+# p1 = ggplot(res_3_rpart,
+#   aes(x = framework, y = time)) +
+#   geom_col(fill = "#F8766D") +
+#   xlab("Framework") +
+#   ylab("Runtime (s)") +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle = 90))
 
-res_3 = as.data.table(bm_ranger$bm_3_1)
-res_3[c("mlr3_200_point"), framework := "mlr3", on = "expr"]
-res_3[c("tidymodels_200_point"), framework := "tidymodels", on = "expr"]
-res_3[, framework := factor(framework)]
-res_3 = res_3[, list(time = median(time)), by = c("expr", "framework")]
-res_3[, time := time / 1e+6]
+res_3_ranger = as.data.table(bm_ranger$bm_3_1)
+res_3_ranger[c("mlr3_200_point"), framework := "mlr3", on = "expr"]
+res_3_ranger[c("tidymodels_200_point"), framework := "tidymodels", on = "expr"]
+res_3_ranger[, framework := factor(framework)]
+res_3_ranger = res_3_ranger[, list(time = median(time)), by = c("expr", "framework")]
+res_3_ranger[, time := time / 1e+9]
 
-ggplot(res_3,
-  aes(x = framework, y = time)) +
-  geom_col(fill = "#F8766D") +
-  xlab("Framework") +
-  ylab("Runtime (ms)") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90))
+# p2 = ggplot(res_3_ranger,
+#   aes(x = framework, y = time)) +
+#   geom_col(fill = "#F8766D") +
+#   xlab("Framework") +
+#   ylab("Runtime (s)") +
+#   theme_minimal() +
+#   theme(
+#     axis.text.x = element_text(angle = 90),
+#     axis.title.y = element_blank())
+
+# plot_grid(p1, p2)
 ```
 
 ## Tune Parallel
 
-Now we enable parallelization and run the same benchmarks.
+Finally, we measure the runtime of the tune functions with parallelization.
 The parallelization runs on 3 cores.
 We use the largest possible chunk size for `mlr3`.
 The `tidymodels` package uses the same chunk size but sets it internally.
@@ -458,75 +677,65 @@ The `tidymodels` package uses the same chunk size but sets it internally.
 options("mlr3.exec_chunk_size" = 200)
 ```
 
-The results for `mlr3` with `future`.
+The runtimes of `mlr3` and `tidymodels` are very similar.
+The `mlr3` package is slightly faster with `rpart` (@tbl-tune-parallel-mlr3-future-rpart) and slower with `ranger` (@tbl-tune-parallel-mlr3-future-ranger).
+Since we are using a 3-fold cross-validation, the `doParallel` package is faster than `doFuture` (@fig-tune-parallel).
+Regardless of the framework-backend combination, it is worth activating parallelization.
 
-:::{layout-ncol="2" .column-body-outset}
+:::{layout-ncol="2"}
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_rpart$bm_4_1))[, list(expr, min, median, max)], row.names = FALSE)
+#| label: tbl-tune-parallel-mlr3-future-rpart
+#| tbl-cap: "Average runtime in seconds of tuning 200 points of rpart depending on the framework."
+
+tab_rpart = rbindlist(list(summary(bm_rpart$bm_4_1), summary(bm_rpart$bm_4_2), summary(bm_rpart$bm_4_3)))
+tab_rpart[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+tab_rpart[, parallelization := c("future", "doFuture", "doParallel")]
+
+knitr::kable(
+  x = tab_rpart[, list(framework, parallelization, lq, median, uq)][, list(framework, parallelization, .SD / 1000), .SDcols = is.numeric],
+  digits = 0,
+  col.names = c("Framework", "Backend", "LQ", "Median", "UQ"))
 ```
 
 ```{r}
 #| echo: false
-print(setDT(summary(bm_ranger$bm_4_1))[, list(expr, min, median, max)], row.names = FALSE)
-```
+#| label: tbl-tune-parallel-mlr3-future-ranger
+#| tbl-cap: "Average runtime in seconds of tuning 200 points of ranger depending on the framework."
 
-:::
+tab_ranger = rbindlist(list(summary(bm_ranger$bm_4_1), summary(bm_ranger$bm_4_2), summary(bm_ranger$bm_4_3)))
+tab_ranger[, framework := str_split_fixed(expr, "_", 2)[, 1]]
+tab_ranger[, parallelization := c("future", "doFuture", "doParallel")]
 
-The results for `tidymodels` with `doFuture`.
-
-:::{layout-ncol="2" .column-body-outset}
-
-```{r}
-#| echo: false
-print(setDT(summary(bm_rpart$bm_4_2))[, list(expr, min, median, max)], row.names = FALSE)
-```
-
-```{r}
-#| echo: false
-print(setDT(summary(bm_ranger$bm_4_2))[, list(expr, min, median, max)], row.names = FALSE)
-```
-
-:::
-
-The result for `tidymodels` with `doParallel`.
-
-:::{layout-ncol="2" .column-body-outset}
-
-```{r}
-#| echo: false
-print(setDT(summary(bm_rpart$bm_4_3))[, list(expr, min, median, max)], row.names = FALSE)
-```
-
-```{r}
-#| echo: false
-print(setDT(summary(bm_ranger$bm_4_3))[, list(expr, min, median, max)], row.names = FALSE)
+knitr::kable(
+  x = tab_ranger[, list(framework, parallelization, lq, median, uq)][, list(framework, parallelization, .SD / 1000), .SDcols = is.numeric],
+  digits = 0,
+  col.names = c("Framework", "Backend", "LQ", "Median", "UQ"))
 ```
 
 :::
 
-
 ```{r}
-#| layout-ncol: 2
-#| column: page
-#| fig-cap: "Runtime in milliseconds depending on framework."
+#| echo: false
+#| label: fig-tune-parallel
+#| fig-cap: "Average runtime in seconds of tuning 200 points of rpart (left) and ranger (right) depending on the framework and parallelization."
 res_4 = setNames(map(list(bm_rpart$bm_4_1, bm_rpart$bm_4_2, bm_rpart$bm_4_3), as.data.table), c("mlr3_future", "tidymodels_future", "tidymodels_parallel"))
 res_4 = rbindlist(res_4, idcol = "framework")
 res_4[, framework := factor(framework)]
 res_4 = res_4[, list(time = median(time)), by = c("expr", "framework")]
-res_4[, time := time / 1e+6]
+res_4[, time := time / 1e+9]
 
 res_3_4 = rbindlist(list(
-  sequential = res_3,
+  sequential = res_3_rpart,
   parallel = res_4),
   use.names = TRUE, idcol = "mode")
 
-ggplot(res_3_4,
+p1 = ggplot(res_3_4,
   aes(x = framework, y = time, fill = mode)) +
   geom_col() +
   xlab("Framework") +
-  ylab("Runtime (ms)") +
+  ylab("Runtime (s)") +
   labs(fill = "Mode") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90))
@@ -535,19 +744,41 @@ res_4 = setNames(map(list(bm_ranger$bm_4_1, bm_ranger$bm_4_2, bm_ranger$bm_4_3),
 res_4 = rbindlist(res_4, idcol = "framework")
 res_4[, framework := factor(framework)]
 res_4 = res_4[, list(time = median(time)), by = c("expr", "framework")]
-res_4[, time := time / 1e+6]
+res_4[, time := time / 1e+9]
 
 res_3_4 = rbindlist(list(
-  sequential = res_3,
+  sequential = res_3_ranger,
   parallel = res_4),
   use.names = TRUE, idcol = "mode")
 
-ggplot(res_3_4,
+p2 = ggplot(res_3_4,
   aes(x = framework, y = time, fill = mode)) +
   geom_col() +
   xlab("Framework") +
-  ylab("Runtime (ms)") +
+  ylab("Runtime (s)") +
   labs(fill = "Mode") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90))
+
+legend = get_legend(
+  p1 +
+  guides(color = guide_legend(nrow = 1)) +
+  theme(legend.position = "bottom")
+)
+
+prow = plot_grid(
+  p1 + theme(legend.position="none"),
+  p2 + theme(
+    legend.position="none",
+    axis.title.y = element_blank())
+)
+
+plot_grid(prow, legend, ncol = 1, rel_heights = c(1, .1))
 ```
+
+# Conclusion
+
+We cannot identify a clear winner.
+Both frameworks have a similar runtime for training, resampling and tuning.
+The relative overhead of using a framework is high for `rpart` because the training time is short.
+For slow-fitting models like `ranger`, the relative overhead becomes negligible.
