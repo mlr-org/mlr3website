@@ -40,7 +40,7 @@ They provide a unified interface for data preprocessing, model training, resampl
 The faster development comes at the cost of runtime performance.
 In this article, we compare the runtime performance of `tidymodels` and `mlr3`.
 We measure the time it takes to train, resample and tune an `r ref("rpart::rpart()")` and `r ref("ranger::ranger()")` model on the `r ref("mlr_tasks_sonar", "Sonar")` data set.
-Moreover, we analyze the runtime overhead by comparing the runtime of the frameworks with the base R Call.
+Moreover, we analyze the runtime overhead by comparing the runtime of the frameworks with the base R call.
 
 # Setup
 
@@ -53,7 +53,7 @@ Each worker has 3 cores and 12 GB of RAM.
 This means each command is called 10,000 times.
 The cluster is not optimized for single-core performance, so a run on a local machine might be faster.
 The code chunks only show examples of the executed code.
-The whole experiment can be found in our repository [mlr-org/mlr-benchmark](https://github.com/mlr-org/mlr-benchmark/tree/main/tidymodels)
+The whole experiment can be found in our repository [mlr-org/mlr-benchmark](https://github.com/mlr-org/mlr-benchmark/tree/main/tidymodels).
 
 ```{r}
 #| eval: false
@@ -122,7 +122,7 @@ fit(resample_tm_mod, formula, data = data)
 learner$train(task)
 ```
 
-Training an `rpart` model is slightly faster with `tidymodels` (@tbl-train-rpart).
+Training an `rpart` model is faster with `tidymodels` (@tbl-train-rpart).
 The `mlr3` package takes twice as long as the base R call.
 We observe that the relative overhead of using a framework is high for `rpart` because the training time is short.
 The runtime of `ranger` is similar for both frameworks (@tbl-train-ranger).
@@ -291,7 +291,7 @@ The average runtime of the `mlr3` resampling function with `future` parallelizat
 The runtime only increases slightly when the number of folds is doubled.
 This means that we see a large parallelization overhead for starting the workers.
 For `rpart`, the parallelization overhead exceeds the speedup (left @fig-resample-parallel).
-For `ranger`, parallelization is faster than the sequential version (right @fig-resample-parallel).
+For `ranger`, using parallelization is faster than running the sequential version (right @fig-resample-parallel).
 
 
 :::{layout-ncol="2"}
@@ -522,7 +522,7 @@ The grid contains 200 points for the `rpart` model and 200 points for the `range
 ```{r}
 #| eval: false
 
-# tidymodels
+# tidymodels tune
 tm_mod = decision_tree(
   cost_complexity = tune()) %>%
   set_engine("rpart",
@@ -532,7 +532,7 @@ tm_mod = decision_tree(
 tm_design = data.table(
   cost_complexity = seq(0.1, 0.2, length.out = 200))
 
-# mlr3
+# mlr3 tune
 learner = lrn("classif.rpart",
   xval = 0,
   cp = to_tune())
