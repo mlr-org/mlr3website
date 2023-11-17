@@ -8,6 +8,7 @@ author:
     url: https://github.com/be-marc
 date: 2023-10-30
 bibliography: ../../bibliography.bib
+image: cover.png
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -32,35 +33,33 @@ bm_rpart = readRDS("rpart_sonar_resample.rds")
 bm_ranger = readRDS("ranger_sonar_resample.rds")
 ```
 
-
-```{r}
-#| column: body-outset
-#| echo: false
-knitr::include_graphics("cover.png")
-```
-
 # Scope
 
-Machine learning frameworks simplify and quicken the development of machine learning workflows.
-The `r ref_pkg("tidymodels")` and `r ref_pkg("mlr3")` packages are two popular frameworks for R.
+In the realm of data science, machine learning frameworks play an important role in streamlining and accelerating the development of analytical workflows.
+Among these, `r ref_pkg("tidymodels")` and `r ref_pkg("mlr3")` stand out as prominent tools within the R community.
 They provide a unified interface for data preprocessing, model training, resampling and tuning.
-The faster development comes at the cost of runtime performance.
-In this article, we compare the runtime performance of `tidymodels` and `mlr3`.
-We measure the time it takes to train, resample and tune an `r ref("rpart::rpart()")` and `r ref("ranger::ranger()")` model on the `r ref("mlr_tasks_sonar", "Sonar")` data set.
-Moreover, we analyze the runtime overhead by comparing the runtime of the frameworks with the base R call.
+The streamlined and accelerated development process, while efficient, typically results in a trade-off concerning runtime performance.
+This article undertakes a detailed comparison of the runtime efficiency of `tidymodels` and `mlr3`, focusing on their performance in training, resampling, and tuning machine learning models.
+Specifically, we assess the time efficiency of these frameworks in running the `r ref("rpart::rpart()")` and `r ref("ranger::ranger()")` models, using the `r ref("mlr_tasks_sonar", "Sonar")` dataset as a test case.
+Additionally, the study delves into analyzing the runtime overhead of these frameworks by comparing their performance against base R function calls.
+Through this comparative analysis, the article aims to provide valuable insights into the operational trade-offs of using these advanced machine learning frameworks in practical data science applications.
 
 # Setup
 
-We measure the time it takes to train, resample and tune a model with the `r ref_pkg("microbenchmark")` package.
-All function calls are repeated 100 times in random order.
-The benchmark is performed on the `r ref("mlr_tasks_sonar", "Sonar")` data set with `rpart` and `ranger`.
-The `microbenchmark` package returns the median and lower and upper quartile of the runtimes.
-We run the benchmark on a cluster and repeat each run of `microbenchmark` 100 times with different seeds.
-Each worker has 3 cores and 12 GB of RAM.
-This means each command is called 10,000 times.
-The cluster is not optimized for single-core performance, so a run on a local machine might be faster.
-The code chunks only show examples of the executed code.
-The whole experiment can be found in our repository [mlr-org/mlr-benchmark](https://github.com/mlr-org/mlr-benchmark/tree/main/tidymodels).
+We employ the `r ref_pkg("microbenchmark")` package to measure the time required for training, resampling, and tuning models.
+This benchmarking process is applied to the `Sonar` dataset using the `rpart` and `ranger` algorithms.
+
+To ensure the robustness of our results, each function call within the benchmark is executed 100 times in a randomized sequence.
+The microbenchmark package then provides us with detailed insights, including the median, lower quartile, and upper quartile of the runtimes.
+To further enhance the reliability of our findings, we execute the benchmark on a cluster.
+Each run of `microbenchmark` is repeated 100 times, with different seeds applied for each iteration.
+Resulting in a total of 10,000 function calls for each command.
+The computing environment for each worker in the cluster consists of 3 cores and 12 GB of RAM.
+For transparency and reproducibility, the examples of the code used for this experiment are provided as snippets in the article.
+The complete code, along with all details of the experiment, is available in our public repository, [mlr-org/mlr-benchmark](https://github.com/mlr-org/mlr-benchmark/tree/main/tidymodels).
+
+It's important to note that our cluster setup is not specifically optimized for single-core performance.
+Consequently, executing the same benchmark on a local machine with might yield faster results.
 
 ```{r}
 #| eval: false
@@ -73,10 +72,12 @@ library("microbenchmark")
 
 ## Train the Models
 
-We start with the simplest operation, training a model.
-The left side shows the initialization of `rpart` with `mlr3` and `tidymodels`.
-The right side is the initialization of `ranger`.
-We try to use the same parameters for both frameworks.
+Our benchmark starts with the fundamental task of model training.
+To facilitate a direct comparison, we have structured our presentation into two distinct segments.
+On the left, we demonstrate the initialization of the `rpart` model, employing both `mlr3` and `tidymodels` frameworks.
+The `rpart` model is a decision tree classifier, which is a simple yet powerful algorithm for classification tasks.
+Simultaneously, on the right, we turn our attention to the initialization of the `ranger` model, known for its efficient implementation of the random forest algorithm.
+Our aim is to mirror the configuration as closely as possible across both frameworks, maintaining consistency in parameters and settings.
 
 :::{layout-ncol="2"}
 
@@ -115,9 +116,10 @@ learner = lrn("classif.ranger",
 
 :::
 
-We measure the runtime of the train functions.
-Additionally, the base R function is called to get a lower limit of the runtime.
-Both frameworks return the trained model.
+We measure the runtime for the train functions within each framework.
+The result of the train function is a trained model in both frameworks.
+In addition, we invoke the base `rpart()` and `ranger()` functions to establish a baseline for the minimum achievable runtime.
+This allows us to not only assess the efficiency of the train functions in each framework but also to understand how they perform relative to the base packages.
 
 ```{r}
 #| eval: false
@@ -129,18 +131,25 @@ fit(resample_tm_mod, formula, data = data)
 learner$train(task)
 ```
 
-Training an `rpart` model is faster with `tidymodels` (@tbl-train-rpart).
-The `mlr3` package takes twice as long as the base R call.
-We observe that the relative overhead of using a framework is high for `rpart` because the training time is short.
-The runtime of `ranger` is similar for both frameworks (@tbl-train-ranger).
-The relative overhead with `ranger` becomes negligible because the training time is longer.
+When training an `rpart` model, `tidymodels` demonstrates superior speed, outperforming `mlr3` (@tbl-train-rpart).
+Notably, the `mlr3` package requires approximately twice the time compared to the base call.
+
+A key observation from our results is the significant relative overhead when using a framework for `rpart` model training.
+Given that `rpart` inherently requires a shorter training time, the additional processing time introduced by the frameworks becomes more pronounced.
+This aspect highlights the trade-off between the convenience offered by these frameworks and their impact on runtime for quicker tasks.
+
+Conversely, when we shift our focus to training a `ranger` model, the scenario changes (@tbl-train-ranger).
+Here, the runtime performance of `ranger` is strikingly similar across both tidymodels and mlr3.
+This equality in execution time can be attributed to the inherently longer training duration required by `ranger` models.
+As a result, the relative overhead introduced by either framework becomes minimal, effectively diminishing in the face of the more time-intensive training process.
+This pattern suggests that for more complex or time-consuming tasks, the choice of framework may have a less significant impact on overall runtime performance.
 
 :::{layout-ncol="2"}
 
 ```{r}
 #| echo: false
 #| label: tbl-train-rpart
-#| tbl-cap: "Average runtime in milliseconds of training rpart depending on the framework."
+#| tbl-cap: "Average runtime in milliseconds of training `rpart` depending on the framework."
 table = setDT(summary(bm_rpart$bm_1_1))[1:3]
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 
@@ -153,7 +162,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: tbl-train-ranger
-#| tbl-cap: "Average runtime in milliseconds of training ranger depending on the framework."
+#| tbl-cap: "Average runtime in milliseconds of training `ranger` depending on the framework."
 table = setDT(summary(bm_ranger$bm_1_1))[1:3]
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 
@@ -167,12 +176,18 @@ knitr::kable(
 
 ## Resample Sequential
 
-Next, we measure the runtime of the resample functions without parallelization.
-We generate resampling splits for a 3-, 6- and 9-fold cross-validation.
-In addition, we ran a 100 times repeated 3-fold cross-validation.
-Both frameworks use the same resampling splits.
-Since `tidymodels` always scores the resampling result, we do the same with `mlr3`.
-We activate the saving of predictions in `tidymodels` because `mlr3` always saves them.
+We proceed to evaluate the runtime performance of the resampling functions within both frameworks, specifically under conditions without parallelization.
+This step involves the generation of resampling splits, including 3-fold, 6-fold, and 9-fold cross-validation.
+Additionally, we run a 100 times repeated 3-fold cross-validation.
+
+We generate the same resampling splits for both frameworks.
+This consistency is key to ensuring that any observed differences in runtime are attributable to the frameworks themselves, rather than variations in the resampling process.
+
+In our pursuit of a fair and balanced comparison, we address certain inherent differences between the two frameworks.
+Notably, tidymodels inherently includes scoring of the resampling results as part of its process.
+To align the comparison, we replicate this scoring step in mlr3, thus maintaining a level field for evaluation.
+Furthermore, mlr3 inherently saves predictions during the resampling process.
+To match this, we activate the saving of the predictions in tidymodels.
 
 ```{r}
 #| eval: false
@@ -190,16 +205,17 @@ rr = resample(task, learner, resampling)
 rr$score(measure)
 ```
 
-The resampling of the fast-fitting `rpart` model is faster with `mlr3` (@tbl-resample-sequential-rpart).
-Both frameworks show a linear increase in runtime with the number of folds (@fig-resample-sequential).
-The runtime of the `ranger` models is almost the same for both frameworks (@tbl-resample-sequential-ranger).
+When resampling the fast-fitting rpart model, mlr3 demonstrates a notable edge in speed, as detailed in @tbl-resample-sequential-rpart.
+In contrast, when it comes to resampling the more computationally intensive ranger models, the performance of tidymodels and mlr3 converges closely (@tbl-resample-sequential-ranger).
+This parity in performance is particularly noteworthy, considering the differing internal mechanisms and optimizations of tidymodels and mlr3.
+A consistent trend observed across both frameworks is a linear increase in runtime proportional to the number of folds in cross-validation (@fig-resample-sequential).
 
 :::{layout-ncol="2"}
 
 ```{r}
 #| echo: false
 #| label: tbl-resample-sequential-rpart
-#| tbl-cap: "Average runtime in milliseconds of rpart depending on the framework and resampling strategy."
+#| tbl-cap: "Average runtime in milliseconds of `rpart` depending on the framework and resampling strategy."
 table = setDT(summary(bm_rpart$bm_1_1))[4:11]
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
@@ -213,7 +229,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: tbl-resample-sequential-ranger
-#| tbl-cap: "Average runtime in milliseconds of ranger depending on the framework and resampling strategy."
+#| tbl-cap: "Average runtime in milliseconds of `ranger` depending on the framework and resampling strategy."
 table = setDT(summary(bm_ranger$bm_1_1))[4:11]
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
@@ -229,7 +245,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: fig-resample-sequential
-#| fig-cap: "Average runtime in milliseconds of a cross-validation of rpart (left) and ranger (right) depending on the framework and number of folds."
+#| fig-cap: "Average runtime in milliseconds of a cross-validation of `rpart` (left) and `ranger` (right) depending on the framework and number of folds."
 res_1_rpart = as.data.table(bm_rpart$bm_1_1)
 res_1_rpart[c("mlr3_cv3", "tidymodels_cv3"), folds := 3, on = "expr"]
 res_1_rpart[c("mlr3_cv6", "tidymodels_cv6"), folds := 6, on = "expr"]
@@ -290,23 +306,27 @@ plot_grid(prow, legend, ncol = 1, rel_heights = c(1, .1))
 
 ## Resample Parallel
 
-We run the resampling functions again but this time with parallelization.
-The `doFuture` and `doParallel` packages are the best-supported parallelization packages for `tidymodels`.
-The `mlr3` package uses the `future` package for parallelization.
+We conducted a second set of resampling function tests, this time incorporating parallelization to explore its impact on runtime efficiency.
+In this phase, we utilized doFuture and doParallel as the primary parallelization packages for tidymodels, recognizing their robust support and compatibility.
+Meanwhile, for mlr3, the future package was employed to facilitate parallel processing.
 
-The average runtime of the `mlr3` resampling function with `future` parallelization is shown in @tbl-resample-parallel-mlr3-future-rpart and @tbl-resample-parallel-mlr3-future-ranger.
-The runtime only increases slightly when the number of folds is doubled.
-This means that we see a large parallelization overhead for starting the workers.
-For `rpart`, the parallelization overhead exceeds the speedup (left @fig-resample-parallel).
-For `ranger`, using parallelization is faster than running the sequential version (right @fig-resample-parallel).
+Our findings, as presented in the respective tables (@tbl-resample-parallel-mlr3-future-rpart and @tbl-resample-parallel-mlr3-future-ranger), reveal interesting dynamics about parallelization within the frameworks.
+When the number of folds in the resampling process is doubled, we observe only a marginal increase in the average runtime.
+This pattern suggests a significant overhead associated with initializing the parallel workers, a factor that becomes particularly influential in the overall efficiency of the parallelization process.
 
+In the case of the rpart model, the parallelization overhead appears to outweigh the potential speedup benefits, as illustrated in the left section of @fig-resample-parallel.
+This result indicates that for less complex models like rpart, where individual training times are relatively short, the initialization cost of parallel workers may not be sufficiently offset by the reduced processing time per fold.
+
+Conversely, for the ranger model, the utilization of parallelization demonstrates a clear advantage over the sequential version, as evidenced in the right section of @fig-resample-parallel.
+This finding underscores that for more computationally intensive models like ranger, which have longer individual training times, the benefits of parallel processing significantly overcome the initial overhead of worker setup.
+This differentiation highlights the importance of considering the complexity and inherent processing time of models when deciding to implement parallelization strategies in these frameworks.
 
 :::{layout-ncol="2"}
 
 ```{r}
 #| echo: false
 #| label: tbl-resample-parallel-mlr3-future-rpart
-#| tbl-cap: "Average runtime in milliseconds of mlr3 with future and rpart depending on the resampling strategy."
+#| tbl-cap: "Average runtime in milliseconds of mlr3 with future and `rpart` depending on the resampling strategy."
 table = setDT(summary(bm_rpart$bm_2_1))
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
@@ -320,7 +340,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: tbl-resample-parallel-mlr3-future-ranger
-#| tbl-cap: "Average runtime in milliseconds of mlr3 with future and ranger depending on the resampling strategy."
+#| tbl-cap: "Average runtime in milliseconds of mlr3 with future and `ranger` depending on the resampling strategy."
 table = setDT(summary(bm_ranger$bm_2_1))
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
@@ -343,7 +363,7 @@ This might be the reason for the slower runtime.
 ```{r}
 #| echo: false
 #| label: tbl-resample-parallel-tidymodels-future-rpart
-#| tbl-cap: "Average runtime in milliseconds of tidymodels with doFuture and rpart depending on the resampling strategy."
+#| tbl-cap: "Average runtime in milliseconds of tidymodels with doFuture and `rpart` depending on the resampling strategy."
 table = setDT(summary(bm_rpart$bm_2_2))
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
@@ -357,7 +377,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: tbl-resample-parallel-tidymodels-future-ranger
-#| tbl-cap: "Average runtime in milliseconds of tidymodels with doFuture and ranger depending on the resampling strategy."
+#| tbl-cap: "Average runtime in milliseconds of tidymodels with doFuture and `ranger` depending on the resampling strategy."
 table = setDT(summary(bm_ranger$bm_2_2))
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
@@ -378,7 +398,7 @@ The resampling is always a bit faster than `mlr3` but for `rpart` it can also no
 ```{r}
 #| echo: false
 #| label: tbl-resample-parallel-tidymodels-parallel-rpart
-#| tbl-cap: "Average runtime in milliseconds of tidymodels with doParallel and rpart depending on the resampling strategy."
+#| tbl-cap: "Average runtime in milliseconds of tidymodels with doParallel and `rpart` depending on the resampling strategy."
 table = setDT(summary(bm_rpart$bm_2_3))
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
@@ -392,7 +412,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: tbl-resample-parallel-tidymodels-parallel-ranger
-#| tbl-cap: "Average runtime in milliseconds of tidymodels with doParallel and ranger depending on the resampling strategy."
+#| tbl-cap: "Average runtime in milliseconds of tidymodels with doParallel and `ranger` depending on the resampling strategy."
 table = setDT(summary(bm_ranger$bm_2_3))
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 table[, resampling := str_split_fixed(expr, "_", 2)[, 2]]
@@ -408,7 +428,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: fig-resample-parallel
-#| fig-cap: "Average runtime in milliseconds of a cross-validation of rpart (left) and ranger (right) depending on the framework, number of folds and parallelization."
+#| fig-cap: "Average runtime in milliseconds of a cross-validation of `rpart` (left) and `ranger` (right) depending on the framework, number of folds and parallelization."
 res_2 = setNames(map(list(bm_rpart$bm_2_1, bm_rpart$bm_2_2, bm_rpart$bm_2_3), as.data.table), c("mlr3_future", "tidymodels_future", "tidymodels_parallel"))
 res_2 = rbindlist(res_2, idcol = "framework")
 res_2[c("mlr3_cv3", "tidymodels_cv3"), folds := 3, on = "expr"]
@@ -482,7 +502,7 @@ For these larger resamplings, the `doFuture` package is faster than `doParallel`
 ```{r}
 #| echo: false
 #| label: fig-resample-parallel-2
-#| fig-cap: "Average runtime in seconds of a 100 times repeated 3-fold cross-validation of rpart (left) and ranger (right) depending on the framework and parallelization."
+#| fig-cap: "Average runtime in seconds of a 100 times repeated 3-fold cross-validation of `rpart` (left) and `ranger` (right) depending on the framework and parallelization."
 p1 = ggplot(res_rpart_1_2[c("tidymodels_rcv100", "mlr3_rcv100"), on = "expr"][, time := time / 1000],
   aes(x = framework, y = time, fill = mode)) +
   geom_col() +
@@ -607,7 +627,7 @@ Running the tuning sequentially is faster with `mlr3` (@tbl-tune-sequential-rpar
 ```{r}
 #| echo: false
 #| label: tbl-tune-sequential-rpart
-#| tbl-cap: "Average runtime in seconds of tuning 200 points of rpart depending on the framework."
+#| tbl-cap: "Average runtime in seconds of tuning 200 points of `rpart` depending on the framework."
 table = setDT(summary(bm_rpart$bm_3_1))[, list(expr, sapply(.SD, function(x) x / 1000)), .SDcols = is.numeric]
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 
@@ -620,7 +640,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: tbl-tune-sequential-ranger
-#| tbl-cap: "Average runtime in seconds of tuning 200 points of ranger depending on the framework."
+#| tbl-cap: "Average runtime in seconds of tuning 200 points of `ranger` depending on the framework."
 table = setDT(summary(bm_ranger$bm_3_1))[, list(expr, sapply(.SD, function(x) x / 1000)), .SDcols = is.numeric]
 table[, framework := str_split_fixed(expr, "_", 2)[, 1]]
 
@@ -635,7 +655,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: fig-tune-sequential
-#| fig-cap: "Average runtime in seconds of tuning 200 points of rpart (left) and ranger (right) depending on the framework."
+#| fig-cap: "Average runtime in seconds of tuning 200 points of `rpart` (left) and `ranger` (right) depending on the framework."
 res_3_rpart = as.data.table(bm_rpart$bm_3_1)
 res_3_rpart[c("mlr3_200_point"), framework := "mlr3", on = "expr"]
 res_3_rpart[c("tidymodels_200_point"), framework := "tidymodels", on = "expr"]
@@ -693,7 +713,7 @@ Regardless of the framework-backend combination, it is worth activating parallel
 ```{r}
 #| echo: false
 #| label: tbl-tune-parallel-mlr3-future-rpart
-#| tbl-cap: "Average runtime in seconds of tuning 200 points of rpart depending on the framework."
+#| tbl-cap: "Average runtime in seconds of tuning 200 points of `rpart` depending on the framework."
 
 tab_rpart = rbindlist(list(summary(bm_rpart$bm_4_1), summary(bm_rpart$bm_4_2), summary(bm_rpart$bm_4_3)))
 tab_rpart[, framework := str_split_fixed(expr, "_", 2)[, 1]]
@@ -708,7 +728,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: tbl-tune-parallel-mlr3-future-ranger
-#| tbl-cap: "Average runtime in seconds of tuning 200 points of ranger depending on the framework."
+#| tbl-cap: "Average runtime in seconds of tuning 200 points of `ranger` depending on the framework."
 
 tab_ranger = rbindlist(list(summary(bm_ranger$bm_4_1), summary(bm_ranger$bm_4_2), summary(bm_ranger$bm_4_3)))
 tab_ranger[, framework := str_split_fixed(expr, "_", 2)[, 1]]
@@ -725,7 +745,7 @@ knitr::kable(
 ```{r}
 #| echo: false
 #| label: fig-tune-parallel
-#| fig-cap: "Average runtime in seconds of tuning 200 points of rpart (left) and ranger (right) depending on the framework and parallelization."
+#| fig-cap: "Average runtime in seconds of tuning 200 points of `rpart` (left) and `ranger` (right) depending on the framework and parallelization."
 res_4 = setNames(map(list(bm_rpart$bm_4_1, bm_rpart$bm_4_2, bm_rpart$bm_4_3), as.data.table), c("mlr3_future", "tidymodels_future", "tidymodels_parallel"))
 res_4 = rbindlist(res_4, idcol = "framework")
 res_4[, framework := factor(framework)]
