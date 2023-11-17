@@ -32,6 +32,13 @@ bm_rpart = readRDS("rpart_sonar_resample.rds")
 bm_ranger = readRDS("ranger_sonar_resample.rds")
 ```
 
+
+```{r}
+#| column: body-outset
+#| echo: false
+knitr::include_graphics("cover.png")
+```
+
 # Scope
 
 Machine learning frameworks simplify and quicken the development of machine learning workflows.
