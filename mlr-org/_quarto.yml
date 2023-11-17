@@ -78,6 +78,7 @@ website:
 format:
   html:
     page-layout: article # https://quarto.org/docs/output-formats/page-layout.html#custom
+    template-partials: title-block.html
     theme:
       light: [Yeti, custom.scss]
     mainfont: "Roboto"
