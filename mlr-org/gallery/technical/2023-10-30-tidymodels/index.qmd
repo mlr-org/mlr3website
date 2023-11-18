@@ -353,10 +353,9 @@ knitr::kable(
 
 :::
 
-The `tidymodels` package with `doFuture` is much slower than `mlr3` with `future` (@tbl-resample-parallel-tidymodels-future-rpart and @tbl-resample-parallel-tidymodels-future-ranger).
-We observed that `tidymodels` exports more data to the workers than `mlr3`.
-This might be the reason for the slower runtime.
-
+When paired with doFuture, tidymodels exhibits significantly slower performance compared to the mlr3 package utilizing future (@tbl-resample-parallel-tidymodels-future-rpart and @tbl-resample-parallel-tidymodels-future-ranger).
+We observed that tidymodels exports more data to the parallel workers, which notably exceeds that of mlr3.
+This substantial difference in data export could plausibly account for the observed lag in runtime when using tidymodels on small tasks.
 
 :::{layout-ncol="2"}
 
@@ -390,8 +389,11 @@ knitr::kable(
 
 :::
 
-The `doParallel` package works better for these rather small resampling tasks.
-The resampling is always a bit faster than `mlr3` but for `rpart` it can also not beat the sequential version (left @fig-resample-parallel).
+The utilization of the `doParallel` package demonstrates a notable improvement in handling smaller resampling tasks.
+In these scenarios, the resampling process consistently outperforms the `mlr3` framework in terms of speed.
+However, it's important to note that even with this enhanced performance, the `doParallel` package does not always surpass the efficiency of the sequential version, especially when working with the `rpart` model.
+This specific observation is illustrated in the left section of @fig-resample-parallel.
+While `doParallel` provides a speed advantage over `mlr3`, its inability to consistently outpace the sequential approach in the context of `rpart` models points to the nuanced trade-offs that exist between different parallelization strategies and the inherent characteristics of various models.
 
 :::{layout-ncol="2"}
 
