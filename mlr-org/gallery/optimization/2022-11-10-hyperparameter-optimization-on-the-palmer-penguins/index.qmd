@@ -13,6 +13,9 @@ date: 2022-11-10
 bibliography: bibliography.bib
 aliases:
   - ../../../gallery/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins/index.html
+image: cover.png
+image-caption: |
+  Artwork by Allison Horst [-@horst_palmer_2022].
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -22,13 +25,6 @@ aliases:
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 options(datatable.print.nrows = 6)
-```
-
-```{r 2022-11-10-hyperparameter-optimization-on-the-palmer-penguins-002}
-#| column: body-outset
-#| fig-cap: Artwork by @horst_palmer_2022.
-#| echo: false
-knitr::include_graphics("penguins.png")
 ```
 
 # Scope

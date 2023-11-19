@@ -345,9 +345,16 @@ i.status-planned {
 }
 
 // banner image
-.banner-image {
-  width: 100%;
-  margin-top: 10px;
+.banner {
+
+  &__image {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  &__caption {
+    font-size: 0.9rem;
+  }
 }
 
 .quarto-title-banner {

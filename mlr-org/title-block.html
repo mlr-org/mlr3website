@@ -13,11 +13,16 @@
       </div>
       $endif$
       $if(image)$
-        <img src="$image$" class = "banner-image">
+      <div class="banner">
+        <img src="$image$" class = "banner__image">
+        $if(image-caption)$
+        <div class="banner__caption">
+            $image-caption$
+        </div>
+        $endif$
       $endif$
     </div>
   </div>
-
 
   $title-metadata.html()$
 
