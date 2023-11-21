@@ -204,8 +204,11 @@ The overhead per configuration is in the range of 1 to 2 milliseconds.
 library(rush)
 library(mlr3tuning)
 
-rush = rsh(network_id = "mlr3tuning")
-rush
+rush_plan(config = redux::redis_config())
+
+
+#rush = rsh(network_id = "mlr3tuning")
+#rush
 ```
 
 The `ti()` function returns a `TuningInstanceRushSingleCrit` instead of a `TuningInstanceSingleCrit` when a `rush` controller is passed.
@@ -218,7 +221,7 @@ instance = ti(
   resampling = rsmp("cv", folds = 3),
   measure = msr("classif.ce"),
   terminator = trm("evals", n_evals = 100),
-  rush = rush
+  #rush = rush
 )
 ```
 
@@ -229,8 +232,8 @@ The `await_workers` argument determines if the main process waits until all work
 #| eval: false
 future::plan("multisession", workers = 2L)
 
-instance$start_workers(await_workers = TRUE)
-rush
+#instance$start_workers(await_workers = TRUE)
+instance$rush
 ```
 
 The tuner classes of `mlr3tuning` are extended to support rush.
@@ -305,7 +308,7 @@ To activate the logging on the workers, the `lgr_thresholds`  must be set when t
 
 ```{r}
 #| eval: false
-instanceh$start_workers(
+instance$set_worker_options(
   lgr_thresholds = c(mlr3 = "info", bbotk = "warn", rush = "warn"))
 ```
 
@@ -333,7 +336,7 @@ The `heartbeat_expire` defines the time in seconds after which a worker is consi
 
 ```{r}
 #| eval: false
-instanceh$start_workers(
+instance$set_worker_options(
   heartbeat_period = 1,
   heartbeat_expire = 3,
   detect_lost_tasks = TRUE)
