@@ -105,6 +105,16 @@
       ],
       "Hash": "7ac7d2d1133bead1a5102819397e414d"
     },
+    "DiceDesign": {
+      "Package": "DiceDesign",
+      "Version": "1.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "b7b812ae4484d4bbf0a0baac72e8fc01"
+    },
     "DiceKriging": {
       "Package": "DiceKriging",
       "Version": "1.6.0",
@@ -160,6 +170,17 @@
         "utils"
       ],
       "Hash": "022f78c8698724b326f1838b1a98cafa"
+    },
+    "GPfit": {
+      "Package": "GPfit",
+      "Version": "1.0-8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "lattice",
+        "lhs"
+      ],
+      "Hash": "29a7dccade1fd037c8262c2a239775eb"
     },
     "GenSA": {
       "Package": "GenSA",
@@ -568,9 +589,16 @@
     },
     "bbotk": {
       "Package": "bbotk",
-      "Version": "0.7.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.7.3.9000",
+      "Source": "GitHub",
+      "Remotes": "mlr-org/rush",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "bbotk",
+      "RemoteUsername": "mlr-org",
+      "RemotePkgRef": "mlr-org/bbotk@rush",
+      "RemoteRef": "rush",
+      "RemoteSha": "5f4a78ac4b719ee1b283714fbfd0f2afb9212658",
       "Requirements": [
         "R",
         "R6",
@@ -581,7 +609,7 @@
         "mlr3misc",
         "paradox"
       ],
-      "Hash": "7d04d128391d34150d9b290f6e14976f"
+      "Hash": "a88256ccf96569f5e309ac298bef3f24"
     },
     "bestNormalize": {
       "Package": "bestNormalize",
@@ -949,6 +977,19 @@
       ],
       "Hash": "f20c47fd52fae58b4e377c37bb8c335b"
     },
+    "conflicted": {
+      "Package": "conflicted",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "memoise",
+        "rlang"
+      ],
+      "Hash": "bb097fccb22d156624fd07cd2894ddb6"
+    },
     "corrplot": {
       "Package": "corrplot",
       "Version": "0.92",
@@ -1081,6 +1122,30 @@
         "stats"
       ],
       "Hash": "c7f527c59edc72c4bce63519b8d38752"
+    },
+    "dials": {
+      "Package": "dials",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "DiceDesign",
+        "R",
+        "cli",
+        "dplyr",
+        "glue",
+        "hardhat",
+        "lifecycle",
+        "pillar",
+        "purrr",
+        "rlang",
+        "scales",
+        "tibble",
+        "utils",
+        "vctrs",
+        "withr"
+      ],
+      "Hash": "ce71836ecc0efd70890c6825c8b4ff47"
     },
     "dictionar6": {
       "Package": "dictionar6",
@@ -1426,6 +1491,22 @@
         "methods"
       ],
       "Hash": "47b5f30c720c23999b913a1a635cf0bb"
+    },
+    "furrr": {
+      "Package": "furrr",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "future",
+        "globals",
+        "lifecycle",
+        "purrr",
+        "rlang",
+        "vctrs"
+      ],
+      "Hash": "da7a4c32196cb2262a41dd5a25d486ff"
     },
     "future": {
       "Package": "future",
@@ -1891,6 +1972,30 @@
       ],
       "Hash": "80401cb5ec513e8ddc56764d03f63669"
     },
+    "infer": {
+      "Package": "infer",
+      "Version": "1.0.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "broom",
+        "dplyr",
+        "generics",
+        "ggplot2",
+        "glue",
+        "grDevices",
+        "magrittr",
+        "methods",
+        "patchwork",
+        "purrr",
+        "rlang",
+        "tibble",
+        "tidyr",
+        "vctrs"
+      ],
+      "Hash": "d4e1d781a855d40ebb9ae3aa92daa68d"
+    },
     "inum": {
       "Package": "inum",
       "Version": "1.0-5",
@@ -2124,6 +2229,17 @@
       ],
       "Hash": "a6bc51765d7e9eeb2b225a11805527aa"
     },
+    "lhs": {
+      "Package": "lhs",
+      "Version": "1.1.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp"
+      ],
+      "Hash": "a007ff66aa9d478e220bf0493a7b1d95"
+    },
     "libcoin": {
       "Package": "libcoin",
       "Version": "1.0-10",
@@ -2297,6 +2413,17 @@
       ],
       "Hash": "086028ca0460d0c368028d3bda58f31b"
     },
+    "microbenchmark": {
+      "Package": "microbenchmark",
+      "Version": "1.4.10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "graphics",
+        "stats"
+      ],
+      "Hash": "db81b552e393ed092872cf7023469bc2"
+    },
     "miesmuschel": {
       "Package": "miesmuschel",
       "Version": "0.0.3",
@@ -2359,9 +2486,8 @@
     },
     "mlr3": {
       "Package": "mlr3",
-      "Version": "0.16.1",
+      "Version": "0.17.0",
       "Source": "Repository",
-      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -2380,7 +2506,7 @@
         "parallelly",
         "uuid"
       ],
-      "Hash": "adc6c5e420f3dd5dcdc079033ba065f9"
+      "Hash": "367229e0d521f8cc9af254ded4957bd1"
     },
     "mlr3batchmark": {
       "Package": "mlr3batchmark",
@@ -2763,9 +2889,16 @@
     },
     "mlr3tuning": {
       "Package": "mlr3tuning",
-      "Version": "0.19.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.19.1.9000",
+      "Source": "GitHub",
+      "Remotes": "mlr-org/bbotk@rush, mlr-org/rush",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "mlr3tuning",
+      "RemoteUsername": "mlr-org",
+      "RemotePkgRef": "mlr-org/mlr3tuning@rush",
+      "RemoteRef": "rush",
+      "RemoteSha": "ccf36dc97474ad9a0b445991ad7c28d03c14bb15",
       "Requirements": [
         "R",
         "R6",
@@ -2777,7 +2910,7 @@
         "mlr3misc",
         "paradox"
       ],
-      "Hash": "0654f180a077d9fb660c5515e5b82258"
+      "Hash": "cc8c2c2cef862194366c07820580642c"
     },
     "mlr3tuningspaces": {
       "Package": "mlr3tuningspaces",
@@ -2892,6 +3025,34 @@
         "stringi"
       ],
       "Hash": "a7b275e2bbf74648a77df712b86f3072"
+    },
+    "modeldata": {
+      "Package": "modeldata",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "MASS",
+        "R",
+        "dplyr",
+        "purrr",
+        "rlang",
+        "tibble"
+      ],
+      "Hash": "0b63eecd920994f133739d2e6a17e75e"
+    },
+    "modelenv": {
+      "Package": "modelenv",
+      "Version": "0.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "glue",
+        "rlang",
+        "tibble",
+        "vctrs"
+      ],
+      "Hash": "fc2e59a68030885555c7be34ee7765a1"
     },
     "modeltools": {
       "Package": "modeltools",
@@ -3145,6 +3306,35 @@
         "set6"
       ],
       "Hash": "5b753f7d094358dd870b0506dcc715fd"
+    },
+    "parsnip": {
+      "Package": "parsnip",
+      "Version": "1.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "dplyr",
+        "generics",
+        "ggplot2",
+        "globals",
+        "glue",
+        "hardhat",
+        "lifecycle",
+        "magrittr",
+        "pillar",
+        "prettyunits",
+        "purrr",
+        "rlang",
+        "stats",
+        "tibble",
+        "tidyr",
+        "utils",
+        "vctrs",
+        "withr"
+      ],
+      "Hash": "cbb49c720a5e4bf1fe36a870b07d1a0c"
     },
     "partykit": {
       "Package": "partykit",
@@ -3673,6 +3863,18 @@
       ],
       "Hash": "d146b858006ebd52e1fe215ee774e3d5"
     },
+    "redux": {
+      "Package": "redux",
+      "Version": "1.1.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "R6",
+        "storr"
+      ],
+      "Hash": "7f7281e13ab86ac23499130ebb4cf5ec"
+    },
     "refund": {
       "Package": "refund",
       "Version": "0.1-32",
@@ -3848,6 +4050,31 @@
       ],
       "Hash": "4c8415e0ec1e29f3f4f6fc108bef0144"
     },
+    "rsample": {
+      "Package": "rsample",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "dplyr",
+        "furrr",
+        "generics",
+        "glue",
+        "lifecycle",
+        "methods",
+        "pillar",
+        "purrr",
+        "rlang",
+        "slider",
+        "tibble",
+        "tidyr",
+        "tidyselect",
+        "vctrs"
+      ],
+      "Hash": "b20bb09ceef690842b44585ef49db74e"
+    },
     "rstatix": {
       "Package": "rstatix",
       "Version": "0.7.2",
@@ -3870,6 +4097,38 @@
         "utils"
       ],
       "Hash": "5045fbb71b143878d8c51975d1d7d56d"
+    },
+    "rstudioapi": {
+      "Package": "rstudioapi",
+      "Version": "0.15.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5564500e25cffad9e22244ced1379887"
+    },
+    "rush": {
+      "Package": "rush",
+      "Version": "0.0.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "rush",
+      "RemoteUsername": "mlr-org",
+      "RemotePkgRef": "mlr-org/rush",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "e1da8562f424e56eecd8499818945362219e1309",
+      "Requirements": [
+        "R",
+        "callr",
+        "checkmate",
+        "data.table",
+        "future",
+        "globals",
+        "lgr",
+        "mlr3misc",
+        "redux",
+        "uuid"
+      ],
+      "Hash": "baf415016e8af495a6ea00ea342b6fd6"
     },
     "s2": {
       "Package": "s2",
@@ -3995,6 +4254,20 @@
       ],
       "Hash": "8f138ff2c8fbea9e0a523f6c399c0386"
     },
+    "slider": {
+      "Package": "slider",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "rlang",
+        "vctrs",
+        "warp"
+      ],
+      "Hash": "a584625e2b9e4fad4be135c8ea5c99aa"
+    },
     "smotefamily": {
       "Package": "smotefamily",
       "Version": "1.3.1",
@@ -4047,6 +4320,18 @@
         "utils"
       ],
       "Hash": "1229a01b4ec059e9f2396724f2ec9010"
+    },
+    "storr": {
+      "Package": "storr",
+      "Version": "1.2.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "R6",
+        "digest"
+      ],
+      "Hash": "96034207276a46a44dc81b8d43397602"
     },
     "stringi": {
       "Package": "stringi",
@@ -4206,6 +4491,37 @@
       ],
       "Hash": "a84e2cc86d07289b3b6f5069df7a004c"
     },
+    "tidymodels": {
+      "Package": "tidymodels",
+      "Version": "1.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "broom",
+        "cli",
+        "conflicted",
+        "dials",
+        "dplyr",
+        "ggplot2",
+        "hardhat",
+        "infer",
+        "modeldata",
+        "parsnip",
+        "purrr",
+        "recipes",
+        "rlang",
+        "rsample",
+        "rstudioapi",
+        "tibble",
+        "tidyr",
+        "tune",
+        "workflows",
+        "workflowsets",
+        "yardstick"
+      ],
+      "Hash": "d48f93a7b5a68070a7a7796e68d281b1"
+    },
     "tidyr": {
       "Package": "tidyr",
       "Version": "1.3.0",
@@ -4300,6 +4616,38 @@
         "xfun"
       ],
       "Hash": "8f96d229b7311beb32b94cf413b13f84"
+    },
+    "tune": {
+      "Package": "tune",
+      "Version": "1.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "GPfit",
+        "R",
+        "cli",
+        "dials",
+        "dplyr",
+        "foreach",
+        "generics",
+        "ggplot2",
+        "glue",
+        "hardhat",
+        "lifecycle",
+        "parsnip",
+        "purrr",
+        "recipes",
+        "rlang",
+        "rsample",
+        "tibble",
+        "tidyr",
+        "tidyselect",
+        "vctrs",
+        "withr",
+        "workflows",
+        "yardstick"
+      ],
+      "Hash": "d684ce908eb093910df3493510eebbc7"
     },
     "tzdb": {
       "Package": "tzdb",
@@ -4446,6 +4794,16 @@
       ],
       "Hash": "c7d3fd6d29ab077cbac8f0e2751449e6"
     },
+    "warp": {
+      "Package": "warp",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "fea474d578b1cbcb696ae6ac8bdcc439"
+    },
     "withr": {
       "Package": "withr",
       "Version": "2.5.2",
@@ -4468,6 +4826,56 @@
         "R"
       ],
       "Hash": "f58cfa8d9c3a78a309d455a647dee853"
+    },
+    "workflows": {
+      "Package": "workflows",
+      "Version": "1.1.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "generics",
+        "glue",
+        "hardhat",
+        "lifecycle",
+        "modelenv",
+        "parsnip",
+        "rlang",
+        "tidyselect",
+        "vctrs"
+      ],
+      "Hash": "553cd1d3d88da41e40f70b04f657a164"
+    },
+    "workflowsets": {
+      "Package": "workflowsets",
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "dplyr",
+        "generics",
+        "ggplot2",
+        "glue",
+        "hardhat",
+        "lifecycle",
+        "parsnip",
+        "pillar",
+        "prettyunits",
+        "purrr",
+        "rlang",
+        "rsample",
+        "stats",
+        "tibble",
+        "tidyr",
+        "tune",
+        "vctrs",
+        "withr",
+        "workflows"
+      ],
+      "Hash": "7393bad2a9c83d549e79bd641f6bf67a"
     },
     "xfun": {
       "Package": "xfun",
@@ -4500,6 +4908,26 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "0d0056cc5383fbc240ccd0cb584bf436"
+    },
+    "yardstick": {
+      "Package": "yardstick",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "dplyr",
+        "generics",
+        "hardhat",
+        "lifecycle",
+        "rlang",
+        "tibble",
+        "tidyselect",
+        "utils",
+        "vctrs"
+      ],
+      "Hash": "935418860629e50d2a2c495ea0a05221"
     },
     "zoo": {
       "Package": "zoo",
