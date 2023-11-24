@@ -72,7 +72,7 @@ It addresses the limitations of the packages by providing a non-blocking interfa
 The package allows non-interacting queues with priority levels within a queue and dependencies among tasks.
 The package has an advanced error-handling mechanism, heavily influencing the heartbeat mechanism of `rush`.
 
-Rush aligns closely with `rrq` but differentiates itself with its integration into our optimization packages packages `botk` and `mlr3tuning`.
+`rush` aligns closely with `rrq` but differentiates itself with its integration into our optimization packages packages `botk` and `mlr3tuning`.
 This includes a data structure in Redis that can be efficiently converted to a `r ref("data.table::data.table()")` and a cache mechanism that minimizes the number of read and write operations in the R session.
 Moreover, the start of workers with minimal user configuration is integrated with the `future` package.
 Looking ahead, rush allows a decentralized network architecture devoid of a central controller.
@@ -240,6 +240,8 @@ rush$worker_info
 
 On a remote machine, we need to start the workers manually or use the future `cluster` backend.
 See @sec-start-script for more information on how to start workers manually.
+
+A worker can have four states: `"running"`, `"terminated"`, `"killed"` (@sec-stop-workers) and `"lost"` (@sec-error-handling).
 
 ## Push Task {#sec-push-task}
 
@@ -539,19 +541,19 @@ Fetching 100 new tasks and adding them to the cached `data.table` takes around 4
 
 # Optimization {#sec-bbotk-mlr3tuning}
 
+## Install
+
 ```{r}
 #| eval: false
 pak::pkg_install(c("mlr-org/bbotk@rush", "mlr-org/mlr3tuning@rush"))
 ```
 
+## Benchmark
+
 ```{r}
 #| echo: false
-#| label: fig-sleep-benchmark
-#| fig-cap: "Runtime of a random search in seconds depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a homogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
-#| fig-subcap:
-#|   - "Random Search on 100 hyperparameter configuration with a 3-fold cross-validation on 3 workers."
-#|   - "Random Search on 1000 hyperparameter configuration with a 3-fold cross-validation on 30 workers."
-#| layout-ncol: 1
+#| label: fig-sleep-benchmark-1
+#| fig-cap: "Runtime of a random search in seconds on 100 hyperparameter configuration with 3-fold cross-validation on 3 workers depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a homogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
 library(data.table)
 library(mlr3misc)
 library(ggplot2)
@@ -559,7 +561,6 @@ library(patchwork)
 
 res = readRDS("bmr_sleep.rds")
 
-# plot 3 workers
 plots = map(unique(res$sleep_train), function(sleep) {
   data = res[sleep_train == sleep & workers == 3, ]
 
@@ -600,7 +601,29 @@ plots[[3]] = plots[[3]] +
 
 wrap_plots(plots, ncol = 6)
 
-# plot 30 workers
+```
+
+* A batch size of 100 evaluates all 100 configurations with `benchmark()` at once.
+* A chunk size of 100 sends 100 resampling iterations to a worker at once.
+* A batch size of 10 results in 10 tuning iterations and 10 `benchmark()` calls.
+* The tuned learner takes the data but only sleeps for the specified time.
+
+* The runtimes include the start of the workers.
+* Starting a worker with rush is slower than with `future` because the globals are a little bit larger and we initialize the `RushWorker` on the worker first. The globals are smaller with `future` and only `workhorse()` is called.
+
+* This results in smaller runtimes with `future` for the HPCs with constant training time (row 1-3).
+* Interestingly, a chunk size of 10 is as fast as a chunk size of 100.
+* When the training time is heterogeneous, `rush` is a little bit faster than `future`.
+
+* When the tuner has multiple iterations, `rush` is faster than `future` because we do not start the workers again with `benchmark()` in each iteration (row 5). This becomes very costly with many workers (see next plot).
+* The default chunk size of 1 is always slower than `rush` (row 4 and 6)
+
+
+```{r}
+#| echo: false
+#| label: fig-sleep-benchmark-2
+#| fig-cap: "Runtime of a random search in seconds on 1000 hyperparameter configuration with 3-fold cross-validation on 30 workers depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a homogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
+
 plots = map(unique(res$sleep_train), function(sleep) {
   data = res[sleep_train == sleep & workers == 30, ]
 
@@ -642,7 +665,14 @@ plots[[3]] = plots[[3]] +
 wrap_plots(plots, ncol = 6)
 ```
 
+* `rush` is always faster than `future` when we start 30 workers. `future` starts the workers sequentially, while `rush` initializes the `RushWorker` in parallel. This could be further improved in `rush` when we serialize over Redis instead of `future`.
+* Starting 30 workers in each tuning iteration is very costly with `future` (row 5).
+
+## Implementation
+
 The current implementation in `mlr3tunig`.
+The `ti()` function returns a `TuningInstanceRushSingleCrit` instead of a `TuningInstanceSingleCrit` when a `rush` controller is passed.
+The new instance has a new method `$start_workers()` to start the workers.
 
 ```{r}
 library(rush)
@@ -665,6 +695,11 @@ instance$start_workers(await_workers = TRUE)
 instance$rush
 ```
 
+The tuner classes of `mlr3tuning` are extended to support rush.
+Just use the tuners as normal.
+Internally a slightly different algorithm is used when parallelizing with `rush`.
+The optimization is started as always with the `$optimize()` method.
+
 ```{r}
 tuner = tnr("random_search")
 
@@ -684,6 +719,7 @@ library(mlr3tuning)
 rush_plan(config = redux::redis_config())
 
 # creates rush controller internally
+# accessible with instance$rush
 instance = ti(
   task = tsk("pima"),
   learner = lrn("classif.rpart", cp = to_tune(0.01, 0.1), minsplit = to_tune(1, 100)),
@@ -695,9 +731,38 @@ instance = ti(
 tuner = tnr("random_search")
 
 # starts workers before optimization
+# when workers were started manually, use them instead of starting new ones
 # allows in next releases to send a specific objective to worker e.g. async mbo
 tuner$optimize(instance)
 ```
+
+* `rush_plan` can be used by other functions
+* `tune()` and `auto_tuner()` work better with this draft.
+
+## Discussion
+
+**Advantages**
+
+* non-blocking allows new algorithms like async hyperband
+* no batch means no waiting and idling cores when heterogeneous runtimes are in a batch
+* less serialization overhead when we have multiple tuning iterations because we do not start the worker again with `benchmark()` in each iteration
+* no configuration of batch size and chunk size which is error prone or is ignored by most users
+* main process gets not overloaded with many fast-fitting models (future just got stuck)
+* Terminators works more precise without batches
+* Hotstarting could work better because we do not need to serialize the models
+
+**Disadvantages**
+
+* installing Redis is more complicated than using future
+* the resampling of a hyperparameter configuration is not split into individual resampling iterations
+  - a worker evaluates the whole resampling with `resample()`
+  - when we split, the 1:1 mapping between the Redis data store and the archive does not work
+  - the tuner operates directly on the data store/ archive which produces almost no overhead
+  - when we split, a process would have to summarise the resamplings which adds overhead
+* external packages like gensa are slower with Redis
+  - external packages propose only a single hyperparameter configuration and the resampling cannot be split
+  - we could implement a rush powered `benchmark()` function that does not stop the workers between the tuning iterations
+* not always reproducible (optuna suggests running in sequential mode)
 
 # Conclusion {#sec-conclusion}
 
