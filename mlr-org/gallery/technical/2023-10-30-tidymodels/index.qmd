@@ -364,7 +364,7 @@ knitr::kable(
 
 :::
 
-When paired with doFuture, `tidymodels` exhibits significantly slower performance compared to the `mlr3` package utilizing `future` (@tbl-resample-parallel-tidymodels-future-rpart and @tbl-resample-parallel-tidymodels-future-ranger).
+When paired with doFuture, `tidymodels` exhibits significantly slower runtime compared to the `mlr3` package utilizing `future` (@tbl-resample-parallel-tidymodels-future-rpart and @tbl-resample-parallel-tidymodels-future-ranger).
 We observed that `tidymodels` exports more data to the parallel workers, which notably exceeds that of `mlr3`.
 This substantial difference in data export could plausibly account for the observed slower runtime when using `tidymodels` on small tasks.
 
@@ -732,7 +732,7 @@ This final set of measurements is important in painting a complete picture of th
 options("mlr3.exec_chunk_size" = 200)
 ```
 
-Our analysis of the parallelized tuning functions reveals that the runtimes for `mlr3` and `tidymodels` are remarkably similar, indicating a high level of efficiency in both frameworks when operating in a parallelized environment.
+Our analysis of the parallelized tuning functions reveals that the runtimes for `mlr3` and `tidymodels` are remarkably similar.
 However, subtle differences emerge upon closer inspection.
 For instance, the `mlr3` package exhibits a slightly faster performance when tuning the `rpart` model, as indicated in @tbl-tune-parallel-mlr3-future-rpart.
 In contrast, it falls marginally behind `tidymodels` in tuning the `ranger` model, as shown in @tbl-tune-parallel-mlr3-future-ranger.
