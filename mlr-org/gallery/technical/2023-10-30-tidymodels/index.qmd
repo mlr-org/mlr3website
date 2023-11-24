@@ -274,6 +274,7 @@ p1 = ggplot(res_1_rpart[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels_
   xlab("Number of Folds") +
   ylab("Runtime (ms)") +
   labs(color = "Framework") +
+  ggtitle("rpart") +
   theme_minimal()
 
 res_1_ranger = as.data.table(bm_ranger$bm_1_1)
@@ -295,6 +296,7 @@ p2 = ggplot(res_1_ranger[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodels
   xlab("Number of Folds") +
   ylab("Runtime (ms)") +
   labs(color = "Framework") +
+  ggtitle("ranger") +
   theme_minimal()
 
 legend = get_legend(
@@ -364,7 +366,7 @@ knitr::kable(
 
 When paired with doFuture, `tidymodels` exhibits significantly slower performance compared to the `mlr3` package utilizing `future` (@tbl-resample-parallel-tidymodels-future-rpart and @tbl-resample-parallel-tidymodels-future-ranger).
 We observed that `tidymodels` exports more data to the parallel workers, which notably exceeds that of `mlr3`.
-This substantial difference in data export could plausibly account for the observed lag in runtime when using `tidymodels` on small tasks.
+This substantial difference in data export could plausibly account for the observed slower runtime when using `tidymodels` on small tasks.
 
 :::{layout-ncol="2"}
 
@@ -463,6 +465,7 @@ p1 = ggplot(res_rpart_1_2[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymodel
   xlab("Number of Folds") +
   ylab("Runtime (ms)") +
   labs(color = "Framework", linetype = "Mode") +
+  ggtitle("rpart") +
   theme_minimal()
 
 res_2 = setNames(map(list(bm_ranger$bm_2_1, bm_ranger$bm_2_2, bm_ranger$bm_2_3), as.data.table), c("mlr3_future", "tidymodels_future", "tidymodels_parallel"))
@@ -488,6 +491,7 @@ p2 = ggplot(res_ranger_1_2[c("mlr3_cv3", "tidymodels_cv3", "mlr3_cv6", "tidymode
   xlab("Number of Folds") +
   ylab("Runtime (ms)") +
   labs(color = "Framework", linetype = "Mode") +
+  ggtitle("ranger") +
   theme_minimal()
 
 legend = get_legend(
@@ -524,6 +528,7 @@ p1 = ggplot(res_rpart_1_2[c("tidymodels_rcv100", "mlr3_rcv100"), on = "expr"][, 
   ylab("Runtime (s)") +
   labs(fill = "Mode") +
   theme_minimal() +
+  ggtitle("rpart") +
   theme(axis.text.x = element_text(angle = 90))
 
 p2 = ggplot(res_ranger_1_2[c("tidymodels_rcv100", "mlr3_rcv100"), on = "expr"][, time := time / 1000],
@@ -533,6 +538,7 @@ p2 = ggplot(res_ranger_1_2[c("tidymodels_rcv100", "mlr3_rcv100"), on = "expr"][,
   ylab("Runtime (s)") +
   labs(fill = "Mode") +
   theme_minimal() +
+  ggtitle("ranger") +
   theme(axis.text.x = element_text(angle = 90))
 
 legend = get_legend(
@@ -794,6 +800,7 @@ p1 = ggplot(res_3_4,
   ylab("Runtime (s)") +
   labs(fill = "Mode") +
   theme_minimal() +
+  ggtitle("rpart") +
   theme(axis.text.x = element_text(angle = 90))
 
 res_4 = setNames(map(list(bm_ranger$bm_4_1, bm_ranger$bm_4_2, bm_ranger$bm_4_3), as.data.table), c("mlr3_future", "tidymodels_future", "tidymodels_parallel"))
@@ -814,6 +821,7 @@ p2 = ggplot(res_3_4,
   ylab("Runtime (s)") +
   labs(fill = "Mode") +
   theme_minimal() +
+  ggtitle("ranger") +
   theme(axis.text.x = element_text(angle = 90))
 
 legend = get_legend(
