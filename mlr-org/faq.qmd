@@ -1,0 +1,45 @@
+---
+sidebar: false
+toc: false
+---
+
+# Frequently Asked Questions
+
+{{< include _setup.qmd >}}
+
+* [What is the purpose of the `OMP_THREAD_LIMIT` environment variable?](#omp-thread-limit)
+* [Why is tuning slow despite quick model fitting?](#tuning-slow)
+
+## What is the purpose of the `OMP_THREAD_LIMIT` environment variable? {#omp-thread-limit}
+
+The `OMP_THREAD_LIMIT` environment variable controls the number of threads used by [OpenMP](https://www.openmp.org/), an API for writing parallel programs in C, C++ or Fortran.
+Many R packages, including many learners in `mlr3`, have algorithms written in these languages.
+When `mlr3` operates in parallel mode through the `future` package, it can potentially conflict with OpenMP's parallelization mechanism. This conflict arises because both systems attempt to utilize the CPU cores simultaneously.
+This can slow down the execution time rather than speeding it up, due to the increased overhead of managing multiple parallel processes.
+We especially observed this when all cores are used for parallelization and there are many cores, e.g. on a high-performance cluster.
+By setting `options("OMP_THREAD_LIMIT" = 1)` in your `.Rprofile` file, you effectively instruct OpenMP to use only one thread.
+This avoids the conflict with `future` and can lead to faster execution times.
+
+## Why is tuning slow despite quick model fitting? {#tuning-slow}
+
+Tuning in `mlr3` involves several factors that can affect its speed, even if individual models are fitting quickly:
+
+1. **Tuner Batch Size:** The tuner in `mlr3` proposes a set of hyperparameter configurations in batches, which are then evaluated using `benchmark()`.
+The `batch_size` parameter controls the size of these batches. A smaller batch size might slow down the tuning process because it increases the frequency of the benchmarking overhead, particularly noticeable when using parallelization.
+We recommend using the largest feasible batch size for efficiency.
+More details can be found in the [tuning section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallel-tuning) of the mlr3book.
+
+2. **Parallelization Chunk Size:** If the `mlr3.exec_chunk_size` parameter is set too small, the overhead of parallelization can outweigh its benefits.
+A `chunk.size` of 1 means each resampling iteration is handled as a separate computational job.
+Combining multiple resampling iterations into a single job by increasing the `chunk.size` can enhance efficiency.
+See the [parallelization section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization) in the mlr3book for further insights.
+
+3. **Model Fitting Time vs. Parallelization Overhead:** For models that fit extremely quickly, the time saved through parallelization might be less than the overhead it introduces.
+In such cases, parallelization might not be beneficial.
+
+4. **Setting the `OMP_THREAD_LIMIT`:** Not configuring the `OMP_THREAD_LIMIT` appropriately when using `future` can slow down the tuning process.
+Refer to the [OpenMP Thread Limit](#omp-thread-limit) section in this FAQ for guidance.
+
+5. **Nested Resampling Strategies:** When employing nested resampling, choosing an effective parallelization strategy is crucial.
+The wrong strategy can lead to inefficiencies.
+For a deeper understanding, refer to the [nested resampling section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-nested-resampling-parallelization) in our book.
