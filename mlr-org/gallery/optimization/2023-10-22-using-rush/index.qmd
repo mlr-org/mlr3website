@@ -15,6 +15,7 @@ bibliography: ../../bibliography.bib
 ```{r}
 #| include: false
 
+options(datatable.prettyprint.char = 5L)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 set.seed(1)
@@ -77,7 +78,6 @@ This includes a data structure in Redis that can be efficiently converted to a `
 Moreover, the start of workers with minimal user configuration is integrated with the `future` package.
 Looking ahead, rush allows a decentralized network architecture devoid of a central controller.
 This allows the implementation of recently developed optimization algorithms such as Asynchronous Decentralized Bayesian Optimization [@Egele2023].
-Finally, the availability of the package on CRAN is a significant consideration for us.
 
 ::: {.callout-note}
 
@@ -209,12 +209,11 @@ Packages that are needed by `fun` can be passed to the `packages` argument.
 future::plan("multisession")
 
 rush$start_workers(
-  worker_loop = fun_loop,
+  fun = eval_svm,
   n_workers = 2,
   globals = c("learner", "task", "splits"),
-  packages = c("mlr3", "mlr3learners", "e1071"),
-  host = "local",
-  fun = eval_svm)
+  packages = c("mlr3", "mlr3learners", "e1071")
+)
 
 rush
 ```
@@ -263,7 +262,7 @@ We can wait for a task to finish with the `$await_tasks()` method.
 The method blocks until all tasks are processed by the workers.
 
 ```{r}
-rush$await_tasks(keys)
+rush$wait_for_tasks(keys)
 ```
 
 ## Retrieve Results {#sec-retrieve-results}
@@ -277,34 +276,61 @@ rush$fetch_finished_tasks()
 ```
 
 There are multiple `$fetch_*()` methods available for retrieving data from the Redis database.
-A matching method is defined for each task state e.g. `$fetch_running_tasks()` and `$fetch_finished_tasks()`.
+A matching method is defined for each task state e.g. `$fetch_queued_tasks()` and `$fetch_running_tasks()`.
 If only the result of the function evaluation is needed, `$fetch_results()` and `$fetch_latest_results()` are faster than `$fetch_finished_tasks()`.
-The methods `$fetch_results()` and `$fetch_finished_tasks()` cache the already queried data.
-
-The `$block_*()` variants wait until a new result is available.
+We can change the included columns with the `fields` argument.
+The default of `$fetch_finished_tasks()` is `c("xs", "xs_extra", "worker_extra", "ys", "ys_extra", "state")`.
+If we don't want all that extra information, we can just query `"xs"` and `"ys"`.
 
 ```{r}
-rush$block_latest_results()
+rush$fetch_finished_tasks(fields = c("xs", "ys"))
+```
+
+The methods `$fetch_results()` and `$fetch_finished_tasks()` cache the already queried data (see @sec-caching).
+
+The `data_format = "list` returns a `list` instead of a `data.table`.
+
+```{r}
+rush$fetch_finished_tasks(data_format = "list")
+```
+
+An advantage of the `data.table` format is that we can set a key on the result column.
+The `data.table` is then always sorted by the result which gives us fast access to the best result.
+However, when we want to store complex data structures like `list`, `data.frame` and `environment` in the database, we need to wrap them in a `list`.
+Otherwise, `data.table` cannot bind the tasks to a table.
+In this case, it might be better to use the `list` format to avoid wrapping the objects in lists.
+
+## Wait for Results {#sec-wait-for-results}
+
+The `$wait_for_*()` variants of the `$fetch_*` methods wait until a new result is available.
+
+```{r}
+rush$wait_for_latest_results()
 ```
 
 We push another task to the queue and block until the result is available.
 
 ```{r}
 rush$push_tasks(list(list(cost = 1e-2, gamma = 1e-2)))
-rush$block_latest_results()
+rush$wait_for_latest_results()
 ```
+
+We can set a timeout with the `timeout` argument.
 
 ## Caching {#sec-caching}
 
 The results of the `$fetch_results()` and `$fetch_finished_tasks()` are cached.
-The cache is a `data.table` that is stored in the controller.
+This gives a significant speedup when we query the same data multiple times.
+The cache is a `data.table` or `list` that is stored in the controller.
 New results are rbined to the `data.table`.
-This takes constant time independent of the number of results in the cache.
-For our example around 4 milliseconds (see @sec-benchmark).
+This takes around 4 milliseconds for 100 tasks, independent of the number of results in the cache (see @sec-benchmark).
 
 ```{r}
 rush$fetch_results()
 ```
+
+If we change the queried fields, the change is not reflected in the cache.
+In this case, we can clear the cache with the `reset_cache = TRUE` option.
 
 ## Stop Workers {#sec-stop-workers}
 
@@ -391,12 +417,24 @@ The packages must be installed on the remote machine but they are loaded automat
 
 ## Reproducibility {#sec-reproducibility}
 
+Rush uses a random number generator with multiple independent streams created by @Ecuyer2002.
+The implementation of the `r ref_pkg("rlecuyer")` package is used.
+We attach a random number stream to each task.
+This ensures reproducibility regardless of the number of workers.
+Set a seed when starting the workers to get reproducible results.
+
+```{r}
+#| eval: false
+
+rush$start_workers(
+  fun = fun,
+  n_workers = 2, s
+  eed = 123456)
+```
+
 ::: {.callout-note}
 
 # Question
-
-* How to pass a seed to the workers?
-Just bind `.Random.seed` to the tasks?
 * The results of hyperband are not reproducible. See [Optuna](https://optuna.readthedocs.io/en/stable/faq.html#how-can-i-obtain-reproducible-optimization-results).
 :::
 
@@ -675,6 +713,7 @@ The `ti()` function returns a `TuningInstanceRushSingleCrit` instead of a `Tunin
 The new instance has a new method `$start_workers()` to start the workers.
 
 ```{r}
+#| eval: false
 library(rush)
 library(mlr3tuning)
 
@@ -701,6 +740,7 @@ Internally a slightly different algorithm is used when parallelizing with `rush`
 The optimization is started as always with the `$optimize()` method.
 
 ```{r}
+#| eval: false
 tuner = tnr("random_search")
 
 tuner$optimize(instance)
