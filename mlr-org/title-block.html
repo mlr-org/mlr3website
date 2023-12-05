@@ -1,0 +1,29 @@
+<header id="title-block-header" class="quarto-title-block default$if(quarto-template-params.banner-header-class)$ $quarto-template-params.banner-header-class$$endif$">
+  <div class="quarto-title-banner">
+    <div class="quarto-title column-body">
+      $if(title)$<h1 class="title">$title$</h1>$endif$
+      $if(subtitle)$
+      <p class="subtitle lead">$subtitle$</p>
+      $endif$
+      $if(description)$
+      <div>
+        <div class="description">
+          $description$
+        </div>
+      </div>
+      $endif$
+      $if(image)$
+      <div class="banner">
+        <img src="$image$" class = "banner__image">
+        $if(image-caption)$
+        <div class="banner__caption">
+            $image-caption$
+        </div>
+        $endif$
+      $endif$
+    </div>
+  </div>
+
+  $title-metadata.html()$
+
+  </header>
