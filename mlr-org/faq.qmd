@@ -9,6 +9,7 @@ toc: false
 
 * [What is the purpose of the `OMP_THREAD_LIMIT` environment variable?](#omp-thread-limit)
 * [Why is tuning slow despite quick model fitting?](#tuning-slow)
+* [Why is `mlr3` using so much disk space / memory?]
 
 ## What is the purpose of the `OMP_THREAD_LIMIT` environment variable? {#omp-thread-limit}
 
@@ -43,3 +44,8 @@ Refer to the [OpenMP Thread Limit](#omp-thread-limit) section in this FAQ for gu
 5. **Nested Resampling Strategies:** When employing nested resampling, choosing an effective parallelization strategy is crucial.
 The wrong strategy can lead to inefficiencies.
 For a deeper understanding, refer to the [nested resampling section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-nested-resampling-parallelization) in our book.
+
+## Why is `mlr3` using so much disk space / memory?
+
+There are various reasons why `mlr3` might use more memory / disk space than expected.
+We have written a [gallery post](https://mlr-org/gallery/technical/2023-11-09-memory-disk/) that covers various aspects of this topic and offers solutions where possible.
