@@ -16,9 +16,16 @@ knitr:
     R.options:
       datatable.print.nrows: 6
       datatable.print.trunc.cols: TRUE
+freeze: true
 ---
 
 {{< include ../../_setup.qmd >}}
+
+```{r}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+```
+
 
 When serializing `mlr3` objects, it can happen that their size is much larger than expected.
 While we are trying our best to keep such cases from happening, there are things that are beyond our control.
@@ -31,14 +38,17 @@ Note that while some of these issues might seem neglibile, they can cause seriou
 Some objects in `mlr3` have parameters that can be functions.
 One example for that is `po("colapply")`'s `applicator` parameter.
 
-```{r}
+```{r, output = FALSE}
+library("mlr3verse")
+library("pryr")
 po_center = po("colapply", applicator = function(x) x - mean(x))
 ```
 
 Because `Learner`s store the hyperparameters that were used for training in their `$state`, it is important to ensure that their size is small.
-One cause for large sizes of parameter values is the use of source references, i.e. when installing packages with the `--with-keep.source` option.
+One cause for large sizes of parameter values is the presence of source references in the function's attributes.
+Source references are kept when installing packages with the `--with-keep.source` option.
 Note that this option is enabled by default when installing packages with `renv`.
-You can disble it by setting the following option before installing packages, e.g. by adding the following to your `.Rprofile`.
+You can disble it by setting the following option before installing packages, e.g. by adding it to your `.Rprofile`.
 
 ```{r, eval = FALSE}
 options("install.opts" = "--without-keep.source")
@@ -59,10 +69,10 @@ object_size(lxy)
 ```
 
 Because of R's copy-on-write semantics, data is only copied when it is modified, i.e. the list `lx` has the same size as `lxy` because `x` and `y` all point to the same underlying data.
-However, when serializing `lxy`, both `x` and `y` are serialized independently and when loading the object again, its size in memory is doubled.
+However, when serializing `lxy`, both `x` and `y` are serialized independently and its memory footprint is doubled.
 
 ```{r}
-pryr::object_size(serialie(lxy, NULL))
+object_size(serialize(lxy, NULL))
 ```
 
 Because data is serialized not only when manually saving objects, but also when parallelizing execution via `future` or when using encapsulation, this can cause the same information to be duplicated many times and blow up both RAM and disk usage.
