@@ -5,12 +5,12 @@
 
 # Project Structure
 
-  - `mlr3website` - The root directory contains the `mlr3website` R
-    package.
-  - `mlr-org/` - Quarto project.
-  - `mlr-org/gallery` - Gallery posts.
-  - `.github/workflows` Contains workflows to build the website and
-    render gallery posts
+- `mlr3website` - The root directory contains the `mlr3website` R
+  package.
+- `mlr-org/` - Quarto project.
+- `mlr-org/gallery` - Gallery posts.
+- `.github/workflows` Contains workflows to build the website and render
+  gallery posts
 
 ## Setup
 
@@ -22,8 +22,6 @@ the website with the same package versions.
 2.  Call `renv::restore(project = "mlr-org/")` to download and install
     all required packages.
 3.  Run the following command from your terminal to preview the website:
-
-<!-- end list -->
 
 ``` bash
 quarto preview mlr-org/
@@ -63,6 +61,12 @@ series, add it to the `series` directory.
 3.  Use only one sentence for the description and start with a verb. Do
     not repeat the title. See the previously published articles for
     examples.
+4.  Render the post with
+    `quarto render mlr-org/gallery/{category}/{post}/index.qmd`.
+
+Because the gallery posts are not rendered in the CI, you need to ensure
+that the rendered file is contained in the `mlr-org/_freeze`
+subdirectory.
 
 If your post needs a new package or package version:
 
