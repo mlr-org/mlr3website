@@ -75,7 +75,7 @@ object_size(serialize(lxy, NULL))
 ```
 
 Because data is serialized not only when manually saving objects, but also when parallelizing execution via `future` or when using encapsulation, this can cause the same information to be duplicated many times and blow up both RAM and disk usage.
-While we have some mechanisms (like `mlr3misc::leanify`) in place to counteract this to some extent, it is impossible to get rid of the problem completely.
+While we have some mechanisms (like `mlr3misc::leanify` and  database normalization) in place to counteract this to some extent, it is impossible to get rid of the problem completely.
 
 ## Setting the Correct Flags
 
