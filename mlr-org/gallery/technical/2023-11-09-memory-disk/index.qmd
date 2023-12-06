@@ -55,7 +55,7 @@ options("install.opts" = "--without-keep.source")
 
 ## Duplication of Data When Serializing
 
-Anjor cause for increased object size is how R duplicates data when serializing objects.
+Another cause for increased object size is how R duplicates data when serializing objects.
 Consider the simple example below:
 
 ```{r}
