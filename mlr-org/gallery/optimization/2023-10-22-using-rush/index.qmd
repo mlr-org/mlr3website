@@ -591,7 +591,7 @@ pak::pkg_install(c("mlr-org/bbotk@rush", "mlr-org/mlr3tuning@rush"))
 ```{r}
 #| echo: false
 #| label: fig-sleep-benchmark-1
-#| fig-cap: "Runtime of a random search in seconds on 100 hyperparameter configuration with 3-fold cross-validation on 3 workers depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a homogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
+#| fig-cap: "Runtime of a random search in seconds on 100 hyperparameter configuration with 3-fold cross-validation on 3 workers depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a heterogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
 library(data.table)
 library(mlr3misc)
 library(ggplot2)
@@ -660,7 +660,7 @@ wrap_plots(plots, ncol = 6)
 ```{r}
 #| echo: false
 #| label: fig-sleep-benchmark-2
-#| fig-cap: "Runtime of a random search in seconds on 1000 hyperparameter configuration with 3-fold cross-validation on 30 workers depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a homogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
+#| fig-cap: "Runtime of a random search in seconds on 1000 hyperparameter configuration with 3-fold cross-validation on 30 workers depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a heterogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
 
 plots = map(unique(res$sleep_train), function(sleep) {
   data = res[sleep_train == sleep & workers == 30, ]
