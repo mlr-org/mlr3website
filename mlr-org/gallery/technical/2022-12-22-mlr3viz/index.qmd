@@ -8,7 +8,7 @@ author:
   - name: Marc Becker
     orcid: 0000-0002-8115-0400
     url: https://github.com/be-marc
-date: 2022-12-22
+date: 2023-12-20
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -34,6 +34,10 @@ We start with plots of the base mlr3 objects.
 This includes boxplots of tasks, dendrograms of cluster learners and ROC curves of predictions.
 After that, we tune a classification tree and visualize the results.
 Finally, we show visualizations for filters.
+
+::: {.callout-note}
+This article will be updated whenever a new plot is available in `mlr3viz`.
+:::
 
 # Package
 
@@ -111,11 +115,55 @@ autoplot(task, type = "pairs")
 
 # Learner
 
+## Classification
+
+The `"prediction"` plot shows the decision boundary of a classification learner and the true class labels as points.
+
+```{r 2022-12-22-mlr3viz-008}
+task = tsk("pima")$select(c("age", "pedigree"))
+learner = lrn("classif.rpart")
+learner$train(task)
+
+autoplot(learner, type = "prediction", task)
+```
+
+Using probabilities.
+
+```{r 2022-12-22-mlr3viz-009}
+task = tsk("pima")$select(c("age", "pedigree"))
+learner = lrn("classif.rpart", predict_type = "prob")
+learner$train(task)
+
+autoplot(learner, type = "prediction", task)
+```
+
+## Regression
+
+The `"prediction"` plot of a regression learner illustrates the decision boundary and the true response as points.
+
+```{r 2022-12-22-mlr3viz-010}
+task = tsk("boston_housing")$select("age")
+learner = lrn("regr.rpart")
+learner$train(task)
+
+autoplot(learner, type = "prediction", task)
+```
+
+When using two features, the response surface is plotted in the background.
+
+```{r 2022-12-22-mlr3viz-011}
+task = tsk("boston_housing")$select(c("age", "rm"))
+learner = lrn("regr.rpart")
+learner$train(task)
+
+autoplot(learner, type = "prediction", task)
+```
+
 ## GLMNet
 
 The `r ref("mlr_learners_classif.glmnet", "classification")` and `r ref("mlr_learners_regr.glmnet", "regression")`  GLMNet learner is equipped with a plot function.
 
-```{r 2022-12-22-mlr3viz-008}
+```{r 2022-12-22-mlr3viz-012}
 #| warning: false
 library(mlr3data)
 
@@ -124,15 +172,15 @@ task$select(setdiff(task$feature_names, "gender"))
 learner = lrn("classif.glmnet")
 learner$train(task)
 
-autoplot(learner)
+autoplot(learner, type = "ggfortify")
 ```
 
-```{r 2022-12-22-mlr3viz-009}
+```{r 2022-12-22-mlr3viz-013}
 task = tsk("mtcars")
 learner = lrn("regr.glmnet")
 learner$train(task)
 
-autoplot(learner)
+autoplot(learner, type = "ggfortify")
 ```
 
 ## Rpart
@@ -140,29 +188,29 @@ autoplot(learner)
 We plot a `r ref("mlr_learners_classif.rpart", "classification tree")` of the `r ref_pkg("rpart")` package.
 We have to fit the learner with `keep_model = TRUE` to keep the model object.
 
-```{r 2022-12-22-mlr3viz-010}
+```{r 2022-12-22-mlr3viz-014}
 task = tsk("penguins")
 learner = lrn("classif.rpart", keep_model = TRUE)
 learner$train(task)
 
-autoplot(learner)
+autoplot(learner, type = "ggparty")
 ```
 
 We can also plot regression trees.
 
-```{r 2022-12-22-mlr3viz-011}
+```{r 2022-12-22-mlr3viz-015}
 task = tsk("mtcars")
 learner = lrn("regr.rpart", keep_model = TRUE)
 learner$train(task)
 
-autoplot(learner)
+autoplot(learner, type = "ggparty")
 ```
 
 ## ClustHierachical
 
 The `"dend"` plot shows the result of the hierarchical clustering of the data.
 
-```{r 2022-12-22-mlr3viz-012}
+```{r 2022-12-22-mlr3viz-016}
 #| warning: false
 
 library(mlr3cluster)
@@ -176,7 +224,7 @@ autoplot(learner, type = "dend", task = task)
 
 The `"scree"` type plots the number of clusters and the height.
 
-```{r 2022-12-22-mlr3viz-013}
+```{r 2022-12-22-mlr3viz-017}
 autoplot(learner, type = "scree")
 ```
 
@@ -187,7 +235,7 @@ autoplot(learner, type = "scree")
 We plot the predictions of a classification learner.
 The `"stacked"` plot shows the predicted and true class labels.
 
-```{r 2022-12-22-mlr3viz-014}
+```{r 2022-12-22-mlr3viz-018}
 task = tsk("spam")
 learner = lrn("classif.rpart", predict_type = "prob")
 pred = learner$train(task)$predict(task)
@@ -197,20 +245,20 @@ autoplot(pred, type = "stacked")
 
 The ROC curve plots the true positive rate against the false positive rate at different thresholds.
 
-```{r 2022-12-22-mlr3viz-015}
+```{r 2022-12-22-mlr3viz-019}
 autoplot(pred, type = "roc")
 ```
 
 
 The precision-recall curve plots the precision against the recall at different thresholds.
 
-```{r 2022-12-22-mlr3viz-016}
+```{r 2022-12-22-mlr3viz-020}
 autoplot(pred, type = "prc")
 ```
 
 The `"threshold"` plot varies the threshold of a binary classification and plots against the resulting performance.
 
-```{r 2022-12-22-mlr3viz-017}
+```{r 2022-12-22-mlr3viz-021}
 autoplot(pred, type = "threshold")
 ```
 
@@ -218,7 +266,7 @@ autoplot(pred, type = "threshold")
 
 The predictions of a regression learner are often presented as a scatterplot of truth and predicted response.
 
-```{r 2022-12-22-mlr3viz-018}
+```{r 2022-12-22-mlr3viz-022}
 task = tsk("boston_housing")
 learner = lrn("regr.rpart")
 pred = learner$train(task)$predict(task)
@@ -228,13 +276,13 @@ autoplot(pred, type = "xy")
 
 Additionally, we plot the response with the residuals.
 
-```{r 2022-12-22-mlr3viz-019}
+```{r 2022-12-22-mlr3viz-023}
 autoplot(pred, type = "residual")
 ```
 
 We can also plot the distribution of the residuals.
 
-```{r 2022-12-22-mlr3viz-020}
+```{r 2022-12-22-mlr3viz-024}
 #| warning: false
 autoplot(pred, type = "histogram")
 ```
@@ -243,7 +291,7 @@ autoplot(pred, type = "histogram")
 
 The predictions of a cluster learner are often presented as a scatterplot of the data points colored by the cluster.
 
-```{r 2022-12-22-mlr3viz-021}
+```{r 2022-12-22-mlr3viz-025}
 #| warning: false
 
 library(mlr3cluster)
@@ -258,13 +306,13 @@ autoplot(pred, task, type = "scatter")
 The `"sil"` plot shows the silhouette width of the clusters.
 The dashed line is the mean silhouette width.
 
-```{r 2022-12-22-mlr3viz-022}
+```{r 2022-12-22-mlr3viz-026}
 autoplot(pred, task, type = "sil")
 ```
 
 The `"pca"` plot shows the first two principal components of the data colored by the cluster.
 
-```{r 2022-12-22-mlr3viz-023}
+```{r 2022-12-22-mlr3viz-027}
 autoplot(pred, task, type = "pca")
 ```
 
@@ -274,7 +322,7 @@ autoplot(pred, task, type = "pca")
 
 The `"boxplot"` shows the distribution of the performance measures.
 
-```{r 2022-12-22-mlr3viz-024}
+```{r 2022-12-22-mlr3viz-028}
 task = tsk("sonar")
 learner = lrn("classif.rpart", predict_type = "prob")
 resampling = rsmp("cv")
@@ -285,27 +333,27 @@ autoplot(rr, type = "boxplot")
 
 We can also plot the distribution of the performance measures as a "`histogram`".
 
-```{r 2022-12-22-mlr3viz-025}
+```{r 2022-12-22-mlr3viz-029}
 #| warning: false
 autoplot(rr, type = "histogram")
 ```
 
 The ROC curve plots the true positive rate against the false positive rate at different thresholds.
 
-```{r 2022-12-22-mlr3viz-026}
+```{r 2022-12-22-mlr3viz-030}
 autoplot(rr, type = "roc")
 ```
 
 The precision-recall curve plots the precision against the recall at different thresholds.
 
-```{r 2022-12-22-mlr3viz-027}
+```{r 2022-12-22-mlr3viz-031}
 autoplot(rr, type = "prc")
 ```
 
 The `"prediction"` plot shows two features and the predicted class in the background.
 Points mark the observations of the test set and the color presents the truth.
 
-```{r 2022-12-22-mlr3viz-028}
+```{r 2022-12-22-mlr3viz-032}
 #| warning: false
 
 task = tsk("pima")
@@ -320,7 +368,7 @@ autoplot(rr, type = "prediction")
 
 Alternatively, we can plot class probabilities.
 
-```{r 2022-12-22-mlr3viz-029}
+```{r 2022-12-22-mlr3viz-033}
 #| warning: false
 
 task = tsk("pima")
@@ -335,7 +383,7 @@ autoplot(rr, type = "prediction")
 
 In addition to the test set, we can also plot the train set.
 
-```{r 2022-12-22-mlr3viz-030}
+```{r 2022-12-22-mlr3viz-034}
 #| warning: false
 
 task = tsk("pima")
@@ -350,7 +398,7 @@ autoplot(rr, type = "prediction", predict_sets = c("train", "test"))
 
 The `"prediction"` plot can also show categorical features.
 
-```{r 2022-12-22-mlr3viz-031}
+```{r 2022-12-22-mlr3viz-035}
 #| warning: false
 
 task = tsk("german_credit")
@@ -368,7 +416,7 @@ autoplot(rr, type = "prediction")
 The "`prediction`" plot shows one feature and the response.
 Points mark the observations of the test set.
 
-```{r 2022-12-22-mlr3viz-032}
+```{r 2022-12-22-mlr3viz-036}
 task = tsk("boston_housing")
 task$select("age")
 task$filter(seq(100))
@@ -381,7 +429,7 @@ autoplot(rr, type = "prediction")
 
 Additionally, we can add confidence bounds.
 
-```{r 2022-12-22-mlr3viz-033}
+```{r 2022-12-22-mlr3viz-037}
 task = tsk("boston_housing")
 task$select("age")
 task$filter(seq(100))
@@ -394,7 +442,7 @@ autoplot(rr, type = "prediction")
 
 And add the train set.
 
-```{r 2022-12-22-mlr3viz-034}
+```{r 2022-12-22-mlr3viz-038}
 task = tsk("boston_housing")
 task$select("age")
 task$filter(seq(100))
@@ -407,7 +455,7 @@ autoplot(rr, type = "prediction", predict_sets = c("train", "test"))
 
 We can also add the prediction surface to the background.
 
-```{r 2022-12-22-mlr3viz-035}
+```{r 2022-12-22-mlr3viz-039}
 task = tsk("boston_housing")
 task$select(c("age", "rm"))
 task$filter(seq(100))
@@ -422,7 +470,7 @@ autoplot(rr, type = "prediction")
 
 We show the performance distribution of a benchmark with multiple tasks.
 
-```{r 2022-12-22-mlr3viz-036}
+```{r 2022-12-22-mlr3viz-040}
 tasks = tsks(c("pima", "sonar"))
 learner = lrns(c("classif.featureless", "classif.rpart", "classif.xgboost"), predict_type = "prob")
 resampling = rsmps("cv")
@@ -433,7 +481,7 @@ autoplot(bmr, type = "boxplot")
 
 We plot a benchmark result with one task and multiple learners.
 
-```{r 2022-12-22-mlr3viz-037}
+```{r 2022-12-22-mlr3viz-041}
 tasks = tsk("pima")
 learner = lrns(c("classif.featureless", "classif.rpart", "classif.xgboost"), predict_type = "prob")
 resampling = rsmps("cv")
@@ -442,13 +490,13 @@ bmr = benchmark(benchmark_grid(tasks, learner, resampling))
 
 We plot an roc curve for each learner.
 
-```{r 2022-12-22-mlr3viz-038}
+```{r 2022-12-22-mlr3viz-042}
 autoplot(bmr, type = "roc")
 ```
 
 Alternatively, we can plot precision-recall curves.
 
-```{r 2022-12-22-mlr3viz-039}
+```{r 2022-12-22-mlr3viz-043}
 autoplot(bmr, type = "prc")
 ```
 
@@ -457,7 +505,7 @@ autoplot(bmr, type = "prc")
 We tune the hyperparameters of a decision tree on the sonar task.
 The `"performance"` plot shows the performance over batches.
 
-```{r 2022-12-22-mlr3viz-040}
+```{r 2022-12-22-mlr3viz-044}
 #| message: false
 
 library(mlr3tuning)
@@ -476,43 +524,49 @@ instance = tune(
 autoplot(instance, type = "performance")
 ```
 
+The `"incumbent"` plot shows the performance of the best hyperparameter setting over the number of evaluations.
+
+```{r 2022-12-22-mlr3viz-045}
+autoplot(instance, type = "incumbent")
+```
+
 
 The `"parameter"` plot shows the performance for each hyperparameter setting.
 
-```{r 2022-12-22-mlr3viz-041}
-```{r 2022-12-22-mlr3viz-042}
+```{r 2022-12-22-mlr3viz-046}
+```{r 2022-12-22-mlr3viz-047}
 autoplot(instance, type = "parameter", cols_x = c("cp", "minsplit"))
 ```
 
 The `"marginal"` plot shows the performance of different hyperparameter values.
 The color indicates the batch.
 
-```{r 2022-12-22-mlr3viz-043}
+```{r 2022-12-22-mlr3viz-048}
 autoplot(instance, type = "marginal", cols_x = "cp")
 ```
 
 The `"parallel"` plot visualizes the relationship of hyperparameters.
 
-```{r 2022-12-22-mlr3viz-044}
+```{r 2022-12-22-mlr3viz-049}
 autoplot(instance, type = "parallel")
 ```
 
 We plot `cp` against `minsplit` and color the points by the performance.
 
-```{r 2022-12-22-mlr3viz-045}
+```{r 2022-12-22-mlr3viz-050}
 autoplot(instance, type = "points", cols_x = c("cp", "minsplit"))
 ```
 
 Next, we plot all hyperparameters against each other.
 
-```{r 2022-12-22-mlr3viz-046}
+```{r 2022-12-22-mlr3viz-051}
 autoplot(instance, type = "pairs")
 ```
 
 We plot the performance surface of two hyperparameters.
 The surface is interpolated with a learner.
 
-```{r 2022-12-22-mlr3viz-047}
+```{r 2022-12-22-mlr3viz-052}
 autoplot(instance, type = "surface", cols_x = c("cp", "minsplit"), learner = mlr3::lrn("regr.ranger"))
 ```
 
@@ -520,7 +574,7 @@ autoplot(instance, type = "surface", cols_x = c("cp", "minsplit"), learner = mlr
 
 We plot filter scores for the mtcars task.
 
-```{r 2022-12-22-mlr3viz-048}
+```{r 2022-12-22-mlr3viz-053}
 library(mlr3filters)
 
 task = tsk("mtcars")
