@@ -8,7 +8,7 @@ author:
   - name: Marc Becker
     orcid: 0000-0002-8115-0400
     url: https://github.com/be-marc
-date: 2023-12-20
+date: 2022-12-22
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -534,39 +534,38 @@ autoplot(instance, type = "incumbent")
 The `"parameter"` plot shows the performance for each hyperparameter setting.
 
 ```{r 2022-12-22-mlr3viz-046}
-```{r 2022-12-22-mlr3viz-047}
 autoplot(instance, type = "parameter", cols_x = c("cp", "minsplit"))
 ```
 
 The `"marginal"` plot shows the performance of different hyperparameter values.
 The color indicates the batch.
 
-```{r 2022-12-22-mlr3viz-048}
+```{r 2022-12-22-mlr3viz-047}
 autoplot(instance, type = "marginal", cols_x = "cp")
 ```
 
 The `"parallel"` plot visualizes the relationship of hyperparameters.
 
-```{r 2022-12-22-mlr3viz-049}
+```{r 2022-12-22-mlr3viz-048}
 autoplot(instance, type = "parallel")
 ```
 
 We plot `cp` against `minsplit` and color the points by the performance.
 
-```{r 2022-12-22-mlr3viz-050}
+```{r 2022-12-22-mlr3viz-049}
 autoplot(instance, type = "points", cols_x = c("cp", "minsplit"))
 ```
 
 Next, we plot all hyperparameters against each other.
 
-```{r 2022-12-22-mlr3viz-051}
+```{r 2022-12-22-mlr3viz-050}
 autoplot(instance, type = "pairs")
 ```
 
 We plot the performance surface of two hyperparameters.
 The surface is interpolated with a learner.
 
-```{r 2022-12-22-mlr3viz-052}
+```{r 2022-12-22-mlr3viz-051}
 autoplot(instance, type = "surface", cols_x = c("cp", "minsplit"), learner = mlr3::lrn("regr.ranger"))
 ```
 
@@ -574,7 +573,7 @@ autoplot(instance, type = "surface", cols_x = c("cp", "minsplit"), learner = mlr
 
 We plot filter scores for the mtcars task.
 
-```{r 2022-12-22-mlr3viz-053}
+```{r 2022-12-22-mlr3viz-052}
 library(mlr3filters)
 
 task = tsk("mtcars")
