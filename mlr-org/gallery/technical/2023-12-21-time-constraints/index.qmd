@@ -1,0 +1,99 @@
+---
+title: "Setting time constraints in mlr3 ecosystem"
+description: |
+  Set time limits for learners, tuning and nested resampling.
+author:
+  - name: Marc Becker
+    orcid: 0000-0002-8115-0400
+    url: https://github.com/be-marc
+date: 2023-12-21
+bibliography: ../../bibliography.bib
+image: cover.jpg
+---
+
+# Scope
+
+This article gives a quick overview on how to set time constraints in the mlr3 ecosystem.
+Time constraints can be set for individual learners, tuning processes and nested resampling.
+Setting a time limit is important for successful tuning and on shared computing resources.
+
+## Learner
+
+We load the tuning package and use an support vector machine.
+The training of an svm can be time consuming.
+
+```{r}
+#| eval: false
+library(mlr3verse)
+
+learner = lrn("classif.svm")
+```
+
+Setting timeouts on the `$train()` and `$predict()` functions guards against learners that run for an indefinite amount of time.
+We set a time limit of 10 seconds for the training of the svm.
+
+```{r}
+#| eval: false
+learner$timeout = c(train = 10, predict = Inf)
+```
+
+We need to encapsulate the training and prediction process in a separate R process to be able to kill it.
+Using `callr` encapsulation works most reliable, since the `evaluate` package is sometimes not able to terminate external compiled code.
+
+```{r}
+#| eval: false
+learner$encapsulate = c(train = "callr", predict = "callr")
+```
+
+Using `callr` comes with an increased runtime for starting the R process.
+
+## Tuning
+
+Jobs on high-performance clusters are often limited to a certain amount of time.
+If the time limit is exceeded, the job is killed and the results are lost.
+So we have to make sure that the tuning process does not exceed the time limit.
+
+The `trm("runtime")` terminates the tuning process after a certain amount of time.
+We must take into account that the terminator can only check the time between batches.
+We must therefore set the time lower than the runtime of the job.
+
+```{r}
+#| eval: false
+terminator = trm("run_time", secs = 60)
+
+instance = ti(
+  task = tsk("sonar"),
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measures = msr("classif.ce"),
+  terminator = terminator
+)
+```
+
+## Nested Resampling
+
+When using nested resampling, we can also set a timeout in the outer resampling iterations.
+It works the same way as for the learner.
+
+The nested resampling can take a maximum time of 10 minutes (120 seconds * 5 folds).
+
+```{r}
+#| eval: false
+learner = lrn("classif.svm")
+learner$encapsulate = c(train = "callr", predict = "callr")
+learner$timeout = c(train = 10, predict = Inf)
+
+terminator = trm("runtime", secs = 60)
+
+at = auto_tuner(
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measures = msr("classif.ce"),
+  terminator = terminator
+)
+
+at$encapsulate = c(train = "callr", predict = "callr")
+at$timeout = c(train = 120, predict = Inf)
+
+rr = resample(task, at, rsmp("cv", folds = 5))
+```
