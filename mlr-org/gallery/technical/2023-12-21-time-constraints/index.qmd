@@ -23,6 +23,7 @@ The mlr3 ecosystem provides several mechanisms for setting time constraints for 
 This section demonstrates how to impose time constraints using a support vector machine (SVM) as an illustrative example.
 
 ```{r 2023-12-21-time-constraints-001}
+#| message: false
 library(mlr3verse)
 
 learner = lrn("classif.svm")
@@ -52,7 +53,7 @@ Additionally, it's advisable to specify a fallback learner, such as `"classif.fe
 learner$fallback = lrn("classif.featureless")
 ```
 
-These time constraints are now integrated into training, resampling, and benchmarking processes.
+These time constraints are now integrated into the training, resampling, and benchmarking processes.
 For more information on encapsulation and fallback learners, see the [mlr3book](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-error-handling).
 The next section will focus on setting time limits for the entire tuning process.
 
@@ -66,7 +67,7 @@ The `trm("runtime")` controls the duration of the tuning process.
 We must take into account that the terminator can only check if the time limit is reached between batches.
 We must therefore set the time lower than the runtime of the job.
 How much lower depends on the runtime or time limit of the individual learners.
-The last batch should be able to finish before the global time limit is reached.
+The last batch should be able to finish before the time limit of the cluster is reached.
 
 ```{r 2023-12-21-time-constraints-005}
 terminator = trm("run_time", secs = 60)
@@ -136,5 +137,5 @@ rr = resample(task, at, rsmp("cv", folds = 5))
 
 We delved into the setting of time constraints across different levels in the mlr3 ecosystem.
 From individual learners to the complexities of nested resampling, we've seen how effectively managing time limits can significantly enhance the efficiency and reliability of machine learning workflows.
-By utilizing tools like `trm("runtime")` for tuning processes and integrating `$timeout` for individual learners and auto tuners, we can ensure that our machine learning tasks are not only precise but also adhere to the practical time constraints of shared computational resources.
+By utilizing the `trm("runtime")` for tuning processes and setting `$timeout` for individual learners and auto tuners, we can ensure that our machine learning tasks are not only effective but also adhere to the practical time constraints of shared computational resources.
 For more information, see also the error handling section in the [mlr3book](https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-encapsulation-fallback).
