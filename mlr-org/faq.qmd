@@ -9,7 +9,7 @@ toc: false
 
 * [What is the purpose of the `OMP_THREAD_LIMIT` environment variable?](#omp-thread-limit)
 * [Why is tuning slow despite quick model fitting?](#tuning-slow)
-* [How can I use time limit constraints in tuning?](#time-limit-constraints)
+* [How can I use time constraints in tuning?](#time-limit-constraints)
 
 ## What is the purpose of the `OMP_THREAD_LIMIT` environment variable? {#omp-thread-limit}
 
@@ -45,7 +45,7 @@ Refer to the [OpenMP Thread Limit](#omp-thread-limit) section in this FAQ for gu
 The wrong strategy can lead to inefficiencies.
 For a deeper understanding, refer to the [nested resampling section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-nested-resampling-parallelization) in our book.
 
-## How can I use time limit constraints in tuning? {#time-limit-constraints}
+## How can I use time constraints in tuning? {#time-limit-constraints}
 
 The mlr3 ecosystem provides several mechanisms for setting time constraints for individual learners, tuning processes, and nested resampling.
 The [gallery post](gallery/technical/2023-12-21-time-constraints/) on time limit constraints provides a detailed overview of these mechanisms.
