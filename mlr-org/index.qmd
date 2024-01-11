@@ -9,6 +9,8 @@ page-layout: article
 <div class="center-text">
 # mlr3: Machine Learning in R
 </div>
+The mlr3 ecosystem is the framework for machine learning in R.
+
 An open-source collection of R packages providing a unified interface for machine learning in the R language.
 Successor of [mlr](https://mlr.mlr-org.com/).
 
@@ -18,10 +20,10 @@ Successor of [mlr](https://mlr.mlr-org.com/).
 
 content = rowwise_table(
     ~icon,          ~text,                                                    ~link,
-    "code-square",  "A scientifically designed and easy to learn interface.", "index.html",
+    "code-square",  "A scientifically designed and easy to learn interface.", "https://mlr3book.mlr-org.com/",
     "pen",          "More than 100 connected machine learning algorithms.",   "learners.html",
-    "box",          "Light on dependencies.",                                 "index.html",
-    "stack",        "Convenient parallelization with the future package.",    "https://futureverse.org/",
+    "box",          "Light on dependencies.",                                 "dependencies.html",
+    "stack",        "Convenient parallelization with the future package.",    "https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization",
     "sliders",      "State-of-the-art optimization algorithms.",              "tuners.html",
     "share",        "Dataflow programming with pipelines.",                   "pipeops.html"
 )
@@ -42,7 +44,7 @@ div(class = "feature-grid",
 ## Get Started
 
 There are many packages in the mlr3 [ecosystem](ecosystem.html) that you may want to use.
-Install the full mlr3 universe at once.
+You can install the full mlr3 universe at once with:
 
 ```{r}
 #| eval: false
@@ -66,7 +68,6 @@ In addition to the book, there are many other resources to learn more about mlr3
 The [gallery](gallery.html) contains a collection of case studies that demonstrate the functionality of mlr3.
 The [cheatsheets](resources.html#cheat-sheets) provide a quick overview of the most important functions.
 The [resources](resources.html) section contains links to talks, courses, and other material.
-
 
 ## Examples
 
