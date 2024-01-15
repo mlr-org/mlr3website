@@ -50,7 +50,6 @@ When minimizing the synchronization overhead, a too large chunk size can lead to
 This can be avoided by setting `mlr3.exec_chunk_bins` to a smaller value than the number of cores available on the system.
 
 
-Prior to `mlr3` version 0.17.1, the `r ref_pkg("data.table")` package used half of the available cores of the system on each worker.
 This overloaded the CPUs when using `r ref("resample()")` and `r ref("benchmark()")` with `r ref_pkg("future")` and led to slower execution times.
 Setting the environment variable `OMP_NUM_THREADS` is no longer necessary.
 
