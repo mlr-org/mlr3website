@@ -49,10 +49,6 @@ This is referred to as [synchronization overhead](https://mlr3book.mlr-org.com/c
 When minimizing the synchronization overhead, a too large chunk size can lead to a situation where the last chunk takes much longer than the others.
 This can be avoided by setting `mlr3.exec_chunk_bins` to a smaller value than the number of cores available on the system.
 
-
-This overloaded the CPUs when using `r ref("resample()")` and `r ref("benchmark()")` with `r ref_pkg("future")` and led to slower execution times.
-Setting the environment variable `OMP_NUM_THREADS` is no longer necessary.
-
 ## How can I use time constraints when tuning?
 
 Time constraints can be set for individual learners, tuning processes, and nested resampling.
