@@ -70,7 +70,7 @@ content = rowwise_table(
     "data",          "mlr3data",          "stable",       "https://mlr3data.mlr-org.com/",              "Data sets and tasks",
     "learners",      "mlr3learners",      "stable",       "https://mlr3learners.mlr-org.com/",          "Essential learners for mlr3, maintained by the mlr-org team",
     "learners",      "mlr3extralearners", "stable",       "https://mlr3extralearners.mlr-org.com/",     "Extra learners for mlr3, implemented by the community",
-    "learners",      "mlr3torch",         "experimental", "https://github.com/mlr-org/mlr3torch/",      "Deep learning with Torch",
+    "learners",      "mlr3torch",         "experimental", "https://mlr3torch.mlr-org.com",              "Deep learning with Torch",
     "learners",      "mlr3keras",         "experimental", "https://github.com/mlr-org/mlr3keras/",      "Deep learning with Keras",
     "visualization", "mlr3viz",           "stable",       "https://mlr3viz.mlr-org.com/",               "Visualizations for tasks, predictions, resample results and benchmarks",
     "pipelines",     "mlr3pipelines",     "stable",       "https://mlr3pipelines.mlr-org.com/",         "Dataflow programming toolkit",
@@ -82,13 +82,13 @@ content = rowwise_table(
     "tasks",         "mlr3temporal",      "experimental", "https://mlr3temporal.mlr-org.com/",          "Time series analysis",
     "tasks",         "mlr3spatial",       "stable",       "https://mlr3spatial.mlr-org.com/",           "Spatial data backends and prediction functions",
     "tasks",         "mlr3multilabel",    "planned",      "https://github.com/mlr-org/mlr3multilabel",  "Multi-Label Classification",
-    "tasks",         "mlr3fda",           "planned",      "https://github.com/mlr-org/mlr3fda",         "Functional Data Analysis",
+    "tasks",         "mlr3fda",           "experimental", "https://mlr3fda.mlr-org.com",                "Functional Data Analysis",
     "utils",         "bbotk",             "stable",       "https://bbotk.mlr-org.com/",                 "Black-box optimization toolkit",
     "utils",         "paradox",           "stable",       "https://paradox.mlr-org.com/",               "Universal parameter space description and tools",
     "utils",         "mlr3misc",          "stable",       "https://mlr3misc.mlr-org.com/",              "Miscellaneous helper functions for mlr3",
     "utils",         "mlr3measures",      "stable",       "https://mlr3measures.mlr-org.com/",          "Performance measures for supervised learning",
     "utils",         "mlr3benchmark",     "stable",       "https://mlr3benchmark.mlr-org.com/",         "Analysis and tools for benchmarking",
-    "tasks",         "mlr3fairness",      "stable", "https://mlr3fairness.mlr-org.com/",          "Fairness in Machine Learning",
+    "tasks",         "mlr3fairness",      "stable",       "https://mlr3fairness.mlr-org.com/",          "Fairness in Machine Learning",
     "utils",         "mlr3batchmark",     "experimental", "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools"
 )
 # add CRAN link

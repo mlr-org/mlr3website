@@ -58,6 +58,10 @@ If you write a series, add it to the `series` directory.
 1. Use only one sentence for the description and start with a verb.
    Do not repeat the title.
    See the previously published articles for examples.
+1. Render the post with `quarto render mlr-org/gallery/{category}/{post}/index.qmd`.
+
+Because the gallery posts are not rendered in the CI, you need to ensure that the rendered file is contained in the
+`mlr-org/_freeze` subdirectory.
 
 If your post needs a new package or package version:
 
