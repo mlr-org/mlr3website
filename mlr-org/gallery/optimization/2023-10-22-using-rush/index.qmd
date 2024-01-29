@@ -1,0 +1,826 @@
+---
+title: "Parallel Computing with Rush"
+description: |
+  Run a centralized parallel computing network with the `rush` package.
+author:
+  - name: Marc Becker
+    url: https://github.com/be-marc
+date: 2023-10-23
+image: cover.jpg
+bibliography: ../../bibliography.bib
+---
+
+{{< include ../../_setup.qmd >}}
+
+```{r}
+#| include: false
+
+options(datatable.prettyprint.char = 5L)
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(1)
+
+library(microbenchmark)
+library(ggplot2)
+
+config = redux::redis_config()
+r = redux::hiredis(config)
+r$FLUSHALL()
+```
+
+
+# Scope
+
+Parallel computing plays an important role in machine learning, especially as the size of datasets and the computational intensity of algorithms increase.
+This trend necessitates the distribution of computing tasks across multiple workers.
+In this context, we present `rush`, our novel framework for parallel and distributed computing in R.
+`rush` enables the parallelization of arbitrary R expressions in a network of workers.
+The framework implements a queue system and an efficient data store based on [Redis](https://redis.io).
+It integrates the `r ref_pkg("future")` package to start workers on the local machine or remote machines.
+Rush is engineered to impose minimal overhead, with the aim of a few milliseconds per task, and is optimized for both rapid and long-running tasks.
+The package is designed to be lightweight and easy to use, with a simple interface and minimal dependencies.
+We integrate `rush` into our optimization packages `r ref_pkg("bbotk")` and `r ref_pkg("mlr3tuning")` but still keep it as a general-purpose package.
+
+We start the article with an overview of parallel computing in R (@sec-related-work).
+Next we show how to install Redis and the rush package.
+Then we present the network architecture of the package (@sec-rush-network) and how to use the package to parallelize a simple task (@sec-example).
+In this example, we present the basic functionality of the package.
+Next we present advanced features of the package (@sec-advanced-functionality).
+Finally, we look at the runtime performance of the package (@sec-benchmark).
+
+# Related Work {#sec-related-work}
+
+As multi-core processors became commonplace in the 2000s, there was a growing need to utilize these resources effectively for computational tasks in R.
+The first packages to address this need were `r ref_pkg("snow")` and `r ref_pkg("multicore")`.
+With R version 2.14.0 (released in 2011), parallel computing capabilities were integrated into the base R system through the `parallel` package.
+The functions `parallel::mclapply()` and `parallel::parLapply()` are parallel versions of the `lapply()` function for multicore and cluster computing, respectively.
+Both functions are widely used in R packages but have some limitations.
+The R session is blocked until all tasks are finished and it is not possible to retrieve partial results.
+Moreover, load balancing can be an issue when the tasks have different runtimes.
+
+The landscape further evolved with the release of the `future` package in 2016, which provided a unified and flexible parallel computing interface in R, supporting various backends such as `multisession`, `multicore`, and `callr`.
+The `r ref_pkg("future.apply")` package implements parallel versions of the `*apply()` family functions, compatible with the `future` backends.
+
+With the rise of high-performance computing (HPC) clusters, the `r ref_pkg("batchtools")` package was developed to facilitate the execution of long-running tasks on these systems.
+The communication between the main process and the workers runs completely over the file system.
+A notable feature of the package is the assistance in conducting large-scale computer experiments.
+A more recent development in distributed computing is the `r ref_pkg("crew")` package.
+The package is designed for long-running tasks in distributed systems, ranging from traditional high-performance clusters to cloud computing platforms.
+A drawback of both systems is the high overhead per task.
+
+The [rrq](https://github.com/mrc-ide/rrq) package is a task queue system for R using Redis.
+It addresses the limitations of the packages by providing a non-blocking interface to parallel computing and keeping the overhead per task low.
+The package allows non-interacting queues with priority levels within a queue and dependencies among tasks.
+The package has an advanced error-handling mechanism, heavily influencing the heartbeat mechanism of `rush`.
+
+`rush` aligns closely with `rrq` but differentiates itself with its integration into our optimization packages packages `botk` and `mlr3tuning`.
+This includes a data structure in Redis that can be efficiently converted to a `r ref("data.table::data.table()")` and a cache mechanism that minimizes the number of read and write operations in the R session.
+Moreover, the start of workers with minimal user configuration is integrated with the `future` package.
+Looking ahead, rush allows a decentralized network architecture devoid of a central controller.
+This allows the implementation of recently developed optimization algorithms such as Asynchronous Decentralized Bayesian Optimization [@Egele2023].
+
+::: {.callout-note}
+
+## Question
+
+* Maybe we can elaborate more on the differences between `rrq` and `rush`?
+* What could be an advantage for the normal user?
+* The seamless integration with `bbotk` and `mlr3tuning` is only a big advantage for us.
+
+:::
+
+
+# Install {#sec-install}
+
+There are several options to install Redis depending on your operating system.
+You can find instructions on how to install Redis on [redis.io](https://redis.io/docs/install/install-redis/).
+The `rush` package is not yet on CRAN.
+You can install the development version from GitHub with `r ref_pkg("pak")`.
+
+```{r}
+#| eval: false
+pak::pkg_install("mlr-org/rush")
+```
+
+`rush` is designed to be light on dependencies.
+It utilizes a select few packages to establish its functionality:
+
+* `redux` - This package is integral to rush, facilitating robust communication with the Redis server for task queuing and data storage operations.
+* `callr` - Enables rush to maintain a heartbeat process, essential for monitoring the status of remote workers.
+* `future` - Provides the core mechanism for initiating worker processes, whether they are on local or remote machines.
+
+# Rush Network {#sec-rush-network}
+
+The rush network is orchestrated through a combination of a controller and multiple workers (as illustrated in @fig-rush).
+The controller initializes the system and starts the workers (@sec-controller).
+This stage prepares the environment for task processing which includes loading the function to be evaluated and any required packages.
+The controller pushes tasks to the queue and retrieves their outcomes (@sec-start-workers).
+The workers pop tasks from the queue, evaluate them, and push the results to the database.
+A task life cycle consists of four states: `"queued"`, `"running"`, `"finished"`, and `"failed"`.
+Tasks initially enter a `"queued"` state, awaiting processing (@sec-push-task).
+They remain in this state until a worker is available to handle them.
+When a worker picks up a task, its status transitions to `"running"`.
+This stage marks the active processing of the task.
+Upon completion, a task's state is updated to `"finished"`, and its result is stored in the database (@sec-retrieve-results).
+In cases where a task encounters an error or issue, its state is marked as `"failed"`.
+
+![Centralized rush network](rush.png){#fig-rush width=100%}
+
+The architecture of a centralized rush network.
+
+## Example {#sec-example}
+
+To demonstrate the core capabilities of `rush`, we present a simple, practical example utilizing the `mlr3` package for machine learning.
+The example involves the assessment of a Support Vector Machine (SVM) model performance on the widely-used `spam` dataset.
+We first define a function, `evaluate_svm()`, that will be dispatched to the workers for execution.
+This function is designed to accept two parameters: `cost` and `gamma`.
+These parameters represent the cost and the gamma hyperparameters of the SVM model, respectively.
+Inside `evaluate_svm()`, the SVM model is trained on the `spam` dataset using the provided `cost` and `gamma` values.
+After training the model, `evaluate_svm()` computes the classification error, which serves as the performance metric.
+The function concludes by returning the classification error.
+This returned value is then captured by `rush`, which manages the collection and storage of results from all the workers.
+By employing `rush`, we can parallelize the evaluation of the SVM model over a grid of `cost` and `gamma` values, significantly accelerating the hyperparameter tuning process.
+
+```{r}
+library(mlr3)
+library(mlr3learners)
+
+task = tsk("spam")
+splits = partition(task)
+learner = lrn("classif.svm", type = "C-classification", kernel = "radial")
+
+eval_svm = function(cost, gamma, ...) {
+  learner$param_set$set_values(cost = cost, gamma = gamma)
+  learner$train(task, row_ids = splits$train)
+  pred = learner$predict(task, row_ids = splits$test)
+  list(ce = pred$score())
+}
+```
+
+## Controller {#sec-controller}
+
+The `Rush` instance is the controller of the centralized network.
+The controller starts and stops the workers, pushes tasks to the queue and fetches their results.
+The controller is initialized with the function `rsh()`.
+The `network_id` argument is used to identify the controller and workers belonging to the same network.
+The `config` argument is a list of Redis configuration options used by the `redux` package to connect to the Redis server.
+
+```{r}
+library(rush)
+
+config = redux::redis_config()
+rush = rsh(network_id = "svm", config = config)
+rush
+```
+
+::: {.callout-note}
+
+## Question
+
+* We could create a `rush_plan(config)` function that rush controllers could use to connect to the Redis server.
+
+:::
+
+
+## Start Workers {#sec-start-workers}
+
+Now we are ready to start the workers.
+The `RushWorker` class represents a worker in the network.
+The class inherits from the `Rush` controller class but adds methods to pop tasks from the queue and push results to the database.
+On the worker runs a loop that processes the tasks from the queue.
+The default worker loop is `fun_loop`.
+This function fetches a task from the queue, evaluates the user-defined function `fun`, pushes the results back to the database and waits for the next task.
+Usually, we do not need to define a custom worker loop and pass the function `fun`.
+
+Workers can be started on the local machine or a remote machine.
+A local worker runs on the same machine as the controller.
+A remote worker runs on a different machine.
+We distinguish between local and remote workers because the mechanism to kill and monitor a remote worker is different.
+
+The `$start_workers()` method starts the workers with the `future` package.
+We pass the `host = "local"` argument to mark the workers as local.
+Optionally, we can pass a `n_workers` argument to specify the number of workers.
+If we do not pass a `n_workers` argument, the number of workers is set to available future workers.
+If `fun` depends on global variables, we can pass them to the `globals` argument.
+Our `eval_svm()` function depends on the `learner`, `task` and `splits` objects.
+Packages that are needed by `fun` can be passed to the `packages` argument.
+
+```{r}
+future::plan("multisession")
+
+rush$start_workers(
+  fun = eval_svm,
+  n_workers = 2,
+  globals = c("learner", "task", "splits"),
+  packages = c("mlr3", "mlr3learners", "e1071")
+)
+
+rush
+```
+
+::: {.callout-note}
+
+## Question
+ * We could simplify `$start_workers()` by hiding the `worker_loop` argument.
+But `bbotk` and `mlr3tuning` use a custom worker loop.
+ * We could replace `future` and just use `parallely`.
+ * We could replace the `host` argument with something like `Sys.info()[["nodename"]]`.
+
+:::
+
+We get more information about the workers with `$worker_info`.
+The `worker_id` identifies the worker.
+The `pid` is the process id of the worker process.
+The `heartbeat` is the process id of the heartbeat process (see @sec-heartbeat).
+
+```{r}
+rush$worker_info
+```
+
+On a remote machine, we need to start the workers manually or use the future `cluster` backend.
+See @sec-start-script for more information on how to start workers manually.
+
+A worker can have four states: `"running"`, `"terminated"`, `"killed"` (@sec-stop-workers) and `"lost"` (@sec-error-handling).
+
+## Push Task {#sec-push-task}
+
+The `$push_tasks()` method pushes tasks to the queue.
+The method takes a list of tasks as input.
+Each task is a list of parameters.
+We push 2 tasks to the queue.
+
+```{r}
+keys = rush$push_tasks(list(
+  list(cost = 1e-4, gamma = 1e-4),
+  list(cost = 1e-3, gamma = 1e-3)))
+```
+
+The keys of the pushed tasks are returned.
+Pushing a task takes around 0.5 milliseconds (see @sec-benchmark).
+Pushing a task is non-blocking i.e. the method returns immediately.
+We can wait for a task to finish with the `$await_tasks()` method.
+The method blocks until all tasks are processed by the workers.
+
+```{r}
+rush$wait_for_tasks(keys)
+```
+
+## Retrieve Results {#sec-retrieve-results}
+
+The `$fetch_finished_tasks()` method retrieves the results of finished tasks.
+The method returns a `data.table` with additional meta information.
+The `worker_id` of the worker that evaluated the task and the `pid` of the worker process are stored in the table.
+
+```{r}
+rush$fetch_finished_tasks()
+```
+
+There are multiple `$fetch_*()` methods available for retrieving data from the Redis database.
+A matching method is defined for each task state e.g. `$fetch_queued_tasks()` and `$fetch_running_tasks()`.
+If only the result of the function evaluation is needed, `$fetch_results()` and `$fetch_latest_results()` are faster than `$fetch_finished_tasks()`.
+We can change the included columns with the `fields` argument.
+The default of `$fetch_finished_tasks()` is `c("xs", "xs_extra", "worker_extra", "ys", "ys_extra", "state")`.
+If we don't want all that extra information, we can just query `"xs"` and `"ys"`.
+
+```{r}
+rush$fetch_finished_tasks(fields = c("xs", "ys"))
+```
+
+The methods `$fetch_results()` and `$fetch_finished_tasks()` cache the already queried data (see @sec-caching).
+
+The `data_format = "list` returns a `list` instead of a `data.table`.
+
+```{r}
+rush$fetch_finished_tasks(data_format = "list")
+```
+
+An advantage of the `data.table` format is that we can set a key on the result column.
+The `data.table` is then always sorted by the result which gives us fast access to the best result.
+However, when we want to store complex data structures like `list`, `data.frame` and `environment` in the database, we need to wrap them in a `list`.
+Otherwise, `data.table` cannot bind the tasks to a table.
+In this case, it might be better to use the `list` format to avoid wrapping the objects in lists.
+
+## Wait for Results {#sec-wait-for-results}
+
+The `$wait_for_*()` variants of the `$fetch_*` methods wait until a new result is available.
+
+```{r}
+rush$wait_for_latest_results()
+```
+
+We push another task to the queue and block until the result is available.
+
+```{r}
+rush$push_tasks(list(list(cost = 1e-2, gamma = 1e-2)))
+rush$wait_for_latest_results()
+```
+
+We can set a timeout with the `timeout` argument.
+
+## Caching {#sec-caching}
+
+The results of the `$fetch_results()` and `$fetch_finished_tasks()` are cached.
+This gives a significant speedup when we query the same data multiple times.
+The cache is a `data.table` or `list` that is stored in the controller.
+New results are rbined to the `data.table`.
+This takes around 4 milliseconds for 100 tasks, independent of the number of results in the cache (see @sec-benchmark).
+
+```{r}
+rush$fetch_results()
+```
+
+If we change the queried fields, the change is not reflected in the cache.
+In this case, we can clear the cache with the `reset_cache = TRUE` option.
+
+## Stop Workers {#sec-stop-workers}
+
+Local and remote workers can be terminated with the `$stop_workers(type = "terminate")` method.
+The workers evaluate the currently running task and then terminate.
+
+```{r}
+rush$stop_workers(type = "terminate")
+```
+
+```{r}
+#| include: false
+Sys.sleep(5)
+```
+
+When we wait for a few seconds, we see that the workers are terminated.
+
+```{r}
+rush$worker_states
+```
+
+The option `type = "kill"` stops the workers immediately.
+Killing a local worker is done with the `tools::pskill()` function.
+Remote workers are killed by pushing a kill signal to the heartbeat process.
+Without a heartbeat process a remote worker cannot be killed (see @sec-heartbeat).
+
+```{r}
+rush$stop_workers(type = "kill")
+```
+
+
+# Advanced Functionality {#sec-advanced-functionality}
+
+## Error Handling {#sec-error-handling}
+
+When evaluating tasks in a distributed system, many things can go wrong.
+Simple R errors in the worker loop are caught and written to the archive.
+The task is marked as `"failed"`.
+If the connection to a worker is lost, it looks like a task is `"running"` forever.
+The methods `$detect_lost_workers()` and `$detect_lost_tasks()` detect lost workers.
+Running these methods periodically adds a small overhead.
+Remote workers are monitored with the heartbeat mechanism (see @sec-heartbeat).
+On local workers, we check the running processes.
+This can be very slow on Windows.
+
+
+::: {.callout-note}
+
+# Question
+
+* Use `mlr3misc::encapsulate()`?
+Allows using `callr` for encapsulation.
+Workers would not get lost.
+But we would save the log messages twice since `lgr` messages are directly written to the database by `rush`.
+We have encapsulation already in mlr3.
+* Restarting a lost worker is not possible with `future`.
+
+:::
+
+## Logging {#sec-logging}
+
+The worker logs all messages written with the `lgr` package to the database.
+The `lgr_thresholds` argument pf `$start_workers()` defines the logging level for each logger e.g. `c(rush = "debug")`.
+Saving log messages adds a small overhead but is useful for debugging.
+By default, no log messages are stored.
+
+```{r}
+rush$read_log()
+```
+
+## Start Script {#sec-start-script}
+
+We are not limited to start workers with the `future` package.
+A work can be started manually with a script on a remote machine.
+The only requirement is that the machine has access to the Redis server and can run R scripts.
+
+```{r}
+rush$create_worker_script()
+```
+
+The `$create_worker_script()` takes also a `globals` and `packages` argument.
+The globals are serialized and passed to the worker via Redis.
+The packages must be installed on the remote machine but they are loaded automatically.
+
+## Reproducibility {#sec-reproducibility}
+
+Rush uses a random number generator with multiple independent streams created by @Ecuyer2002.
+The implementation of the `r ref_pkg("rlecuyer")` package is used.
+We attach a random number stream to each task.
+This ensures reproducibility regardless of the number of workers.
+Set a seed when starting the workers to get reproducible results.
+
+```{r}
+#| eval: false
+
+rush$start_workers(
+  fun = fun,
+  n_workers = 2, s
+  eed = 123456)
+```
+
+::: {.callout-note}
+
+# Question
+* The results of hyperband are not reproducible. See [Optuna](https://optuna.readthedocs.io/en/stable/faq.html#how-can-i-obtain-reproducible-optimization-results).
+:::
+
+## Queues
+
+Rush uses a shared queue and a queue for each worker.
+The shared queue is used to push tasks to the workers.
+The first worker that pops a task from the shared queue evaluates the task.
+Until now we only used the shared queue.
+The worker queues are used to push tasks to specific workers.
+
+```{r}
+worker_id = rush$worker_ids[1]
+rush$push_priority_tasks(list(list(cost = 1e-1, gamma = 1e-1)), priority = worker_id)
+```
+
+## Heartbeats {#sec-heartbeat}
+
+The heartbeat is a mechanism to monitor the status of remote workers in distributed computing systems.
+The mechanism consists of a heartbeat key with a set [expiration timeout](https://redis.io/commands/expire/) and a dedicated heartbeat process that refreshes the timeout periodically.
+The heartbeat process is started with `callr` and is linked to main process of the worker.
+In the event of a worker's failure, the associated heartbeat process also ceases to function, thus halting the renewal of the timeout.
+The absence of the heartbeat key acts as an indicator to the controller that the worker is no longer operational.
+Consequently, the controller updates the worker's status to `"lost"`.
+
+Heartbeats are initiated upon worker startup by specifying the `heartbeat_period` and `heartbeat_expire` parameters.
+The `heartbeat_period` defines the frequency at which the heartbeat process will update the timeout.
+The `heartbeat_expire` sets the duration, in seconds, before the heartbeat key expires.
+The expiration time should be set to a value greater than the heartbeat period to ensure that the heartbeat process has sufficient time to refresh the timeout.
+
+```{r}
+#| eval: false
+rush$start_workers(
+  worker_loop = fun_loop,
+  n_workers = 2,
+  globals = c("learner", "task", "splits"),
+  packages = c("mlr3", "mlr3learners", "e1071"),
+  host = "remote",
+  heartbeat_period = 1,
+  heartbeat_expire = 3,
+  fun = eval_svm)
+```
+
+The heartbeat process is also the only way to kill a remote worker.
+The `$stop_workers(type = "kill")` method pushes a kill signal to the heartbeat process.
+The heartbeat process terminates the main process of the worker.
+
+
+## Rush Data Store {#sec-data-store}
+
+Rush writes a task and its result and additional meta information into a Redis [hash](https://redis.io/docs/data-types/hashes/).
+
+```
+key : xs | ys | extra | state
+```
+
+The key of the hash identifies the task in `rush`.
+The fields are written by different methods, e.g. `$push_result()` writes `ys` when the result is available.
+The value of a field is a serialized list e.g. unserializing `xs` gives `list(x1 = 1, x2 = 2)`.
+This data structure allows quickly converting a hash into a row and joining multiple hashes into a table.
+For example, three hashes from the above example are converted to the following table.
+
+
+| key | x1 | x2 | y | timestamp | state    |
+|-----|----|----|---|-----------|----------|
+| 1.. |  3 |  4 | 7 |  12:04:11 | finished |
+| 2.. |  1 |  4 | 5 |  12:04:12 | finished |
+| 3.. |  1 |  1 | 2 |  12:04:13 | finished |
+
+
+Notice that a value of a field can store multiple columns of the table.
+The methods `$push_tasks()` and `$push_results()` write into multiple hashes.
+One for each task or result.
+For example, `$push_tasks(xss = list(list(x1 = 1, x2 = 2), list(x1 = 2, x2 = 2))` writes `xs` in two hashes.
+
+# Benchmark {#sec-benchmark}
+
+We benchmark the performance of `rush` with the `r ref_pkg("microbenchmark")` package with 100 repetitions.
+The benchmark was run on cluster that is not optimized for single-core performance.
+The runtime might be faster on a local machine.
+
+We pushed tasks to the queue and measured the time (@fig-benchmark-push).
+The number of tasks was increased from 1 to 10,000.
+One task consisted of two numbers.
+The runtime increased sublinearly with the number of tasks.
+When pushing one task, overhead per task was around 0.5 millisecond.
+When pushing 10,000 tasks, the overhead per task was around 0.05 millisecond.
+We use the pipeline mechanism of Redis to push multiple tasks at once what explains the sublinear increase.
+It is beneficial to push multiple tasks at once.
+But the overhead per task is already low for one task.
+Poping a task from the queue takes around 0.5 millisecond independent of the number of tasks in the queue.
+
+```{r}
+#| echo: false
+#| label: fig-benchmark-push
+#| fig-cap: Runtime Performance, measured in milliseconds, of pushing a task. Both axes are on a logarithmic scale.
+tab = readRDS("bmr_push.rds")
+
+ggplot(tab, aes(x = n, y = median)) +
+  scale_x_log10() +
+  scale_y_log10(expand = expansion(mult = 0.1)) +
+  geom_point(
+    size = 3,
+    color = viridis::viridis(1, begin = 0.5),
+    alpha = 0.8) +
+  geom_line(color = viridis::viridis(1, begin = 0.5)) +
+  geom_text(aes(label = signif(median, 2)), hjust = 1,  vjust = -1) +
+  xlab("Number of Tasks") +
+  ylab("Time in Milliseconds") +
+  theme_minimal()
+```
+
+We fetched the results from the database and measured the time (@fig-benchmark-fetch).
+This includes fetching the results from the database and converting them to a `data.table`.
+The number of results was increased from 1 to 10,000.
+The runtime increased sublinearly with the number of results.
+When fetching one result, overhead per result was around 1 millisecond.
+When fetching 10,000 results, the overhead per result was around 0.034 millisecond.
+
+```{r}
+#| echo: false
+#| label: fig-benchmark-fetch
+#| fig-cap: Runtime Performance, measured in milliseconds, of fetching the results. Both axes are on a logarithmic scale.
+tab = readRDS("bmr_fetch.rds")
+
+ggplot(tab, aes(x = n, y = median)) +
+  scale_x_log10() +
+  scale_y_log10(expand = expansion(mult = 0.1)) +
+  geom_point(
+    size = 3,
+    color = viridis::viridis(1, begin = 0.5),
+    alpha = 0.8) +
+  geom_line(color = viridis::viridis(1, begin = 0.5)) +
+  geom_text(aes(label = signif(median, 2)), hjust = 1,  vjust = -1) +
+  xlab("Number of Results") +
+  ylab("Time in Milliseconds") +
+  theme_minimal()
+```
+
+`rush` caches already fetched results.
+Fetching 100 new tasks and adding them to the cached `data.table` takes around 4 milliseconds independent of the number of results in the cache.
+
+# Optimization {#sec-bbotk-mlr3tuning}
+
+## Install
+
+```{r}
+#| eval: false
+pak::pkg_install(c("mlr-org/bbotk@rush", "mlr-org/mlr3tuning@rush"))
+```
+
+## Benchmark
+
+```{r}
+#| echo: false
+#| label: fig-sleep-benchmark-1
+#| fig-cap: "Runtime of a random search in seconds on 100 hyperparameter configuration with 3-fold cross-validation on 3 workers depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a heterogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
+library(data.table)
+library(mlr3misc)
+library(ggplot2)
+library(patchwork)
+
+res = readRDS("bmr_sleep.rds")
+
+plots = map(unique(res$sleep_train), function(sleep) {
+  data = res[sleep_train == sleep & workers == 3, ]
+
+  ggplot(data, aes(x = sleep_train, y = experiment, fill = result)) +
+    geom_tile(alpha = 0.3) +
+    geom_text(aes(label = result)) +
+    scale_fill_distiller(palette = "BuGn", trans = "log") +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.title.y = element_blank(),
+      axis.text.y = element_blank(),
+      axis.title.x = element_blank(),
+      axis.text.x = element_text(angle=45),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank())
+})
+
+plots[[1]] = plots[[1]] +
+  ylab("Tuner Configuration") +
+  scale_y_discrete(labels = c(
+    "Batch 1 Chunk 1",
+    "Batch 10 Chunk 10",
+    "Batch 100 Chunk 1",
+    "Batch 100 Chunk 10",
+    "Batch 100 Chunk 100",
+    "Rush")) +
+  theme(
+    axis.title.y = element_text(size = 10, angle = 90, vjust = 3),
+    axis.text.y = element_text())
+
+
+plots[[3]] = plots[[3]] +
+  xlab("Sleep Time") +
+  theme(
+    axis.title.x = element_text(size = 10, hjust = 2.5)
+    )
+
+wrap_plots(plots, ncol = 6)
+
+```
+
+* A batch size of 100 evaluates all 100 configurations with `benchmark()` at once.
+* A chunk size of 100 sends 100 resampling iterations to a worker at once.
+* A batch size of 10 results in 10 tuning iterations and 10 `benchmark()` calls.
+* The tuned learner takes the data but only sleeps for the specified time.
+
+* The runtimes include the start of the workers.
+* Starting a worker with rush is slower than with `future` because the globals are a little bit larger and we initialize the `RushWorker` on the worker first. The globals are smaller with `future` and only `workhorse()` is called.
+
+* This results in smaller runtimes with `future` for the HPCs with constant training time (row 1-3).
+* Interestingly, a chunk size of 10 is as fast as a chunk size of 100.
+* When the training time is heterogeneous, `rush` is a little bit faster than `future`.
+
+* When the tuner has multiple iterations, `rush` is faster than `future` because we do not start the workers again with `benchmark()` in each iteration (row 5). This becomes very costly with many workers (see next plot).
+* The default chunk size of 1 is always slower than `rush` (row 4 and 6)
+
+
+```{r}
+#| echo: false
+#| label: fig-sleep-benchmark-2
+#| fig-cap: "Runtime of a random search in seconds on 1000 hyperparameter configuration with 3-fold cross-validation on 30 workers depending on batch size and chunk size for different training times. The first three runs use a constant training time of 10 ms, 100 ms and 1 second. The last three runs use a heterogenous training time ranging from 10 ms to 10 seconds. Rush does not have a batch size and chunk size parameter."
+
+plots = map(unique(res$sleep_train), function(sleep) {
+  data = res[sleep_train == sleep & workers == 30, ]
+
+  ggplot(data, aes(x = sleep_train, y = experiment, fill = result)) +
+    geom_tile(alpha = 0.3) +
+    geom_text(aes(label = result)) +
+    scale_fill_distiller(palette = "BuGn", trans = "log") +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.title.y = element_blank(),
+      axis.text.y = element_blank(),
+      axis.title.x = element_blank(),
+      axis.text.x = element_text(angle=45),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank())
+})
+
+plots[[1]] = plots[[1]] +
+  ylab("Tuner Configuration") +
+  scale_y_discrete(labels = c(
+    "Batch 10 Chunk 1",
+    "Batch 100 Chunk 10",
+    "Batch 1000 Chunk 1",
+    "Batch 1000 Chunk 10",
+    "Batch 1000 Chunk 100",
+    "Rush")) +
+  theme(
+    axis.title.y = element_text(size = 10, angle = 90),
+    axis.text.y = element_text())
+
+
+plots[[3]] = plots[[3]] +
+  xlab("Sleep Time") +
+  theme(
+    axis.title.x = element_text(size = 10, hjust = 2.5)
+    )
+
+wrap_plots(plots, ncol = 6)
+```
+
+* `rush` is always faster than `future` when we start 30 workers. `future` starts the workers sequentially, while `rush` initializes the `RushWorker` in parallel. This could be further improved in `rush` when we serialize over Redis instead of `future`.
+* Starting 30 workers in each tuning iteration is very costly with `future` (row 5).
+
+## Implementation
+
+The current implementation in `mlr3tunig`.
+The `ti()` function returns a `TuningInstanceRushSingleCrit` instead of a `TuningInstanceSingleCrit` when a `rush` controller is passed.
+The new instance has a new method `$start_workers()` to start the workers.
+
+```{r}
+#| eval: false
+library(rush)
+library(mlr3tuning)
+
+rush = rsh(network_id = "mlr3tuning")
+
+instance = ti(
+  task = tsk("pima"),
+  learner = lrn("classif.rpart", cp = to_tune(0.01, 0.1), minsplit = to_tune(1, 100)),
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.ce"),
+  terminator = trm("evals", n_evals = 100),
+  rush = rush
+)
+
+future::plan("multisession", workers = 2L)
+
+instance$start_workers(await_workers = TRUE)
+instance$rush
+```
+
+The tuner classes of `mlr3tuning` are extended to support rush.
+Just use the tuners as normal.
+Internally a slightly different algorithm is used when parallelizing with `rush`.
+The optimization is started as always with the `$optimize()` method.
+
+```{r}
+#| eval: false
+tuner = tnr("random_search")
+
+tuner$optimize(instance)
+```
+
+More info in the tuning rush post.
+
+**New draft**
+
+```{r}
+#| eval: false
+library(rush)
+library(mlr3tuning)
+
+# provides rush controller with configuration
+rush_plan(config = redux::redis_config())
+
+# creates rush controller internally
+# accessible with instance$rush
+instance = ti(
+  task = tsk("pima"),
+  learner = lrn("classif.rpart", cp = to_tune(0.01, 0.1), minsplit = to_tune(1, 100)),
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.ce"),
+  terminator = trm("evals", n_evals = 100)
+)
+
+tuner = tnr("random_search")
+
+# starts workers before optimization
+# when workers were started manually, use them instead of starting new ones
+# allows in next releases to send a specific objective to worker e.g. async mbo
+tuner$optimize(instance)
+```
+
+* `rush_plan` can be used by other functions
+* `tune()` and `auto_tuner()` work better with this draft.
+
+## Discussion
+
+**Advantages**
+
+* non-blocking allows new algorithms like async hyperband
+* no batch means no waiting and idling cores when heterogeneous runtimes are in a batch
+* less serialization overhead when we have multiple tuning iterations because we do not start the worker again with `benchmark()` in each iteration
+* no configuration of batch size and chunk size which is error prone or is ignored by most users
+* main process gets not overloaded with many fast-fitting models (future just got stuck)
+* Terminators works more precise without batches
+* Hotstarting could work better because we do not need to serialize the models
+
+**Disadvantages**
+
+* installing Redis is more complicated than using future
+* the resampling of a hyperparameter configuration is not split into individual resampling iterations
+  - a worker evaluates the whole resampling with `resample()`
+  - when we split, the 1:1 mapping between the Redis data store and the archive does not work
+  - the tuner operates directly on the data store/ archive which produces almost no overhead
+  - when we split, a process would have to summarise the resamplings which adds overhead
+* external packages like gensa are slower with Redis
+  - external packages propose only a single hyperparameter configuration and the resampling cannot be split
+  - we could implement a rush powered `benchmark()` function that does not stop the workers between the tuning iterations
+* not always reproducible (optuna suggests running in sequential mode)
+
+# Conclusion {#sec-conclusion}
+
+
+#### Glossary
+
+* Parallel computing: The use of multiple processing elements simultaneously for solving a computational problem.
+* Distributed computing: Utilizing multiple computers in a network to solve a computational problem.
+* Worker: A process that performs tasks as part of a larger computation.
+* Computing task: A discrete portion of a larger computational problem, designed to be executed by a worker.
+* Redis: An open-source, in-memory data store, used as a database, cache, and message broker.
+
+
+```{r}
+#| include: false
+rush$stop_workers(type = "kill")
+
+config = redux::redis_config()
+r = redux::hiredis(config)
+r$FLUSHALL()
+```

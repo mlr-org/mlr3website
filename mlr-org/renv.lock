@@ -589,9 +589,16 @@
     },
     "bbotk": {
       "Package": "bbotk",
-      "Version": "0.7.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.7.3.9000",
+      "Source": "GitHub",
+      "Remotes": "mlr-org/rush",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "bbotk",
+      "RemoteUsername": "mlr-org",
+      "RemotePkgRef": "mlr-org/bbotk@rush",
+      "RemoteRef": "rush",
+      "RemoteSha": "5f4a78ac4b719ee1b283714fbfd0f2afb9212658",
       "Requirements": [
         "R",
         "R6",
@@ -602,7 +609,7 @@
         "mlr3misc",
         "paradox"
       ],
-      "Hash": "7d04d128391d34150d9b290f6e14976f"
+      "Hash": "a88256ccf96569f5e309ac298bef3f24"
     },
     "bestNormalize": {
       "Package": "bestNormalize",
@@ -2479,9 +2486,8 @@
     },
     "mlr3": {
       "Package": "mlr3",
-      "Version": "0.16.1",
+      "Version": "0.17.0",
       "Source": "Repository",
-      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -2500,7 +2506,7 @@
         "parallelly",
         "uuid"
       ],
-      "Hash": "adc6c5e420f3dd5dcdc079033ba065f9"
+      "Hash": "367229e0d521f8cc9af254ded4957bd1"
     },
     "mlr3batchmark": {
       "Package": "mlr3batchmark",
@@ -2883,9 +2889,16 @@
     },
     "mlr3tuning": {
       "Package": "mlr3tuning",
-      "Version": "0.19.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.19.1.9000",
+      "Source": "GitHub",
+      "Remotes": "mlr-org/bbotk@rush, mlr-org/rush",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "mlr3tuning",
+      "RemoteUsername": "mlr-org",
+      "RemotePkgRef": "mlr-org/mlr3tuning@rush",
+      "RemoteRef": "rush",
+      "RemoteSha": "ccf36dc97474ad9a0b445991ad7c28d03c14bb15",
       "Requirements": [
         "R",
         "R6",
@@ -2897,7 +2910,7 @@
         "mlr3misc",
         "paradox"
       ],
-      "Hash": "0654f180a077d9fb660c5515e5b82258"
+      "Hash": "cc8c2c2cef862194366c07820580642c"
     },
     "mlr3tuningspaces": {
       "Package": "mlr3tuningspaces",
@@ -3850,6 +3863,18 @@
       ],
       "Hash": "d146b858006ebd52e1fe215ee774e3d5"
     },
+    "redux": {
+      "Package": "redux",
+      "Version": "1.1.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "R6",
+        "storr"
+      ],
+      "Hash": "7f7281e13ab86ac23499130ebb4cf5ec"
+    },
     "refund": {
       "Package": "refund",
       "Version": "0.1-32",
@@ -4080,6 +4105,31 @@
       "Repository": "CRAN",
       "Hash": "5564500e25cffad9e22244ced1379887"
     },
+    "rush": {
+      "Package": "rush",
+      "Version": "0.0.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "rush",
+      "RemoteUsername": "mlr-org",
+      "RemotePkgRef": "mlr-org/rush",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "e1da8562f424e56eecd8499818945362219e1309",
+      "Requirements": [
+        "R",
+        "callr",
+        "checkmate",
+        "data.table",
+        "future",
+        "globals",
+        "lgr",
+        "mlr3misc",
+        "redux",
+        "uuid"
+      ],
+      "Hash": "baf415016e8af495a6ea00ea342b6fd6"
+    },
     "s2": {
       "Package": "s2",
       "Version": "1.1.4",
@@ -4270,6 +4320,18 @@
         "utils"
       ],
       "Hash": "1229a01b4ec059e9f2396724f2ec9010"
+    },
+    "storr": {
+      "Package": "storr",
+      "Version": "1.2.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "R6",
+        "digest"
+      ],
+      "Hash": "96034207276a46a44dc81b8d43397602"
     },
     "stringi": {
       "Package": "stringi",
