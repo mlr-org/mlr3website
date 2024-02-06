@@ -54,42 +54,39 @@ package_grid = function(content) {
 
 # Text description should be one sentence
 content = rowwise_table(
-    ~category,       ~name,               ~status,        ~url,                                         ~text,
-    "core",          "mlr3",              "stable",       "https://mlr3.mlr-org.com/",                  "Basic building blocks for machine learning",
-    "core",          "mlr3verse",         "stable",       "https://mlr3verse.mlr-org.com/",             "Meta-package intended to simplify both installation and loading of packages from the mlr3 ecosystem",
-    "optimization",  "mlr3tuning",        "stable",       "https://mlr3tuning.mlr-org.com/",            "Hyperparameter tuning for mlr3 learners",
-    "optimization",  "mlr3tuningspaces",  "stable",       "https://mlr3tuningspaces.mlr-org.com/",      "Collection of search spaces for hyperparameter tuning",
-    "optimization",  "mlr3hyperband",     "stable",       "https://mlr3hyperband.mlr-org.com/",         "Successive halving and hyperband tuner for mlr3tuning",
-    "optimization",  "mlr3mbo",           "stable",       "https://mlr3mbo.mlr-org.com/",               "Model-based optimization for mlr3tuning",
-    "optimization",  "miesmuschel",       "stable",       "https://github.com/mlr-org/miesmuschel/",    "Flexible mixed integer evolutionary strategies",
-    "optimization",  "mlr3automl",        "experimental", "https://github.com/mlr-org/mlr3automl/",     "Automated machine learning",
-    "featsel",       "mlr3filters",       "stable",       "https://mlr3filters.mlr-org.com/",           "Filter Feature Selection",
-    "featsel",       "mlr3fselect",       "stable",       "https://mlr3fselect.mlr-org.com/",           "Wrapper Feature Selection",
-    "data",          "mlr3db",            "stable",       "https://mlr3db.mlr-org.com/",                "Data backend to transparently work with databases",
-    "data",          "mlr3oml",           "stable",       "https://mlr3oml.mlr-org.com/",               "Connector to OpenML",
-    "data",          "mlr3data",          "stable",       "https://mlr3data.mlr-org.com/",              "Data sets and tasks",
-    "learners",      "mlr3learners",      "stable",       "https://mlr3learners.mlr-org.com/",          "Essential learners for mlr3, maintained by the mlr-org team",
-    "learners",      "mlr3extralearners", "stable",       "https://mlr3extralearners.mlr-org.com/",     "Extra learners for mlr3, implemented by the community",
-    "learners",      "mlr3torch",         "experimental", "https://mlr3torch.mlr-org.com",              "Deep learning with Torch",
-    "learners",      "mlr3keras",         "experimental", "https://github.com/mlr-org/mlr3keras/",      "Deep learning with Keras",
-    "visualization", "mlr3viz",           "stable",       "https://mlr3viz.mlr-org.com/",               "Visualizations for tasks, predictions, resample results and benchmarks",
-    "pipelines",     "mlr3pipelines",     "stable",       "https://mlr3pipelines.mlr-org.com/",         "Dataflow programming toolkit",
-    "tasks",         "mlr3spatiotempcv",  "stable",       "https://mlr3spatiotempcv.mlr-org.com/",      "Spatiotemporal resampling and visualization methods",
-    "tasks",         "mlr3cluster",       "stable",       "https://mlr3cluster.mlr-org.com/",           "Cluster analysis",
-    "tasks",         "mlr3proba",         "stable",       "https://mlr3proba.mlr-org.com/",             "Probabilistic predictions",
-    "tasks",         "mlr3ordinal",       "experimental", "https://mlr3ordinal.mlr-org.com/",           "Ordinal regression",
-    "tasks",         "mlr3multioutput",   "experimental", "https://github.com/mlr-org/mlr3multioutput", "Storing and working with multi-output tasks",
-    "tasks",         "mlr3temporal",      "experimental", "https://mlr3temporal.mlr-org.com/",          "Time series analysis",
-    "tasks",         "mlr3spatial",       "stable",       "https://mlr3spatial.mlr-org.com/",           "Spatial data backends and prediction functions",
-    "tasks",         "mlr3multilabel",    "planned",      "https://github.com/mlr-org/mlr3multilabel",  "Multi-Label Classification",
-    "tasks",         "mlr3fda",           "experimental", "https://mlr3fda.mlr-org.com",                "Functional Data Analysis",
-    "utils",         "bbotk",             "stable",       "https://bbotk.mlr-org.com/",                 "Black-box optimization toolkit",
-    "utils",         "paradox",           "stable",       "https://paradox.mlr-org.com/",               "Universal parameter space description and tools",
-    "utils",         "mlr3misc",          "stable",       "https://mlr3misc.mlr-org.com/",              "Miscellaneous helper functions for mlr3",
-    "utils",         "mlr3measures",      "stable",       "https://mlr3measures.mlr-org.com/",          "Performance measures for supervised learning",
-    "utils",         "mlr3benchmark",     "stable",       "https://mlr3benchmark.mlr-org.com/",         "Analysis and tools for benchmarking",
-    "tasks",         "mlr3fairness",      "stable",       "https://mlr3fairness.mlr-org.com/",          "Fairness in Machine Learning",
-    "utils",         "mlr3batchmark",     "experimental", "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools"
+    ~category,         ~name,               ~status,        ~url,                                         ~text,
+    "core",            "mlr3",              "stable",       "https://mlr3.mlr-org.com/",                  "Basic building blocks for machine learning",
+    "core",            "mlr3verse",         "stable",       "https://mlr3verse.mlr-org.com/",             "Meta-package intended to simplify both installation and loading of packages from the mlr3 ecosystem",
+    "core",            "mlr3pipelines",     "stable",       "https://mlr3pipelines.mlr-org.com/",         "Dataflow programming toolkit",
+    "optimization",    "mlr3tuning",        "stable",       "https://mlr3tuning.mlr-org.com/",            "Hyperparameter tuning for mlr3 learners",
+    "optimization",    "mlr3tuningspaces",  "stable",       "https://mlr3tuningspaces.mlr-org.com/",      "Collection of search spaces for hyperparameter tuning",
+    "optimization",    "mlr3hyperband",     "stable",       "https://mlr3hyperband.mlr-org.com/",         "Successive halving and hyperband tuner for mlr3tuning",
+    "optimization",    "mlr3mbo",           "stable",       "https://mlr3mbo.mlr-org.com/",               "Model-based optimization for mlr3tuning",
+    "optimization",    "miesmuschel",       "stable",       "https://github.com/mlr-org/miesmuschel/",    "Flexible mixed integer evolutionary strategies",
+    "optimization",    "mlr3automl",        "experimental", "https://github.com/mlr-org/mlr3automl/",     "Automated machine learning",
+    "optimization",    "bbotk",             "stable",       "https://bbotk.mlr-org.com/",                 "Black-box optimization toolkit",
+    "featsel",         "mlr3filters",       "stable",       "https://mlr3filters.mlr-org.com/",           "Filter Feature Selection",
+    "featsel",         "mlr3fselect",       "stable",       "https://mlr3fselect.mlr-org.com/",           "Wrapper Feature Selection",
+    "data",            "mlr3db",            "stable",       "https://mlr3db.mlr-org.com/",                "Data backend to transparently work with databases",
+    "data",            "mlr3oml",           "stable",       "https://mlr3oml.mlr-org.com/",               "Connector to OpenML",
+    "data",            "mlr3data",          "stable",       "https://mlr3data.mlr-org.com/",              "Data sets and tasks",
+    "learners",        "mlr3learners",      "stable",       "https://mlr3learners.mlr-org.com/",          "Essential learners for mlr3, maintained by the mlr-org team",
+    "learners",        "mlr3extralearners", "stable",       "https://mlr3extralearners.mlr-org.com/",     "Extra learners for mlr3, implemented by the community",
+    "learners",        "mlr3torch",         "experimental", "https://mlr3torch.mlr-org.com",              "Deep learning with Torch",
+    "analysis",        "mlr3viz",           "stable",       "https://mlr3viz.mlr-org.com/",               "Visualizations for tasks, predictions, resample results and benchmarks",
+    "analysis",        "mlr3benchmark",     "stable",       "https://mlr3benchmark.mlr-org.com/",         "Analysis and tools for benchmarking",
+    "tasks",           "mlr3spatiotempcv",  "stable",       "https://mlr3spatiotempcv.mlr-org.com/",      "Spatiotemporal resampling and visualization methods",
+    "tasks",           "mlr3cluster",       "stable",       "https://mlr3cluster.mlr-org.com/",           "Cluster analysis",
+    "tasks",           "mlr3proba",         "stable",       "https://mlr3proba.mlr-org.com/",             "Probabilistic predictions",
+    "tasks",           "mlr3temporal",      "experimental", "https://mlr3temporal.mlr-org.com/",          "Time series analysis",
+    "tasks",           "mlr3spatial",       "stable",       "https://mlr3spatial.mlr-org.com/",           "Spatial data backends and prediction functions",
+    "tasks",           "mlr3fda",           "experimental", "https://mlr3fda.mlr-org.com",                "Functional Data Analysis",
+    "tasks",           "mlr3fairness",      "stable",       "https://mlr3fairness.mlr-org.com/",          "Fairness in Machine Learning",
+    "utils",           "paradox",           "stable",       "https://paradox.mlr-org.com/",               "Universal parameter space description and tools",
+    "utils",           "mlr3misc",          "stable",       "https://mlr3misc.mlr-org.com/",              "Miscellaneous helper functions for mlr3",
+    "utils",           "mlr3measures",      "stable",       "https://mlr3measures.mlr-org.com/",          "Performance measures for supervised learning",
+    "parallelization", "mlr3batchmark",     "experimental", "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools",
+    "parallelization", "rush",              "experimental", "https://github.com/mlr-org/rush",            "Asynchronous parallelization"
 )
 # add CRAN link
 content[, on_cran := name %in% rownames(available.packages(repos = "https://cloud.r-project.org"))]
@@ -109,12 +106,25 @@ setkeyv(content, c("category", "status"))
 package_grid(content[.("core")])
 ```
 
+## <i class="bi-pen"></i> Learners
+
+```{r}
+#| echo: false
+package_grid(content[.("learners")])
+```
 
 ## <i class="bi-sliders"></i> Optimization
 
 ```{r}
 #| echo: false
 package_grid(content[.("optimization")])
+```
+
+## <i class="bi-list-task"></i> Tasks and Datatypes
+
+```{r}
+#| echo: false
+package_grid(content[.("tasks")])
 ```
 
 ## <i class="bi-funnel"></i> Feature Selection
@@ -131,32 +141,12 @@ package_grid(content[.("featsel")])
 package_grid(content[.("data")])
 ```
 
-## <i class="bi-pen"></i> Learners
+
+## <i class="bi-bar-chart-line"></i> Analysis
 
 ```{r}
 #| echo: false
-package_grid(content[.("learners")])
-```
-
-## <i class="bi-bar-chart-line"></i> Visualization
-
-```{r}
-#| echo: false
-package_grid(content[.("visualization")])
-```
-
-## <i class="bi-share"></i> Pipelines
-
-```{r}
-#| echo: false
-package_grid(content[.("pipelines")])
-```
-
-## <i class="bi-list-task"></i> Tasks
-
-```{r}
-#| echo: false
-package_grid(content[.("tasks")])
+package_grid(content[.("analysis")])
 ```
 
 ## <i class="bi-balloon"></i> Utilities
@@ -164,4 +154,11 @@ package_grid(content[.("tasks")])
 ```{r}
 #| echo: false
 package_grid(content[.("utils")])
+```
+
+## <i class="bi-share"></i> Parallelization
+
+```{r}
+#| echo: false
+package_grid(content[.("parallelization")])
 ```
