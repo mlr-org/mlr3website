@@ -12,6 +12,7 @@ title: Frequently Asked Questions
 * [Why is the parallelization of tuning slow?](#tuning-slow)
 * [Why are the CPUs on my system not fully utilized when using parallelization?](#parallelization-cpu)
 * [How can I use time constraints when tuning?](#time-constraints)
+* [Why is method X slower when used via `mlr3`?](#mlr3-default-slower)
 
 ## Why is there only the rpart learner? {#learner}
 
@@ -53,3 +54,8 @@ This can be avoided by setting `mlr3.exec_chunk_bins` to a smaller value than th
 
 Time constraints can be set for individual learners, tuning processes, and nested resampling.
 The gallery post [Time constraints in the mlr3 ecosystem](gallery/technical/2023-12-21-time-constraints/) provides an overview of the different options.
+
+## Why is method X slower when used via `mlr3`? {#mlr3-default-slower}
+
+By default, we set the number of threads of learners to 1 to avoid conflicts with parallelization.
+Therefore, the default configuration of a learner may be significantly slower than the default configuration of the method when used directly.
