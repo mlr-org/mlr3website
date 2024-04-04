@@ -236,7 +236,9 @@ keys = rush$push_tasks(list(
 ```
 
 The keys of the pushed tasks are returned.
-Pushing a task takes around 0.5 milliseconds, and pushing 10,000 takes around 200 milliseconds.
+Pushing a task takes around 0.5 milliseconds, and pushing 10,000 takes around 200 milliseconds (see @sec-benchmark).
+See @sec-data-store for more information on how the tasks are stored in the Redis database.
+
 Pushing a task is non-blocking i.e. the method returns immediately.
 We can wait for a task to finish with the `$wait_for_tasks()` method.
 The method blocks until all tasks are processed by the workers.
@@ -244,6 +246,7 @@ The method blocks until all tasks are processed by the workers.
 ```{r}
 rush$wait_for_tasks(keys)
 ```
+
 
 ## Retrieve Results {#sec-retrieve-results}
 
