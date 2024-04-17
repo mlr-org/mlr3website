@@ -846,6 +846,21 @@ The worker evaluates the configuration with `ObjectiveTuning` and pushes the res
 }
 ```
 
+Worker loop.
+
+```{r}
+bbotk_worker_loop_decentralized = function(rush, optimizer, instance) {
+  # replace controller with worker
+  instance$rush = rush
+  instance$archive$rush = rush
+
+  # run optimizer loop
+  get_private(optimizer)$.optimize(instance)
+
+  return(NULL)
+}Com
+```
+
 
 # Conclusion {#sec-conclusion}
 
