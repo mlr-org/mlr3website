@@ -68,5 +68,5 @@ The presence of symbols such as `+, -, <, >, =`, or spaces in the factor levels 
 While underscores (`_`) and dots (`.`) are generally safe to use, other special characters should be avoided.
 To ensure smooth operation and prevent errors, please follow these guidelines:
 
-1. **Use Descriptive Labels with no special characters**: Assign meaningful and descriptive labels to factor levels that do not include special characters. For example, instead of `60+` for a factor level of an `age` feature, use `60_above`.
-2. **Use Factor Encoding**: Incorporate a preprocessing step in your data pipeline (e.g. see [mlr_pipeops_encode])(https://mlr3pipelines.mlr-org.com/reference/mlr_pipeops_encode.html) to make sure factors are one-hot encoded, alleviating problems that may arise from factor levels that incorporate strange symbols.
+1. **Use descriptive labels with no special characters**: Assign meaningful and descriptive labels to factor levels that do not include special characters. For example, instead of `60+` for a factor level of an `age` feature, use `60_above`.
+2. **Use factor encoding**: Incorporate a pre-processing step in your data pipeline (e.g. see [mlr_pipeops_encode](https://mlr3pipelines.mlr-org.com/reference/mlr_pipeops_encode.html) to make sure factors are one-hot encoded, alleviating problems that may arise from factor levels that incorporate strange symbols.
