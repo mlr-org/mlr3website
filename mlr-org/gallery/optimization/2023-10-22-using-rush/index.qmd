@@ -335,6 +335,13 @@ rush$stop_workers(type = "kill")
 
 # Advanced Functionality {#sec-advanced-functionality}
 
+## Globals
+
+Global are variables that are defined in the global environment but should be available on the workers.
+Global variables are passed by name in the `$start_workers()` and `$create_worker_script()` methods.
+The globals are serialized and stored in the redis data base.
+The workers pull the globals from the data base and assign them to their global environment.
+
 ## Reproducibility {#sec-reproducibility}
 
 Ensuring reproducibility is important in computational research.
@@ -702,164 +709,6 @@ Fetching 100 new tasks and adding them to the cache takes around 2 milliseconds 
 Running the complete `woker_loop_default` function once only comes with a small overhead of around 0.8 milliseconds.
 When the task evaluation is encapsulated with `callr`, the overhead is around 500 milliseconds.
 
-# Optimization {#sec-bbotk-mlr3tuning}
-
-## Install
-
-```{r}
-#| eval: false
-pak::pkg_install(c("mlr-org/bbotk@rush", "mlr-org/mlr3tuning@rush"))
-```
-
-## Centralized Design
-
-![The architecture of a centralized rush network.](rush_centralized.png){#fig-rush width=100%}
-
-The `rush_plan()` makes the Redis configuration and the maximum number of workers available to any rush controller.
-The `TuningInstanceRushSingleCrit` class creates the `Rush` controller internally.
-The archive of the instance (`ArchiveRedis`) is connected to the Redis database via the rush controller.
-When the instance is passed to the tuner, the workers are started automatically and the `ObjectiveTuning` is copied to the workers.
-The grid search tuner has a new method `$optimize_async()` for tuning with rush.
-
-```{r}
-library(mlr3tuning)
-library(rush)
-
-rush_plan(n_workers = 2, config = redux::redis_config())
-
-instance = TuningInstanceRushSingleCrit$new(
-  task = tsk("pima"),
-  learner = lrn("classif.rpart", cp = to_tune(0.01, 0.1), minsplit = to_tune(1, 100)),
-  resampling = rsmp("cv", folds = 3),
-  measure = msr("classif.ce"),
-  terminator = trm("evals", n_evals = 10)
-)
-
-tuner = tnr("grid_search")
-
-tuner$optimize(instance)
-
-instance$archive$data
-```
-
-The `$.optimize_async()` method runs in the main process.
-The method generates the design grid and sends the hyperparameter configurations to the workers via `inst$eval_async()`.
-
-```{r}
-#| eval: false
-.optimize_async = function(inst) {
-  pv = self$param_set$values
-
-  data = generate_design_grid(
-    param_set = inst$search_space,
-    resolution = pv$resolution,
-    param_resolutions = pv$param_resolutions)$data
-
-  inst$eval_async(data)
-
-  repeat({
-    if (inst$is_terminated) stop(bbotk::terminated_error(inst))
-    Sys.sleep(0.01)
-  })
-}
-```
-
-The worker loop evaluates the hyperparameter configurations with `ObjectiveTuning`.
-
-```{r}
-#| eval: false
-bbotk_worker_loop_centralized = function(rush, objective, search_space) {
-  while(!rush$terminated) {
-    task = rush$pop_task(fields = c("xs", "seed"))
-    xs_trafoed = trafo_xs(task$xs, search_space)
-
-    if (!is.null(task)) {
-      tryCatch({
-        ys = with_rng_state(objective$eval, args = list(xs = xs_trafoed), seed = task$seed)
-        rush$push_results(task$key, yss = list(ys), extra = list(list(x_domain = list(xs_trafoed), timestamp_ys = Sys.time())))
-      }, error = function(e) {
-        condition = list(message = e$message)
-        rush$push_failed(task$key, conditions = list(condition))
-      })
-    }
-  }
-  return(NULL)
-}
-```
-
-## Decentralized Design
-
-![The architecture of a decentralized rush network.](rush_decentralized.png){#fig-rush width=100%}
-
-The same user interface as the centralized design.
-When the instance is passed to the tuner, the workers are started automatically and both are copied to the workers.
-
-```{r}
-library(mlr3tuning)
-library(rush)
-
-rush_plan(n_workers = 2, config = redux::redis_config())
-
-instance = TuningInstanceRushSingleCrit$new(
-  task = tsk("pima"),
-  learner = lrn("classif.rpart", cp = to_tune(0.01, 0.1), minsplit = to_tune(1, 100)),
-  resampling = rsmp("cv", folds = 3),
-  measure = msr("classif.ce"),
-  terminator = trm("evals", n_evals = 10)
-)
-
-tuner = tnr("random_search_v2")
-
-tuner$optimize(instance)
-
-instance$archive$data
-```
-
-The `$.optimize()` method runs on each worker.
-The configuration is sampled and on the worker.
-The worker evaluates the configuration with `ObjectiveTuning` and pushes the results to the database.
-
-```{r}
-.optimize = function(inst) {
-  search_space = inst$search_space
-  rush = inst$rush
-
-  while(!inst$is_terminated) {
-    # sample and transform
-    sampler = SamplerUnif$new(search_space)
-    xdt = sampler$sample(1)$data
-    xss = transpose_list(xdt)
-    xs = xss[[1]][inst$archive$cols_x]
-    xs_trafoed = trafo_xs(xs, search_space)
-
-    # mark as running
-    keys = inst$rush$push_running_task(list(xs), extra = list(list(timestamp_xs = Sys.time())))
-
-    # evaluate
-    ys = inst$objective$eval(xs_trafoed)
-
-    # push results
-    rush$push_results(keys, yss = list(ys), extra = list(list(
-      x_domain = list(xs_trafoed),
-      timestamp_ys = Sys.time())))
-  }
-}
-```
-
-Worker loop.
-
-```{r}
-bbotk_worker_loop_decentralized = function(rush, optimizer, instance) {
-  # replace controller with worker
-  instance$rush = rush
-  instance$archive$rush = rush
-
-  # run optimizer loop
-  get_private(optimizer)$.optimize(instance)
-
-  return(NULL)
-}Com
-```
 
 
 # Conclusion {#sec-conclusion}
