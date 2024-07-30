@@ -26,10 +26,11 @@ However, as we illustrate below, using the discrete time-to-event pipeline imple
 
 ```{r}
 #| output: false
+library(mlr3learners)
 library(mlr3extralearners)
 library(mlr3pipelines)
 # library(mlr3proba)
-devtools::load_all("~/Dropbox/GitHub/mlr/mlr3proba")
+devtools::load_all("../../../../../mlr3proba")
 library(survival)
 library(pammtools)
 library(distr6)
@@ -158,6 +159,78 @@ However, looking at the Shoenfeld residuals for this model, we see that the PH a
 zph <- cox.zph(m_cox)
 ```
 
+## Discrete time-to-event analysis using mlr3proba
 
+To get started with discrete time-to-event analysis using `mlr3proba`, we can use the `survtoclassif_disctime` pipeline.
+```{r}
+data("tumor", package = "pammtools")
+tumor = head(tumor,100)
+tsk_tumor = TaskSurv$new(id = "tumor_disc", backend = tumor, 
+                         event = "status", time = "days")
+```
+
+After defining a task we can create a pipeline that transforms the data and fits a classifier to the new outcome variable. We need to specify the learner that we want to use for the classification task. Here we use a logistic regression. We can also specify the right-hand side of the formula that we want to use for the classification task. In this case we use the `tend` variable that gets created by the pipeline as a factor. The `cut` argument specifies the intervals that we want to use for the transformation. We use the same `cut` points as before.
+```{r}
+pipeline_logreg = ppl("survtoclassif_disctime", learner = lrn("classif.log_reg"),
+                      rhs = "as.factor(tend)", cut = cut, graph_learner = TRUE)
+
+pipeline_logreg$train(tsk_tumor)
+pred_logreg = pipeline_logreg$predict(tsk_tumor)
+
+pred_logreg
+```
+
+We can also use other learners, such as `ranger` or `xgboost`:
+```{r}
+pipeline_ranger = ppl("survtoclassif_disctime", learner = lrn("classif.ranger"),
+                      rhs = "as.factor(tend)", cut = cut, graph_learner = TRUE)
+
+pipeline_ranger$train(tsk_tumor)
+pred_ranger = pipeline_ranger$predict(tsk_tumor)
+
+
+pipeline_xgboost = ppl("survtoclassif_disctime", learner = lrn("classif.xgboost"),
+                       rhs = "as.factor(tend)", cut = cut, graph_learner = TRUE)
+
+pipeline_xgboost$train(tsk_tumor)
+pred_xgboost = pipeline_xgboost$predict(tsk_tumor)
+```
+
+We can now compare the predictions of the three pipelines with the Kaplan-Meier estimate:
+```{r}
+df = data.frame(x = as.numeric(names(pred_logreg$data$distr[1,])),
+                y1 = pred_logreg$data$distr[1,],
+                y2 = pred_ranger$data$distr[1,],
+                y3 = pred_xgboost$data$distr[1,])
+
+ggplot(dt, aes(x)) + 
+  geom_step(aes(y = y1, col = "Pipeline Logistic Regression")) +
+  geom_step(aes(y = y2, col = "Pipeline Ranger")) +
+  geom_step(aes(y = y3, col = "Pipeline XGBoost")) +
+  geom_step(data = km, aes(x = time, y = estimate, col = "Kaplan-Meier")) +
+  ylim(0,1) +
+  scale_color_discrete(name = "Method") +
+  labs(y = "Survival Probability", x = "Time")
+```
+
+If we want to use more complex formulas, like splines, we have to specify the formula beforehand and pass it to the pipeline:
+```{r}
+gam_learner = lrn("classif.gam")
+gam_learner$param_set$values$formula = as.formula("disc_status ~ s(tend)")
+pipeline_splines = ppl("survtoclassif_disctime", learner = gam_learner,
+                       graph_learner = TRUE)
+
+pipeline_splines$train(tsk_tumor)
+pred_splines = pipeline_splines$predict(tsk_tumor)
+```
+
+```{r}
+ggplot() + 
+  geom_step(aes(x = as.numeric(names(pred_splines$data$distr[1,])), y = pred_splines$data$distr[1,], col = "Pipeline Splines")) +
+  geom_step(data = km, aes(x = time, y = estimate, col = "Kaplan-Meier")) +
+  ylim(0,1) +
+  scale_color_discrete(name = "Method") +
+  labs(y = "Survival Probability", x = "Time")
+```
 
 ## References
