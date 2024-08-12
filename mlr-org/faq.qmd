@@ -14,6 +14,7 @@ title: Frequently Asked Questions
 * [How can I use time constraints when tuning?](#time-constraints)
 * [Why is method X slower when used via `mlr3`?](#mlr3-default-slower)
 * [Preprocessing factor levels](#factor-levels)
+* [Memory Problems](#memory-problems)
 
 ## Why is there only the rpart learner? {#learner}
 
@@ -70,3 +71,14 @@ To ensure smooth operation and prevent errors, please follow these guidelines:
 
 1. **Use descriptive labels with no special characters**: Assign meaningful and descriptive labels to factor levels that do not include special characters. For example, instead of `60+` for a factor level of an `age` feature, use `60_above`.
 2. **Use factor encoding**: Incorporate a pre-processing step in your data pipeline (e.g. see [mlr_pipeops_encode](https://mlr3pipelines.mlr-org.com/reference/mlr_pipeops_encode.html) to make sure factors are one-hot encoded, alleviating problems that may arise from factor levels that incorporate strange symbols.
+
+
+## Memory Problems {#memory-problems}
+
+One explanation for why `mlr3` might in some cases use an unusual amount of memory, is when packages are installed with the `--with-keep.source` flag.
+This configuration option is enabled by default when managing dependencies via `renv`, see issue [#1713](https://github.com/rstudio/renv/issues/1713).
+To opt out of this default run the code below, e.g. by adding it to your `.Rprofile`:
+
+```{r}
+options("install.opts" = "--without-keep.source")
+```
