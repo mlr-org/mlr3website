@@ -26,6 +26,7 @@ For neural networks, see the `r ref_pkg("mlr3torch")` extension.
 
 ```{r}
 #| echo: false
+#| warning: false
 #| column: page
 
 content = as.data.table(mlr_learners, objects = TRUE)
