@@ -22,7 +22,7 @@ To keep the dependencies on other packages reasonable, the base package mlr3 onl
 A subjective selection of implementations for essential ML algorithms can be found in `r ref_pkg("mlr3learners")` package.
 Survival learners are provided by `r ref_pkg("mlr3proba")`, cluster learners via `r ref_pkg("mlr3cluster")`.
 Additional learners, including some learners which are not yet to be considered stable or which are not available on CRAN, are connected via the `r ref_pkg("mlr3extralearners")` package.
-
+For neural networks, see the `r ref_pkg("mlr3torch")` extension.
 
 ```{r}
 #| echo: false
@@ -31,11 +31,12 @@ Additional learners, including some learners which are not yet to be considered 
 content = as.data.table(mlr_learners, objects = TRUE)
 content[, base_package := map(object, function(x) strsplit(x$man, "::", TRUE)[[1]][1])]
 content[, packages := pmap(list(packages, base_package), function(x, y) setdiff(x, c(y, "mlr3")))]
+learners = set_names(content$object, content$key)
 content[, `:=`(object = NULL, task_type = NULL)]
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3website::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
+  mlr3website::ref(learners[[value]]$man, text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(
