@@ -1,0 +1,46 @@
+---
+title: Dependencies
+sidebar: false
+toc: false
+---
+
+`mlr3` tries to be light on dependencies.
+The following packages are at runtime:
+
+*   [`parallelly`](https://cran.r-project.org/package=parallelly):
+    Helper functions for parallelization. No extra recursive
+    dependencies.
+*   [`future.apply`](https://cran.r-project.org/package=future.apply):
+    Resampling and benchmarking is parallelized with the
+    [`future`](https://cran.r-project.org/package=future)
+    abstraction interfacing many parallel backends.
+*   [`backports`](https://cran.r-project.org/package=backports):
+    Ensures backward compatibility with older R releases. Developed
+    by members of the `mlr` team. No recursive dependencies.
+*   [`checkmate`](https://cran.r-project.org/package=checkmate):
+    Fast argument checks. Developed by members of the `mlr` team. No
+    extra recursive dependencies.
+*   [`mlr3misc`](https://cran.r-project.org/package=mlr3misc):
+    Miscellaneous functions used in multiple mlr3 [extension
+    packages](https://mlr-org.com/ecosystem.html). Developed by the
+    `mlr` team.
+*   [`paradox`](https://cran.r-project.org/package=paradox):
+    Descriptions for parameters and parameter sets. Developed by the
+    `mlr` team. No extra recursive dependencies.
+*   [`R6`](https://cran.r-project.org/package=R6): Reference class
+    objects. No recursive dependencies.
+*   [`data.table`](https://cran.r-project.org/package=data.table):
+    Extension of R’s `data.frame`. No recursive dependencies.
+*   [`digest`](https://cran.r-project.org/package=digest) (via
+    `mlr3misc`): Hash digests. No recursive dependencies.
+*   [`uuid`](https://cran.r-project.org/package=uuid): Create unique
+    string identifiers. No recursive dependencies.
+*   [`lgr`](https://cran.r-project.org/package=lgr): Logging
+    facility. No extra recursive dependencies.
+*   [`mlr3measures`](https://cran.r-project.org/package=mlr3measures):
+    Performance measures. No extra recursive dependencies.
+*   [`mlbench`](https://cran.r-project.org/package=mlbench): A
+    collection of machine learning data sets. No dependencies.
+*   [`palmerpenguins`](https://cran.r-project.org/package=palmerpenguins):
+    A classification data set about penguins, used on examples and
+    provided as a toy task. No dependencies.
