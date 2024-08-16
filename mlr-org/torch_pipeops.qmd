@@ -1,0 +1,44 @@
+---
+sidebar: false
+toc: false
+---
+
+# Torch Pipeline Operators
+
+{{< include _setup.qmd >}}
+
+```{r}
+#| include: false
+
+library("mlr3torch")
+```
+
+`r ref_pkg("mlr3torch")` supports a number of `r ref("PipeOp")` building blocks to define neural networks, including preprocessing and data augmentation steps.
+
+```{r}
+#| echo: false
+#| column: page
+
+mlr_pipeops$remove("breslowcompose") # workaround
+content = as.data.table(mlr_pipeops)
+content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
+content[, packages := map(packages, function(value) setdiff(value, "mlr3pipelines"))]
+content = content[, .(key, label, packages, tags)]
+content = content[map_lgl(tags, function(tags) "torch" %in% tags), ]
+
+ref_cell = function(value) {
+  if (!length(value)) return(NULL)
+  mlr3website::ref(sprintf("%s_%s", "mlr_pipeops", value), text = value, format = "htmltools")
+}
+
+reactable(content, columns = list(
+    key = colDef(name = "Key", cell = ref_cell),
+    label = colDef(name = "Label"),
+    packages = colDef(name = "Packages", cell = package_list_cell),
+    tags = colDef(name = "Tags", cell = list_cell)
+  ),
+  searchable = TRUE,
+  pagination = FALSE,
+  highlight = TRUE
+)
+```
