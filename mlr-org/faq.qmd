@@ -91,6 +91,8 @@ Most of these learners provide some option in their paramset to control output b
 Another option is to simply use [Encapsulation](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-logging), likely in the `evaluate` mode, running the learner in the same R session, but with caught exceptions and redirected output.
 
 ```{r}
+library(mlr3)
+library(mlr3learners)
 mytask = tsk("iris")
 # manual option
 mylearner = lrn("classif.nnet", trace = TRUE)
