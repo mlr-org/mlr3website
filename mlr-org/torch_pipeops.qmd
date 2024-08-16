@@ -24,7 +24,7 @@ content = as.data.table(mlr_pipeops)
 content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
 content[, packages := map(packages, function(value) setdiff(value, "mlr3pipelines"))]
 content = content[, .(key, label, packages, tags)]
-content = content[mlr3misc::map_lgl(tags, function(tags) "torch" %in% tags), ]
+content = content[mlr3misc::map_lgl(packages, function(ps) "torch" %in% ps), ]
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
