@@ -3,31 +3,28 @@ sidebar: false
 toc: false
 ---
 
-# Pipeline Operators
+# Torch Pipeline Operators
 
 {{< include _setup.qmd >}}
 
 ```{r}
 #| include: false
 
-library("mlr3verse")
-library("mlr3proba")
-library("mlr3fda")
+library("mlr3pipelines")
 library("mlr3torch")
 ```
 
-Objects of class `r ref("PipeOp")` are the building blocks to compose linear machine learning pipelines and non-linear `r ref("Graph", text = "Graphs")`.
-The base objects are implemented in `r ref_pkg("mlr3pipelines")`.
+`r ref_pkg("mlr3torch")` supports a number of `r ref("PipeOp")` building blocks to define neural networks, including preprocessing and data augmentation steps.
 
 ```{r}
 #| echo: false
 #| column: page
 
-mlr_pipeops$remove("breslowcompose") # workaround
 content = as.data.table(mlr_pipeops)
 content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
 content[, packages := map(packages, function(value) setdiff(value, "mlr3pipelines"))]
 content = content[, .(key, label, packages, tags)]
+content = content[mlr3misc::map_lgl(packages, function(ps) "torch" %in% ps), ]
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)

@@ -72,21 +72,23 @@ content = rowwise_table(
     "data",            "mlr3data",          "stable",       "https://mlr3data.mlr-org.com/",              "Data sets and tasks",
     "learners",        "mlr3learners",      "stable",       "https://mlr3learners.mlr-org.com/",          "Essential learners for mlr3, maintained by the mlr-org team",
     "learners",        "mlr3extralearners", "stable",       "https://mlr3extralearners.mlr-org.com/",     "Extra learners for mlr3, implemented by the community",
-    "learners",        "mlr3torch",         "experimental", "https://mlr3torch.mlr-org.com",              "Deep learning with Torch",
+    "learners",        "mlr3torch",         "stable",       "https://mlr3torch.mlr-org.com",              "Deep learning with torch",
     "analysis",        "mlr3viz",           "stable",       "https://mlr3viz.mlr-org.com/",               "Visualizations for tasks, predictions, resample results and benchmarks",
     "analysis",        "mlr3benchmark",     "stable",       "https://mlr3benchmark.mlr-org.com/",         "Analysis and tools for benchmarking",
+    "analysis",        "mlr3inferr",        "stable",       "https://mlr3inferr.mlr-org.com/",            "Statistical methods for inference on the generalization error",
+    "analysis",        "mlr3summary",       "stable",       "https://github.com/mlr-org/mlr3summary",     "Summary methods for mlr3",
     "tasks",           "mlr3spatiotempcv",  "stable",       "https://mlr3spatiotempcv.mlr-org.com/",      "Spatiotemporal resampling and visualization methods",
     "tasks",           "mlr3cluster",       "stable",       "https://mlr3cluster.mlr-org.com/",           "Cluster analysis",
     "tasks",           "mlr3proba",         "stable",       "https://mlr3proba.mlr-org.com/",             "Probabilistic predictions",
     "tasks",           "mlr3temporal",      "experimental", "https://mlr3temporal.mlr-org.com/",          "Time series analysis",
     "tasks",           "mlr3spatial",       "stable",       "https://mlr3spatial.mlr-org.com/",           "Spatial data backends and prediction functions",
-    "tasks",           "mlr3fda",           "experimental", "https://mlr3fda.mlr-org.com",                "Functional Data Analysis",
+    "tasks",           "mlr3fda",           "stable",       "https://mlr3fda.mlr-org.com",                "Functional Data Analysis",
     "tasks",           "mlr3fairness",      "stable",       "https://mlr3fairness.mlr-org.com/",          "Fairness in Machine Learning",
-    "utils",           "paradox",           "stable",       "https://paradox.mlr-org.com/",               "Universal parameter space description and tools",
-    "utils",           "mlr3misc",          "stable",       "https://mlr3misc.mlr-org.com/",              "Miscellaneous helper functions for mlr3",
-    "utils",           "mlr3measures",      "stable",       "https://mlr3measures.mlr-org.com/",          "Performance measures for supervised learning",
-    "parallelization", "mlr3batchmark",     "experimental", "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools",
-    "parallelization", "rush",              "experimental", "https://github.com/mlr-org/rush",            "Asynchronous parallelization"
+    "other",           "paradox",           "stable",       "https://paradox.mlr-org.com/",               "Universal parameter space description and tools",
+    "other",           "mlr3misc",          "stable",       "https://mlr3misc.mlr-org.com/",              "Miscellaneous helper functions for mlr3",
+    "other",           "mlr3measures",      "stable",       "https://mlr3measures.mlr-org.com/",          "Performance measures for supervised learning",
+    "parallelization", "mlr3batchmark",     "stable",       "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools",
+    "parallelization", "rush",              "stable",       "https://github.com/mlr-org/rush",            "Asynchronous parallelization"
 )
 # add CRAN link
 content[, on_cran := name %in% rownames(available.packages(repos = "https://cloud.r-project.org"))]
@@ -105,7 +107,7 @@ setkeyv(content, c("category", "status"))
 #| echo: false
 package_grid(content[.("core")])
 ```
-
+ 
 ## <i class="bi-pen"></i> Learners
 
 ```{r}
@@ -113,7 +115,7 @@ package_grid(content[.("core")])
 package_grid(content[.("learners")])
 ```
 
-## <i class="bi-sliders"></i> Optimization
+## <i class="bi-sliders"></i> Tuning & Optimization
 
 ```{r}
 #| echo: false
@@ -149,11 +151,11 @@ package_grid(content[.("data")])
 package_grid(content[.("analysis")])
 ```
 
-## <i class="bi-balloon"></i> Utilities
+## <i class="bi-balloon"></i> Other
 
 ```{r}
 #| echo: false
-package_grid(content[.("utils")])
+package_grid(content[.("other")])
 ```
 
 ## <i class="bi-share"></i> Parallelization
