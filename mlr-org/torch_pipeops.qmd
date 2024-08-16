@@ -10,6 +10,7 @@ toc: false
 ```{r}
 #| include: false
 
+library("mlr3pipelines")
 library("mlr3torch")
 ```
 
@@ -19,12 +20,11 @@ library("mlr3torch")
 #| echo: false
 #| column: page
 
-mlr_pipeops$remove("breslowcompose") # workaround
 content = as.data.table(mlr_pipeops)
 content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
 content[, packages := map(packages, function(value) setdiff(value, "mlr3pipelines"))]
 content = content[, .(key, label, packages, tags)]
-content = content[map_lgl(tags, function(tags) "torch" %in% tags), ]
+content = content[mlr3misc::map_lgl(tags, function(tags) "torch" %in% tags), ]
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
