@@ -82,3 +82,20 @@ To opt out of this default run the code below, e.g. by adding it to your `.Rprof
 ```{r}
 options("install.opts" = "--without-keep.source")
 ```
+
+## How can I suppress logging output of learners on the R console
+
+Some learners are quite verbose during their train or predict step, and this clutters the R console.
+Note that this is different than controlling the generic mlr3 logger, which is covered under [Logging](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-logging).
+Most of these learners provide some option in their paramset to control output behavior.
+Another option is to simply use [Encapsulation](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-logging), likely in the `evaluate` mode, running the learner in the same R session, but with caught exceptions and redirected output.
+
+```{r}
+mytask = tsk("iris")
+# manual option
+mylearner = lrn("classif.nnet", trace = TRUE)
+# generic option
+mylearner$encapsulate = c(train = "evaluate", predict = "evaluate")
+mylearner$train(mytask)
+```
+
