@@ -1,51 +1,84 @@
 ---
 sidebar: false
 toc: false
+title: Frequently Asked Questions
 ---
-
-# Frequently Asked Questions
 
 {{< include _setup.qmd >}}
 
-* [What is the purpose of the `OMP_THREAD_LIMIT` environment variable?](#omp-thread-limit)
-* [Why is tuning slow despite quick model fitting?](#tuning-slow)
-* [How can I use time constraints in tuning?](#time-limit-constraints)
+* [Why is there only the rpart learner?](#learner)
+* [How can I use parallelization?](#parallelization)
+* [Why is the parallelization with the future package slow?](#parallelization-slow)
+* [Why is the parallelization of tuning slow?](#tuning-slow)
+* [Why are the CPUs on my system not fully utilized when using parallelization?](#parallelization-cpu)
+* [How can I use time constraints when tuning?](#time-constraints)
+* [Why is method X slower when used via `mlr3`?](#mlr3-default-slower)
+* [Preprocessing factor levels](#factor-levels)
+* [Memory Problems](#memory-problems)
 
-## What is the purpose of the `OMP_THREAD_LIMIT` environment variable? {#omp-thread-limit}
+## Why is there only the rpart learner? {#learner}
 
-The `OMP_THREAD_LIMIT` environment variable controls the number of threads used by [OpenMP](https://www.openmp.org/), an API for writing parallel programs in C, C++ or Fortran.
-Many R packages, including many learners in `mlr3`, have algorithms written in these languages.
-When `mlr3` operates in parallel mode through the `future` package, it can potentially conflict with OpenMP's parallelization mechanism. This conflict arises because both systems attempt to utilize the CPU cores simultaneously.
-This can slow down the execution time rather than speeding it up, due to the increased overhead of managing multiple parallel processes.
-We especially observed this when all cores are used for parallelization and there are many cores, e.g. on a high-performance cluster.
-By setting `options("OMP_THREAD_LIMIT" = 1)` in your `.Rprofile` file, you effectively instruct OpenMP to use only one thread.
-This avoids the conflict with `future` and can lead to faster execution times.
+The base package `r ref_pkg("mlr3")` ships only with regression and classification trees from the `r ref_pkg("rpart")` package and some learners for debugging.
+A selection of popular learners can be found in the extension package `r ref_pkg("mlr3learners")`.
+Survival learners are provided by `r ref_pkg("mlr3proba")`, cluster learners via `r ref_pkg("mlr3cluster")`.
+Additional learners can be found in the extension packages `r ref_pkg("mlr3extralearners")`.
+If your favorite learner is missing, please open a learner [request](https://github.com/mlr-org/mlr3extralearners).
+An overview of all learners can be found on our [website](learners.html).
 
-## Why is tuning slow despite quick model fitting? {#tuning-slow}
+## How can I use parallelization? {#parallelization}
 
-Tuning in `mlr3` involves several factors that can affect its speed, even if individual models are fitting quickly:
+Parallelization is supported when training learners, resampling, tuning and predicting.
+We recommend reading the section about [Parallelization](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization) in the `mlr3book`.
 
-1. **Tuner Batch Size:** The tuner in `mlr3` proposes a set of hyperparameter configurations in batches, which are then evaluated using `benchmark()`.
-The `batch_size` parameter controls the size of these batches. A smaller batch size might slow down the tuning process because it increases the frequency of the benchmarking overhead, particularly noticeable when using parallelization.
-We recommend using the largest feasible batch size for efficiency.
-More details can be found in the [tuning section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallel-tuning) of the mlr3book.
+## Why is the parallelization with the future package slow? {#parallelization-slow}
 
-2. **Parallelization Chunk Size:** If the `mlr3.exec_chunk_size` parameter is set too small, the overhead of parallelization can outweigh its benefits.
-A `chunk.size` of 1 means each resampling iteration is handled as a separate computational job.
-Combining multiple resampling iterations into a single job by increasing the `chunk.size` can enhance efficiency.
-See the [parallelization section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization) in the mlr3book for further insights.
+Starting and terminating workers as well as possible communication between workers comes at a price in the form of additionally required runtime which is called [parallelization overhead](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization).
+This overhead strongly varies between parallelization backends and must be carefully weighed against the runtime of the sequential execution to determine if parallelization is worth the effort.
+When resampling or tuning a fast-fitting learner, it helps to chunk multiple resampling iterations into a single computational job.
+The option [`mlr3.exec_chunk_bins`](https://mlr3.mlr-org.com/reference/mlr3-package.html#package-options) determines the number of chunks to split the resampling iterations into.
+For example, when running a benchmark with 100 resampling iterations, `options("mlr3.exec_chunk_bins" = 4)` creates 4 computational jobs with 25 resampling iterations each.
+This reduces the parallelization overhead and speeds up the execution.
 
-3. **Model Fitting Time vs. Parallelization Overhead:** For models that fit extremely quickly, the time saved through parallelization might be less than the overhead it introduces.
-In such cases, parallelization might not be beneficial.
+## Why is the parallelization of tuning slow? {#tuning-slow}
 
-4. **Setting the `OMP_THREAD_LIMIT`:** Not configuring the `OMP_THREAD_LIMIT` appropriately when using `future` can slow down the tuning process.
-Refer to the [OpenMP Thread Limit](#omp-thread-limit) section in this FAQ for guidance.
+Tuning can also suffer from the [parallelization overhead](#parallelization-slow) described above.
+Additionally, the batch size of the tuner can have a large impact on the runtime.
+Setting an optimal batch size is explained in the section [Parallelization of Tuning](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallel-tuning) of the `mlr3book`.
 
-5. **Nested Resampling Strategies:** When employing nested resampling, choosing an effective parallelization strategy is crucial.
-The wrong strategy can lead to inefficiencies.
-For a deeper understanding, refer to the [nested resampling section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-nested-resampling-parallelization) in our book.
+## Why are the CPUs on my system not fully utilized when using parallelization? {#parallelization-cpu}
 
-## How can I use time constraints in tuning? {#time-limit-constraints}
+If there are few jobs with dissimilar runtimes, the system may end up waiting for the last chunk to finish, while other resources are idle.
+This is referred to as [synchronization overhead](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization).
+When minimizing the synchronization overhead, a too large chunk size can lead to a situation where the last chunk takes much longer than the others.
+This can be avoided by setting `mlr3.exec_chunk_bins` to a smaller value than the number of cores available on the system.
 
-The mlr3 ecosystem provides several mechanisms for setting time constraints for individual learners, tuning processes, and nested resampling.
-The [gallery post](gallery/technical/2023-12-21-time-constraints/) on time limit constraints provides a detailed overview of these mechanisms.
+## How can I use time constraints when tuning?
+
+Time constraints can be set for individual learners, tuning processes, and nested resampling.
+The gallery post [Time constraints in the mlr3 ecosystem](gallery/technical/2023-12-21-time-constraints/) provides an overview of the different options.
+
+## Why is method X slower when used via `mlr3`? {#mlr3-default-slower}
+
+By default, we set the number of threads of learners to 1 to avoid conflicts with parallelization.
+Therefore, the default configuration of a learner may be significantly slower than the default configuration of the method when used directly.
+
+## Preprocessing factor levels {#factor-levels}
+
+When working with `mlr3`, it is important to avoid using special characters in the levels of factor variables.
+The presence of symbols such as `+, -, <, >, =`, or spaces in the factor levels can cause errors during model training (depends on the `learner` used and if the `formula` interface is utilized, e.g. as in the [`surv.parametric`](https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.parametric.html) learner).
+While underscores (`_`) and dots (`.`) are generally safe to use, other special characters should be avoided.
+To ensure smooth operation and prevent errors, please follow these guidelines:
+
+1. **Use descriptive labels with no special characters**: Assign meaningful and descriptive labels to factor levels that do not include special characters. For example, instead of `60+` for a factor level of an `age` feature, use `60_above`.
+2. **Use factor encoding**: Incorporate a pre-processing step in your data pipeline (e.g. see [mlr_pipeops_encode](https://mlr3pipelines.mlr-org.com/reference/mlr_pipeops_encode.html) to make sure factors are one-hot encoded, alleviating problems that may arise from factor levels that incorporate strange symbols.
+
+
+## Memory Problems {#memory-problems}
+
+One explanation for why `mlr3` might in some cases use an unusual amount of memory, is when packages are installed with the `--with-keep.source` flag.
+This configuration option is enabled by default when managing dependencies via `renv`, see issue [#1713](https://github.com/rstudio/renv/issues/1713).
+To opt out of this default run the code below, e.g. by adding it to your `.Rprofile`:
+
+```{r}
+options("install.opts" = "--without-keep.source")
+```
