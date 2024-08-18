@@ -27,14 +27,7 @@ content = as.data.table(mlr_pipeops, objects = TRUE)[, .(key, label, packages, t
 content = content[key %nin% c(
   "crankcompose",
   "distrcompose",
-  "breslowcompose",
-  "fda.cor",
-  "fda.extract",
-  "fda.flatten",
-  "fda.fpca",
-  "fda.interpol",
-  "fda.scalerange",
-  "fda.smooth")] # deprecated, no help page
+  "breslowcompose")] # deprecated, no help page
 content[, packages := map(packages, function(value) setdiff(value, "mlr3pipelines"))]
 content = content[, .(key, label, packages, tags)]
 
