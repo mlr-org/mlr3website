@@ -51,7 +51,12 @@ website:
            - fselectors.qmd
       - resources.qmd
       - book.qmd
-      - benchmark.qmd
+      - text: "Benchmarks"
+        menu:
+          - benchmarks_mlr3.qmd
+          - benchmarks_mlr3tuning.qmd
+          - benchmarks_mlr3fselect.qmd
+          - benchmarks_paradox.qmd
       - gallery.qmd
       - team.qmd
       - text: "More"
