@@ -17,8 +17,8 @@ title: Frequently Asked Questions
 * [Memory Problems](#memory-problems)
 * [How can I suppress logging output of learners on the R console](#suppress-output)
 * [A learner trained with an old mlr3 version does not work anymore](#old-model-broken)
-* [Caching of knitr/rmarkdown chunks does not work with mlr3] (#caching-knitr)
-* [How to keep all mlr3 packages up-to-date?] (#update-packages)
+* [Caching of knitr/rmarkdown chunks does not work with mlr3](#caching-knitr)
+* [How to keep all mlr3 packages up-to-date?](#update-packages)
 
 ## Why is there only the rpart learner? {#learner}
 
@@ -137,7 +137,7 @@ Therefore, be careful when attempting this solution and double-check that the le
 ## Caching of knitr/rmarkdown chunks does not work with mlr3 {#caching-knitr}
 
 {knitr} per default uses R's lazy-load database to store the results of individual chunks.
-The lazy-load database is an internal feature of R, and has issues handling active bindings (https://github.com/r-lib/R6/issues/152).
+The lazy-load database is an internal feature of R, and has issues handling active bindings ([https://github.com/r-lib/R6/issues/152](https://github.com/r-lib/R6/issues/152)).
 Fortunately, it is possible to disable lazy-loading by setting the chunk option `cache.lazy` to `FALSE`:
 
 ```{r, eval = FALSE}
