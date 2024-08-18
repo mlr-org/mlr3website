@@ -144,7 +144,7 @@ Fortunately, it is possible to disable lazy-loading by setting the chunk option 
 knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE)
 ```
 
-## How to keep all mlr3 packages up-to-date? (#update-packages)
+## How to keep all mlr3 packages up-to-date? {#update-packages}
 
 Either run R's `update.packages()` to update all installed packages, or run
 
