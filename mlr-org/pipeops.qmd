@@ -13,6 +13,7 @@ toc: false
 library("mlr3verse")
 library("mlr3proba")
 library("mlr3fda")
+library("mlr3torch")
 ```
 
 Objects of class `r ref("PipeOp")` are the building blocks to compose linear machine learning pipelines and non-linear `r ref("Graph", text = "Graphs")`.
@@ -22,11 +23,20 @@ The base objects are implemented in `r ref_pkg("mlr3pipelines")`.
 #| echo: false
 #| column: page
 
-mlr_pipeops$remove("breslowcompose") # workaround
 content = as.data.table(mlr_pipeops, objects = TRUE)[, .(key, label, packages, tags)]
-content = content[key %nin% c("crankcompose", "distrcompose")] # deprecated, no help page
+content = content[key %nin% c(
+  "crankcompose",
+  "distrcompose",
+  "breslowcompose",
+  "fda.cor",
+  "fda.extract",
+  "fda.flatten",
+  "fda.fpca",
+  "fda.interpol",
+  "fda.scalerange",
+  "fda.smooth")] # deprecated, no help page
 content[, packages := map(packages, function(value) setdiff(value, "mlr3pipelines"))]
-
+content = content[, .(key, label, packages, tags)]
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
