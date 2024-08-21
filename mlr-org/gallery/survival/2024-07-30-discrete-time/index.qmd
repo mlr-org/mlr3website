@@ -27,9 +27,6 @@ The advantage of this approach is that once the data are transformed, any classi
 The disadvantage is that the data transformation can be cumbersome to perform manually and that it takes quite some boilerplate code to do it consistently across resampling iterations and to combine the conditional probabilities (discrete hazards) to survival probabilities.
 However, as we illustrate below, using the discrete time-to-event pipeline implemented in `mlr3proba` using `mlr3pipelines`, all of these details are abstracted away so that practitioners can focus on modeling their data.
 
-
-In the following paragraphs we will first provide more details and intuition on discrete time-to-event analysis and then illustrate how to perform similar and more advanced machine learning based survival tasks later on.
-
 ## Libraries
 
 ```{r, message = FALSE}
@@ -65,6 +62,16 @@ data("tumor", package = "pammtools")
 head(tumor)
 mean(tumor$status)# ~ca. 50% of subjects are censored during the folow up
 ```
+
+In the following paragraphs we will first provide a short illustration how to use the discrete-time pipeline in an usual machine learning workflow and compare the prediction to dedicated survival learners.
+
+The following sections provide more details and intuition on discrete time-to-event analysis and discuss some issue related to the discrete time approach.
+
+
+## TL;DR
+In this section we just briefly show some code to get started without much explanation.
+
+TODO
 
 
 ## Discrete time-to-event analysis
@@ -383,17 +390,21 @@ p_stratified +
 
 ## Tuning of learners and out of sample performance
 
-
+TODO
 
 
 ## Additional Thoughts on Discrete Time-to-Event Analysis
 
 ### Number of Intervals
 
+TODO: using the simplest example from above, show how reducing the number of intervals "coarsens" the estimation and how increasing it might lead to longer estimation times, reduced stability of estimates (graphically)
+
 ### Modeling the baseline hazard or "what is a featureless discrete time model?"
+
+TODO: using the simplest example from above, show constant baseline hazard, linear, non-linear (already done)-> discuss "featureless"
 
 ### Discrete-time vs. continuous time and Interpolation
 
-
+TODO: Explain that discrete time assumes same discrete time hazard for all time points, S(t) is discrete, but simple linear interpolation provides a solid continous time S(t) approximation
 
 ## References
