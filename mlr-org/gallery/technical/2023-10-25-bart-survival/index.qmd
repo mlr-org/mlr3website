@@ -208,15 +208,13 @@ dplyr::bind_rows(z_list) %>%
 We will use the following survival metrics:
 
 1. Integrated Brier Score (requires a survival distribution prediction - `distr`)
-2. Right-Censored Log loss (requires a survival distribution prediction - `distr`)
-3. Uno's C-index (requires a continuous ranking score prediction - `crank`)
+2. Uno's C-index (requires a continuous ranking score prediction - `crank`)
 
-For the first two measures we will use the ERV (**Explained Residual Variation**) version, which standardizes the scores against a Kaplan-Meier (KM) baseline [@Sonabend2022a].
+For the first measure we will use the ERV (**Explained Residual Variation**) version, which standardizes the score against a Kaplan-Meier (KM) baseline [@Sonabend2022a].
 This means that values close to $0$ represent performance similar to a KM model, negative values denote worse performance than KM and $1$ is the absolute best possible score.
 ```{r}
 measures = list(
   msr("surv.graf", ERV = TRUE),
-  msr("surv.rcll", ERV = TRUE),
   msr("surv.cindex", weight_meth = "G2", id = "surv.cindex.uno")
 )
 
