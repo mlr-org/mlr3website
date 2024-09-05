@@ -42,6 +42,9 @@ When resampling or tuning a fast-fitting learner, it helps to chunk multiple res
 The option [`mlr3.exec_chunk_bins`](https://mlr3.mlr-org.com/reference/mlr3-package.html#package-options) determines the number of chunks to split the resampling iterations into.
 For example, when running a benchmark with 100 resampling iterations, `options("mlr3.exec_chunk_bins" = 4)` creates 4 computational jobs with 25 resampling iterations each.
 This reduces the parallelization overhead and speeds up the execution.
+The parallelization of the BLAS library can interfere with future parallelization due to over-utilization of the available cores.
+Install [`RhpcBLASctl`](https://cran.r-project.org/web/packages/RhpcBLASctl/index.html) so that mlr3 can turn off the parallelization of BLAS.
+`RhpcBLASctl` can only be included as an optional dependency due to licensing issues.
 
 ## Why is the parallelization of tuning slow? {#tuning-slow}
 
