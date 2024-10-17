@@ -41,16 +41,11 @@ learner$timeout = c(train = 10, predict = Inf)
 
 To effectively terminate the process if necessary, it's important to run the training and prediction within a separate R process.
 The `r ref_pkg("callr")` package is recommended for this encapsulation, as it tends to be more reliable than the `r ref_pkg("evaluate")` package, especially for terminating externally compiled code.
+Note that using `callr` increases the runtime due to the overhead of starting an R process.
+Additionally, a fallback learner must be specified, such as `"classif.featureless"`, to provide baseline predictions in case the primary learner is terminated.
 
 ```{r 2023-12-21-time-constraints-003}
-learner$encapsulate = c(train = "callr", predict = "callr")
-```
-
-Note that using `callr` increases the runtime due to the overhead of starting an R process.
-Additionally, it's advisable to specify a fallback learner, such as `"classif.featureless"`, to provide baseline predictions in case the primary learner is terminated.
-
-```{r 2023-12-21-time-constraints-004}
-learner$fallback = lrn("classif.featureless")
+learner$encapsulate(method = "callr", fallback = lrn("classif.featureless"))
 ```
 
 These time constraints are now integrated into the training, resampling, and benchmarking processes.
@@ -99,8 +94,7 @@ We set the time limit for an individual learner to 10 seconds.
 
 ```{r 2023-12-21-time-constraints-006}
 learner$timeout = c(train = 10, predict = Inf)
-learner$encapsulate = c(train = "callr", predict = "callr")
-learner$fallback = lrn("classif.featureless")
+learner$encapsulate(method = "callr", fallback = lrn("classif.featureless"))
 ```
 
 Next, we give each auto tuner 60 seconds to finish the tuning process.
@@ -122,8 +116,7 @@ at = auto_tuner(
 )
 
 at$timeout = c(train = 100, predict = 20)
-at$encapsulate = c(train = "callr", predict = "callr")
-at$fallback = lrn("classif.featureless")
+at$encapsulate(method = "callr", fallback = lrn("classif.featureless"))
 ```
 
 In total, the entire nested resampling process is designed to be completed within 10 minutes (120 seconds multiplied by 5 folds).
@@ -139,3 +132,10 @@ We delved into the setting of time constraints across different levels in the ml
 From individual learners to the complexities of nested resampling, we've seen how effectively managing time limits can significantly enhance the efficiency and reliability of machine learning workflows.
 By utilizing the `trm("runtime")` for tuning processes and setting `$timeout` for individual learners and auto tuners, we can ensure that our machine learning tasks are not only effective but also adhere to the practical time constraints of shared computational resources.
 For more information, see also the error handling section in the [mlr3book](https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-encapsulation-fallback).
+
+# Session Info
+
+```{r 2023-12-21-time-constraints-010}
+sessionInfo()
+```
+
