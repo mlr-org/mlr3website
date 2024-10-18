@@ -104,7 +104,7 @@ mytask = tsk("iris")
 # manual option
 mylearner = lrn("classif.nnet", trace = TRUE)
 # generic option
-mylearner$encapsulate = c(train = "evaluate", predict = "evaluate")
+mylearner$encapsulate(method = "evaluate", fallback = lrn("classif.featureless"))
 mylearner$train(mytask)
 ```
 
