@@ -141,7 +141,7 @@ learner = lrn("classif.gbm",
   predict_type = "prob")
 ```
 
-Now we define the feature selection problem by using the `r ref("fsi()")` function that constructs an `r ref("FSelectInstanceSingleCrit")`.
+Now we define the feature selection problem by using the `r ref("fsi()")` function that constructs an `r ref("FSelectInstanceBatchSingleCrit")`.
 In addition to the task and learner, we have to select a `r ref("Resampling", text = "resampling strategy")` and `r ref("Measure", text = "performance measure")` to determine how the performance of a feature subset is evaluated.
 We pass the `"none"` terminator because the `n_features` parameter of the optimizer determines when the feature selection stops.
 
@@ -488,3 +488,4 @@ The RFE algorithm is a valuable feature selection method, especially for high-di
 The numerous settings of the algorithm in mlr3 make it possible to apply it to many datasets and learners.
 If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/feature-selection.html).
 
+{{< include ../../_session_info.qmd >}}

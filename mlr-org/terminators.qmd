@@ -62,7 +62,7 @@ task = tsk("pima")
 learner = lts(lrn("classif.rpart"))
 
 # set instance
-instance = TuningInstanceSingleCrit$new(
+instance = ti(
   task = task,
   learner = learner,
   resampling = rsmp("holdout"),

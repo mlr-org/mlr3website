@@ -28,7 +28,7 @@ You will learn the following:
 
 * Build a `r ref("Graph", "Graph")` that consists of two common preprocessing steps, then switches between two dimensionality reduction techniques followed by a `r ref("Learner", "Learner")` vs. no dimensionality reduction followed by another `r ref("Learner", "Learner")`
 * Define the search space for tuning that handles inter-dependencies between pipeline steps and hyperparameters
-* Run a `r ref("TunerGridSearch", "grid search")` to find an optimal choice of preprocessing steps and hyperparameters.
+* Run a `r ref("TunerBatchGridSearch", "grid search")` to find an optimal choice of preprocessing steps and hyperparameters.
 
 Ideally you already had a look at how to tune over [multiple learners](https://mlr3gallery.mlr-org.com/posts/2020-02-01-tuning-multiplexer/).
 
@@ -190,7 +190,7 @@ The [mlr3tuning Tutorial](https://mlr3gallery.mlr-org.com/posts/2020-03-11-mlr3t
 We can now tune the parameters of our graph as defined in the search space with respect to a measure.
 We will use the `r ref("mlr_measures_classif.acc", "classification accuracy")`.
 As a resampling method we use `r ref("mlr_resamplings_cv", "3-fold cross-validation")`.
-We will use the `r ref("TerminatorNone", "TerminatorNone")` (i.e., no early termination) for terminating the tuning because we will apply a `r ref("TunerGridSearch", "grid search")` (we use a `grid search` because it gives nicely plottable and understandable results but if there were much more parameters, `r ref("TunerRandomSearch", "random search")` or more intelligent optimization methods would be preferred to a `grid search`:
+We will use the `r ref("TerminatorNone", "TerminatorNone")` (i.e., no early termination) for terminating the tuning because we will apply a `r ref("TunerBatchGridSearch", "grid search")` (we use a `grid search` because it gives nicely plottable and understandable results but if there were much more parameters, `r ref("TunerRandomSearch", "random search")` or more intelligent optimization methods would be preferred to a `grid search`:
 
 ```{r tuning-a-complex-graph-012}
 tune1 = TuningInstanceSingleCrit$new(

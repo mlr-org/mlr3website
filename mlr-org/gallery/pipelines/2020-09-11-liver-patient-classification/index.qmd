@@ -21,7 +21,7 @@ aliases:
 
 {{< include ../../_setup.qmd >}}
 
-```{r}
+```{r 2020-09-11-liver-patient-classification-001}
 #| include: false
 requireNamespace("MASS")
 ```
@@ -40,7 +40,7 @@ This tutorial assumes familiarity with the basics of `r ref_pkg("mlr3tuning")` a
 Consult the [mlr3book](https://mlr3book.mlr-org.com/pipelines.html) if some aspects are not fully understandable.
 We load the most important packages for this example.
 
-```{r 2020-09-11-liver-patient-classification-001, message=FALSE}
+```{r 2020-09-11-liver-patient-classification-002, message=FALSE}
 library(mlr3verse)
 library(dplyr)
 library(tidyr)
@@ -51,7 +51,7 @@ library(gridExtra)
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
 
-```{r 2020-09-11-liver-patient-classification-002}
+```{r 2020-09-11-liver-patient-classification-003}
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -74,7 +74,7 @@ Section 3 presents learners and their hyperparameter tuning while section 4, dea
 
 The data set we used for our project is the "Indian Liver Patient Dataset" which was obtained from the `r ref_pkg("mlr3data")` package. It was donated by three professors from India in 2012 @Dua2017.
 
-```{r 2020-09-11-liver-patient-classification-003}
+```{r 2020-09-11-liver-patient-classification-004}
 # Importing data
 data("ilpd", package = "mlr3data")
 ```
@@ -111,7 +111,7 @@ Lastly, one should note that some of the measurements are part of more than one 
 
 Next, we looked into the univariate distribution of each of the variables. We began with the target and the only discrete feature, gender, which are both binary.
 
-```{r 2020-09-11-liver-patient-classification-004, echo=FALSE, fig.width = 8, fig.height = 4}
+```{r 2020-09-11-liver-patient-classification-005, echo=FALSE, fig.width = 8, fig.height = 4}
 # Barplots for discrete variables (target, gender)
 bar_target = ggplot(ilpd, aes(x = diseased)) +
   geom_bar() +
@@ -136,7 +136,7 @@ Furthermore, we applied stratified sampling to ensure the proportion of the clas
 The only discrete feature gender is quite imbalanced, too.
 As one can see in the next section, this proportion is also observed within each target class. Prior to that, we looked into the distributions of the metric features.
 
-```{r 2020-09-11-liver-patient-classification-005, echo=FALSE, fig.width = 10, fig.height = 10}
+```{r 2020-09-11-liver-patient-classification-006, echo=FALSE, fig.width = 10, fig.height = 10}
 # Metric variables
 plot_histogram(ilpd, nrow = 3, ncol = 3, ggtheme = theme_minimal())
 ```
@@ -149,7 +149,7 @@ To reduce the impact of outliers and since some models assume normality of featu
 To picture the relationship between the target and the features, we analysed the distributions of the features by class.
 First, we examined the discrete feature gender.
 
-```{r 2020-09-11-liver-patient-classification-006, echo=FALSE, warning=FALSE, fig.width = 8, fig.height = 4}
+```{r 2020-09-11-liver-patient-classification-007, echo=FALSE, warning=FALSE, fig.width = 8, fig.height = 4}
 # Discrete feature by class (gender, stacked barplot)
 count_class_gender = ilpd %>%
   group_by(gender) %>%
@@ -166,7 +166,7 @@ The percentage of males in the "disease" class is slightly higher, but overall t
 Besides that, the gender imbalance can be observed in both classes, as we mentioned before.
 To see the differences in metric features, we compare the following boxplots, where right-skewed features are not log-transformed yet.
 
-```{r 2020-09-11-liver-patient-classification-007, echo=FALSE, warning=FALSE, fig.width=10, fig.height=10}
+```{r 2020-09-11-liver-patient-classification-008, echo=FALSE, warning=FALSE, fig.width=10, fig.height=10}
 # Class by metric features before log-transforming right-skewed features
 plot_boxplot(ilpd, by = "diseased", nrow = 3, ncol = 3,
   ggtheme = theme_minimal(base_size = 14))
@@ -178,7 +178,7 @@ This effect is weakened by log-transforming such features, as can be seen in the
 Moreover, the dispersion in the class "disease" is greater for these features, as the length of the boxes indicates.
 Overall, the features seem to be correlated to the target, so it makes sense to use them for this task and model their relationship with the target.
 
-```{r 2020-09-11-liver-patient-classification-008, echo=FALSE, warning=FALSE, fig.width = 10, fig.height = 10}
+```{r 2020-09-11-liver-patient-classification-009, echo=FALSE, warning=FALSE, fig.width = 10, fig.height = 10}
 # Metric features by class after log-transforming right-skewed features
 ilpd_log = ilpd %>%
   mutate( # Log for features with skewed distributions
@@ -203,7 +203,7 @@ This suggests that they are highly correlated.
 Some of the models we want to compare assume independent features or have problems with multicollinearity.
 Therefore, we checked for correlations between features.
 
-```{r 2020-09-11-liver-patient-classification-009, echo=FALSE, fig.width = 12, fig.height = 12}
+```{r 2020-09-11-liver-patient-classification-010, echo=FALSE, fig.width = 12, fig.height = 12}
 # Correlation heatmap
 # Remove missing values and change factor variables to numeric ones (no impact on calculated correlations)
 ilpd_numeric = ilpd %>%
@@ -227,7 +227,7 @@ Since we did not notice any fundamental differences in the data for these two fe
 
 ## Final Dataset
 
-```{r 2020-09-11-liver-patient-classification-010}
+```{r 2020-09-11-liver-patient-classification-011}
 ## Reducing, transforming and scaling dataset
 ilpd = ilpd %>%
   select(-total_bilirubin, -alanine_transaminase, -total_protein,
@@ -274,14 +274,14 @@ First, we need to define a task which contains the final dataset and some meta i
 Further we need to specify the positive class since the package takes the first one as the positive class by default.
 The specification of the positive class has an impact on the evaluation later on.
 
-```{r 2020-09-11-liver-patient-classification-011}
+```{r 2020-09-11-liver-patient-classification-012}
 ## Task definition
 task_liver = as_task_classif(ilpd, target = "diseased", positive = "1")
 ```
 
 In the following we are going to evaluate logistic regression, linear discriminant analysis (LDA), quadratic discriminant analysis (QDA), naive Bayes, k-nearest neighbour (k-NN), classification trees (CART) and random forest on the binary target.
 
-```{r 2020-09-11-liver-patient-classification-012}
+```{r 2020-09-11-liver-patient-classification-013}
 ## Learner definition
 # Use predict type "prob" for the AUC score. Predict on train and test sets to
 # detect overfitting
@@ -333,7 +333,7 @@ We also tried different distance measures (e.g. 1 for Manhattan distance, 2 for 
 For CART we tuned the hyperparameters cp (complexity parameter) and minsplit (minimum number of observations in a node in order to attempt a split).
 `cp` controls the size of the tree: small values can result in overfitting while large values can cause underfitting. We also tuned parameters for the minimum size of terminal nodes and the number of variables randomly sampled as candidates at each split (from 1 to number of features) for random forest.
 
-```{r 2020-09-11-liver-patient-classification-013}
+```{r 2020-09-11-liver-patient-classification-014}
 tune_ps_knn = ps(
   k = p_int(lower = 3, upper = 50), # Number of neighbors considered
   distance = p_dbl(lower = 1, upper = 3),
@@ -356,7 +356,7 @@ tune_ps_rf = ps(
 The next step is to instantiate the AutoTuner from `r ref_pkg("mlr3tuning")`.
 We employed 5-fold cross-validation for the inner loop of the nested resampling. The number of evaluations was set to 100 as the stopping criterion. As an evaluation metric we used AUC.
 
-```{r 2020-09-11-liver-patient-classification-014}
+```{r 2020-09-11-liver-patient-classification-015}
 # AutoTuner for k-NN, CART and random forest
 learners$learner_knn = auto_tuner(
   tuner = tnr("random_search"),
@@ -392,14 +392,14 @@ learners$learner_rf$predict_sets = c("train", "test")
 During our research we found that oversampling can potentially increase the performance of the learners.
 As mentioned in section 2.2, we opted for perfectly balancing the classes. By using `r ref_pkg("mlr3pipelines")` we can apply the benchmark function later on.
 
-```{r 2020-09-11-liver-patient-classification-015}
+```{r 2020-09-11-liver-patient-classification-016}
 # Oversampling minority class to get perfectly balanced classes
 po_over = po("classbalancing", id = "oversample", adjust = "minor",
   reference = "minor", shuffle = FALSE, ratio = 416/167)
 table(po_over$train(list(task_liver))$output$truth()) # Check class balance
 ```
 
-```{r 2020-09-11-liver-patient-classification-016, results="hide"}
+```{r 2020-09-11-liver-patient-classification-017, results="hide"}
 # Learners with balanced/oversampled data
 learners_bal = lapply(learners, function(x) {
   GraphLearner$new(po_scale %>>% po_over %>>% x)
@@ -413,7 +413,7 @@ With the learners defined, the inner method of the nested resampling chosen and 
 We opted for stratified 5-fold cross-validation to maintain the distribution of the target variable, independent of oversampling.
 However, it turned out that normal cross-validation without stratification yields very similar results.
 
-```{r 2020-09-11-liver-patient-classification-017, echo = TRUE, results = 'hide'}
+```{r 2020-09-11-liver-patient-classification-018, echo = TRUE, results = 'hide'}
 # 5-fold cross-validation
 resampling_outer = rsmp(id = "cv", .key = "cv", folds = 5L)
 
@@ -424,7 +424,7 @@ task_liver$col_roles$stratum = task_liver$target_names
 To rank the different learners and finally decide which one fits best for the task at hand, we used benchmarking.
 The following code chunk executes our benchmarking with all learners.
 
-```{r 2020-09-11-liver-patient-classification-018, warning = FALSE}
+```{r 2020-09-11-liver-patient-classification-019, warning = FALSE}
 design = benchmark_grid(
   tasks = task_liver,
   learners = c(learners, learners_bal),
@@ -441,7 +441,7 @@ While each one of them has its specific use case, we opted for AUC, a performanc
 
 We first present a comparison of all learners by AUC, with and without oversampling, and for both training and test data.
 
-```{r 2020-09-11-liver-patient-classification-019, echo=FALSE}
+```{r 2020-09-11-liver-patient-classification-020, echo=FALSE}
 # Table with train and test AUC by learner
 measures = list(
   msr("classif.auc", id = "auc_train", predict_sets = "train"),
@@ -458,7 +458,7 @@ Furthermore, oversampling leaves AUC performance almost untouched for all learne
 
 The boxplots below graphically summarize AUC performance of all learners, with the blue dots indicating mean AUC performance.
 
-```{r 2020-09-11-liver-patient-classification-020, echo=FALSE, fig.height = 6, fig.width = 12}
+```{r 2020-09-11-liver-patient-classification-021, echo=FALSE, fig.height = 6, fig.width = 12}
 # Boxplots to compare learners by AUC
 compare_df = as.data.frame(bmr$score(list(
   msr("classif.auc"),
@@ -490,7 +490,7 @@ Whereas mean AUC is roughly between 0.65 and 0.75 for all learners, the individu
 
 As a first step towards "AUC decomposition", we consider the ROC curve, which provides valuable graphical insights into performance - even more so since AUC is directly derived from it.
 
-```{r 2020-09-11-liver-patient-classification-021, echo=FALSE, out.width='85%', fig.align="center"}
+```{r 2020-09-11-liver-patient-classification-022, echo=FALSE, out.width='85%', fig.align="center"}
 # Plotting ROC curves
 # FIXME:
 # autoplot(bmr, type = "roc", show_cb = FALSE) +
@@ -499,7 +499,7 @@ As a first step towards "AUC decomposition", we consider the ROC curve, which pr
 
 Subsequently, sensitivity, specificity, false negative rate (FNR), and false positive rate (FPR) for each learner are shown explicitly in the output below, next to AUC.
 
-```{r 2020-09-11-liver-patient-classification-022, echo=FALSE}
+```{r 2020-09-11-liver-patient-classification-023, echo=FALSE}
 # Table with train AUC, sensitivity, specificity, false negative rate and false positive rate
 bmr$aggregate(list(
   msr("classif.auc"),
@@ -522,7 +522,7 @@ By definition, high sensitivity (specificity) results from a low false negative 
 
 With oversampling, specificity increases at the cost of sensitivity for all learners (even for those which already had high specificity), as can be seen in the two graphs below.
 
-```{r 2020-09-11-liver-patient-classification-023, echo=FALSE, fig.width = 10, fig.height = 10, eval=FALSE}
+```{r 2020-09-11-liver-patient-classification-024, echo=FALSE, fig.width = 10, fig.height = 10, eval=FALSE}
 # FIXME:
 # Creating dataframe with the performance measures for the barplots
 compare_df2 = as.data.frame(bmr$aggregate(list(
@@ -580,7 +580,7 @@ grid.arrange(arrangeGrob(plot1 + theme(legend.position = "none"),
 
 For a given learner, say random forest, the different performance metrics and their dependence upon target variable balance are shown in the following graph.
 
-```{r 2020-09-11-liver-patient-classification-024, echo=FALSE, fig.width = 10, fig.height = 10, eval=FALSE}
+```{r 2020-09-11-liver-patient-classification-025, echo=FALSE, fig.width = 10, fig.height = 10, eval=FALSE}
 # FIXME:
 compare_df3 = gather(compare_df2, "measure", "value", 2:6)
 
@@ -601,7 +601,7 @@ ggplot(compare_df3[which(compare_df3$learner_id_wo == "classif.ranger.tuned"), ]
 To get a look at performance from yet another angle, we next considered the confusion matrix for each learner, which simply contrasts the absolute numbers of predictions and true values by category, with and without oversampling.
 You can have a look at all the confusion matrices, if you run the script.
 
-```{r 2020-09-11-liver-patient-classification-025, echo=FALSE, out.extra='', eval=FALSE}
+```{r 2020-09-11-liver-patient-classification-026, echo=FALSE, out.extra='', eval=FALSE}
 # FIXME:
 names = sapply(1:14, function(x) bmr$resample_result(x)$learner$id)
 for (x in 1:14) {

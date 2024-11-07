@@ -250,7 +250,7 @@ graph_learner_1 = GraphLearner$new(graph_1)
 
 graph_learner_1$param_set$values$encode.method = to_tune(c("one-hot", "treatment"))
 
-at_1 = AutoTuner$new(
+at_1 = auto_tuner(
   learner = graph_learner_1,
   resampling = resampling,
   measure = msr("classif.ce"),
@@ -268,7 +268,7 @@ graph_learner_2 = GraphLearner$new(graph_2)
 
 graph_learner_2$param_set$values$encode.method = to_tune(c("one-hot", "treatment"))
 
-at_2 = AutoTuner$new(
+at_2 = auto_tuner(
   learner = graph_learner_2,
   resampling = resampling,
   measure = msr("classif.ce"),
@@ -342,3 +342,5 @@ The pipeline ensures that the preprocessing is always a part of the train and pr
 
 The [mlr3book](https://mlr3book.mlr-org.com/) includes chapters on [pipelines](https://mlr3book.mlr-org.com/pipelines.html) and [hyperparameter tuning](https://mlr3book.mlr-org.com/tuning.html).
 The [mlr3cheatsheets](https://cheatsheets.mlr-org.com/) contain frequently used commands and workflows of mlr3.
+
+{{< include ../../_session_info.qmd >}}
