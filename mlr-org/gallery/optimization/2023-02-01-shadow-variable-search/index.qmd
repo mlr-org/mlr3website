@@ -115,7 +115,7 @@ learner = po("imputehist") %>>% lrn("classif.svm", predict_type = "prob")
 
 # Feature Selection
 
-Now we define the feature selection problem by using the `r ref("fsi()")` function that constructs an `r ref("FSelectInstanceSingleCrit")`.
+Now we define the feature selection problem by using the `r ref("fsi()")` function that constructs an `r ref("FSelectInstanceBatchSingleCrit")`.
 In addition to the task and learner, we have to select a `r ref("Resampling", text = "resampling strategy")` and `r ref("Measure", text = "performance measure")` to determine how the performance of a feature subset is evaluated.
 We pass the `"none"` terminator because the shadow variable search algorithm terminates by itself.
 
@@ -204,3 +204,4 @@ The shadow variable search is a fast feature selection method that is easy to us
 More information on the theoretical background can be found in @wu_controlling_2007 and @thomas_probing_2017.
 If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/feature-selection.html).
 
+{{< include ../../_session_info.qmd >}}

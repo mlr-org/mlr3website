@@ -23,6 +23,7 @@ requireNamespace("glmnet")
 requireNamespace("ggfortify")
 requireNamespace("partykit")
 requireNamespace("ggdendro")
+requireNamespace("xgboost")
 ```
 
 # Scope
@@ -58,8 +59,10 @@ We plot the class frequency of the target variable.
 
 ```{r 2022-12-22-mlr3viz-002}
 #| message: false
-library(mlr3verse)
 library(mlr3viz)
+library(mlr3learners)
+library(mlr3tuning)
+library(mlr3cluster)
 
 task = tsk("penguins")
 task$select(c("body_mass", "bill_length"))
@@ -591,3 +594,5 @@ If you need to highly customize a plot e.g. for a publication, we encourage you 
 The code should be easily adaptable to your needs.
 We are also looking forward to new visualizations.
 You can suggest new plots in an issue on [GitHub](https://github.com/mlr-org/mlr3viz/issues).
+
+{{< include ../../_session_info.qmd >}}
