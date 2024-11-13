@@ -37,11 +37,11 @@ Our goal is to predict the median value of owner-occupied homes in USD 1000's (t
 
 ```{r 2020-08-13-a-production-example-using-plumber-and-docker-002}
 data = tsk("boston_housing")$data()
-data = data[, c("medv", "crim", "tax", "town")]
+data = data[, c("cmedv", "crim", "tax", "town")]
 ```
 
 ```{r 2020-08-13-a-production-example-using-plumber-and-docker-003}
-task = TaskRegr$new("boston", backend = data, target = "medv")
+task = TaskRegr$new("boston", backend = data, target = "cmedv")
 ```
 
 Let's create a toy pipeline:
@@ -243,3 +243,5 @@ docker stop $(docker ps -a -q)
 ```
 
 Finally, you can proceed to deploy your container to an Amazon Web Service or an Azure Cloud. For the latter, the package `r ref_pkg("AzureContainers")` is especially helpful. If you do plan to do this note that the `plumber` service above is exposed over HTTP, and there is no authentication layer making it insecure. You may think about adding a layer of authentification and restricting the service to HTTPS.
+
+{{< include ../../_session_info.qmd >}}

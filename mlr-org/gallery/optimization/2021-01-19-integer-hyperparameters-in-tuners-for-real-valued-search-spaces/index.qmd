@@ -14,6 +14,10 @@ aliases:
 
 {{< include ../../_setup.qmd >}}
 
+```{r}
+requireNamespace("kknn")
+```
+
 ## Introduction
 
 `r ref("Tuner")` for real-valued search spaces are not able to tune on integer hyperparameters.
@@ -47,7 +51,7 @@ print(learner$param_set$params$k)
 # Tuning
 
 We choose generalized simulated annealing as tuning strategy.
-The `param_classes` field of `r ref("TunerGenSA")` states that the tuner only supports real-valued (`ParamDbl`) hyperparameter tuning.
+The `param_classes` field of `r ref("TunerBatchGenSA")` states that the tuner only supports real-valued (`ParamDbl`) hyperparameter tuning.
 
 ```{r 2021-01-19-integer-hyperparameters-in-tuners-for-real-valued-search-spaces-004}
 print(tnr("gensa"))
@@ -93,7 +97,7 @@ The archive shows us that for all real-valued `k` proposed by `r ref_pkg("GenSA"
 as.data.table(instance$archive)[, .(k, classif.ce, x_domain_k)]
 ```
 
-Internally, `r ref("TunerGenSA")` was given the parameter types of the search space and therefore suggested real numbers for `k`.
+Internally, `r ref("TunerBatchGenSA")` was given the parameter types of the search space and therefore suggested real numbers for `k`.
 Before the performance of the different `k` values was evaluated, the transformation function of the `search_space` parameter set was called and `k` was transformed to an integer value.
 
 Note that the tuner is not aware of the transformation.
@@ -102,6 +106,8 @@ First, the tuner might propose different real valued configurations that after r
 This is only problematic, if we only optimze integer parameters.
 Second, the rounding introduces discontinuities which can be problematic for some tuners.
 
-We successfully tuned a integer-valued hyperparameter with `r ref("TunerGenSA")` which is only suitable for an real-valued search space.
+We successfully tuned a integer-valued hyperparameter with `r ref("TunerBatchGenSA")` which is only suitable for an real-valued search space.
 This technique is not limited to tuning problems.
 `r ref("Optimizer")` in `r ref_pkg("bbotk")` can be also used in the same way to produce points with integer parameters.
+
+{{< include ../../_session_info.qmd >}}

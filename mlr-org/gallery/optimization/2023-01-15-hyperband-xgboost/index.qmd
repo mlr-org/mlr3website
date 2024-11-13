@@ -221,7 +221,7 @@ instance = ti(
 instance
 ```
 
-We load the `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 2`.
+We load the `r ref("TunerBatchHyperband", "Hyperband tuner")` and set `eta = 2`.
 Hyperband can start from the beginning when the last bracket is evaluated.
 We control the number of Hyperband runs with the `repetition` argument.
 The setting `repetition = Inf` is useful when a terminator should stop the optimization.
@@ -299,4 +299,4 @@ For your optimization, you should use cross-validation and increase the maximum 
 The @bischl_hyperparameter_2021 search space suggests 5000 boosting rounds.
 Check out our [next post](/gallery/optimization/2023-01-16-hyperband-subsampling) on Hyperband which uses the size of the training data set as the fidelity parameter.
 
-
+{{< include ../../_session_info.qmd >}}

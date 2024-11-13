@@ -16,6 +16,9 @@ title: Frequently Asked Questions
 * [Preprocessing factor levels](#factor-levels)
 * [Memory Problems](#memory-problems)
 * [How can I suppress logging output of learners on the R console](#suppress-output)
+* [A learner trained with an old mlr3 version does not work anymore](#old-model-broken)
+* [Caching of knitr/rmarkdown chunks does not work with mlr3](#caching-knitr)
+* [How to keep all mlr3 packages up-to-date?](#update-packages)
 
 ## Why is there only the rpart learner? {#learner}
 
@@ -39,6 +42,9 @@ When resampling or tuning a fast-fitting learner, it helps to chunk multiple res
 The option [`mlr3.exec_chunk_bins`](https://mlr3.mlr-org.com/reference/mlr3-package.html#package-options) determines the number of chunks to split the resampling iterations into.
 For example, when running a benchmark with 100 resampling iterations, `options("mlr3.exec_chunk_bins" = 4)` creates 4 computational jobs with 25 resampling iterations each.
 This reduces the parallelization overhead and speeds up the execution.
+The parallelization of the BLAS library can interfere with future parallelization due to over-utilization of the available cores.
+Install [`RhpcBLASctl`](https://cran.r-project.org/web/packages/RhpcBLASctl/index.html) so that mlr3 can turn off the parallelization of BLAS.
+`RhpcBLASctl` can only be included as an optional dependency due to licensing issues.
 
 ## Why is the parallelization of tuning slow? {#tuning-slow}
 
@@ -98,7 +104,57 @@ mytask = tsk("iris")
 # manual option
 mylearner = lrn("classif.nnet", trace = TRUE)
 # generic option
-mylearner$encapsulate = c(train = "evaluate", predict = "evaluate")
+mylearner$encapsulate(method = "evaluate", fallback = lrn("classif.featureless"))
 mylearner$train(mytask)
 ```
+
+## A learner trained with an old mlr3 version does not work anymore {#old-model-broken}
+
+It is possible that a saved `Learner` that was trained with an old `mlr3` version does not work with a different version of `mlr3`.
+In general, we recommend saving the computational environment using a tool like [renv](https://github.com/rstudio/renv) so this can later be restored and avoiding such situations alltogether.
+If this is not an option, a possible workaround is to construct the same learner in the currently used `mlr3` version and manually set its `$state` to the one of the saved learner.
+This is illustrated below:
+
+1. Using an old `mlr3` version:
+
+   ```{r, eval = FALSE}
+   learner = lrn("classif.rpart")
+   learner$train(tsk("iris"))
+   saveRDS(learner, "learner.rds")
+   ```
+
+1. With a subsequent `mlr3` version:
+
+   ```{r, eval = FALSE}
+   learner = lrn("classif.rpart")
+   learner_old = readRDS("learner.rds")
+   learner$state = learner_old$state
+   ```
+
+Note that this is **risky** and **not** guaranteed to work because of various reasons:
+* You might have now loaded a different version of the learner library (in this case the `rpart` pacakge).
+* The internals (such as the structure of the internal `$state`) might have changed between the versions.
+
+Therefore, be careful when attempting this solution and double-check that the learner behaves sensibly.
+
+## Caching of knitr/rmarkdown chunks does not work with mlr3 {#caching-knitr}
+
+{knitr} per default uses R's lazy-load database to store the results of individual chunks.
+The lazy-load database is an internal feature of R, and has issues handling active bindings ([https://github.com/r-lib/R6/issues/152](https://github.com/r-lib/R6/issues/152)).
+Fortunately, it is possible to disable lazy-loading by setting the chunk option `cache.lazy` to `FALSE`:
+
+```{r, eval = FALSE}
+knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE)
+```
+
+## How to keep all mlr3 packages up-to-date? {#update-packages}
+
+Either run R's `update.packages()` to update all installed packages, or run
+
+```r
+devtools::update_packages("mlr3verse", dependencies = TRUE)
+```
+
+to update only packages from the mlr3verse.
+Note that this also updates recursive dependencies not listed as a direct import.
 

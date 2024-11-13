@@ -24,7 +24,9 @@ This section demonstrates how to impose time constraints using a support vector 
 
 ```{r 2023-12-21-time-constraints-001}
 #| message: false
-library(mlr3verse)
+library(mlr3)
+library(mlr3learners)
+library(mlr3tuning)
 
 learner = lrn("classif.svm")
 ```
@@ -41,16 +43,11 @@ learner$timeout = c(train = 10, predict = Inf)
 
 To effectively terminate the process if necessary, it's important to run the training and prediction within a separate R process.
 The `r ref_pkg("callr")` package is recommended for this encapsulation, as it tends to be more reliable than the `r ref_pkg("evaluate")` package, especially for terminating externally compiled code.
+Note that using `callr` increases the runtime due to the overhead of starting an R process.
+Additionally, a fallback learner must be specified, such as `"classif.featureless"`, to provide baseline predictions in case the primary learner is terminated.
 
 ```{r 2023-12-21-time-constraints-003}
-learner$encapsulate = c(train = "callr", predict = "callr")
-```
-
-Note that using `callr` increases the runtime due to the overhead of starting an R process.
-Additionally, it's advisable to specify a fallback learner, such as `"classif.featureless"`, to provide baseline predictions in case the primary learner is terminated.
-
-```{r 2023-12-21-time-constraints-004}
-learner$fallback = lrn("classif.featureless")
+learner$encapsulate(method = "callr", fallback = lrn("classif.featureless"))
 ```
 
 These time constraints are now integrated into the training, resampling, and benchmarking processes.
@@ -69,7 +66,7 @@ We must therefore set the time lower than the runtime of the job.
 How much lower depends on the runtime or time limit of the individual learners.
 The last batch should be able to finish before the time limit of the cluster is reached.
 
-```{r 2023-12-21-time-constraints-005}
+```{r 2023-12-21-time-constraints-004}
 terminator = trm("run_time", secs = 60)
 
 instance = ti(
@@ -97,22 +94,21 @@ This limit encompasses not only the tuning phase but also the time required for 
 The best way to show this is with an example.
 We set the time limit for an individual learner to 10 seconds.
 
-```{r 2023-12-21-time-constraints-006}
+```{r 2023-12-21-time-constraints-005}
 learner$timeout = c(train = 10, predict = Inf)
-learner$encapsulate = c(train = "callr", predict = "callr")
-learner$fallback = lrn("classif.featureless")
+learner$encapsulate(method = "callr", fallback = lrn("classif.featureless"))
 ```
 
 Next, we give each auto tuner 60 seconds to finish the tuning process.
 
-```{r 2023-12-21-time-constraints-007}
+```{r 2023-12-21-time-constraints-006}
 terminator = trm("run_time", secs = 60)
 ```
 
 Furthermore, we impose a 120-second limit for resampling each auto tuner.
 This effectively divides the time allocation, with around 60 seconds for tuning and another 60 seconds for final model fitting and predictions on the outer test set.
 
-```{r 2023-12-21-time-constraints-008}
+```{r 2023-12-21-time-constraints-007}
 at = auto_tuner(
   tuner = tnr("random_search"),
   learner = learner,
@@ -122,13 +118,12 @@ at = auto_tuner(
 )
 
 at$timeout = c(train = 100, predict = 20)
-at$encapsulate = c(train = "callr", predict = "callr")
-at$fallback = lrn("classif.featureless")
+at$encapsulate(method = "callr", fallback = lrn("classif.featureless"))
 ```
 
 In total, the entire nested resampling process is designed to be completed within 10 minutes (120 seconds multiplied by 5 folds).
 
-```{r 2023-12-21-time-constraints-009}
+```{r 2023-12-21-time-constraints-008}
 #| eval: false
 rr = resample(task, at, rsmp("cv", folds = 5))
 ```
@@ -139,3 +134,5 @@ We delved into the setting of time constraints across different levels in the ml
 From individual learners to the complexities of nested resampling, we've seen how effectively managing time limits can significantly enhance the efficiency and reliability of machine learning workflows.
 By utilizing the `trm("runtime")` for tuning processes and setting `$timeout` for individual learners and auto tuners, we can ensure that our machine learning tasks are not only effective but also adhere to the practical time constraints of shared computational resources.
 For more information, see also the error handling section in the [mlr3book](https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-encapsulation-fallback).
+
+{{< include ../../_session_info.qmd >}}

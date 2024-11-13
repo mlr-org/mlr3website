@@ -106,9 +106,8 @@ Support vector machines often crash or never finish the training with certain hy
 We set a timeout of 30 seconds and a [fallback learner](https://mlr3book.mlr-org.com/optimization.html#sec-encapsulation-fallback) to handle these cases.
 
 ```{r 2023-01-16-hyperband-subsampling-007}
-graph_learner$encapsulate = c(train = "evaluate", predict = "evaluate")
+graph_learner$encapsulate(method = "evaluate", fallback = lrn("classif.featureless"))
 graph_learner$timeout = c(train = 30, predict = 30)
-graph_learner$fallback = lrn("classif.featureless")
 ```
 
 Let's create the tuning instance.
@@ -125,7 +124,7 @@ instance = ti(
 instance
 ```
 
-We load the `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 3`.
+We load the `r ref("TunerBatchHyperband", "Hyperband tuner")` and set `eta = 3`.
 
 ```{r 2023-01-16-hyperband-subsampling-009}
 #| message: false
@@ -217,5 +216,8 @@ ggplot(data, aes(x = subsample.frac, y = classif.ce, group = i)) +
 Using the data set size as the budget parameter in Hyperband allows the tuning of machine learning models that are not trained iteratively.
 We have tried to keep the runtime of the example low.
 For your optimization, you should use cross-validation and run multiple iterations of Hyperband.
+
+{{< include ../../_session_info.qmd >}}
+
 
 # References

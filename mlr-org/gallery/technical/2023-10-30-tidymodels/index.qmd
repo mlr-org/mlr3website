@@ -13,7 +13,7 @@ image: cover.png
 
 {{< include ../../_setup.qmd >}}
 
-```{r 2022-12-22-mlr3viz-001}
+```{r 2023-10-30-tidymodels-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -49,7 +49,7 @@ Through this comparative analysis, the article aims to provide valuable insights
 We employ the `r ref_pkg("microbenchmark")` package to measure the time required for training, resampling, and tuning models.
 This benchmarking process is applied to the `Sonar` dataset using the `rpart` and `ranger` algorithms.
 
-```{r}
+```{r 2023-10-30-tidymodels-002}
 #| eval: false
 library("mlr3verse")
 library("tidymodels")
@@ -85,7 +85,7 @@ Our aim is to mirror the configuration as closely as possible across both framew
 
 :::{layout-ncol="2"}
 
-```{r}
+```{r 2023-10-30-tidymodels-003}
 #| eval: false
 
 # tidymodels
@@ -99,7 +99,7 @@ learner = lrn("classif.rpart",
   xval = 0L)
 ```
 
-```{r}
+```{r 2023-10-30-tidymodels-004}
 #| eval: false
 
 # tidymodels
@@ -125,7 +125,7 @@ The result of the train function is a trained model in both frameworks.
 In addition, we invoke the `rpart()` and `ranger()` functions to establish a baseline for the minimum achievable runtime.
 This allows us to not only assess the efficiency of the train functions in each framework but also to understand how they perform relative to the base packages.
 
-```{r}
+```{r 2023-10-30-tidymodels-005}
 #| eval: false
 
 # tidymodels train
@@ -150,7 +150,7 @@ This pattern suggests that for more complex or time-consuming tasks, the choice 
 
 :::{layout-ncol="2"}
 
-```{r}
+```{r 2023-10-30-tidymodels-006}
 #| echo: false
 #| label: tbl-train-rpart
 #| tbl-cap: "Average runtime in milliseconds of training `rpart` depending on the framework."
@@ -163,7 +163,7 @@ knitr::kable(
   col.names = c("Framework", "LQ", "Median", "UQ"))
 ```
 
-```{r}
+```{r 2023-10-30-tidymodels-007}
 #| echo: false
 #| label: tbl-train-ranger
 #| tbl-cap: "Average runtime in milliseconds of training `ranger` depending on the framework."
@@ -193,7 +193,7 @@ To align the comparison, we replicate this scoring step in `mlr3`, thus maintain
 Furthermore, `mlr3` inherently saves predictions during the resampling process.
 To match this, we activate the saving of the predictions in `tidymodels`.
 
-```{r}
+```{r 2023-10-30-tidymodels-008}
 #| eval: false
 
 # tidymodels resample
@@ -221,7 +221,7 @@ A consistent trend observed across both frameworks is a linear increase in runti
 
 :::{layout-ncol="2"}
 
-```{r}
+```{r 2023-10-30-tidymodels-009}
 #| echo: false
 #| label: tbl-resample-sequential-rpart
 #| tbl-cap: "Average runtime in milliseconds of `rpart` depending on the framework and resampling strategy."
@@ -235,7 +235,7 @@ knitr::kable(
   col.names = c("Framework", "Resampling", "LQ", "Median", "UQ"))
 ```
 
-```{r}
+```{r 2023-10-30-tidymodels-010}
 #| echo: false
 #| label: tbl-resample-sequential-ranger
 #| tbl-cap: "Average runtime in milliseconds of `ranger` depending on the framework and resampling strategy."
@@ -251,7 +251,7 @@ knitr::kable(
 
 :::
 
-```{r}
+```{r 2023-10-30-tidymodels-011}
 #| echo: false
 #| label: fig-resample-sequential
 #| fig-cap: "Average runtime, measured in milliseconds, for cross-validations using `rpart` (displayed on the left) and `ranger` (on the right). The comparison encompasses variations across different frameworks and the number of folds in the cross-validation."
@@ -334,7 +334,7 @@ This differentiation highlights the importance of considering the complexity and
 
 :::{layout-ncol="2"}
 
-```{r}
+```{r 2023-10-30-tidymodels-012}
 #| echo: false
 #| label: tbl-resample-parallel-mlr3-future-rpart
 #| tbl-cap: "Average runtime in milliseconds of `mlr3` with `future` and `rpart` depending on the resampling strategy."
@@ -348,7 +348,7 @@ knitr::kable(
   col.names = c("Resampling", "LQ", "Median", "UQ"))
 ```
 
-```{r}
+```{r 2023-10-30-tidymodels-013}
 #| echo: false
 #| label: tbl-resample-parallel-mlr3-future-ranger
 #| tbl-cap: "Average runtime in milliseconds of `mlr3` with `future` and `ranger` depending on the resampling strategy."
@@ -370,7 +370,7 @@ This substantial difference in data export could plausibly account for the obser
 
 :::{layout-ncol="2"}
 
-```{r}
+```{r 2023-10-30-tidymodels-014}
 #| echo: false
 #| label: tbl-resample-parallel-tidymodels-future-rpart
 #| tbl-cap: "Average runtime in milliseconds of `tidymodels` with `doFuture` and `rpart` depending on the resampling strategy."
@@ -384,7 +384,7 @@ knitr::kable(
   col.names = c("Resampling", "LQ", "Median", "UQ"))
 ```
 
-```{r}
+```{r 2023-10-30-tidymodels-015}
 #| echo: false
 #| label: tbl-resample-parallel-tidymodels-future-ranger
 #| tbl-cap: "Average runtime in milliseconds of `tidymodels` with `doFuture` and `ranger` depending on the resampling strategy."
@@ -407,7 +407,7 @@ This specific observation is illustrated in the left section of @fig-resample-pa
 
 :::{layout-ncol="2"}
 
-```{r}
+```{r 2023-10-30-tidymodels-016}
 #| echo: false
 #| label: tbl-resample-parallel-tidymodels-parallel-rpart
 #| tbl-cap: "Average runtime in milliseconds of `tidymodels` with `doParallel`  and `rpart` depending on the resampling strategy."
@@ -421,7 +421,7 @@ knitr::kable(
   col.names = c("Resampling", "LQ", "Median", "UQ"))
 ```
 
-```{r}
+```{r 2023-10-30-tidymodels-017}
 #| echo: false
 #| label: tbl-resample-parallel-tidymodels-parallel-ranger
 #| tbl-cap: "Average runtime in milliseconds of `tidymodels` with `doParallel`  and `ranger` depending on the resampling strategy."
@@ -438,7 +438,7 @@ knitr::kable(
 :::
 
 
-```{r}
+```{r 2023-10-30-tidymodels-018}
 #| echo: false
 #| label: fig-resample-parallel
 #| fig-cap: "Average runtime, measured in milliseconds, for cross-validations using `rpart` (displayed on the left) and `ranger` (on the right). The comparison encompasses variations across different frameworks, the number of folds in the cross-validation, and the implementation of parallelization."
@@ -517,7 +517,7 @@ Interestingly, within these more extensive resampling scenarios, the `doFuture` 
 This distinction is important, as it highlights the relative strengths of different parallelization packages under varying workload conditions.
 While `doParallel` shows proficiency in smaller tasks, `doFuture` demonstrates its capability to handle larger, more complex resampling processes with greater speed and efficiency.
 
-```{r}
+```{r 2023-10-30-tidymodels-019}
 #| echo: false
 #| label: fig-resample-parallel-2
 #| fig-cap: "Average runtime, measured in seconds, of a 100 times repeated 3-fold cross-validation using `rpart` (displayed on the left) and `ranger` (on the right). The comparison encompasses variations across different frameworks and the implementation of parallelization."
@@ -568,7 +568,7 @@ This approach helps us to understand how each framework handles the optimization
 
 :::{layout-ncol="2"}
 
-```{r}
+```{r 2023-10-30-tidymodels-020}
 #| eval: false
 
 # tidymodels
@@ -590,7 +590,7 @@ mlr3_design = data.table(
   cp = seq(0.1, 0.2, length.out = 200))
 ```
 
-```{r}
+```{r 2023-10-30-tidymodels-021}
 #| eval: false
 
 # tidymodels
@@ -621,7 +621,7 @@ mlr3_design = data.table(
 We measure the runtime of the tune functions within each framework.
 Both the `tidymodels` and `mlr3` frameworks are tasked with identifying the optimal hyperparameter configuration.
 
-```{r}
+```{r 2023-10-30-tidymodels-022}
 #| eval: false
 
 # tidymodels tune
@@ -648,7 +648,7 @@ The faster performance of `mlr3` in these sequential runs highlights its efficie
 
 :::{layout-ncol="2"}
 
-```{r}
+```{r 2023-10-30-tidymodels-023}
 #| echo: false
 #| label: tbl-tune-sequential-rpart
 #| tbl-cap: "Average runtime in seconds of tuning 200 points of `rpart` depending on the framework."
@@ -661,7 +661,7 @@ knitr::kable(
   col.names = c("Framework", "LQ", "Median", "UQ"))
 ```
 
-```{r}
+```{r 2023-10-30-tidymodels-024}
 #| echo: false
 #| label: tbl-tune-sequential-ranger
 #| tbl-cap: "Average runtime in seconds of tuning 200 points of `ranger` depending on the framework."
@@ -676,7 +676,7 @@ knitr::kable(
 
 :::
 
-```{r}
+```{r 2023-10-30-tidymodels-025}
 #| echo: false
 #| label: fig-tune-sequential
 #| fig-cap: "Average runtime in seconds of tuning 200 points of `rpart` (left) and `ranger` (right) depending on the framework."
@@ -728,7 +728,7 @@ On the other hand, the `tidymodels` package also operates with the same chunk si
 By conducting these parallelization tests, we aim to provide a deeper understanding of how each framework handles the distribution and management of computational tasks during the tuning process, particularly in a parallel computing environment.
 This final set of measurements is important in painting a complete picture of the runtime performance of the tune functions across both `tidymodels` and `mlr3` under different operational settings.
 
-```{r}
+```{r 2023-10-30-tidymodels-026}
 options("mlr3.exec_chunk_size" = 200)
 ```
 
@@ -746,7 +746,7 @@ This conclusion underscores the value of parallel processing in modern machine l
 
 :::{layout-ncol="2"}
 
-```{r}
+```{r 2023-10-30-tidymodels-027}
 #| echo: false
 #| label: tbl-tune-parallel-mlr3-future-rpart
 #| tbl-cap: "Average runtime in seconds of tuning 200 points of `rpart` depending on the framework."
@@ -761,7 +761,7 @@ knitr::kable(
   col.names = c("Framework", "Backend", "LQ", "Median", "UQ"))
 ```
 
-```{r}
+```{r 2023-10-30-tidymodels-028}
 #| echo: false
 #| label: tbl-tune-parallel-mlr3-future-ranger
 #| tbl-cap: "Average runtime in seconds of tuning 200 points of `ranger` depending on the framework."
@@ -778,7 +778,7 @@ knitr::kable(
 
 :::
 
-```{r}
+```{r 2023-10-30-tidymodels-029}
 #| echo: false
 #| label: fig-tune-parallel
 #| fig-cap: "Average runtime, measured in seconds, of a tuning 200 hyperparameter configurations of `rpart` (displayed on the left) and `ranger` (on the right). The comparison encompasses variations across different frameworks and the implementation of parallelization."

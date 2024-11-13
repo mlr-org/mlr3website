@@ -23,7 +23,7 @@ aliases:
 
 {{< include ../../_setup.qmd >}}
 
-```{r}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-001}
 requireNamespace("DiceKriging")
 ```
 
@@ -49,7 +49,7 @@ Finally, nested resampling is used to compute an unbiased performance estimate o
 
 We load the `r ref_pkg("mlr3verse")`  package which pulls in the most important packages for this example.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-001, message = FALSE}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-002, message = FALSE}
 library(mlr3verse)
 ```
 
@@ -57,7 +57,7 @@ We initialize the random number generator with a fixed seed for reproducibility,
 The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r ref_pkg("mlr3")` packages.
 The `r ref_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r ref_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r ref_pkg("mlr3tuning")` ).
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-002}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-003}
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -69,7 +69,7 @@ The Iris data set allows us to quickly fit models to it.
 However, the influence of hyperparameter tuning on the predictive performance might be minor.
 Other data sets might give more meaningful tuning results.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-003}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-004}
 # retrieve the task from mlr3
 task = tsk("iris")
 
@@ -79,7 +79,7 @@ skimr::skim(task$data())
 
 We choose the support vector machine implementation from the `r ref_pkg("e1071")` package (which is based on [LIBSVM](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)) and use it as a classification machine by setting `type` to `"C-classification"`.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-004}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-005}
 learner = lrn("classif.svm", type = "C-classification", kernel = "radial")
 ```
 
@@ -90,14 +90,14 @@ A learner stores all information about its hyperparameters in the slot `$param_s
 Not all parameters are tunable.
 We have to choose a subset of the hyperparameters we want to tune.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-005, eval = FALSE}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-006, eval = FALSE}
 as.data.table(learner$param_set)[, .(id, class, lower, upper, nlevels)]
 ```
 
 We use the `r ref("to_tune()")` function to define the range over which the hyperparameter should be tuned.
 We opt for the `cost` and `gamma` hyperparameters of the `radial` kernel and set the tuning ranges with lower and upper bounds.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-006}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-007}
 learner$param_set$values$cost = to_tune(0.1, 10)
 learner$param_set$values$gamma = to_tune(0, 5)
 ```
@@ -107,7 +107,7 @@ learner$param_set$values$gamma = to_tune(0, 5)
 We specify how to evaluate the performance of the different hyperparameter configurations.
 For this, we choose 3-fold cross validation as the resampling strategy and the classification error as the performance measure.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-007}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-008}
 resampling = rsmp("cv", folds = 3)
 measure = msr("classif.ce")
 ```
@@ -117,14 +117,14 @@ This is done by choosing a `r ref("Terminator")`, which stops the tuning e.g. af
 However, some tuners like grid search terminate themselves.
 In this case, we  choose a terminator that never stops and the tuning is not stopped before all grid points are evaluated.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-008}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-009}
 terminator = trm("none")
 ```
 
-At this point, we can construct a `r ref("TuningInstanceSingleCrit")` that describes the tuning problem.
+At this point, we can construct a `r ref("TuningInstanceBatchSingleCrit")` that describes the tuning problem.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-009}
-instance = TuningInstanceSingleCrit$new(
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-010}
+instance = ti(
   task = task,
   learner = learner,
   resampling = resampling,
@@ -141,32 +141,32 @@ Categorical parameters produce a grid over all levels specified in the search sp
 In this example, we only use a resolution of 5 to keep the runtime low.
 Usually, a higher resolution is used to create a denser grid.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-010}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-011}
 tuner = tnr("grid_search", resolution = 5)
 
 print(tuner)
 ```
 
-We can preview the proposed configurations by using `r ref("generate_design_grid()")`. This function is internally executed by `r ref("TunerGridSearch")`.
+We can preview the proposed configurations by using `r ref("generate_design_grid()")`. This function is internally executed by `r ref("TunerBatchGridSearch")`.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-011}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-012}
 generate_design_grid(learner$param_set$search_space(), resolution = 5)
 ```
 
-We trigger the tuning by passing the `r ref("TuningInstanceSingleCrit")` to the `$optimize()` method of the `r ref("Tuner")`. The instance is modified in-place.
+We trigger the tuning by passing the `r ref("TuningInstanceBatchSingleCrit")` to the `$optimize()` method of the `r ref("Tuner")`. The instance is modified in-place.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-012}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-013}
 tuner$optimize(instance)
 ```
 
 We plot the performances depending on the evaluated `cost` and `gamma` values.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-013, eval = FALSE}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-014, eval = FALSE}
 autoplot(instance, type = "surface", cols_x = c("cost", "gamma"),
   learner = lrn("regr.km"))
 ```
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-014, echo = FALSE}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-015, echo = FALSE}
 # regr.km prints a log
 log = capture.output(autoplot(instance, type = "surface", cols_x = c("cost", "gamma"), learner = lrn("regr.km")))
 ```
@@ -177,7 +177,7 @@ However, we can see the general interaction between the hyperparameters.
 
 Tuning a learner can be shortened by using the `r ref("tune()")`-shortcut.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-015, eval = FALSE}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-016, eval = FALSE}
 learner = lrn("classif.svm", type = "C-classification", kernel = "radial")
 learner$param_set$values$cost = to_tune(0.1, 10)
 learner$param_set$values$gamma = to_tune(0, 5)
@@ -203,7 +203,7 @@ These transformations are applied before the proposed configuration is passed to
 We can directly define the transformation in the `r ref("to_tune()")` function.
 The lower and upper bound is set on the original scale.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-016}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-017}
 learner = lrn("classif.svm", type = "C-classification", kernel = "radial")
 
 # tune from 2^-15 to 2^15 on a log scale
@@ -217,14 +217,14 @@ Transformations to the log scale are the ones most commonly used.
 We can use a shortcut for this transformation.
 The lower and upper bound is set on the transformed scale.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-017}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-018}
 learner$param_set$values$cost = to_tune(p_dbl(1e-5, 1e5, logscale = TRUE))
 learner$param_set$values$gamma = to_tune(p_dbl(1e-5, 1e5, logscale = TRUE))
 ```
 
 We use the `r ref("tune()")`-shortcut to run the tuning.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-018}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-019}
 instance = tune(
   tuner = tnr("grid_search", resolution = 5),
   task = task,
@@ -238,13 +238,13 @@ The hyperparameter values after the transformation are stored in the `x_domain` 
 We can expand these lists into multiple columns by using `as.data.table()`.
 The hyperparameter names are prefixed by `x_domain`.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-019}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-020}
 as.data.table(instance$archive)[, .(cost, gamma, x_domain_cost, x_domain_gamma)]
 ```
 
 We plot the performances depending on the evaluated `cost` and `gamma` values.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-020}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-021}
 library(ggplot2)
 library(scales)
 autoplot(instance, type = "points", cols_x = c("x_domain_cost", "x_domain_gamma")) +
@@ -263,7 +263,7 @@ autoplot(instance, type = "points", cols_x = c("x_domain_cost", "x_domain_gamma"
 Dependencies ensure that certain parameters are only proposed depending on values of other hyperparameters.
 We want to tune the `degree` hyperparameter that is only needed for the `polynomial` kernel.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-021}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-022}
 learner = lrn("classif.svm", type = "C-classification")
 
 learner$param_set$values$cost = to_tune(p_dbl(1e-5, 1e5, logscale = TRUE))
@@ -275,25 +275,25 @@ learner$param_set$values$degree = to_tune(1, 4)
 
 The dependencies are already stored in the learner parameter set.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-022}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-023}
 learner$param_set$deps
 ```
 
 The `gamma` hyperparameter depends on the kernel being `polynomial`, `radial` or `sigmoid`
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-023}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-024}
 learner$param_set$deps$cond[[5]]
 ```
 
 whereas the `degree` hyperparameter is solely used by the `polynomial` kernel.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-024}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-025}
 learner$param_set$deps$cond[[3]]
 ```
 
 We preview the grid to show the effect of the dependencies.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-025}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-026}
 generate_design_grid(learner$param_set$search_space(), resolution = 2)
 ```
 
@@ -301,7 +301,7 @@ The value for `degree` is `NA` if the dependency on the `kernel` is not satisfie
 
 We use the `r ref("tune()")`-shortcut to run the tuning.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-026}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-027}
 instance = tune(
   tuner = tnr("grid_search", resolution = 3),
   task = task,
@@ -311,7 +311,7 @@ instance = tune(
 )
 ```
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-027}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-028}
 instance$result
 ```
 
@@ -319,7 +319,7 @@ instance$result
 
 We add the optimized hyperparameters to the learner and train the learner on the full dataset.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-028}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-029}
 learner = lrn("classif.svm")
 learner$param_set$values = instance$result_learner_param_vals
 learner$train(task)
@@ -338,7 +338,7 @@ We can use the `r ref("AutoTuner")` class for running nested resampling.
 The `r ref("AutoTuner")` wraps a `r ref("Learner")` and tunes the hyperparameter of the learner during `$train()`.
 This is our inner resampling loop.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-029}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-030}
 learner = lrn("classif.svm", type = "C-classification")
 learner$param_set$values$cost = to_tune(p_dbl(1e-5, 1e5, logscale = TRUE))
 learner$param_set$values$gamma = to_tune(p_dbl(1e-5, 1e5, logscale = TRUE))
@@ -349,7 +349,7 @@ resampling_inner = rsmp("cv", folds = 3)
 terminator = trm("none")
 tuner = tnr("grid_search", resolution = 3)
 
-at = AutoTuner$new(
+at = auto_tuner(
   learner = learner,
   resampling = resampling_inner,
   measure = measure,
@@ -360,7 +360,7 @@ at = AutoTuner$new(
 
 We put the `r ref("AutoTuner")` into a `r ref("resample()")` call to get the outer resampling loop.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-030}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-031}
 resampling_outer = rsmp("cv", folds = 3)
 rr = resample(task = task, learner = at, resampling = resampling_outer, store_models = TRUE)
 ```
@@ -370,7 +370,7 @@ This means that the selected hyperparameters should not vary too much.
 We might observe unstable models in this example because the small data set and the low number of resampling iterations might introduce too much randomness.
 Usually, we aim for the selection of stable hyperparameters for all outer training sets.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-031}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-032}
 #| column: page
 extract_inner_tuning_results(rr)[, .SD, .SDcols = !c("learner_param_vals", "x_domain")]
 ```
@@ -378,26 +378,26 @@ extract_inner_tuning_results(rr)[, .SD, .SDcols = !c("learner_param_vals", "x_do
 Next, we want to compare the predictive performances estimated on the outer resampling to the inner resampling (`extract_inner_tuning_results(rr)`).
 Significantly lower predictive performances on the outer resampling indicate that the models with the optimized hyperparameters overfit the data.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-032}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-033}
 rr$score()[, .(iteration, task_id, learner_id, resampling_id, classif.ce)]
 ```
 
 The archives of the `r ref("AutoTuner")`s allows us to inspect all evaluated hyperparameters configurations with the associated predictive performances.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-033}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-034}
 #| column: page
 extract_inner_tuning_archives(rr, unnest = NULL, exclude_columns = c("resample_result", "uhash", "x_domain", "timestamp"))
 ```
 
 The aggregated performance of all outer resampling iterations is essentially the unbiased performance of an SVM with optimal hyperparameter found by grid search.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-034}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-035}
 rr$aggregate()
 ```
 
 Applying nested resampling can be shortened by using the `r ref("tune_nested()")`-shortcut.
 
-```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-035, eval = FALSE}
+```{r 2021-03-09-practical-tuning-series-tune-a-support-vector-machine-036, eval = FALSE}
 learner = lrn("classif.svm", type = "C-classification")
 learner$param_set$values$cost = to_tune(p_dbl(1e-5, 1e5, logscale = TRUE))
 learner$param_set$values$gamma = to_tune(p_dbl(1e-5, 1e5, logscale = TRUE))
@@ -418,3 +418,5 @@ rr = tune_nested(
 
 The [mlr3book](https://mlr3book.mlr-org.com/) includes chapters on [tuning spaces](https://mlr3book.mlr-org.com/searchspace.html) and [hyperparameter tuning](https://mlr3book.mlr-org.com/tuning.html).
 The [mlr3cheatsheets](https://cheatsheets.mlr-org.com/) contain frequently used commands and workflows of mlr3.
+
+{{< include ../../_session_info.qmd >}}
