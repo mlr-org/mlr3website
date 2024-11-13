@@ -7,7 +7,7 @@ website:
   description: Website of the mlr organization
   favicon: images/favicon.ico
   # reader-mode: true
-  announcement: 
+  announcement:
     icon: info-circle
     dismissable: true
     content: "The mlr3book has a [new chapter](https://mlr3book.mlr-org.com/chapters/chapter15/predsets_valid_inttune.html) on validation and internal tuning"
@@ -55,6 +55,12 @@ website:
       - resources.qmd
       - book.qmd
       - gallery.qmd
+      - text: "Benchmarks"
+        menu:
+          - benchmarks_mlr3.qmd
+          - benchmarks_mlr3tuning.qmd
+          - benchmarks_mlr3fselect.qmd
+          - benchmarks_paradox.qmd
       - team.qmd
       - text: "More"
         menu:
