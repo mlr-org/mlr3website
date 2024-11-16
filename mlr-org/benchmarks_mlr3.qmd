@@ -40,6 +40,19 @@ plot_runtime = function(data) {
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 }
 
+plot_overhead = function(data) {
+  data = copy(data)
+  data[, overhead := median_run_time - total_model_time ]
+  ggplot(data, aes(x = mlr3, y = overhead)) +
+  geom_col(group = 1, fill = "#008080") +
+  geom_errorbar(aes(ymin = overhead - mad_run_time, ymax = overhead + mad_run_time), width = 0.5, position = position_dodge(0.9)) +
+  #geom_hline(aes(yintercept = model_time * evals / 1000), linetype = "dashed") +
+  facet_wrap(~evals, scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
+  labs(x = "mlr3 Version", y = "Overhead [s]") +
+  theme_minimal(base_size = 7) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
 plot_memory = function(data) {
   ggplot(data, aes(x = mlr3, y = median_memory)) +
   geom_col(group = 1, fill = "#ff6347") +
@@ -99,41 +112,9 @@ create_table = function(data) {
   }
 ```
 
-# Version Histroy
+The mlr3 package comes with `resample()` and `benchmark()` functions to evaluate models.
+The runtime and memory usage of these functions are compared for different mlr3 versions.
 
-## mlr3
-
-**mlr3 0.20.3**
-
-* refactor: Optimize runtime of fixing factor levels.
-* refactor: Optimize runtime of setting row roles.
-* refactor: Optimize runtime of marshalling.
-* refactor: Optimize runtime of `Task$col_info`
-
-**mlr3 0.18.0**
-
-* Skip unnecessary clone of learner's state in `resample()`.
-
-**mlr3 0.17.1**
-
-* Remove `data_prototype` when resampling from `learner$state` to reduce memory consumption.
-* Optimize runtime of `resample()` and `benchmark()` by reducing the number of hashing operations.
-* Reduce number of threads used by data.table and BLAS to 1 when running resample() or benchmark() in parallel.
-
-**mlr3 0.17.0**
-
-* Speed up resampling by removing unnecessary calls to `packageVersion()`.
-* The `design` of `benchmark()` can now include parameter settings.
-
-## paradox
-
-**paradox 1.0.1**
-
-* Performance improvements.
-
-**paradox 1.0.0**
-
-* Removed Param objects. ParamSet now uses a data.table internally; individual parameters are more like Domain objects now.
 
 # Resampling
 
@@ -182,6 +163,7 @@ resample(task, learner, resampling)
 #|  The dashed line indicates the total training time of the models.
 #|  Error bars represent the median absolute devidation of the runtime.
 plot_runtime(data[algorithm == "resample_sequential" & model_time == 1000 & task == "data_1000"])
+plot_overhead(data[algorithm == "resample_sequential" & model_time == 1000 & task == "data_1000"])
 ```
 
 ```{r}
@@ -933,3 +915,38 @@ plot_size_evals(data[object == "benchmark result store models"])
 create_table(data[object == "benchmark result store models"])
 ```
 
+# Version Histroy
+
+## mlr3
+
+**mlr3 0.20.3**
+
+* refactor: Optimize runtime of fixing factor levels.
+* refactor: Optimize runtime of setting row roles.
+* refactor: Optimize runtime of marshalling.
+* refactor: Optimize runtime of `Task$col_info`
+
+**mlr3 0.18.0**
+
+* Skip unnecessary clone of learner's state in `resample()`.
+
+**mlr3 0.17.1**
+
+* Remove `data_prototype` when resampling from `learner$state` to reduce memory consumption.
+* Optimize runtime of `resample()` and `benchmark()` by reducing the number of hashing operations.
+* Reduce number of threads used by data.table and BLAS to 1 when running resample() or benchmark() in parallel.
+
+**mlr3 0.17.0**
+
+* Speed up resampling by removing unnecessary calls to `packageVersion()`.
+* The `design` of `benchmark()` can now include parameter settings.
+
+## paradox
+
+**paradox 1.0.1**
+
+* Performance improvements.
+
+**paradox 1.0.0**
+
+* Removed Param objects. ParamSet now uses a data.table internally; individual parameters are more like Domain objects now.
