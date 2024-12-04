@@ -1,7 +1,8 @@
 ---
-title: "mlr3"
+title: "mlr3 Runtime and Memory Benchmarks"
 sidebar: false
 toc: true
+cache: false
 ---
 
 {{< include _setup.qmd >}}
@@ -11,28 +12,17 @@ toc: true
 library(data.table)
 library(ggplot2)
 library(gt)
+library(DBI)
 
-snapshot = mlr3misc::rowwise_table(
-  ~renv_project, ~mlr3, ~paradox,
-  "snapshot_2022_07_21", "0.13.4", "0.9.0",
-  "snapshot_2022_11_02", "0.14.2", "0.10.0",
-  "snapshot_2023_03_17", "0.15.0", "0.11.1",
-  "snapshot_2023_06_18", "0.16.0", "0.11.1",
-  "snapshot_2023_11_17", "0.17.0", "0.11.1",
-  "snapshot_2023_12_21", "0.17.1", "0.11.1",
-  "snapshot_2024_01_09", "0.17.2", "0.11.1",
-  "snapshot_2024_03_05", "0.18.0", "0.11.1",
-  "snapshot_2024_04_24", "0.19.0", "0.11.1",
-  "snapshot_2024_06_28", "0.20.0", "1.0.0",
-  "snapshot_2024_07_22", "0.20.1", "1.0.1",
-  "snapshot_2024_07_29", "0.20.2", "1.0.1",
-  "snapshot_2024_08_14", "0.20.3", "1.0.1"
-)
+con = dbConnect(RSQLite::SQLite(), here::here("mlr-org/benchmark_results.db"))
+snapshot = setDT(dbReadTable(con, "mlr3_snapshots"))
+snapshot[, mlr3 := factor(mlr3)]
+snapshot[, paradox := factor(paradox)]
 
 plot_runtime = function(data) {
-  ggplot(data, aes(x = mlr3, y = median_run_time)) +
+  ggplot(data, aes(x = mlr3, y = median_runtime)) +
   geom_col(group = 1, fill = "#008080") +
-  geom_errorbar(aes(ymin = median_run_time - mad_run_time, ymax = median_run_time + mad_run_time), width = 0.5, position = position_dodge(0.9)) +
+  geom_errorbar(aes(ymin = median_runtime - mad_runtime, ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
   geom_hline(aes(yintercept = model_time * evals / 1000), linetype = "dashed") +
   facet_wrap(~evals, scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
   labs(x = "mlr3Version", y = "Runtime [s]") +
@@ -42,10 +32,10 @@ plot_runtime = function(data) {
 
 plot_overhead = function(data) {
   data = copy(data)
-  data[, overhead := median_run_time - total_model_time ]
+  data[, overhead := median_runtime - total_model_time ]
   ggplot(data, aes(x = mlr3, y = overhead)) +
   geom_col(group = 1, fill = "#008080") +
-  geom_errorbar(aes(ymin = overhead - mad_run_time, ymax = overhead + mad_run_time), width = 0.5, position = position_dodge(0.9)) +
+  geom_errorbar(aes(ymin = overhead - mad_runtime, ymax = overhead + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
   #geom_hline(aes(yintercept = model_time * evals / 1000), linetype = "dashed") +
   facet_wrap(~evals, scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
   labs(x = "mlr3 Version", y = "Overhead [s]") +
@@ -57,6 +47,7 @@ plot_memory = function(data) {
   ggplot(data, aes(x = mlr3, y = median_memory)) +
   geom_col(group = 1, fill = "#ff6347") +
   geom_errorbar(aes(ymin = median_memory - mad_memory, ymax = median_memory + mad_memory), width = 0.5, position = position_dodge(0.9)) +
+  geom_hline(aes(yintercept = 131), linetype = "dashed") +
   facet_wrap(~evals, scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
   labs(x = "mlr3 Version", y = "Memory [MB]") +
   theme_minimal(base_size = 7) +
@@ -64,13 +55,13 @@ plot_memory = function(data) {
 }
 
 create_table = function(data) {
-  data = data[, -c("mad_run_time", "mad_memory", "renv_project", "algorithm")]
+  data = data[, -c("mad_memory", "mad_runtime")]
 
   data_1000 = data[task == "data_1000", -"task"]
   data_10000 = data[task == "data_10000", -c("task", "k", "total_model_time")]
   data = merge(data_1000, data_10000, by = c("mlr3", "paradox", "model_time", "evals"), suffixes = c("", "_10000"))
 
-  setcolorder(data, c("mlr3", "paradox", "model_time", "evals", "total_model_time", "median_run_time", "median_run_time_10000", "k", "median_memory", "median_memory_10000"))
+  setcolorder(data, c("mlr3", "paradox", "model_time", "evals", "total_model_time", "median_runtime", "median_runtime_10000", "k", "median_memory", "median_memory_10000"))
 
   data %>%
     gt() %>%
@@ -80,12 +71,12 @@ create_table = function(data) {
       model_time = "Model Time [ms]",
       evals = "Resampling Iterations",
       total_model_time = "Total Model Time [s]",
-      median_run_time = "Median Runtime [s]",
-      median_run_time_10000 = "Median Runtime 10,000 [s]",
+      median_runtime = "Median Runtime [s]",
+      median_runtime_10000 = "Median Runtime 10,000 [s]",
       k = "K",
       median_memory = "Median Memory [MB]",
       median_memory_10000 = "Median Memory 10,000 [s]") %>%
-    fmt_number(columns = c("k", "median_run_time", "median_run_time_10000"), n_sigfig = 2) %>%
+    fmt_number(columns = c("k", "median_runtime", "median_runtime_10000"), n_sigfig = 2) %>%
     fmt_number(columns = c("median_memory", "median_memory_10000"), decimals = 0) %>%
     tab_style(
       style = list(
@@ -114,27 +105,51 @@ create_table = function(data) {
 
 The mlr3 package comes with `resample()` and `benchmark()` functions to evaluate models.
 The runtime and memory usage of these functions are compared for different mlr3 versions.
+The experiments vary the training time of the models and the number of resampling iterations.
+The training time of the models is set to 1 ms, 10 ms, 100 ms, and 1 s.
+
+# Summary of Latest mlr3 Version
+
+Models with a training time of 1 second and 100 ms have almost no overhead in `resample()` and `benchmark()`.
+For models with a training time of 10 ms, the runtime is doubled by the overhead.
+The runtime is 10 times larger than the model training for models with a training time of 1 ms.
+
+In section X we analyzed the runtime performance when training models in parallel with `future::multisession` on 10 cores.
+In this scenario the overhead includes the time to start the parallel workers and the time to collect the results.
+For 1 seconds training time it is beneficial to train the models in parallel even for 10 resampling iterations.
+For 100 ms training time the parallelization overhead is too large for 10 resampling iterations.
+The models with a training time of 10 ms only benefit from parallelization when more than 1000 resampling iterations are run.
+For models with a training time of 1 ms the parallelization overhead is too large for all scenarios.
+The sequential execution is faster than the parallel execution.
+
+The results of `resample()` and `benchmark()` are very similar.
+ As the same code is used internally, this was to be expected.
+
+
+
+
 
 
 # Resampling
 
 ```{r}
 #| include: false
+data_memory = setDT(dbReadTable(con, "mlr3_resample_memory"))[, list(task, evals, renv_project, median_memory, mad_memory)]
+data_memory[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+data_memory = data_memory [snapshot, on = "renv_project"]
+setorderv(data_memory, c("task", "evals", "mlr3"), order = c(1, 1, 1))
+data_memory = data_memory[, -c("renv_project")]
 
-data_memory = fread(here::here("mlr-org/benchmark_results/mlr3_resample_memory.csv"))[, list(model_time, task, evals, renv_project, algorithm, median_memory, mad_memory)]
-data_runtime = fread(here::here("mlr-org/benchmark_results/mlr3_resample_runtime.csv"))[, list(model_time, task, evals, renv_project, algorithm, median_run_time, mad_run_time, k)]
-data = merge(data_memory, data_runtime, by = c("model_time", "task", "evals", "renv_project", "algorithm"))
+data_runtime = setDT(dbReadTable(con, "mlr3_resample_runtime"))[, list(model_time, task, evals, renv_project, median_runtime, mad_runtime, k)]
+data_runtime[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+data_runtime = data_runtime[snapshot, on = "renv_project"]
+setorderv(data_runtime, c("task", "model_time", "evals", "mlr3"), order = c(1, 1, 1, 1))
+data_runtime = data_runtime[, -c("renv_project")]
+data_runtime[, median_runtime := median_runtime / 1000]
+data_runtime[, mad_runtime := mad_runtime / 1000]
+data_runtime[, total_model_time := model_time * evals / 1000]
 
-# fix
-# data[renv_project == "/home/mbecke16/mlr-benchmark/mlr3/default/snapshots/snapshot_2023_01_09", renv_project := "/home/mbecke16/mlr-benchmark/mlr3/default/snapshots/snapshot_2024_01_09"]
-
-data[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
-data = data[snapshot, on = "renv_project"]
-data[, mlr3 := factor(mlr3, levels = c("0.13.4", "0.14.2", "0.15.0", "0.16.0", "0.17.0", "0.17.1", "0.17.2", "0.18.0", "0.19.0", "0.20.0", "0.20.1", "0.20.2", "0.20.3"))]
-setorderv(data, c("algorithm", "model_time", "evals"), order = c(1, 1, 1))
-data[, median_run_time := median_run_time / 1000] # ms to s
-data[, mad_run_time := mad_run_time / 1000] # ms to s
-data[, total_model_time := model_time * evals / 1000] #ms to s
+data_runtime = merge(data_runtime, data_memory, by = c("task", "evals", "mlr3", "paradox"), sort = FALSE)
 ```
 
 The runtime and memory usage of the `resample()` function is compared for different mlr3 versions.
@@ -162,16 +177,7 @@ resample(task, learner, resampling)
 #|  Median runtime of `resample()` with models trained for 1 s depending on the mlr3 version.
 #|  The dashed line indicates the total training time of the models.
 #|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "resample_sequential" & model_time == 1000 & task == "data_1000"])
-plot_overhead(data[algorithm == "resample_sequential" & model_time == 1000 & task == "data_1000"])
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of `resample()` with models trained for 1 s depending on the mlr3 version.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "resample_sequential" & model_time == 1000 & task == "data_1000"])
+plot_runtime(data_runtime[model_time == 1000 & task == "data_1000"])
 ```
 
 ```{r}
@@ -182,7 +188,7 @@ plot_memory(data[algorithm == "resample_sequential" & model_time == 1000 & task 
 #|  The K factor shows how much longer the runtime is than the model training.
 #|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
 #|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "resample_sequential" & model_time == 1000])
+create_table(data_runtime[model_time == 1000])
 ```
 
 ## Model Time 100 ms
@@ -192,16 +198,7 @@ create_table(data[algorithm == "resample_sequential" & model_time == 1000])
 #| fig-cap: |
 #|  Median runtime of `resample()` with models trained for 100 ms depending on the mlr3 version.
 #|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "resample_sequential" & model_time == 100 & task == "data_1000"])
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of `resample()` with models trained for 100 ms depending on the mlr3 version.
-#|  The dashed line indicates the total training time of the models.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "resample_sequential" & model_time == 100 & task == "data_1000"])
+plot_runtime(data_runtime[model_time == 100 & task == "data_1000"])
 ```
 
 ```{r}
@@ -212,7 +209,7 @@ plot_memory(data[algorithm == "resample_sequential" & model_time == 100 & task =
 #|  The K factor shows how much longer the runtime is than the model training.
 #|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
 #|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "resample_sequential" & model_time == 100])
+create_table(data_runtime[model_time == 100])
 ```
 
 ## Model Time 10 ms
@@ -223,15 +220,7 @@ create_table(data[algorithm == "resample_sequential" & model_time == 100])
 #|  Median runtime of `resample()` with models trained for 10 ms depending on the mlr3 version.
 #|  The dashed line indicates the total training time of the models.
 #|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "resample_sequential" & model_time == 10 & task == "data_1000"])
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of `resample()` with models trained for 10 ms depending on the mlr3 version.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "resample_sequential" & model_time == 10 & task == "data_1000"])
+plot_runtime(data_runtime[model_time == 10 & task == "data_1000"])
 ```
 
 ```{r}
@@ -242,7 +231,7 @@ plot_memory(data[algorithm == "resample_sequential" & model_time == 10 & task ==
 #|  The K factor shows how much longer the runtime is than the model training.
 #|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
 #|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "resample_sequential" & model_time == 10])
+create_table(data_runtime[model_time == 10])
 ```
 
 ## Model Time 1 ms
@@ -253,15 +242,7 @@ create_table(data[algorithm == "resample_sequential" & model_time == 10])
 #|  Median runtime of `resample()` with models trained for 1 ms depending on the mlr3 version.
 #|  The dashed line indicates the total training time of the models.
 #|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "resample_sequential" & model_time == 1 & task == "data_1000"])
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of `resample()` with models trained for 1 ms depending on the mlr3 version.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "resample_sequential" & model_time == 1 & task == "data_1000"])
+plot_runtime(data_runtime[model_time == 1 & task == "data_1000"])
 ```
 
 ```{r}
@@ -272,7 +253,17 @@ plot_memory(data[algorithm == "resample_sequential" & model_time == 1 & task == 
 #|  The K factor shows how much longer the runtime is than the model training.
 #|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
 #|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "resample_sequential" & model_time == 1])
+create_table(data_runtime[model_time == 1])
+```
+
+## Memory
+
+```{r}
+#| echo: false
+#| fig-cap: |
+#|  Memory usage of `resample()` depending on the mlr3 version.
+#|  Error bars represent the median absolute deviation of the memory usage.
+plot_memory(data_memory[task == "data_1000"])
 ```
 
 # Benchmark
@@ -280,20 +271,22 @@ create_table(data[algorithm == "resample_sequential" & model_time == 1])
 ```{r}
 #| include: false
 
-data_memory = fread(here::here("mlr-org/benchmark_results/mlr3_benchmark_memory.csv"))[, list(model_time, task, evals, renv_project, algorithm, median_memory, mad_memory)]
-data_runtime = fread(here::here("mlr-org/benchmark_results/mlr3_benchmark_runtime.csv"))[, list(model_time, task, evals, renv_project, algorithm, median_run_time, mad_run_time, k)]
-data = merge(data_memory, data_runtime, by = c("model_time", "task", "evals", "renv_project", "algorithm"))
+data_memory = setDT(dbReadTable(con, "mlr3_benchmark_memory"))[, list(task, evals, renv_project, median_memory, mad_memory)]
+data_memory[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+data_memory = data_memory [snapshot, on = "renv_project"]
+setorderv(data_memory, c("task", "evals", "mlr3"), order = c(1, 1, 1))
+data_memory = data_memory[, -c("renv_project")]
 
-# fix
-data[renv_project == "/home/mbecke16/mlr-benchmark/mlr3/default/snapshots/snapshot_2023_01_09", renv_project := "/home/mbecke16/mlr-benchmark/mlr3/default/snapshots/snapshot_2024_01_09"]
+data_runtime = setDT(dbReadTable(con, "mlr3_benchmark_runtime"))[, list(model_time, task, evals, renv_project, median_runtime, mad_runtime, k)]
+data_runtime[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+data_runtime = data_runtime[snapshot, on = "renv_project"]
+setorderv(data_runtime, c("task", "model_time", "evals", "mlr3"), order = c(1, 1, 1, 1))
+data_runtime = data_runtime[, -c("renv_project")]
+data_runtime[, median_runtime := median_runtime / 1000]
+data_runtime[, mad_runtime := mad_runtime / 1000]
+data_runtime[, total_model_time := model_time * evals / 1000]
 
-data[, renv_project := gsub("/home/mbecke16/mlr-benchmark/mlr3/default/snapshots/", "", renv_project)]
-data = data[snapshot, on = "renv_project"]
-data[, mlr3 := factor(mlr3, levels = c("0.13.4", "0.14.2", "0.15.0", "0.16.0", "0.17.0", "0.17.1", "0.17.2", "0.18.0", "0.19.0", "0.20.0", "0.20.1", "0.20.2"))]
-setorderv(data, c("algorithm", "model_time", "evals"), order = c(1, 1, 1))
-data[, median_run_time := median_run_time / 1000] # ms to s
-data[, mad_run_time := mad_run_time / 1000] # ms to s
-data[, total_model_time := model_time * evals / 1000] #ms to s
+data_runtime = merge(data_runtime, data_memory, by = c("task", "evals", "mlr3", "paradox"), sort = FALSE)
 ```
 
 The runtime and memory usage of the `benchmark()` function is compared for different mlr3 versions.
@@ -323,15 +316,7 @@ benchmark(design)
 #|  Median runtime of `benchmark()` with models trained for 1 s depending on the mlr3 version.
 #|  The dashed line indicates the total training time of the models.
 #|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "benchmark_sequential" & model_time == 1000 & task == "data_1000"])
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of `benchmark()` with models trained for 1 s depending on the mlr3 version.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "benchmark_sequential" & model_time == 1000 & task == "data_1000"])
+plot_runtime(data_runtime[model_time == 1000 & task == "data_1000"])
 ```
 
 ```{r}
@@ -342,7 +327,7 @@ plot_memory(data[algorithm == "benchmark_sequential" & model_time == 1000 & task
 #|  The K factor shows how much longer the runtime is than the model training.
 #|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
 #|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "benchmark_sequential" & model_time == 1000])
+create_table(data_runtime[model_time == 1000])
 ```
 
 ## Model Time 100 ms
@@ -352,17 +337,9 @@ create_table(data[algorithm == "benchmark_sequential" & model_time == 1000])
 #| fig-cap: |
 #|  Median runtime of `benchmark()` with models trained for 100 ms depending on the mlr3 version.
 #|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "benchmark_sequential" & model_time == 100 & task == "data_1000"])
+plot_runtime(data_runtime[model_time == 100 & task == "data_1000"])
 ```
 
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of `benchmark()` with models trained for 100 ms depending on the mlr3 version.
-#|  The dashed line indicates the total training time of the models.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "benchmark_sequential" & model_time == 100 & task == "data_1000"])
-```
 
 ```{r}
 #| echo: false
@@ -372,7 +349,7 @@ plot_memory(data[algorithm == "benchmark_sequential" & model_time == 100 & task 
 #|  The K factor shows how much longer the runtime is than the model training.
 #|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
 #|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "benchmark_sequential" & model_time == 100])
+create_table(data_runtime[model_time == 100])
 ```
 
 ## Model Time 10 ms
@@ -383,17 +360,10 @@ create_table(data[algorithm == "benchmark_sequential" & model_time == 100])
 #|  Median runtime of `benchmark()` with models trained for 10 ms depending on the mlr3 version.
 #|  The dashed line indicates the total training time of the models.
 #|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "benchmark_sequential" & model_time == 10 & task == "data_1000"])
+plot_runtime(data_runtime[model_time == 10 & task == "data_1000"])
 ```
 
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of `benchmark()` with models trained for 10 ms depending on the mlr3 version.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "benchmark_sequential" & model_time == 10 & task == "data_1000"])
-```
-
+´
 ```{r}
 #| echo: false
 #| column: body-outset
@@ -402,7 +372,7 @@ plot_memory(data[algorithm == "benchmark_sequential" & model_time == 10 & task =
 #|  The K factor shows how much longer the runtime is than the model training.
 #|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
 #|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "benchmark_sequential" & model_time == 10])
+create_table(data_runtime[model_time == 10])
 ```
 
 ## Model Time 1 ms
@@ -413,15 +383,7 @@ create_table(data[algorithm == "benchmark_sequential" & model_time == 10])
 #|  Median runtime of `benchmark()` with models trained for 1 ms depending on the mlr3 version.
 #|  The dashed line indicates the total training time of the models.
 #|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "benchmark_sequential" & model_time == 1 & task == "data_1000"])
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of `benchmark()` with models trained for 1 ms depending on the mlr3 version.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "benchmark_sequential" & model_time == 1 & task == "data_1000"])
+plot_runtime(data_runtime[model_time == 1 & task == "data_1000"])
 ```
 
 ```{r}
@@ -432,118 +394,95 @@ plot_memory(data[algorithm == "benchmark_sequential" & model_time == 1 & task ==
 #|  The K factor shows how much longer the runtime is than the model training.
 #|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
 #|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "benchmark_sequential" & model_time == 1])
+create_table(data_runtime[model_time == 1])
 ```
 
-# Resample Result
-
-The runtime and memory usage of the `rr$score()` and `rr$aggregate()` is compared for different mlr3 versions.
-
-## Score
+## Memory
 
 ```{r}
-#| eval: false
-task = tsk("spam_1000")
-
-learner = lrn("classif.sleep",
-  sleep_train = model_time / 2,
-  sleep_predict = model_time / 2)
-
-resampling = rsmp("subsampling", repeats = evals)
-
-rr = resample(task, learner, resampling)
-
-rr$score(msr("classif.ce"))
+#| echo: false
+#| fig-cap: |
+#|  Memory usage of `benchmark()` with models trained for 100 ms depending on the mlr3 version.
+#|  The dashed line indicates the total training time of the models.
+#|  Error bars represent the median absolute devidation of the memory usage.
+plot_memory(data_memory[task == "data_1000"])
 ```
+
+# Encapsulation
 
 ```{r}
 #| include: false
-data_memory = fread(here::here("mlr-org/benchmark_results/mlr3_resample_result_memory.csv"))[, list(task, evals, renv_project, algorithm, median_memory, mad_memory)]
-data_runtime = fread(here::here("mlr-org/benchmark_results/mlr3_resample_result_runtime.csv"))[, list(task, evals, renv_project, algorithm, median_run_time, mad_run_time)]
-data = merge(data_memory, data_runtime, by = c("task", "evals", "renv_project", "algorithm"))
 
-data[, renv_project := gsub("/home/mbecke16/mlr-benchmark/mlr3/default/snapshots/", "", renv_project)]
-data = data[snapshot, on = "renv_project"]
-data[, mlr3 := factor(mlr3, levels = c("0.13.4", "0.14.2", "0.15.0", "0.16.0", "0.17.0", "0.17.1", "0.17.2", "0.18.0", "0.19.0", "0.20.0", "0.20.1", "0.20.2"))]
-setorderv(data, c("algorithm", "evals"), order = c(1, 1))
-data[, median_run_time := median_run_time / 1000] # ms to s
-data[, mad_run_time := mad_run_time / 1000] # ms to s
+# data_memory = setDT(dbReadTable(con, "mlr3_resample_memory"))[, list(task, evals, renv_project, median_memory, mad_memory)]
+# data_memory[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+# data_memory = data_memory [snapshot, on = "renv_project"]
+# setorderv(data_memory, c("task", "evals", "mlr3"), order = c(1, 1, 1))
+# data_memory = data_memory[, -c("renv_project")]
 
-plot_runtime = function(data) {
-  ggplot(data, aes(x = mlr3, y = median_run_time)) +
+data_runtime = setDT(dbReadTable(con, "mlr3_encapsulation_runtime"))[, list(task, method, renv_project, median_runtime, mad_runtime)]
+data_runtime[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+data_runtime = data_runtime[snapshot, on = "renv_project"]
+setorderv(data_runtime, c("task", "method", "mlr3"), order = c(1, 1, 1))
+data_runtime = data_runtime[, -c("renv_project")]
+data_runtime[, median_runtime := median_runtime / 1000]
+data_runtime[, mad_runtime := mad_runtime / 1000]
+
+# data_runtime = merge(data_runtime, data_memory, by = c("task", "evals", "mlr3", "paradox"), sort = FALSE)
+```
+
+```{r}
+#| echo: false
+ggplot(data_runtime[task == "data_1000"], aes(x = mlr3, y = median_runtime)) +
   geom_col(group = 1, fill = "#008080") +
-  geom_errorbar(aes(ymin = median_run_time - mad_run_time, ymax = median_run_time + mad_run_time), width = 0.5, position = position_dodge(0.9)) +
+  geom_errorbar(aes(ymin = median_runtime - mad_runtime, ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
+  facet_wrap(~method, scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Method", value))) +
+  labs(x = "mlr3Version", y = "Runtime [s]") +
+  theme_minimal(base_size = 7) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+# Resampling Parallel
+
+```{r}
+plot_runtime = function(data) {
+  ggplot(data, aes(x = mlr3, y = median_runtime)) +
+  geom_col(group = 1, fill = "#008080") +
+  geom_errorbar(aes(ymin = median_runtime - mad_runtime, ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
+  geom_hline(aes(yintercept = model_time * evals / 10 / 1000), linetype = "dashed") +
   facet_wrap(~evals, scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
   labs(x = "mlr3Version", y = "Runtime [s]") +
   theme_minimal(base_size = 7) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 }
-
-create_table = function(data) {
-  data = data[, -c("mad_run_time", "mad_memory", "renv_project", "algorithm")]
-
-  data_1000 = data[task == "data_1000", -"task"]
-  data_10000 = data[task == "data_10000", -"task"]
-  data = merge(data_1000, data_10000, by = c("mlr3", "paradox", "evals"), suffixes = c("", "_10000"))
-
-  setcolorder(data, c("mlr3", "paradox", "evals", "median_run_time", "median_run_time_10000", "median_memory", "median_memory_10000"))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
-      evals = "Resampling Iterations",
-      median_run_time = "Median Runtime [s]",
-      median_run_time_10000 = "Median Runtime 10,000 [s]",
-      median_memory = "Median Memory [MB]",
-      median_memory_10000 = "Median Memory 10,000 [MB]") %>%
-    fmt_number(columns = c("median_run_time", "median_run_time_10000"), n_sigfig = 2) %>%
-    fmt_number(columns = c("median_memory", "median_memory_10000"), decimals = 0) %>%
-    tab_row_group(
-      label = "1000 Resampling Iterations",
-      rows = evals == 1000
-    ) %>%
-    tab_row_group(
-      label = "100 Resampling Iterations",
-      rows = evals == 100
-    ) %>%
-    tab_row_group(
-      label = "10 Resampling Iterations",
-      rows = evals == 10
-    )
-  }
 ```
 
 ```{r}
-#| echo: false
-#| fig-cap: |
-#|  Median runtime of `rr$score()` depending on the mlr3 version for different resampling iterations.
-#|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "resample_score" & task == "data_1000"])
+#| include: false
+data_memory = setDT(dbReadTable(con, "mlr3_resample_parallel_memory"))[, list(task, evals, renv_project, median_memory, mad_memory)]
+data_memory[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+data_memory = data_memory [snapshot, on = "renv_project"]
+setorderv(data_memory, c("task", "evals", "mlr3"), order = c(1, 1, 1))
+data_memory = data_memory[, -c("renv_project")]
+
+data_runtime = setDT(dbReadTable(con, "mlr3_resample_parallel_runtime"))[, list(model_time, task, evals, renv_project, median_runtime, mad_runtime, k)]
+data_runtime[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+data_runtime = data_runtime[snapshot, on = "renv_project"]
+setorderv(data_runtime, c("task", "model_time", "evals", "mlr3"), order = c(1, 1, 1, 1))
+data_runtime = data_runtime[, -c("renv_project")]
+data_runtime[, median_runtime := median_runtime / 1000]
+data_runtime[, mad_runtime := mad_runtime / 1000]
+data_runtime[, total_model_time := model_time * evals / 1000]
+
+data_runtime = merge(data_runtime, data_memory, by = c("task", "evals", "mlr3", "paradox"), sort = FALSE)
 ```
 
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Median memory usage of `rr$score()` depending on the mlr3 version for different resampling iterations.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "resample_score" & task == "data_1000"])
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Runtime and memory usage of `rr$score()` depending on the mlr3 version for different resampling iterations.
-#|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "resample_score"])
-```
-
-## Aggregate
+The runtime and memory usage of the `resample()` function is compared for different mlr3 versions.
+The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset.
+The resampling iterations (`evals`) are set to 1000, 100, and 10.
 
 ```{r}
 #| eval: false
-task = tsk("spam_1000")
+task = tsk("spam")
 
 learner = lrn("classif.sleep",
   sleep_train = model_time / 2,
@@ -551,369 +490,255 @@ learner = lrn("classif.sleep",
 
 resampling = rsmp("subsampling", repeats = evals)
 
-rr = resample(task, learner, resampling)
+future::plan("multisession", workers = 10)
+options("mlr3.exec_chunk_size" = evals / 10)
 
-rr$aggregate(msr("classif.ce"))
+resample(task, learner, resampling)
 ```
+
+## Model Time 1000 ms
 
 ```{r}
 #| echo: false
 #| fig-cap: |
-#|  Median runtime of `rr$aggregate()` depending on the mlr3 version for different resampling iterations.
+#|  Median runtime of `resample()` with models trained for 1 s depending on the mlr3 version.
+#|  The dashed line indicates the total training time of the models.
 #|  Error bars represent the median absolute devidation of the runtime.
-plot_runtime(data[algorithm == "resample_aggregate" & task == "data_1000"])
+plot_runtime(data_runtime[model_time == 1000 & task == "data_1000"])
 ```
+
+```{r}
+#| echo: false
+#| column: body-outset
+#| tbl-cap: |
+#|  Runtime and memory usage of `resample()` with models trained for 1 s depending on the mlr3 version.
+#|  The K factor shows how much longer the runtime is than the model training.
+#|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
+#|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
+create_table(data_runtime[model_time == 1000])
+```
+
+## Model Time 100 ms
 
 ```{r}
 #| echo: false
 #| fig-cap: |
-#|  Median memory usage of `rr$aggregate()` depending on the mlr3 version for different resampling iterations.
-#|  Error bars represent the median absolute devidation of the memory usage.
-plot_memory(data[algorithm == "resample_aggregate" & task == "data_1000"])
+#|  Median runtime of `resample()` with models trained for 100 ms depending on the mlr3 version.
+#|  Error bars represent the median absolute devidation of the runtime.
+plot_runtime(data_runtime[model_time == 100 & task == "data_1000"])
 ```
 
 ```{r}
 #| echo: false
+#| column: body-outset
 #| tbl-cap: |
-#|  Runtime and memory usage of `rr$aggregate()` depending on the mlr3 version for different resampling iterations.
+#|  Runtime and memory usage of `resample()` with models trained for 100 ms depending on the mlr3 version.
+#|  The K factor shows how much longer the runtime is than the model training.
+#|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
 #|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table(data[algorithm == "resample_aggregate"])
+create_table(data_runtime[model_time == 100])
 ```
 
-# Object Size
+## Model Time 10 ms
 
-The size of different objects is compared for different mlr3 versions.
-The size is measured in memory and after calling `serialize()` and `unserialize()`.
+```{r}
+#| echo: false
+#| fig-cap: |
+#|  Median runtime of `resample()` with models trained for 10 ms depending on the mlr3 version.
+#|  The dashed line indicates the total training time of the models.
+#|  Error bars represent the median absolute devidation of the runtime.
+plot_runtime(data_runtime[model_time == 10 & task == "data_1000"])
+```
+
+```{r}
+#| echo: false
+#| column: body-outset
+#| tbl-cap: |
+#|  Runtime and memory usage of `resample()` with models trained for 10 ms depending on the mlr3 version.
+#|  The K factor shows how much longer the runtime is than the model training.
+#|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
+#|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
+create_table(data_runtime[model_time == 10])
+```
+
+## Model Time 1 ms
+
+```{r}
+#| echo: false
+#| fig-cap: |
+#|  Median runtime of `resample()` with models trained for 1 ms depending on the mlr3 version.
+#|  The dashed line indicates the total training time of the models.
+#|  Error bars represent the median absolute devidation of the runtime.
+plot_runtime(data_runtime[model_time == 1 & task == "data_1000"])
+```
+
+```{r}
+#| echo: false
+#| column: body-outset
+#| tbl-cap: |
+#|  Runtime and memory usage of `resample()` with models trained for 1 ms depending on the mlr3 version.
+#|  The K factor shows how much longer the runtime is than the model training.
+#|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
+#|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
+create_table(data_runtime[model_time == 1])
+```
+
+## Memory
+
+```{r}
+#| echo: false
+#| fig-cap: |
+#|  Memory usage of `resample()` depending on the mlr3 version.
+#|  Error bars represent the median absolute deviation of the memory usage.
+plot_memory(data_memory[task == "data_1000"])
+```
+
+# Benchmark Parallel
 
 ```{r}
 #| include: false
 
-data = fread(here::here("mlr-org/benchmark_results/mlr3_object_size.csv"))
+data_memory = setDT(dbReadTable(con, "mlr3_benchmark_parallel_memory"))[, list(task, evals, renv_project, median_memory, mad_memory)]
+data_memory[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+data_memory = data_memory [snapshot, on = "renv_project"]
+setorderv(data_memory, c("task", "evals", "mlr3"), order = c(1, 1, 1))
+data_memory = data_memory[, -c("renv_project")]
 
-data[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
-data = data[snapshot, on = "renv_project"]
+data_runtime = setDT(dbReadTable(con, "mlr3_benchmark_parallel_runtime"))[, list(model_time, task, evals, renv_project, median_runtime, mad_runtime, k)]
+data_runtime[, renv_project := gsub("mlr3/default/snapshots/", "", renv_project)]
+data_runtime = data_runtime[snapshot, on = "renv_project"]
+setorderv(data_runtime, c("task", "model_time", "evals", "mlr3"), order = c(1, 1, 1, 1))
+data_runtime = data_runtime[, -c("renv_project")]
+data_runtime[, median_runtime := median_runtime / 1000]
+data_runtime[, mad_runtime := mad_runtime / 1000]
+data_runtime[, total_model_time := model_time * evals / 1000]
 
-data[, mlr3 := factor(mlr3, levels = c("0.13.4", "0.14.2", "0.15.0", "0.16.0", "0.17.0", "0.17.1", "0.17.2", "0.18.0", "0.19.0", "0.20.0", "0.20.1", "0.20.2"))]
-
-data = data[, -c("renv_project")]
-data_1000 = data[task == "data_1000", -"task"]
-data_10000 = data[task == "data_10000", -"task"]
-data = merge(data_1000, data_10000, by = c("mlr3", "paradox", "evals", "object", "learner"), suffixes = c("", "_10000"))
-
-plot_size = function(data) {
-  data = melt(data, id.vars = c("mlr3", "paradox", "evals", "object", "learner"), measure.vars = c("size", "serialized_size"), value.name = "size", variable.name = "type")
-
-  ggplot(data, aes(x = mlr3, y = size, fill= type, group = type)) +
-    geom_col(position = "dodge") +
-    labs(x = "mlr3Version", y = "Size [MB]") +
-    scale_fill_manual(labels = c("In Memory", "Serialized"), values = c("#008080", "#ff6347"), name = "Type") +
-    theme_minimal(base_size = 7) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-plot_size_evals = function(data) {
-  data = melt(data, id.vars = c("mlr3", "paradox", "evals", "object", "learner"), measure.vars = c("size", "serialized_size"), value.name = "size", variable.name = "type")
-
-  ggplot(data, aes(x = mlr3, y = size, fill= type, group = type)) +
-    geom_col(position = "dodge") +
-    labs(x = "mlr3Version", y = "Size [MB]") +
-    scale_fill_manual(labels = c("In Memory", "Serialization"), values = c("#008080", "#ff6347"), name = "Type") +
-    facet_wrap(~evals, scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
-    theme_minimal(base_size = 7) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-create_table = function(data) {
-  data = data[, -c("learner", "object", "k", "k_10000")]
-  setcolorder(data, c("mlr3", "paradox", "evals", "size", "size_10000", "serialized_size", "serialized_size_10000"))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
-      evals = "Resampling Iterations",
-      size = "In Memory [MB]",
-      size_10000 = "In Memory 10,000 [MB]",
-      serialized_size = "Serialized [MB]",
-      serialized_size_10000 = "Serialized 10,000 [MB]") %>%
-    fmt_number(columns = c("size", "serialized_size", "size_10000", "serialized_size_10000"), n_sigfig = 2) %>%
-    tab_row_group(
-      label = "100 Resampling Iterations",
-      rows = evals == 100
-    ) %>%
-    tab_row_group(
-      label = "10 Resampling Iterations",
-      rows = evals == 10
-    )
-}
+data_runtime = merge(data_runtime, data_memory, by = c("task", "evals", "mlr3", "paradox"), sort = FALSE)
 ```
 
-## Task
+The runtime and memory usage of the `benchmark()` function is compared for different mlr3 versions.
+The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset.
+The resampling iterations (`evals`) are set to 1000, 100, and 10.
 
 ```{r}
 #| eval: false
-task = tsk("spam_1000")
+task = tsk("spam")
+
+learner = lrn("classif.sleep",
+  sleep_train = model_time / 2,
+  sleep_predict = model_time / 2)
+
+resampling = rsmp("subsampling", repeats = instance$evals / 5)
+
+design = benchmark_grid(task, replicate(5, learner), resampling)
+
+future::plan("multisession", workers = 10)
+options("mlr3.exec_chunk_size" = evals / 10)
+
+benchmark(design)
 ```
 
+## Model Time 1000 ms
 
 ```{r}
 #| echo: false
 #| fig-cap: |
-#|  Memory usage of a `Task` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size(data[object == "task"])
+#|  Median runtime of `benchmark()` with models trained for 1 s depending on the mlr3 version.
+#|  The dashed line indicates the total training time of the models.
+#|  Error bars represent the median absolute devidation of the runtime.
+plot_runtime(data_runtime[model_time == 1000 & task == "data_1000"])
 ```
 
 ```{r}
 #| echo: false
+#| column: body-outset
 #| tbl-cap: |
-#|  Memory usage of a `Task` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "task"])
+#|  Runtime and memory usage of `benchmark()` with models trained for 1 s depending on the mlr3 version.
+#|  The K factor shows how much longer the runtime is than the model training.
+#|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
+#|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
+create_table(data_runtime[model_time == 1000])
 ```
 
-## Learner
-
-```{r}
-#| eval: false
-learner = lrn("classif.rpart")
-```
+## Model Time 100 ms
 
 ```{r}
 #| echo: false
 #| fig-cap: |
-#|  Memory usage of a `LearnerClassifRpart` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size(data[object == "learner"])
+#|  Median runtime of `benchmark()` with models trained for 100 ms depending on the mlr3 version.
+#|  Error bars represent the median absolute devidation of the runtime.
+plot_runtime(data_runtime[model_time == 100 & task == "data_1000"])
 ```
+
 
 ```{r}
 #| echo: false
+#| column: body-outset
 #| tbl-cap: |
-#|  Memory usage of a `LearnerClassifRpart` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "learner"])
+#|  Runtime and memory usage of `benchmark()` with models trained for 100 ms depending on the mlr3 version.
+#|  The K factor shows how much longer the runtime is than the model training.
+#|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
+#|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
+create_table(data_runtime[model_time == 100])
 ```
 
-```{r}
-#| eval: false
-learner$train(task)
-```
+## Model Time 10 ms
 
 ```{r}
 #| echo: false
 #| fig-cap: |
-#|  Memory usage of a trained `LearnerClassifRpart` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size(data[object == "learner trained"])
+#|  Median runtime of `benchmark()` with models trained for 10 ms depending on the mlr3 version.
+#|  The dashed line indicates the total training time of the models.
+#|  Error bars represent the median absolute devidation of the runtime.
+plot_runtime(data_runtime[model_time == 10 & task == "data_1000"])
 ```
 
+´
 ```{r}
 #| echo: false
+#| column: body-outset
 #| tbl-cap: |
-#|  Memory usage of a trained `LearnerClassifRpart` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "learner trained"])
+#|  Runtime and memory usage of `benchmark()` with models trained for 10 ms depending on the mlr3 version.
+#|  The K factor shows how much longer the runtime is than the model training.
+#|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
+#|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
+create_table(data_runtime[model_time == 10])
 ```
 
-```{r}
-#| eval: false
-learner$model
-```
+## Model Time 1 ms
 
 ```{r}
 #| echo: false
 #| fig-cap: |
-#|  Memory usage of a model in a `LearnerClassifRpart` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size(data[object == "learner$model"])
+#|  Median runtime of `benchmark()` with models trained for 1 ms depending on the mlr3 version.
+#|  The dashed line indicates the total training time of the models.
+#|  Error bars represent the median absolute devidation of the runtime.
+plot_runtime(data_runtime[model_time == 1 & task == "data_1000"])
 ```
 
 ```{r}
 #| echo: false
+#| column: body-outset
 #| tbl-cap: |
-#|  Memory usage of a model in a `LearnerClassifRpart` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "learner$model"])
+#|  Runtime and memory usage of `benchmark()` with models trained for 1 ms depending on the mlr3 version.
+#|  The K factor shows how much longer the runtime is than the model training.
+#|  A red background indicates that the runtime is 3 times larger than the total training time of the models.
+#|  The table includes runtime and memory usage for tasks of size 1000 and 10,000.
+create_table(data_runtime[model_time == 1])
 ```
 
-```{r}
-#| eval: false
-learner$param_set
-```
+## Memory
 
 ```{r}
 #| echo: false
 #| fig-cap: |
-#|  Memory usage of the `ParamSet` of a `LearnerClassifRpart` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size(data[object == "learner$param_set"])
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of the `ParamSet` of a `LearnerClassifRpart` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "learner$param_set"])
-```
-
-## Prediction
-
-```{r}
-#| eval: false
-pred = learner$predict(task)
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of a `Prediction` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size_evals(data[object == "prediction"])
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `Prediction` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "prediction"])
-```
-
-## Resampling
-
-```{r}
-#| eval: false
-resampling = rsmp("subsampling", repeats = evals)
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of a `Resampling` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size(data[object == "resampling"])
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `Resampling` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "resampling"])
-```
-
-```{r}
-#| eval: false
-resampling$instantiate(task)
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of a instantiated `Resampling` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size_evals(data[object == "resampling instantiated"])
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a instantiated `Resampling` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "resampling instantiated"])
-```
-
-## Resample Result
-
-```{r}
-#| eval: false
-rr = resample(task, learner, resampling)
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of a `ResampleResult` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size_evals(data[object == "resample result"])
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `ResampleResult` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "resample result"])
+#|  Memory usage of `benchmark()` with models trained for 100 ms depending on the mlr3 version.
+#|  The dashed line indicates the total training time of the models.
+#|  Error bars represent the median absolute devidation of the memory usage.
+plot_memory(data_memory[task == "data_1000"])
 ```
 
 
-```{r}
-#| eval: false
-rr = resample(task, learner, resampling, store_models = TRUE)
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of a `ResamplingResult` object with models depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size_evals(data[object == "resample result store models"])
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `ResamplingResult` object with models depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "resample result store models"])
-```
-
-## Benchmark Result
-
-```{r}
-#| eval: false
-bmr = benchmark(task, learner, resampling)
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of a `BenchmarkResult` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size_evals(data[object == "benchmark result"])
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `BenchmarkResult` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "benchmark result"])
-```
-
-```{r}
-#| eval: false
-bmr = benchmark(task, learner, resampling, store_models = TRUE)
-```
-
-```{r}
-#| echo: false
-#| fig-cap: |
-#|  Memory usage of a `BenchmarkResult` object with models depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-plot_size_evals(data[object == "benchmark result store models"])
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `BenchmarkResult` object with models depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table(data[object == "benchmark result store models"])
-```
 
 # Version Histroy
 
