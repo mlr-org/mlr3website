@@ -379,7 +379,7 @@ Now we present some ways that allows us to create ranked list of features based 
 
 The most straightforward ranking is obtained by counting how often each feature appears in the 'best' feature subsets (`"features"`).
 Below, we show the first 8 features, which correspond to the cutoff (`committee_size`) derived from the knee point of the estimated Pareto front.
-The column `"score"` represents these counts:
+The column `"score"` represents these counts, while the column `"norm_score"` is the **feature selection frequency** or also known as **selection probability** [@Meinshausen2010]:
 ```{r efs-024}
 efs$feature_ranking(method = "av", use_weights = FALSE, committee_size = 8)
 ```
@@ -387,17 +387,16 @@ efs$feature_ranking(method = "av", use_weights = FALSE, committee_size = 8)
 In the language of Voting Theory, we call the method that generates these counts *approval voting* (`method = "av"`) [@Lackner2023].
 Using this framework, learners act as *voters*, features act as *candidates* and voters select certain candidates (features).
 The primary objective is to compile these selections into a consensus ranked list of features (i.e a committee).
-The column `"norm_score"` is the feature **selection frequency** or also known as **selection probabilities** [@Meinshausen2010].
 
 Internally, `$feature_ranking()` uses the [`fastVoteR`](https://bblodfon.github.io/fastVoteR/) R package, which supports more advanced ranking methods.
-For example, we can perform **weighted-ranking**, by considering the varying performance (accuracy) of each learner.
+For example, we can perform **weighted ranking**, by considering the varying performance (accuracy) of each learner.
 This results in the same top 8 features but with slightly different ordering:
 ```{r efs-025}
 efs$feature_ranking(method = "av", use_weights = TRUE, committee_size = 8)
 ```
 
 Additionally, alternative ranking methods are supported.
-Below, we use *satisfaction approval voting* (SAV), which results in a different feature ranking (e.g. `"V10"` feature is now included in the top 8 features):
+Below, we use *satisfaction approval voting* (SAV), which results in a different feature ranking (e.g. `"V10"` feature is now included in the top 8 features but not `"V4"`):
 ```{r efs-026}
 efs$feature_ranking(method = "sav", committee_size = 8)
 ```
