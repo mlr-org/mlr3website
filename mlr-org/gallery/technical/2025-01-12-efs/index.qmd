@@ -6,7 +6,7 @@ author:
   - name: John Zobolas
     orcid: 0000-0002-3609-8674
     url: https://github.com/bblodfon
-date: 2025-12-01
+date: 2025-01-12
 bibliography: ../../bibliography.bib
 ---
 
@@ -60,7 +60,7 @@ The **ensemble feature selection (EFS)** workflow is the following (in parenthes
 1. Repeatedly split a dataset to **train/test sets** (`init_resampling`), e.g. by subsampling $B$ times.
 2. Choose $M$ **learners** (`learners`).  
 3. Perform **wrapped-based feature selection** on each train set from (1) using each of the models from (2).
-This process results in a *best feature (sub)set* and a *final trained model* using these best features, **for each combination of train set and learner** ($B \times M$).
+This process results in a 'best' feature (sub)set and a final trained model using these best features, for each combination of train set and learner ($B \times M$ combinations in total).
 4. Score the final models on the respective test sets.
 
 To guide the feature selection process (3) we need to choose:
@@ -104,7 +104,7 @@ options(progressr.enable = TRUE)
 handlers(global = TRUE)
 handlers("progress")
 
-# Parallelization: use 10 cores
+# Parallelization for EFS: use 10 cores
 plan("multisession", workers = 10)
 ```
 
@@ -112,7 +112,7 @@ plan("multisession", workers = 10)
 
 For each (train set, learner) combination we will run a Recursive Feature Elimination (RFE) optimization algorithm.
 We configure the algorithm to start with all features of the `task`, remove the 80% less important features in each iteration, and stop when 2 features are reached.
-In each RFE iteration, a 5-fold CV resampling of the given `task` takes place using the specified `learner`.
+In each RFE iteration, a 5-fold CV resampling of the given `task` takes place and a `learner` is trained and used for prediction on the test folds.
 The outcome of each RFE iteration is the average CV error (performance estimate) and the feature importances (by default the average of the feature ranks from each fold).
 Practically, for the `sonar` dataset, we will have **15 RFE iterations**, with the following feature subset sizes:
 
@@ -129,7 +129,7 @@ See [this gallery post](https://mlr-org.com/gallery/optimization/2023-02-07-recu
 
 ### Learners
 
-We define a `list()` with the following $M = 4$ classification `learners` (parameters are set at default values): 
+We define a `list()` with the following classification `learners` (parameters are set at default values): 
 
 1. XGBoost with early stopping
 2. A tree
@@ -138,6 +138,7 @@ We define a `list()` with the following $M = 4$ classification `learners` (param
 
 ```{r efs-006}
 max_nrounds = 500
+
 learners = list(
   lrn("classif.xgboost", id = "xgb", nrounds = max_nrounds,
       early_stopping_rounds = 20, validate = "test"),
@@ -150,7 +151,7 @@ learners = list(
 :::{.callout-note}
 It is possible to perform tuning while also performing wrapper-based feature selection. This practically means that we would use an `AutoTuner` learner with its own inner resampling scheme and tuning space in the above list.
 The whole process would then be a double (nested) cross-validation with outer loop the $B$ subsample iterations, which is computationally taxing.
-Models that need minimum to no tuning (e.g. like Random Forests) are therefore ideal candidates for wrapper-based feature selection.
+Models that need minimum to no tuning (e.g. like Random Forests) are therefore ideal candidates for wrapper-based ensemble feature selection.
 :::
 
 ### Callbacks
@@ -193,7 +194,7 @@ Using the [`mlr3fselect::ensemble_fselect()`](https://mlr3fselect.mlr-org.com/re
 For a particular (train set, learner) combination, the RFE process will evaluate the $15$ feature subsets mentioned above.
 Using the inner 5-fold CV resampling scheme, the average CV classification error will be used to find the best feature subset.
 Using only features from this best feature set, a final model will be trained using all the observations from each trained set.
-Lastly, the performance of this final model will be assessed on the corresponding test set using the classification accuracy.
+Lastly, the performance of this final model will be assessed on the corresponding test set using the classification accuracy metric.
 
 ```{r efs-010}
 #| eval: false
@@ -241,17 +242,16 @@ For each learner (`"learner_id"`) and dataset subsample (`"resampling_iteration"
 
 - The 'best' feature subsets (`"features"`)
 - The number of 'best' features (`"nfeatures"`)
-- The average rank importances for these 'best' features (`"importance"`) - this output column we get only because RFE optimization was used
-- Inner optimization performance scores on the train sets (`"classif.ce_inner"`)
-- Performance scores on the test sets (`"classif.acc"`)
+- The importances for these 'best' features (`"importance"`) - this output column we get only because RFE optimization was used
+- The inner optimization performance scores on the train sets (`"classif.ce_inner"`)
+- The performance scores on the test sets (`"classif.acc"`)
 
-Since there are two ways in this process to evaluate performance, we can always check which is the *active* measure:
-
+Since there are two ways in this process to evaluate performance, we can always check which is the **active measure**:
 ```{r efs-013}
 efs$active_measure
 ```
 
-By default the active measure is `"outer"`, i.e. the measure used to evaluate each learner's performance in the test sets.
+By default the active measure is the `"outer"`, i.e. the measure used to evaluate each learner's performance in the test sets.
 In our case that was the classification accuracy:
 
 ```{r efs-014}
@@ -259,7 +259,7 @@ efs$measure
 ```
 
 :::{.callout-note}
-In the following sections and analyses, we can use the inner optimization scores (i.e. `"classif.ce_inner"`) by executing `efs$set_active_measure("inner")`.
+In the following sections we can use the inner optimization scores (i.e. `"classif.ce_inner"`) by executing `efs$set_active_measure("inner")`.
 This affects all methods and plots that use performance scores.
 :::
 
@@ -276,7 +276,7 @@ autoplot(efs, type = "performance") +
   theme_minimal(base_size = 14)
 ```
 
-We observe that RF has better classification accuracy on the test sets of the $50$ subsamples, followed by XGBoost, then the SVM and last the tree model (as expected).
+We observe that RF has better classification accuracy on the test sets of the $50$ subsamples, followed by XGBoost, then the SVM and last the tree model.
 
 ## Number of Selected Features
 
@@ -291,7 +291,7 @@ autoplot(efs, type = "n_features") +
   theme_minimal(base_size = 14)
 ```
 
-We observe that RF needed more features to achieve the average best performance (~20), followed by SVM (~15), then XGBoost (~12) and the tree model (~5) was the model using the least features (but with worst performance).
+We observe that RF needed more features to achieve the best average performance, followed by SVM, then XGBoost and the tree model was the model using the least features (but with worst performance).
 
 ## Pareto Plot
 
@@ -299,23 +299,23 @@ Both performance scores and number of features selected by the RFE optimization 
 Here we also draw the **Pareto front**, i.e. the set of points that represent the trade-off between the number of features and performance (classification accuracy).
 As we see below, these points are derived from multiple learners and resamplings:
 ```{r efs-017}
-#| fig-cap: "Number of features vs Accuracy with empirical pareto front"
 #| warning: false
 
 autoplot(efs, type = "pareto") +
   scale_color_brewer(palette = "Set1") +
-  theme_minimal(base_size = 14)
+  theme_minimal(base_size = 14) +
+  labs(title = "Empirical Pareto front")
 ```
 
-We can also draw an **estimated Pareto front curve** by fitting a linear model with the inversed of the number of selected features ($1/x$) of the empirical Pareto front as input, and the associated performance scores as output:
+We can also draw an **estimated Pareto front curve** by fitting a linear model with the inverse of the number of selected features ($1/x$) of the empirical Pareto front as input, and the associated performance scores as output:
 
 ```{r efs-018}
-#| fig-cap: "Number of features vs Accuracy with an estimated pareto front"
 #| warning: false
 
 autoplot(efs, type = "pareto", pareto_front = "estimated") +
   scale_color_brewer(palette = "Set1") +
-  theme_minimal(base_size = 14)
+  theme_minimal(base_size = 14) +
+  labs(title = "Estimated Pareto front")
 ```
 
 ## Knee Point Identification
@@ -326,12 +326,11 @@ By default, we use the geometry-based *Normal-Boundary Intersection* (NBI) metho
 This approach calculates the perpendicular distance of each point from the line connecting the first (worst performance, minimum number of features) and last (best performance, maximum number of features) point of the Pareto front.
 The knee point is then identified as the point with the maximum distance from this line [@Das1999].
 
+Using the empirical and estimated Pareto fronts, we observe that the optimal knee points correspond to different numbers of features:
 ```{r efs-019}
 efs$knee_points()
 efs$knee_points(type = "estimated")
 ```
-
-Using the empirical and estimated Pareto fronts, we observe that the optimal knee points correspond to different numbers of features.
 
 :::{.callout-tip title="Number of features cutoff"}
 The number of features at the identified knee point provides a cutoff for prioritizing features when working with a ranked feature list (see "Feature Ranking" section).
@@ -342,7 +341,7 @@ The number of features at the identified knee point provides a cutoff for priori
 The `stabm` R package [@Bommert2021] implements many measures for the assessment of the **stability of feature selection**, i.e. the similarity between the selected feature sets (`"features"` column in the `EnsembleFSResult` object).
 We can use these measures to assess and visualize the stability across all resampling iterations and learners (`global = "TRUE"`) or per each learner separately (`global = "FALSE"`).
 
-The default stability measure is the *Jaccard Index*:
+The default stability measure is the **Jaccard Index**:
 ```{r efs-020}
 efs$stability(stability_measure = "jaccard", global = TRUE)
 ```
@@ -363,7 +362,7 @@ autoplot(efs, type = "stability") +
   theme_minimal(base_size = 14)
 ```
 
-Alternatively, the *Nogueira* measure can be used, which unlike the Jaccard Index, it's a chance-corrected similarity measure [@Nogueira2018]:
+Alternatively, the **Nogueira** stability measure can be used, which unlike the Jaccard Index, it's a chance-corrected similarity measure [@Nogueira2018]:
 ```{r efs-023}
 #| warning: false
 autoplot(efs, type = "stability", stability_measure = "nogueira", 
@@ -374,11 +373,11 @@ autoplot(efs, type = "stability", stability_measure = "nogueira",
 
 ## Feature Ranking
 
-Using the Pareto method, we saw how we can identify a reasonable cutoff for the number of features.
-Now we present some ways that allows us to create ranked list of features based on the ensemble feature selection process.
+Using the Pareto method, we demonstrated how we can identify a reasonable cutoff for the number of selected features.
+Now we will focus on how to create a consensus ranked feature list based on the results of the ensemble feature selection.
 
 The most straightforward ranking is obtained by counting how often each feature appears in the 'best' feature subsets (`"features"`).
-Below, we show the first 8 features, which correspond to the cutoff (`committee_size`) derived from the knee point of the estimated Pareto front.
+Below we show the top 8 features, i.e. up to the cutoff derived from the knee point of the estimated Pareto front.
 The column `"score"` represents these counts, while the column `"norm_score"` is the **feature selection frequency** or also known as **selection probability** [@Meinshausen2010]:
 ```{r efs-024}
 efs$feature_ranking(method = "av", use_weights = FALSE, committee_size = 8)
@@ -386,7 +385,8 @@ efs$feature_ranking(method = "av", use_weights = FALSE, committee_size = 8)
 
 In the language of Voting Theory, we call the method that generates these counts *approval voting* (`method = "av"`) [@Lackner2023].
 Using this framework, learners act as *voters*, features act as *candidates* and voters select certain candidates (features).
-The primary objective is to compile these selections into a consensus ranked list of features (i.e a committee).
+The primary objective is to compile these selections into a consensus ranked list of features (a committee).
+The `committee_size` specifies how many (top-ranked) features to return.
 
 Internally, `$feature_ranking()` uses the [`fastVoteR`](https://bblodfon.github.io/fastVoteR/) R package, which supports more advanced ranking methods.
 For example, we can perform **weighted ranking**, by considering the varying performance (accuracy) of each learner.
