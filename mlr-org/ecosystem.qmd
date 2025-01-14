@@ -80,7 +80,7 @@ content = rowwise_table(
     "tasks",           "mlr3spatiotempcv",  "stable",       "https://mlr3spatiotempcv.mlr-org.com/",      "Spatiotemporal resampling and visualization methods",
     "tasks",           "mlr3cluster",       "stable",       "https://mlr3cluster.mlr-org.com/",           "Cluster analysis",
     "tasks",           "mlr3proba",         "stable",       "https://mlr3proba.mlr-org.com/",             "Probabilistic predictions",
-    "tasks",           "mlr3temporal",      "experimental", "https://mlr3temporal.mlr-org.com/",          "Time series analysis",
+    "tasks",           "mlr3forecast",      "experimental", "https://mlr3forecast.mlr-org.com/",          "Time series analysis",
     "tasks",           "mlr3spatial",       "stable",       "https://mlr3spatial.mlr-org.com/",           "Spatial data backends and prediction functions",
     "tasks",           "mlr3fda",           "stable",       "https://mlr3fda.mlr-org.com",                "Functional Data Analysis",
     "tasks",           "mlr3fairness",      "stable",       "https://mlr3fairness.mlr-org.com/",          "Fairness in Machine Learning",
@@ -107,7 +107,7 @@ setkeyv(content, c("category", "status"))
 #| echo: false
 package_grid(content[.("core")])
 ```
- 
+
 ## <i class="bi-pen"></i> Learners
 
 ```{r}
