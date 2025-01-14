@@ -22,9 +22,12 @@ efs = readRDS(file = "efs.rds")
 Some papers from which we draw the ideas for this tutorial:
 
 - **Stability selection**, i.e. drawing multiple subsamples from a dataset and performing feature selection on each [@Meinshausen2010].
+Stability selection helps ensure that the selected features are robust to variations in the training data, increasing the reliability of the feature selection process.
 - The **ensemble idea** for feature selection, i.e. using multiple methods or models to perform feature selection on a dataset [@Saeys2008].
+This combines the strengths of different approaches to achieve more comprehensive results and alleviates biases that may arise from each individual approach for feature selection.
 
 In this post we will show how we can use the `mlr3fselect` R package to perform *wrapped*-based ensemble feature selection on a given dataset.
+Wrapper-based ensemble feature selection involves applying stability selection techniques (resampling of the data) to create robust feature subsets by leveraging multiple ML models in wrapper-based feature selection strategies.
 
 :::{.callout-note}
 We also support *embedded-based* ensemble feature selection, see the function [`mlr3fselect::embedded_ensemble_fselect()`](https://mlr3fselect.mlr-org.com/reference/embedded_ensemble_fselect.html) for more details.
@@ -34,15 +37,11 @@ We also support *embedded-based* ensemble feature selection, see the function [`
 
 ```{r efs-002}
 #| output: false
-library(mlr3)
-library(mlr3fselect)
+library(mlr3verse)
 library(fastVoteR) # for feature ranking
-library(mlr3learners) # fpr xgboost, svm learners
-library(paradox)
+library(ggplot2)
 library(future)
 library(progressr)
-library(mlr3viz)
-library(ggplot2)
 ```
 
 ## Dataset
@@ -71,8 +70,7 @@ To guide the feature selection process (3) we need to choose:
 - A stopping criterion for the feature selection (`terminator`), i.e. how many iterations should the optimization algorithm run
 
 :::{.callout-note}
-- Choosing RFE as the feature selection optimization algorithm means that all `learners` need to have the `"importance"` property.
-- The `inner_measure` (used for finding the best feature subset in each train set) and `measure` (assesses performance on each test set) can be different.
+The `inner_measure` (used for finding the best feature subset in each train set) and `measure` (assesses performance on each test set) can be different.
 :::
 
 ### Parallelization
@@ -127,6 +125,10 @@ rfe = fs("rfe", n_features = 2, feature_fraction = 0.8)
 
 See [this gallery post](https://mlr-org.com/gallery/optimization/2023-02-07-recursive-feature-elimination/) for more details on RFE optimization.
 
+:::{.callout-note}
+- Using RFE as the feature selection optimization algorithm means that all `learners` need to have the `"importance"` property.
+:::
+
 ### Learners
 
 We define a `list()` with the following classification `learners` (parameters are set at default values): 
@@ -164,7 +166,7 @@ svm_rfe
 
 ---
 
-Also, since the XGBoost learner performs *simultaneously* feature selection (via RFE) and internal tuning (via early stopping - using as validation sets the test folds in the inner cross-validation resampling scheme), we need to define the following callback:
+Also, since the XGBoost learner performs **internal tuning via early stopping**, where the test folds in the inner cross-validation resampling scheme act as validation sets, we need to define the following callback:
 ```{r efs-008}
 internal_ss = ps(
   nrounds = p_int(upper = max_nrounds, aggr = function(x) as.integer(mean(unlist(x))))
@@ -174,7 +176,7 @@ xgb_clbk = clbk("mlr3fselect.internal_tuning", internal_search_space = internal_
 xgb_clbk
 ```
 
-This practically sets the boosting rounds of the final XGBoost model as the average boosting rounds from each subsequent training fold (corresponding to the model trained with the 'best' feature subset).
+This practically sets the boosting rounds of the final XGBoost model (after the RFE optimization is finished) as the average boosting rounds from each subsequent training fold (corresponding to the model trained with the 'best' feature subset).
 For example, since we're performing a 5-fold inner CV, we would have 5 different early-stopped boosting `nrounds`, from which we will use the average value to train the final XGBoost model using the whole train set.
 
 ---
@@ -271,9 +273,8 @@ Each box represents the distribution of scores across different resampling itera
 ```{r efs-015}
 #| warning: false
 
-autoplot(efs, type = "performance") +
-  scale_fill_brewer(palette = "Set1") +
-  theme_minimal(base_size = 14)
+autoplot(efs, type = "performance", theme = theme_minimal(base_size = 14)) +
+  scale_fill_brewer(palette = "Set1")
 ```
 
 We observe that RF has better classification accuracy on the test sets of the $50$ subsamples, followed by XGBoost, then the SVM and last the tree model.
@@ -285,10 +286,9 @@ Continuing, we can plot **the number of features selected by each learner** in t
 ```{r efs-016}
 #| warning: false
 
-autoplot(efs, type = "n_features") +
+autoplot(efs, type = "n_features", theme = theme_minimal(base_size = 14)) +
   scale_fill_brewer(palette = "Set1") +
-  scale_y_continuous(breaks = seq(0, 60, 10)) +
-  theme_minimal(base_size = 14)
+  scale_y_continuous(breaks = seq(0, 60, 10))
 ```
 
 We observe that RF needed more features to achieve the best average performance, followed by SVM, then XGBoost and the tree model was the model using the least features (but with worst performance).
@@ -301,9 +301,8 @@ As we see below, these points are derived from multiple learners and resamplings
 ```{r efs-017}
 #| warning: false
 
-autoplot(efs, type = "pareto") +
+autoplot(efs, type = "pareto", theme = theme_minimal(base_size = 14)) +
   scale_color_brewer(palette = "Set1") +
-  theme_minimal(base_size = 14) +
   labs(title = "Empirical Pareto front")
 ```
 
@@ -312,9 +311,9 @@ We can also draw an **estimated Pareto front curve** by fitting a linear model w
 ```{r efs-018}
 #| warning: false
 
-autoplot(efs, type = "pareto", pareto_front = "estimated") +
+autoplot(efs, type = "pareto", pareto_front = "estimated", 
+         theme = theme_minimal(base_size = 14)) +
   scale_color_brewer(palette = "Set1") +
-  theme_minimal(base_size = 14) +
   labs(title = "Estimated Pareto front")
 ```
 
@@ -357,18 +356,17 @@ To visualize stability, the following code generates a stability barplot:
 ```{r efs-022}
 #| warning: false
 
-autoplot(efs, type = "stability") +
-  scale_fill_brewer(palette = "Set1") +
-  theme_minimal(base_size = 14)
+autoplot(efs, type = "stability", theme = theme_minimal(base_size = 14)) +
+  scale_fill_brewer(palette = "Set1")
 ```
 
 Alternatively, the **Nogueira** stability measure can be used, which unlike the Jaccard Index, it's a chance-corrected similarity measure [@Nogueira2018]:
 ```{r efs-023}
 #| warning: false
 autoplot(efs, type = "stability", stability_measure = "nogueira", 
-         stability_args = list(p = task$n_features)) +
-  scale_fill_brewer(palette = "Set1") +
-  theme_minimal(base_size = 14)
+         stability_args = list(p = task$n_features), 
+         theme = theme_minimal(base_size = 14)) +
+  scale_fill_brewer(palette = "Set1")
 ```
 
 ## Feature Ranking
@@ -396,7 +394,11 @@ efs$feature_ranking(method = "av", use_weights = TRUE, committee_size = 8)
 ```
 
 Additionally, alternative ranking methods are supported.
-Below, we use *satisfaction approval voting* (SAV), which results in a different feature ranking (e.g. `"V10"` feature is now included in the top 8 features but not `"V4"`):
+Below, we use *satisfaction approval voting* (SAV), which ranks features by normalizing approval scores based on the number of features a model has selected.
+Specifically, models that select more features distribute their "approval" across a larger set, reducing the contribution to each selected feature.
+Conversely, **features chosen by models with fewer selected features receive higher weights**, as their selection reflects stronger individual importance.
+This approach ensures that sparsely selected features are prioritized in the ranking, leading to a different set of top-ranked features compared to standard approval voting.
+For instance, in the example above, the `"V10"` feature enters the top 8 features, replacing `"V4"`:
 ```{r efs-026}
 efs$feature_ranking(method = "sav", committee_size = 8)
 ```
