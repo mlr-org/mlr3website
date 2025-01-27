@@ -10,7 +10,7 @@ website:
   announcement:
     icon: info-circle
     dismissable: true
-    content: "The mlr3 ecosystem has a new package [mlr3inferr](https://github.com/mlr-org/mlr3inferr) that allows to construct confidence intervals for the generalization error."
+    content: "The website features runtime and memory [benchmarks](benchmarks_mlr3.qmd) of the mlr3 base package now."
     type: primary
     position: below-navbar
   page-footer:
@@ -57,7 +57,7 @@ website:
       - gallery.qmd
       - text: "Benchmarks"
         menu:
-          - benchmarks_mlr3.qmd
+          - benchmarks/benchmarks_mlr3.qmd
           - benchmarks_mlr3tuning.qmd
           - benchmarks_mlr3fselect.qmd
           - benchmarks_paradox.qmd

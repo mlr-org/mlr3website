@@ -27,7 +27,7 @@ snapshot[, paradox := factor(paradox)]
 plot_runtime = function(data) {
   ggplot(data, aes(x = mlr3, y = median_runtime)) +
   geom_col(group = 1, fill = "#008080") +
-  geom_errorbar(aes(ymin = median_runtime - mad_runtime, ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
+  geom_errorbar(aes(ymin = pmax(median_runtime - mad_runtime, 0), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
   geom_hline(aes(yintercept = model_time * evals / 1000), linetype = "dashed") +
   facet_wrap(~evals, scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
   labs(x = "mlr3Version", y = "Runtime [s]") +
