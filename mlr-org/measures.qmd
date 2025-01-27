@@ -9,7 +9,6 @@ toc: false
 
 ```{r}
 #| include: false
-
 requireNamespace("mlr3verse")
 ```
 
@@ -24,6 +23,7 @@ The `r ref("Measure")` objects provide an abstraction for a plethora of performa
 content = as.data.table(mlr3::mlr_measures)[, .(key, label, task_type, packages)]
 content[is.na(task_type), task_type := "generic"]
 content[, packages := map(packages, function(value) setdiff(value, c("mlr3", "mlr3measures")))]
+content = content[map_lgl(packages, function(packages) "mlr3inferr" %nin% packages)]
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
