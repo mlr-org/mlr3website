@@ -1,2 +1,2 @@
 options("install.opts" = "--without-keep.source")
-source("renv/activate.R")
+#source("renv/activate.R")
