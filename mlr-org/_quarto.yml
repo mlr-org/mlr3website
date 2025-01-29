@@ -7,10 +7,10 @@ website:
   description: Website of the mlr organization
   favicon: images/favicon.ico
   # reader-mode: true
-  announcement: 
+  announcement:
     icon: info-circle
     dismissable: true
-    content: "The mlr3 ecosystem has a new package [mlr3inferr](https://github.com/mlr-org/mlr3inferr) that allows to construct confidence intervals for the generalization error."
+    content: "The website features runtime and memory [benchmarks](benchmarks_mlr3.qmd) of the mlr3 base package now."
     type: primary
     position: below-navbar
   page-footer:
@@ -55,6 +55,9 @@ website:
       - resources.qmd
       - book.qmd
       - gallery.qmd
+      - text: "Benchmarks"
+        menu:
+          - benchmarks/benchmarks_mlr3.qmd
       - team.qmd
       - text: "More"
         menu:
