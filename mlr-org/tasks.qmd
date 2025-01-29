@@ -11,6 +11,9 @@ toc: false
 #| include: false
 
 library("mlr3spatiotempcv")
+library("mlr3torch")
+library("mlr3fda")
+library("mlr3proba")
 requireNamespace("mlr3verse")
 lgr::get_logger("mlr3")$set_threshold("warn")
 ```
