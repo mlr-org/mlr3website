@@ -32,6 +32,9 @@ jobs:
         name:  Install mlr3website package
         run: R CMD INSTALL .
 
+      - name: Install torch
+        run: Rscript -e "torch::install_torch()"
+
       - name: Render site
         run: quarto render mlr-org/
 
