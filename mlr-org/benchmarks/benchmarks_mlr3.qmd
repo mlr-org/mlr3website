@@ -141,8 +141,7 @@ Therefore, we compare the runtime of parallel execution with that of sequential 
 For models with a 1-second training time, using `resample()` and `benchmark()` in parallel reduces runtime.
 For models with a 100 ms training time, parallel execution is only advantageous when performing 100 or 1,000 resampling iterations.
 For models with 10 ms and 1 ms training times, sequential execution only becomes slower than parallel execution when running 1,000 resampling iterations.
-Memory usage increases significantly with the number of cores.
-Each additional core initiates a separate R session, each consuming approximately 131 MB.
+Memory usage increases significantly with the number of cores since each core initiates a separate R session.
 Utilizing 10 cores results in a total memory usage of around 1.2 GB.
 
 Encapsulation ensures that signaled conditions (e.g., messages, warnings and errors) are intercepted and that all conditions raised during the training or prediction step are logged into the learner without interrupting the program flow.
