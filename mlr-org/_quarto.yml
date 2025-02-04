@@ -57,7 +57,10 @@ website:
       - gallery.qmd
       - text: "Benchmarks"
         menu:
-          - benchmarks/benchmarks_mlr3.qmd
+          - text: "mlr3"
+            href: benchmarks/benchmarks_mlr3.qmd
+          - text: "mlr3tuning"
+            href: benchmarks/benchmarks_mlr3tuning.qmd
       - team.qmd
       - text: "More"
         menu:
