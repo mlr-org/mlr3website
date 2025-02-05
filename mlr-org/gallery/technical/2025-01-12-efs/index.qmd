@@ -19,15 +19,15 @@ efs = readRDS(file = "efs.rds")
 
 ## Intro
 
+In this post we will show how we can use the `mlr3fselect` R package to perform *wrapped*-based ensemble feature selection on a given dataset.
+Wrapper-based ensemble feature selection involves applying stability selection techniques (resampling of the data) to create robust feature subsets by leveraging multiple ML models in wrapper-based feature selection strategies.
+
 Some papers from which we draw the ideas for this tutorial:
 
 - **Stability selection**, i.e. drawing multiple subsamples from a dataset and performing feature selection on each [@Meinshausen2010].
 Stability selection helps ensure that the selected features are robust to variations in the training data, increasing the reliability of the feature selection process.
 - The **ensemble idea** for feature selection, i.e. using multiple methods or models to perform feature selection on a dataset [@Saeys2008].
 This combines the strengths of different approaches to achieve more comprehensive results and alleviates biases that may arise from each individual approach for feature selection.
-
-In this post we will show how we can use the `mlr3fselect` R package to perform *wrapped*-based ensemble feature selection on a given dataset.
-Wrapper-based ensemble feature selection involves applying stability selection techniques (resampling of the data) to create robust feature subsets by leveraging multiple ML models in wrapper-based feature selection strategies.
 
 :::{.callout-note}
 We also support *embedded-based* ensemble feature selection, see the function [`mlr3fselect::embedded_ensemble_fselect()`](https://mlr3fselect.mlr-org.com/reference/embedded_ensemble_fselect.html) for more details.
@@ -76,31 +76,13 @@ The `inner_measure` (used for finding the best feature subset in each train set)
 ### Parallelization
 
 Internally, `ensemble_fselect()` performs a full `mlr3::benchmark()`, the results of which can be stored with the argument `store_benchmark_result`.
-The process is fully parallelizable, where **every job is a (train set, learner) combination**.
+The process is fully parallelizable, where **every job is a (init resampling iteration, learner) combination**.
 So it's better to make sure that each RFE optimization (done via [mlr3fselect::auto_fselector](https://mlr3fselect.mlr-org.com/reference/auto_fselector.html)) is single-threaded.
 
 Below we show the code that setups the configuration for the parallelization:
 
 ```{r efs-004}
 #| eval: false
-
-# Logging
-lgr::get_logger("bbotk")$set_threshold("warn")
-lgr::get_logger("mlr3" )$set_threshold("warn")
-
-# Parallelization of XGBoost (use 1 core when training on a dataset)
-Sys.setenv(OMP_NUM_THREADS = 1)
-Sys.setenv(OMP_THREAD_LIMIT = 1)
-Sys.setenv(MKL_NUM_THREADS = 1) # MKL is an Intel-specific thing
-# Package-specific settings
-try(data.table::setDTthreads(1))
-try(RhpcBLASctl::blas_set_num_threads(1))
-try(RhpcBLASctl::omp_set_num_threads(1))
-
-# Progress bars
-options(progressr.enable = TRUE)
-handlers(global = TRUE)
-handlers("progress")
 
 # Parallelization for EFS: use 10 cores
 plan("multisession", workers = 10)
@@ -233,7 +215,7 @@ Printing the result object provides some initial information:
 print(efs)
 ```
 
-As we can see, we have $M \times B = 4 \times 50 = 200$ (train set, learner) combinations.
+As we can see, we have $M \times B = 4 \times 50 = 200$ (init resampling, learner) combinations.
 We can inspect the actual `data.table` result:
 
 ```{r efs-012}
@@ -406,12 +388,11 @@ efs$feature_ranking(method = "sav", committee_size = 8)
 # EFS-based Feature Selection
 
 The ultimate goal of the ensemble feature selection process is to identify predictive and stable features.
-By combining the ranked feature list with the Pareto-derived cutoff, we can select the final set of features and subset the original dataset for further modeling:
+By combining the ranked feature list with the Pareto-derived cutoff, we can select the final set of features for further modeling:
 ```{r efs-027}
 n_features = efs$knee_points(type = "estimated")$n_features
 res = efs$feature_ranking(method = "sav", committee_size = n_features)
-task$select(cols = res$feature)
-task
+res$feature
 ```
 
 {{< include ../../_session_info.qmd >}}
