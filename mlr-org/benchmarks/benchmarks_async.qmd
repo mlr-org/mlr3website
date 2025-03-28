@@ -1,0 +1,395 @@
+---
+title: "Asynchronous Optimization Runtime Benchmarks"
+sidebar: false
+toc: true
+cache: false
+lazy-cache: false
+freeze: true
+format:
+  html:
+    fig-width: 12
+    fig-height: 9
+bibliography: ../bibliography.bib
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r}
+#| include: false
+library(ggplot2)
+library(data.table)
+library(mlr3misc)
+library(gt)
+
+data = fread(here::here("mlr-org/benchmarks/xgboost_1280_30m_bank_marketing.csv"))
+setnames(data, new = gsub("xgboost\\.", "", names(data)))
+setorderv(data, "holdout_auc")
+cols_x = c("alpha", "colsample_bylevel", "colsample_bytree", "eta", "lambda", "max_depth", "subsample", "nrounds")
+
+data_hyperband = data[c("asha", "asha_hotstart"), , on = "tuner"][,
+  list(
+    mean_auc = mean(holdout_auc),
+    max_auc = max(holdout_auc),
+    mean_runtime = mean(runtime_learners),
+    n_configs = .N),
+  by = c("tuner", "stage")
+]
+
+data_rank = map_dtr(seq(10, 1800, by = 30), function(i) {
+  data_i = data[walltime < i]
+  setkey(data_i, walltime)
+  data_i = data_i[, tail(.SD, 1), by = tuner]
+  data_i[, rank := frank(incumbent, ties.method = "min")]
+})
+
+data_utilization = data[, list(
+  n_configs = .N,
+  runtime_learners = sum(runtime_learners),
+  runtime_worker = as.numeric(difftime(max(timestamp_ys), min(timestamp_xs), units = "secs"))
+  ), by = c("worker_id", "tuner")]
+data_utilization[, configs_per_minute := n_configs / runtime_worker * 60]
+data_utilization[, utilization := runtime_learners / runtime_worker]
+
+data_mean_utilization = data_utilization[, .(
+  mean_utilization = mean(utilization),
+  total_configs = sum(n_configs),
+  mean_configs_per_minute = mean(configs_per_minute)), by = tuner]
+
+data_adbo = data[tuner == "adbo" & !is.na(.already_evaluated)][, list(
+  runtime_learners = sum(runtime_learners),
+  runtime_surrogate = sum(runtime_surrogate),
+  runtime_acq_optimizer = sum(as.numeric(runtime_acq_optimizer)),
+  runtime_acq_optimizer_surrogate = sum(runtime_acq_optimizer_surrogate),
+  runtime_worker = as.numeric(difftime(max(timestamp_ys), min(timestamp_xs), units = "secs"))), by = "worker_id"]
+data_adbo[, utilization_1 := runtime_learners / runtime_worker]
+data_adbo[, utilization_2 := (runtime_learners + runtime_surrogate + runtime_acq_optimizer) / runtime_worker]
+data_adbo = data_adbo[, list(
+  mean_utilization_runtime_learners = mean(runtime_learners / runtime_worker),
+  mean_utilization_runtime_acq_optimizer = mean(runtime_acq_optimizer / runtime_worker),
+  mean_utilization_surrogate = mean(runtime_surrogate / runtime_worker),
+  mean_utilization = mean(utilization_2)
+)]
+```
+
+# Scope
+
+This report evaluates the performance of asynchronous optimization algorithms on high-performance clusters.
+It aims to help users assess whether their workflow runtimes fall within expected ranges.
+If significant utilization anomalies arise, users are encouraged to report them via a GitHub issue.
+
+The study optimizes eight hyperparameters of the XGBoost learner using the Bank Marketing dataset.
+This dataset, derived from a Portuguese bank’s marketing campaign, includes client demographics, financial details, and previous interactions to predict term deposit subscriptions.
+To ensure a fair comparison, 20% of the data was reserved for a holdout set, while the remaining data underwent 3-fold cross-validation during optimization.
+Performance was measured using the area under the receiver operating characteristic curve (AUC).
+
+This report primarily focuses on computing resource utilization rather than algorithmic performance.
+A rigorous comparison of algorithm performance would require additional datasets and nested resampling.
+Experiments were conducted on 10 nodes, each with 128 cores, totaling 1,280 workers.
+The optimization ran for 30 minutes, consuming 640 CPU hours.
+
+# Optimization Algorithms
+
+We compare four asynchronous optimization algorithms.
+As a baseline, we implement parallel random search [@bergstra_2012] across all workers.
+Random search samples hyperparameter configurations uniformly at random from the search space.
+This is already an improved random search since the optimal number of boosting rounds is determined by [early stopping](https://mlr3book.mlr-org.com/chapters/chapter15/predsets_valid_inttune.html#sec-internal-tuning) on the test set.
+
+Asynchronous Distributed Bayesian Optimization (ADBO) [@egele_2023] runs sequential [Bayesian optimization](https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-bayesian-optimization) on multiple workers in parallel.
+Each worker maintains its own surrogate model (a random forest) and selects the next hyperparameter configuration by maximizing the upper confidence bounds acquisition function.
+To promote a varying exploration-exploitation tradeoff between the workers, the acquisition functions are initialized with different lambda values ranging from 0.1 to 10.
+When a worker completes an evaluation, it asynchronously sends the result to its peers via a Redis data base; each worker then updates its local model with this shared information.
+This decentralized design enables workers to proceed independently; eliminating the need for a central coordinator that could become a bottleneck in large-scale optimization scenarios.
+The number of boosting rounds is also optimized using early stopping on the test set.
+To start the optimization process with a diverse set of configurations, a Sobol sample with 2,000 configurations is generated.
+
+The Asynchronous Successive Halving Algorithm (ASHA) [@li_2020] belongs to the family of [hyperband](https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-hyperband) algorithms.
+The algorithm is an extension of the successive halving algorithm, which initially allocates minimal resources to many configurations and then progressively increases resource allocation only for those configurations that perform well.
+One of the key innovations of ASHA is its asynchronous approach to promotions.
+Unlike traditional methods that require all configurations in a given stage to complete before moving on, ASHA promotes promising configurations as soon as they meet the performance criteria.
+This strategy eliminates the bottleneck caused by slower or under-performing models, ensuring that the overall process remains efficient and that computing resources are used effectively.
+In our setup, ASHA begins with 9 boosting rounds in the first stage and increases the number of rounds by a factor of 3 per stage, up to a maximum of 2,187 rounds.
+The hotstart variant of ASHA further improves efficiency by continuing training from the previous stage instead of restarting from scratch
+
+The following code presents a simplified version of the benchmark experiment, omitting cluster-specific implementation details.
+
+```{r}
+#| eval: false
+library(rush)
+library(mlr3tuning)
+library(mlr3learners)
+library(mlr3oml)
+library(mlr3pipelines)
+library(mlr3hyperband)
+
+set.seed(4356)
+
+config = redux::redis_config(
+  host = "10.14.20.237",
+  port = "6362"
+)
+
+rush_plan(n_workers = 1280, config = config, worker_type = "script")
+
+learner = as_learner(po("encodeimpact") %>>% lrn("classif.xgboost",
+  eta               = to_tune(1e-4, 1, logscale = TRUE),
+  max_depth         = to_tune(1, 20),
+  colsample_bytree  = to_tune(1e-1, 1),
+  colsample_bylevel = to_tune(1e-1, 1),
+  lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
+  alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
+  subsample         = to_tune(1e-1, 1),
+  nrounds           = to_tune(p_int(9, 2187, tags = "budget")),
+  predict_type = "prob",
+  id = "xgboost"))
+
+# download task
+otask = otsk(359982)
+task = as_task(otask)
+
+# split task into training-test and holdout set
+splits = partition(task, ratio = 0.8)
+task_holdout = task$clone()
+task_holdout$filter(splits$test)
+task$filter(splits$train)
+
+# create tuning instance
+instance = ti_async(
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measures = msr("classif.auc"),
+  terminator = trm("run_time", secs = 1800L),
+  store_benchmark_result = FALSE,
+  store_models = FALSE,
+  callbacks = clbk("mlr3tuning.holdout", task = task_holdout)
+)
+
+# selected tuner
+tuner = tnr("async_successive_halving", eta = 3)
+
+# optimize
+tuner$optimize(instance)
+```
+
+# Results
+
+A key motivation for developing asynchronous algorithms in mlr3tuning was to address the low CPU utilization observed in batch parallelization.
+In the batch setting, when learners were trained rapidly, significant overhead was incurred from repeatedly starting new workers.
+When learner runtimes varied widely, considerable [synchronization overhead](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization) arose due to waiting for all processes to complete.
+The asynchronous algorithms resolve these issues by enabling workers to operate independently.
+@tbl-utilization displays the mean utilization of the workers, calculated as the ratio of learner runtime to total worker runtime.
+Across all algorithms, an overhead of approximately 7% is observed.
+This overhead accounts for the communication time required between workers and the cost of running `resample()`.
+
+```{r}
+#| label: tbl-utilization
+#| tbl-cap: Mean utilization of the workers for each optimizer.
+#| echo: false
+gt(data_mean_utilization) %>%
+  fmt_percent(columns = c("mean_utilization"), decimals = 1) %>%
+  fmt_number(
+    columns = "mean_configs_per_minute",
+    decimals = 1
+  ) %>%
+  fmt_number(
+    columns = "total_configs",
+    sep_mark = ",",
+    decimals = 0
+  ) %>%
+  cols_label(
+    tuner = "Tuner",
+    mean_utilization = "Mean Utilization",
+    total_configs = "Total Configurations",
+    mean_configs_per_minute = "Mean Configurations per Minute"
+  )
+```
+
+@fig-performance illustrates the performance of the algorithms over time, measured using the holdout AUC and the rank of the incumbent configuration.
+The performance differences between the algorithms are minimal, as all approaches quickly converge to well-performing configurations.
+
+```{r}
+#| label: fig-performance
+#| echo: false
+#| warning: false
+#| fig-cap: Performance and rank over time for each optimizer.
+#| fig-subcap:
+#|   - "Holdout AUC Performance"
+#|   - "Rank Performance"
+#| layout-ncol: 1
+ggplot(data, aes(x = walltime, y = incumbent, group = tuner)) +
+  geom_line(aes(color = tuner)) +
+  scale_y_continuous(limits = c(0.93, 0.94)) +
+  scale_color_viridis_d(
+    name = "Tuner",
+    labels = c("ADBO", "ASHA", "ASHA Hotstart", "Random Search")) +
+  xlab("Walltime (s)") +
+  ylab("holdout AUC") +
+  theme_minimal()
+
+ggplot(data_rank, aes(x = walltime, y = rank, group = tuner)) +
+  geom_line(aes(color = tuner)) +
+  scale_color_viridis_d(
+    name = "Tuner",
+    labels = c("ADBO", "ASHA", "ASHA Hotstart", "Random Search")) +
+  xlab("Walltime (s)") +
+  ylab("Rank") +
+  theme_minimal()
+```
+
+The following table presents the final hyperparameter configurations selected by each optimization algorithm along with their corresponding holdout AUC.
+Notably, random search selected a configuration with a higher number of boosting rounds compared to the other algorithms.
+This results in a much longer training time of the final model selected by random search.
+
+```{r}
+#| tbl-cap: Final configurations selected by the optimizers.
+#| echo: false
+#| column: page
+gt(data[, tail(.SD, 1), by = tuner][, c("tuner", "holdout_auc", "runtime_learners", cols_x), with = FALSE]) %>%
+  fmt_number(
+    columns = c("runtime_learners", "alpha", "colsample_bylevel", "colsample_bytree", "eta", "lambda", "subsample"),
+    decimals = 2
+  ) %>%
+  fmt_number(
+    columns = c("holdout_auc"),
+    decimals = 4
+  ) %>%
+  cols_label(
+    tuner = "Tuner",
+    holdout_auc = "holdout AUC",
+    runtime_learners = "Runtime Learners (s)"
+  )
+```
+
+The ASHA algorithms evaluated 12 to 15 times more configurations than Random Search, primarily due to their use of low-fidelity evaluations in the early stages (@fig-configs).
+By initially allocating minimal resources to a large number of configurations and progressively increasing allocation for promising candidates, ASHA was able to explore the search space more efficiently than Random Search.
+
+```{r}
+#| label: fig-configs
+#| fig-cap: Number of configurations evaluated by each optimizer.
+#| echo: false
+ggplot(data_mean_utilization, aes(x = tuner, y = total_configs, group = tuner)) +
+  geom_bar(aes(fill = tuner), stat = "identity") +
+  labs(x = "Optimizer",
+       y = "Number of Configurations") +
+  scale_y_continuous(labels = scales::comma) +
+  scale_fill_viridis_d(labels = c("ADBO", "ASHA", "ASHA Hotstart", "Random Search")) +
+  theme_minimal()
+```
+
+The total number of evaluated configurations may not be a completely fair comparison, as the time required to initialize all workers varies between experiments.
+To account for these differences, @fig-configs-per-minute presents the average number of configurations evaluated per minute, providing a more accurate measure of each algorithm’s efficiency by normalizing for worker runtime disparities.
+
+```{r}
+#| fig-cap: Average number of configurations evaluated per minute for each optimizer.
+#| echo: false
+#| label: fig-configs-per-minute
+ggplot(data_mean_utilization, aes(x = tuner, y = mean_configs_per_minute, group = tuner)) +
+  geom_bar(aes(fill = tuner), stat = "identity") +
+  labs(x = "Optimizer",
+       y = "Number of Configurations per Minute") +
+  scale_y_continuous(labels = scales::comma) +
+  scale_fill_viridis_d(labels = c("ADBO", "ASHA", "ASHA Hotstart", "Random Search")) +
+  theme_minimal()
+```
+
+## Hyperband
+
+@fig-hyperband illustrates the number of hyperparameter configurations evaluated per stage for ASHA and ASHA Hotstart.
+As expected, the number of configurations decreases by a factor of 3 at each stage, following the successive halving principle.
+With hotstarting, more configurations are evaluated in all stages.
+This increase is due to the reduced training time, as models continue training from previous stages rather than restarting from scratch.
+As a result, ASHA Hotstart improves resource efficiency, enabling a greater number of configurations to be explored within the same computational budget.
+
+```{r}
+#| label: fig-hyperband
+#| fig-cap: Number of evaluated hyperparameter configurations per stage for ASHA and ASHA Hotstart.
+#| echo: false
+ggplot(data_hyperband, aes(x = stage, y = n_configs, group = tuner)) +
+  geom_bar(aes(fill = tuner), stat = "identity", position = "dodge") +
+  labs(title = "Number of Evaluations per Stage",
+       x = "Stage",
+       y = "Number of Evaluations",
+       fill = "Tuner") +
+  scale_y_continuous(labels = scales::comma) +
+  scale_fill_viridis_d(labels = c("ASHA", "ASHA Hotstart"), end = 0.8) +
+  theme_minimal()
+```
+
+@tbl-hyperband presents the mean runtime of the learners at each stage of the ASHA algorithms.
+As expected, the runtime increases with the number of boosting rounds, since later stages allocate more computational resources to promising configurations.
+However, in the hotstarting variant, the runtime is lower in the later stages.
+This is because models continue training from previous stages rather than starting from scratch.
+
+```{r}
+#| label: tbl-hyperband
+#| tbl-cap: Mean runtime of the learners, number of configurations and boosting rounds at each stage for ASHA and ASHA Hotstart.
+#| echo: false
+gt(data[c("asha", "asha_hotstart"), , on = "tuner"][, list(
+  mean_runtime = mean(runtime_learners),
+  n_configs = .N,
+  nrounds = nrounds[1]), by = c("tuner", "stage")][order(tuner, stage)]) %>%
+  fmt_number(
+    columns = c("mean_runtime"),
+    decimals = 0
+  ) %>%
+  fmt_number(
+    columns = c("n_configs"),
+    decimals = 0,
+    sep_mark = ","
+  ) %>%
+  cols_label(
+    tuner = "Tuner",
+    stage = "Stage",
+    mean_runtime = "Mean Runtime (s)",
+    n_configs = "Number of Configurations",
+    nrounds = "Number of Boosting Rounds"
+  )
+
+```
+
+As an example, @fig-marginal presents the marginal plot of the learning rate (`eta`) and the regularization parameter (`alpha`) from the ASHA Hotstart run.
+The plot visualizes the configurations evaluated by the algorithm at each stage, where each point represents a configuration and the color indicates the corresponding holdout AUC value.
+In the first stage, a large number of configurations are tested quickly with a small training budget.
+The plot reveals that high `alpha` values lead to lower AUC scores and are therefore not promoted to the next stage.
+As the algorithm progresses, it shifts focus toward the more promising regions of the hyperparameter space.
+By the final stages, fewer configurations remain, but they benefit from a greater number of boosting rounds.
+The algorithm tends to favor configurations with moderate `eta` values, suggesting that extreme learning rates are less effective in this scenario.
+
+```{r}
+#| label: fig-marginal
+#| echo: false
+#| fig-cap: |
+#|   Marginal plot of `eta` and `alpha` for ASHA Hotstart.
+#|   Each point represents a configuration evaluated by ASHA Hotstart.
+#|   The color shows the holdout AUC value.
+#|   The facets show the number of boosting rounds or stages.
+ggplot(data[tuner == "asha_hotstart"], aes(x = eta, y = alpha, color = holdout_auc)) +
+  geom_point(size = 1/3) +
+  xlab("eta") +
+  ylab("alpha") +
+  facet_wrap(~nrounds) +
+  scale_color_viridis_c(name = "holdout AUC") +
+  theme_minimal()
+```
+
+## ADBO
+
+In addition to measuring the runtime of the learners, we also tracked the runtime of the surrogate model training and the runtime of the acquisition optimizer (@tbl-adbo).
+The following table presents the proportional share of each component—learner training, surrogate model training, and acquisition optimization—relative to the total worker runtime.
+This breakdown provides insights into how computational resources are distributed among different aspects of the optimization process.
+Understanding these contributions helps in identifying potential bottlenecks and optimizing the balance between model evaluation and search efficiency.
+
+```{r}
+#| label: tbl-adbo
+#| tbl-cap: Share of the runtime of the learners, surrogate model, and acquisition optimizer on the runtime of the workers for ADBO.
+#| echo: false
+gt(data_adbo) %>%
+  fmt_percent(columns = c("mean_utilization_runtime_learners", "mean_utilization_runtime_acq_optimizer", "mean_utilization_surrogate", "mean_utilization"), decimals = 1) %>%
+  cols_label(
+    mean_utilization_runtime_learners = "Mean Utilization Runtime Learners",
+    mean_utilization_runtime_acq_optimizer = "Mean Utilization Runtime Acquisition Optimizer",
+    mean_utilization_surrogate = "Mean Utilization Surrogate",
+    mean_utilization = "Mean Utilization"
+  )
+```
+
