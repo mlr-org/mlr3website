@@ -57,8 +57,10 @@ website:
       - gallery.qmd
       - text: "Benchmarks"
         menu:
-          - benchmarks/benchmarks_mlr3.qmd
-          - benchmarks/benchmarks_async.qmd
+          - text: "mlr3"
+            href: benchmarks/benchmarks_mlr3.qmd
+          - text: "mlr3tuning Asynchronous Optimization"
+            href: benchmarks/benchmarks_async.qmd
       - team.qmd
       - text: "More"
         menu:
