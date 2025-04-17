@@ -10,6 +10,7 @@ description: |
 date: 04-14-2025
 aliases:
   - ../../../gallery/2020-08-14-comparison-of-decision-boundaries/index.html
+showsolution: true
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -150,9 +151,11 @@ test_set = german[...,]
 </details>
 
 
-### Solution:
-<details>
-<summary>Click me:</summary>
+::: {.content-hidden unless-meta="showsolution"}
+
+
+::: {.callout-note collapse="true"}
+### Solution
 
 We first sample row ids by using `sample()` and identify the non-selected rows via `setdiff()`.
 ```{r}
@@ -168,6 +171,12 @@ Based on that, we create two datasets: one for training and one for testing.
 train_set = german[train_ids,]
 test_set = german[test_ids, ]
 ```
+:::
+
+:::
+
+
+
 
 
 
@@ -196,10 +205,11 @@ task = as_task_classif(x = ..., target = ..., ... = "good")
 </details>
 
 
+::: {.content-hidden unless-meta="showsolution"}
 
-### Solution:
-<details>
-<summary>Click me:</summary>
+
+::: {.callout-note collapse="true"}
+### Solution
 
 To initialize a `TaskClassif` object, two equivalent calls exist:
 
@@ -209,6 +219,11 @@ task = TaskClassif$new("german_credit", backend = train_set, target = "credit_ri
 task = as_task_classif(train_set, target = "credit_risk", positive = "good")
 task
 ```
+:::
+
+:::
+
+
 
 
 
@@ -243,11 +258,11 @@ logreg$train(...)
 
 </details>
 
+::: {.content-hidden unless-meta="showsolution"}
 
 
-### Solution:
-<details>
-<summary>Click me:</summary>
+::: {.callout-note collapse="true"}
+### Solution
 
 By using the syntactic sugar method `lrn()`, we first initialize a `LearnerClassif` model.
 Using the `$train()` method, we derive optimal hyperparameters (i.e., coefficients)
@@ -257,6 +272,12 @@ for our logistic regression model.
 logreg = lrn("classif.log_reg")
 logreg$train(task)
 ```
+
+:::
+
+:::
+
+
 
 
 
@@ -283,11 +304,11 @@ summary(yourmodel$model)
 
 </details>
 
+::: {.content-hidden unless-meta="showsolution"}
 
 
-### Solution:
-<details>
-<summary>Click me:</summary>
+::: {.callout-note collapse="true"}
+### Solution
 
 Similar to models fitted via `glm()` or `lm()`, we could receive a summary
 of the coefficients (including p-values) using `summary()`.
@@ -306,6 +327,12 @@ task$positive
 
 For example, the negative sign of the coefficients of `credit_history = delay in paying off in the past` and `credit_history = critical account/other credit elsewhere`, indicate a negative influence and therefore lower probability of being a creditworthy client compared to their reference class `credit_history = all credits at this bank paid back duly`.
 The positive sign of the coefficient of `status >= 200 DM / salary for at least 1 year` and `status = 0 <= ... < 200 DM`, therefore, indicate a positive influence w.r.t to its reference class `status < 0 DM`.
+
+:::
+
+:::
+
+
 
 
 
@@ -330,15 +357,20 @@ pred = yourmodel$predict_newdata(...)
 
 </details>
 
+::: {.content-hidden unless-meta="showsolution"}
 
 
-### Solution:
-<details>
-<summary>Click me:</summary>
+::: {.callout-note collapse="true"}
+### Solution
 
 ```{r}
 pred_logreg = logreg$predict_newdata(test_set)
 ```
+
+:::
+
+:::
+
 
 
 
@@ -366,11 +398,11 @@ pred_logreg$score()
 
 </details>
 
+::: {.content-hidden unless-meta="showsolution"}
 
 
-### Solution:
-<details>
-<summary>Click me:</summary>
+::: {.callout-note collapse="true"}
+### Solution
 
 By using the `$score()` method, we obtain an estimate for the classification error
 of our model.
@@ -382,6 +414,9 @@ pred_logreg$score()
 The classification error is 0.255 - so 25.5 \% of the test instances were
 misclassified by our logistic regression model.
 
+:::
+
+:::
 
 
 ## Predicting probabilities instead of labels
@@ -402,11 +437,11 @@ You can get an overview of performance measures in mlr3 using `as.data.table(msr
 
 </details>
 
+::: {.content-hidden unless-meta="showsolution"}
 
 
-### Solution:
-<details>
-<summary>Click me:</summary>
+::: {.callout-note collapse="true"}
+### Solution
 
 ```{r}
 # Train a learner
@@ -419,6 +454,12 @@ measure = msrs(c("classif.auc"))
 pred_logreg$score(measure)
 ```
 
+:::
+
+:::
+
+
+
 
 
 
@@ -430,3 +471,5 @@ the help of `mlr3`.
 We showed how to split data manually into training and test data,
 but in most scenarios it is a call to resample or benchmark.
 We will learn more on this in the next sections.
+
+
