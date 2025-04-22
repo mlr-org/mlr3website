@@ -10,10 +10,20 @@ description: |
 date: 04-14-2025
 aliases:
   - ../../../gallery/2020-08-14-comparison-of-decision-boundaries/index.html
-showsolution: true
+
+params:
+  showsolution: true
+
 ---
 
 {{< include ../../_setup.qmd >}}
+
+
+```{r, echo=FALSE}
+show.solution = params$showsolution
+```
+
+
 
 # Goal
 Our goal for this exercise sheet is to learn the basics of mlr3 for supervised learning
@@ -151,14 +161,18 @@ test_set = german[...,]
 </details>
 
 
-::: {.content-hidden unless-meta="showsolution"}
+
+::: {.content-hidden unless-meta="params.showsolution"}
+
 
 
 ::: {.callout-note collapse="true"}
 ### Solution
 
 We first sample row ids by using `sample()` and identify the non-selected rows via `setdiff()`.
-```{r}
+
+```{r, eval=show.solution}
+
 set.seed(100L)
 train_ids = sample(row.names(german), 0.7*nrow(german))
 test_ids = setdiff(row.names(german), train_ids)
@@ -167,7 +181,9 @@ str(test_ids)
 ```
 
 Based on that, we create two datasets: one for training and one for testing.
-```{r}
+
+```{r, eval=show.solution}
+
 train_set = german[train_ids,]
 test_set = german[test_ids, ]
 ```
@@ -205,7 +221,9 @@ task = as_task_classif(x = ..., target = ..., ... = "good")
 </details>
 
 
-::: {.content-hidden unless-meta="showsolution"}
+
+::: {.content-hidden unless-meta="params.showsolution"}
+
 
 
 ::: {.callout-note collapse="true"}
@@ -213,7 +231,9 @@ task = as_task_classif(x = ..., target = ..., ... = "good")
 
 To initialize a `TaskClassif` object, two equivalent calls exist:
 
-```{r}
+
+```{r, eval=show.solution}
+
 library("mlr3verse")
 task = TaskClassif$new("german_credit", backend = train_set, target = "credit_risk", positive = "good")
 task = as_task_classif(train_set, target = "credit_risk", positive = "good")
@@ -258,7 +278,9 @@ logreg$train(...)
 
 </details>
 
-::: {.content-hidden unless-meta="showsolution"}
+
+::: {.content-hidden unless-meta="params.showsolution"}
+
 
 
 ::: {.callout-note collapse="true"}
@@ -268,7 +290,9 @@ By using the syntactic sugar method `lrn()`, we first initialize a `LearnerClass
 Using the `$train()` method, we derive optimal hyperparameters (i.e., coefficients)
 for our logistic regression model.
 
-```{r}
+
+```{r, eval=show.solution}
+
 logreg = lrn("classif.log_reg")
 logreg$train(task)
 ```
@@ -304,7 +328,9 @@ summary(yourmodel$model)
 
 </details>
 
-::: {.content-hidden unless-meta="showsolution"}
+
+::: {.content-hidden unless-meta="params.showsolution"}
+
 
 
 ::: {.callout-note collapse="true"}
@@ -313,7 +339,9 @@ summary(yourmodel$model)
 Similar to models fitted via `glm()` or `lm()`, we could receive a summary
 of the coefficients (including p-values) using `summary()`.
 
-```{r}
+
+```{r, eval=show.solution}
+
 summary(logreg$model)
 ```
 
@@ -321,7 +349,8 @@ According to the summary, e.g., `credit_history` and `status` significantly infl
 By looking on `task$positive`, we see that the class `good` (creditworthy client) is the positive class.
 This means that a positive sign of the estimated coefficient of a feature means that the feature has a positive influence on being a creditworthy client (while a negative sign will have a negative influence).
 
-```{r}
+```{r, eval=show.solution}
+
 task$positive
 ```
 
@@ -357,13 +386,17 @@ pred = yourmodel$predict_newdata(...)
 
 </details>
 
-::: {.content-hidden unless-meta="showsolution"}
+
+::: {.content-hidden unless-meta="params.showsolution"}
+
 
 
 ::: {.callout-note collapse="true"}
 ### Solution
 
-```{r}
+
+```{r, eval=show.solution}
+
 pred_logreg = logreg$predict_newdata(test_set)
 ```
 
@@ -398,7 +431,9 @@ pred_logreg$score()
 
 </details>
 
-::: {.content-hidden unless-meta="showsolution"}
+
+::: {.content-hidden unless-meta="params.showsolution"}
+
 
 
 ::: {.callout-note collapse="true"}
@@ -407,7 +442,9 @@ pred_logreg$score()
 By using the `$score()` method, we obtain an estimate for the classification error
 of our model.
 
-```{r}
+
+```{r, eval=show.solution}
+
 pred_logreg$score()
 ```
 
@@ -437,13 +474,17 @@ You can get an overview of performance measures in mlr3 using `as.data.table(msr
 
 </details>
 
-::: {.content-hidden unless-meta="showsolution"}
+
+::: {.content-hidden unless-meta="params.showsolution"}
+
 
 
 ::: {.callout-note collapse="true"}
 ### Solution
 
-```{r}
+
+```{r,eval=show.solution}
+
 # Train a learner
 logreg = lrn("classif.log_reg", predict_type = "prob")
 logreg$train(task)
