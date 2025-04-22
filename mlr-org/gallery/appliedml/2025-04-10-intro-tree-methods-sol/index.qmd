@@ -24,6 +24,8 @@ show.solution = params$showsolution
 
 ```{r, include=FALSE}
 set.seed(123)
+requireNamespace("kknn")
+requireNamespace("mlr3learners")
 ```
 
 # Goal
