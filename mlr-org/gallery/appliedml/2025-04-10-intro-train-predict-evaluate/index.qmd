@@ -1,0 +1,475 @@
+---
+title: Train Predict Evaluate Basics
+categories:
+  - classification
+  - visualization
+author:
+  - name: Giuseppe Casalicchio
+description: |
+  Applied Machine Learning In-class exercise 01-1.
+date: 04-14-2025
+aliases:
+  - ../../../gallery/2020-08-14-comparison-of-decision-boundaries/index.html
+showsolution: false
+---
+
+{{< include ../../_setup.qmd >}}
+
+# Goal
+Our goal for this exercise sheet is to learn the basics of mlr3 for supervised learning
+by training a first simple model on training data and by evaluating its performance on
+hold-out/test data.
+
+# German Credit Dataset
+
+The German credit dataset was donated by Prof. Dr. Hans Hoffman of the
+University of Hamburg in 1994 and contains 1000 datapoints reflecting
+bank customers.
+The goal is to classify people as a good or bad credit risk based
+on 20 personal, demographic and financial features.
+The dataset is available at the UCI repository as
+[Statlog (German Credit Data) Data Set](https://archive.ics.uci.edu/ml/datasets/Statlog+%28German+Credit+Data%29).
+
+## Motivation of Risk Prediction
+
+Customers who do not repay the distributed loan on time represent an enormous risk for a bank:
+First, because they create an unintended gap in the bank's planning,
+and second, because the collection of the repayment amount additionally
+causes additional time and cost for the bank.
+
+On the other hand, (interest rates for) loans are an important revenue stream for banks.
+If a person's loan is rejected, even though they would have met the repayment deadlines,
+revenue is lost, as well as potential upselling opportunities.
+
+Banks are therefore highly interested in a risk prediction model that accurately
+predicts the risk of future customers.
+This is where supervised learning models come into play.
+
+## Data Overview
+
+n = 1,000 observations of bank customers
+
+- `credit_risk`: is the customer a good or bad credit risk?
+- `age`: age in years
+- `amount`: 	amount asked by applicant
+- `credit_history`: past credit history of applicant at this bank
+- `duration`: duration of the credit in months
+- `employment_duration`: present employment since
+- `foreign_worker`: is applicant foreign worker?
+- `housing`: type of apartment rented, owned, for free / no payment
+- `installment_rate`: installment rate in percentage of disposable income
+- `job`: current job information
+- `number_credits`: number of existing credits at this bank
+- `other_debtors`: other debtors/guarantors present?
+- `other_installment_plans`: other installment plans the applicant is paying
+- `people_liable`: number of people being liable to provide maintenance
+- `personal_status_sex`: combination of sex and personal status of applicant
+- `present_residence`: present residence since
+- `property`: properties that applicant has
+- `purpose`: reason customer is applying for a loan
+- `savings`: savings accounts/bonds at this bank
+- `status`: status/balance of checking account at this bank
+- `telephone`: 	is there any telephone registered for this customer?
+
+## Preprocessing
+
+We first load the data from the `rchallenge` package (you may need to install it first) and get a brief overview.
+
+```{r}
+# install.packages("rchallenge")
+library("rchallenge")
+data("german")
+skimr::skim(german)
+```
+
+# Exercises:
+Now, we can start building a model. To do so, we need to address the following questions:
+
+- What is the problem we are trying to solve?
+- What is an appropriate learning algorithm?
+- How do we evaluate "good" performance?
+
+More systematically in `mlr3` they can be expressed via five components:
+
+- The `Task` definition.
+- The `Learner` definition.
+- The training via `$train()`.
+- The prediction via `$predict()`.
+- The evaluation via one `$score()`.
+
+## Split Data in Training and Test Data
+
+Your task is to split the `german` dataset into 70 \% training data and 30 \% 
+test data by randomly sampling rows.
+Later, we will use the training data to learn an ML model and use the test data 
+to assess its performance.
+
+<details>
+  <summary>Recap: Why do we need train and test data?</summary>
+
+We use part of the available data (the training data) to train our model.
+The remaining/hold-out data (test data) is used to evaluate the trained model.
+This is exactly how we anticipate using the model in practice:
+We want to fit the model to existing data and then make predictions on 
+new, unseen data points for which we do not know the outcome/target values.
+
+Note: Hold-out splitting requires a dataset that is sufficiently
+large such that both the training and test dataset are suitable representations
+of the target population. What "sufficiently large" means depends on the
+dataset at hand and the complexity of the problem.
+
+The ratio of training to test data is also context dependent.
+In practice, a 70\% to 30\% (~ 2:1) ratio is a good starting point.
+
+</details>
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Use `sample()` to sample 70 % of the data ids as training data ids from `row.names(german)`.
+The remaining row ids are obtained via `setdiff()`.
+Based on the ids, set up two datasets, one for training and one for testing/evaluating.
+
+Set a seed (e.g, `set.seed(100L)`) to make your results reproducible.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+# Sample ids for training and test split
+set.seed(100L)
+train_ids = sample(row.names(german), 0.7*nrow(...))
+test_ids = setdiff(..., train_ids)
+
+# Create two datasets based on ids
+train_set = german[...,]
+test_set = german[...,]
+```
+
+</details>
+
+
+::: {.content-hidden unless-meta="showsolution"}
+
+
+::: {.callout-note collapse="true"}
+### Solution
+
+We first sample row ids by using `sample()` and identify the non-selected rows via `setdiff()`.
+```{r}
+set.seed(100L)
+train_ids = sample(row.names(german), 0.7*nrow(german))
+test_ids = setdiff(row.names(german), train_ids)
+str(train_ids)
+str(test_ids)
+```
+
+Based on that, we create two datasets: one for training and one for testing.
+```{r}
+train_set = german[train_ids,]
+test_set = german[test_ids, ]
+```
+:::
+
+:::
+
+
+
+
+
+
+## Create a Classification Task
+
+Install and load the `mlr3verse` package which is a collection of multiple add-on packages in the `mlr3` universe (if you fail installing `mlr3verse`, try to install and load only the `mlr3` and `mlr3learners` packages). 
+Then, create a classification task using the training data as an input and `credit_risk` as the target variable (with the class label `good` as the positive class). 
+By defining an `mlr3` task, we conceptualize the ML problem we want to solve (here we face a classification task).
+As we have a classification task here, make sure you properly specify the class that should be used as the positive class (i.e., the class label for which we would like to predict probabilities - here `good` if you are interested in predicting a probability for the creditworthiness of customers).
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Use e.g. `as_task_classif()` to create a classification task.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+library(mlr3verse)
+task = as_task_classif(x = ..., target = ..., ... = "good")
+```
+
+</details>
+
+
+::: {.content-hidden unless-meta="showsolution"}
+
+
+::: {.callout-note collapse="true"}
+### Solution
+
+To initialize a `TaskClassif` object, two equivalent calls exist:
+
+```{r}
+library("mlr3verse")
+task = TaskClassif$new("german_credit", backend = train_set, target = "credit_risk", positive = "good")
+task = as_task_classif(train_set, target = "credit_risk", positive = "good")
+task
+```
+:::
+
+:::
+
+
+
+
+
+## Train a Model on the Training Dataset
+The created `Task` contains the data we want to work with.
+Now that we conceptualized the ML task (i.e., classification) in a `Task` object,
+it is time to train our first supervised learning method.
+We start with a simple classifier: a logistic regression model.
+During this course, you will, of course, also gain experience with more complex
+models.
+
+Fit a logistic regression model to the `german_credit` training task.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Use `lrn()` to initialize a `Learner` object.
+The short cut and therefore input to this method is `"classif.log_reg"`.
+
+To train a model, use the `$train()` method of your instantiated learner
+with the task of the previous exercise as an input.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+logreg = lrn("classif.log_reg")
+logreg$train(...)
+```
+
+</details>
+
+::: {.content-hidden unless-meta="showsolution"}
+
+
+::: {.callout-note collapse="true"}
+### Solution
+
+By using the syntactic sugar method `lrn()`, we first initialize a `LearnerClassif` model.
+Using the `$train()` method, we derive optimal hyperparameters (i.e., coefficients)
+for our logistic regression model.
+
+```{r}
+logreg = lrn("classif.log_reg")
+logreg$train(task)
+```
+
+:::
+
+:::
+
+
+
+
+
+## Inspect the Model
+
+Have a look at the coefficients by using `summary()`.
+Name at least two features that have a significant effect on the outcome.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Use the `summary()` method of the `model` field of our trained model.
+By looking on `task$positive`, we could see which of the two classes `good` or `bad`
+is used as the positive class (i.e., the class to which the model predictions will refer).
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+summary(yourmodel$model)
+```
+
+</details>
+
+::: {.content-hidden unless-meta="showsolution"}
+
+
+::: {.callout-note collapse="true"}
+### Solution
+
+Similar to models fitted via `glm()` or `lm()`, we could receive a summary
+of the coefficients (including p-values) using `summary()`.
+
+```{r}
+summary(logreg$model)
+```
+
+According to the summary, e.g., `credit_history` and `status` significantly influence the creditworthiness and the bank's risk assessment.
+By looking on `task$positive`, we see that the class `good` (creditworthy client) is the positive class.
+This means that a positive sign of the estimated coefficient of a feature means that the feature has a positive influence on being a creditworthy client (while a negative sign will have a negative influence).
+
+```{r}
+task$positive
+```
+
+For example, the negative sign of the coefficients of `credit_history = delay in paying off in the past` and `credit_history = critical account/other credit elsewhere`, indicate a negative influence and therefore lower probability of being a creditworthy client compared to their reference class `credit_history = all credits at this bank paid back duly`.
+The positive sign of the coefficient of `status >= 200 DM / salary for at least 1 year` and `status = 0 <= ... < 200 DM`, therefore, indicate a positive influence w.r.t to its reference class `status < 0 DM`.
+
+:::
+
+:::
+
+
+
+
+
+## Predict on the Test Dataset
+Use the trained model to predict on the hold-out/test dataset.
+
+<details>
+<summary>**Hint 1**</summary>
+
+Since we have a new tabular dataset as an input (and not a task),
+we need to use `$predict_newdata()` (instead
+of `$predict()`) to derive a `PredictionClassif` object.
+
+</details>
+
+<details>
+<summary>**Hint 2**</summary>
+
+```{r, eval=FALSE}
+pred = yourmodel$predict_newdata(...)
+```
+
+</details>
+
+::: {.content-hidden unless-meta="showsolution"}
+
+
+::: {.callout-note collapse="true"}
+### Solution
+
+```{r}
+pred_logreg = logreg$predict_newdata(test_set)
+```
+
+:::
+
+:::
+
+
+
+
+
+## Evaluation
+
+What is the classification error on the test data (200 observations)?
+
+<details>
+<summary>**Hint 1:**</summary>
+
+The classification error gives the rate of observations that were
+misclassified.
+Use the `$score()` method on the corresponding `PredictionClassif` object
+of the previous exercise.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+pred_logreg$score()
+```
+
+</details>
+
+::: {.content-hidden unless-meta="showsolution"}
+
+
+::: {.callout-note collapse="true"}
+### Solution
+
+By using the `$score()` method, we obtain an estimate for the classification error
+of our model.
+
+```{r}
+pred_logreg$score()
+```
+
+The classification error is 0.255 - so 25.5 \% of the test instances were
+misclassified by our logistic regression model.
+
+:::
+
+:::
+
+
+## Predicting probabilities instead of labels
+
+Similarly, we can assess the performance of our model using the AUC. However, this requires predicted probabilities instead of predicted labels. Evaluate the model using the AUC. To do so, retrain the model with a learner that returns probabilities.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You can generate predictions with probabilities by specifying a `predict_type` argument inside the `lrn()` function call when constructing a learner.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+You can get an overview of performance measures in mlr3 using `as.data.table(msr())`.
+
+</details>
+
+::: {.content-hidden unless-meta="showsolution"}
+
+
+::: {.callout-note collapse="true"}
+### Solution
+
+```{r}
+# Train a learner
+logreg = lrn("classif.log_reg", predict_type = "prob")
+logreg$train(task)
+# Generate predictions
+pred_logreg = logreg$predict_newdata(test_set)
+# Evaluate performance using AUC
+measure = msrs(c("classif.auc"))
+pred_logreg$score(measure)
+```
+
+:::
+
+:::
+
+
+
+
+
+
+# Summary
+
+In this exercise sheet we learned how to fit a logistic regression model on
+a training task and how to assess its performance on unseen test data with
+the help of `mlr3`.
+We showed how to split data manually into training and test data,
+but in most scenarios it is a call to resample or benchmark.
+We will learn more on this in the next sections.
+
+
