@@ -1,0 +1,253 @@
+---
+title: Benchmarking
+categories:
+  - benchmarking
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: www.essentialds.de
+description: |
+  Applied Machine Learning In-class exercise 01-3.
+date: 04-14-2025
+aliases:
+  - ../../../gallery/2020-08-14-comparison-of-decision-boundaries/index.html
+params:
+  showsolution: true
+---
+
+{{< include ../../_setup.qmd >}}
+
+
+```{r, echo=FALSE}
+show.solution = params$showsolution
+```
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+
+# Goal
+
+We will go beyond resampling single learners.
+We will learn how to compare a large number of different models using benchmarking.
+In this exercise, we will not show you how to tune a learner. 
+Instead, we will compare identical learners with different hyperparameters that are set manually.
+In particular, we will learn how to set up benchmarking instances in `mlr3`.
+
+# German Credit Data
+
+We create the task as for the resampling exercise:
+Again, we make us of our work horse:
+The German Credit Data set.
+
+```{r}
+library(mlr3verse)
+task = tsk("german_credit")
+set.seed(20220801)
+```
+
+
+# Exercise: Benchmark multiple learners
+
+We are going to compare a range of different KNN models ranging from a $k$ of 3 to 30.
+Furthermore, we want to assess the performance of a logistic regression.
+
+## Create the learners
+
+Create a logistic regression learner and many KNN learners.
+You should cover all KNNs with a $k$ between 3 and 30.
+Save all learners in a list.
+Give the KNN learners an appropriate `id` that reflects their $k$.
+
+<details>
+  <summary>**Show Hint 1:**</summary>
+  Use the `lapply` function or a for-loop to create the list of learners with $k$ between 3 and 30.
+  Don't forget to also include the logistic regression learner in your list (the `append` function might be helpful here to extend a created list).
+  The `lrn` function has an argument `id` that can be used to change the name of the learner (here, you should give the KNN learners an appropriate `id` that reflects their value of $k$ to be able to distinguish the learners).
+  </details>
+  
+<details>
+  <summary>**Show Hint 2:**</summary>
+  To create a list of KNN learners, you can use this template:
+  `lapply(..., function(i) lrn("classif.kknn", k = i, id = paste0("classif.knn", i))`
+  </details>
+
+::: {.content-hidden unless-meta="params.showsolution"}
+::: {.callout-note collapse="true"}
+### Solution
+
+```{r, eval=show.solution}
+log_reg = lrn("classif.log_reg")
+knn = lapply(3:30, function(i) lrn("classif.kknn", k = i, id = paste0("classif.knn", i)))
+lrns = append(log_reg, knn)
+```
+
+:::
+:::
+
+## Create the resampling
+
+Create a 4-fold cross-validation resampling.
+Create a list that only contains this resampling (this is needed later for the `benchmark_grid` function).
+
+<details>
+  <summary>**Show Hint:**</summary>
+  See the previous resampling use case.
+  </details>
+
+
+::: {.content-hidden unless-meta="params.showsolution"}
+::: {.callout-note collapse="true"}
+### Solution
+
+```{r, eval=show.solution}
+cv4 = list(rsmp("cv", folds = 4))
+```
+
+:::
+:::
+
+## Create a benchmarking design
+
+To design your benchmark experiment consisting of tasks, learners and resampling technique, you can use the `benchmark_grid` function from `mlr3`.
+Here, we will use only one task and one resampling technique but multiple learners.
+Use the previously created task (german credit), learners (the list of many KNN learners and a single logistic regression learner) and resampling (4 fold CV) as input.
+
+<details>
+  <summary>**Show Hint 1:**</summary>
+  Also make sure that the task is included in a list as the arguments of the `benchmark_grid` function requires lists as input.
+  </details>
+<details>
+  <summary>**Show Hint 2:**</summary>
+  `benchmark_grid(...`
+  </details>
+
+::: {.content-hidden unless-meta="params.showsolution"}
+::: {.callout-note collapse="true"}
+### Solution
+
+```{r, eval=show.solution}
+design = benchmark_grid(list(task), lrns, cv4)
+```
+
+:::
+:::
+
+
+## Run the benchmark
+
+Now you still need to run all experiments specified in the design.
+Do so by using the `benchmark` function.
+This may take some time.
+(Still less than a minute.)
+Make sure to store the benchmark in a new object called `bmr` as you will reuse and inspect the benchmark result in the subsequent exercises.
+
+<details>
+  <summary>**Show Hint 1:**</summary>
+  </details>
+
+::: {.content-hidden unless-meta="params.showsolution"}
+::: {.callout-note collapse="true"}
+### Solution
+
+```{r, eval=show.solution, message=FALSE}
+bmr = benchmark(design)
+```
+
+:::
+:::
+## Evaluate the benchmark
+
+Choose two appropriate metrics to evaluate the different learners performance on the task.
+Compute these metrics and also visualize at least one of them using the `autoplot` function.
+
+<details>
+  <summary>**Show Hint 1:**</summary>
+  The previously stored benchmark object has a method `$aggregate(...)` just like the objects created with the `resample` function from the previous use case.
+  </details>
+<details>
+  <summary>**Show Hint 2:**</summary>
+  `autoplot(..., measure = msr(...))`
+  </details>
+
+::: {.content-hidden unless-meta="params.showsolution"}
+::: {.callout-note collapse="true"}
+### Solution
+
+```{r, eval=show.solution}
+res = bmr$aggregate(measures = c(msr("classif.fp"), msr("classif.acc")))
+head(res)
+autoplot(bmr, measure = msr("classif.acc"))
+
+```
+
+:::
+:::
+## Interpret the results
+
+Interpret the plot.
+Which $k$ seems to work well given the task?
+Would you prefer a logistic regression over a KNN learner?
+::: {.content-hidden unless-meta="params.showsolution"}
+::: {.callout-note collapse="true"}
+### Solution
+A $k$ of approx. 12 seems to perform best (in terms of accuracy). 
+A too small $k$ underfits, a large one overfits.
+Not knowing the true $k$, a logistic regression seems preferable.
+If $k$ is too small, the average performance of the logistic regression is much better.
+If $k$ is too large, the variance of the performance is much higher compared to the logistic regression.
+However, a KNN an optimal $k$ has a consistently high accuracy.
+
+:::
+:::
+# Extra: Parallelize your efforts
+
+Benchmarking is **embarassingly** parallel.
+That means it is very easy to run the experiments of the benchmarking on different machines or cores.
+In many cases (not all!), this can significantly speed up computation time.
+We recommend to do this using the `future::plan` function when paralellizing `mlr3` benchmarks.
+
+<details>
+  <summary>**Show Hint 1:**</summary>
+  You need to use the `plan` function twice.
+  Once to set up a `multisession`, then go back to `parallel`.
+  </details>
+<details>
+  <summary>**Show Hint 2:**</summary>
+```{r}
+library(future)
+plan(multisession)
+# your code                     
+plan(sequential)
+```
+  </details>
+
+::: {.content-hidden unless-meta="params.showsolution"}
+::: {.callout-note collapse="true"}
+### Solution
+
+```{r, eval=show.solution, message=FALSE}
+# load the packages
+library(mlr3)
+library(future)
+library(future.apply)
+
+# parallel plan
+plan(multisession)
+set.seed(100) # it is good practice to set a seed before 
+bmr_par = benchmark(design)                     
+plan(sequential)
+
+```
+
+:::
+:::
+
+# Summary
+
+We learnt how to set benchmark in `mlr3`.
+While we only looked at a single task and a single resampling, the procedure easily applies to more complex benchmarks with many tasks.
+Additionally, we learnt how to understand benchmark results.
+Last but not least, you may have parallelized your benchmark if you still had some time left.
+
