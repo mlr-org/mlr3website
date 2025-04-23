@@ -232,6 +232,8 @@ plan(sequential)
 library(mlr3)
 library(future)
 library(future.apply)
+library(mlr3learners)
+library(kknn)
 
 # parallel plan
 plan(multisession)
