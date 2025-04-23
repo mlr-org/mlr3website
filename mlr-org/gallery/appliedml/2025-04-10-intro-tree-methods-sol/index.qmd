@@ -26,6 +26,8 @@ show.solution = params$showsolution
 set.seed(123)
 requireNamespace("kknn")
 requireNamespace("mlr3learners")
+library(kknn)
+library(mlr3learners)
 ```
 
 # Goal
