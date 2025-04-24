@@ -9,8 +9,6 @@ author:
 description: |
   Hyperparameter tuning and benchmarking on german credit task.
 date: 04-14-2025
-aliases:
-  - ../../../gallery/2020-08-14-comparison-of-decision-boundaries/index.html
 params:
   showsolution: false
 ---
@@ -73,8 +71,10 @@ Give the KNN learners an appropriate `id` that reflects their $k$.
   `lapply(..., function(i) lrn("classif.kknn", k = i, id = paste0("classif.knn", i))`
   </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -84,6 +84,7 @@ lrns = append(log_reg, knn)
 ```
 
 :::
+
 :::
 
 ## Create the resampling
@@ -96,9 +97,10 @@ Create a list that only contains this resampling (this is needed later for the `
   See the previous resampling use case.
   </details>
 
+:::{.content-hidden unless-meta="params.showsolution"}
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -106,6 +108,7 @@ cv4 = list(rsmp("cv", folds = 4))
 ```
 
 :::
+
 :::
 
 ## Create a benchmarking design
@@ -123,8 +126,10 @@ Use the previously created task (german credit), learners (the list of many KNN 
   `benchmark_grid(...`
   </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -132,8 +137,8 @@ design = benchmark_grid(list(task), lrns, cv4)
 ```
 
 :::
-:::
 
+:::
 
 ## Run the benchmark
 
@@ -147,8 +152,10 @@ Make sure to store the benchmark in a new object called `bmr` as you will reuse 
   <summary>**Show Hint 1:**</summary>
   </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution, message=FALSE}
@@ -156,7 +163,9 @@ bmr = benchmark(design)
 ```
 
 :::
+
 :::
+
 ## Evaluate the benchmark
 
 Choose two appropriate metrics to evaluate the different learners performance on the task.
@@ -171,8 +180,10 @@ Compute these metrics and also visualize at least one of them using the `autoplo
   `autoplot(..., measure = msr(...))`
   </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -183,14 +194,19 @@ autoplot(bmr, measure = msr("classif.acc"))
 ```
 
 :::
+
 :::
+
 ## Interpret the results
 
 Interpret the plot.
 Which $k$ seems to work well given the task?
 Would you prefer a logistic regression over a KNN learner?
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 A $k$ of approx. 12 seems to perform best (in terms of accuracy). 
 A too small $k$ underfits, a large one overfits.
@@ -200,7 +216,9 @@ If $k$ is too large, the variance of the performance is much higher compared to 
 However, a KNN an optimal $k$ has a consistently high accuracy.
 
 :::
+
 :::
+
 # Extra: Parallelize your efforts
 
 Benchmarking is **embarassingly** parallel.
@@ -223,8 +241,10 @@ plan(sequential)
 ```
   </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution, message=FALSE}
@@ -242,6 +262,7 @@ plan(sequential)
 ```
 
 :::
+
 :::
 
 # Summary
@@ -250,4 +271,3 @@ We learnt how to set benchmark in `mlr3`.
 While we only looked at a single task and a single resampling, the procedure easily applies to more complex benchmarks with many tasks.
 Additionally, we learnt how to understand benchmark results.
 Last but not least, you may have parallelized your benchmark if you still had some time left.
-

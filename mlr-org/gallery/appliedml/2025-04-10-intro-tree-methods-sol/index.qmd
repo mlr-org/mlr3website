@@ -9,10 +9,10 @@ author:
 description: |
   Use, plot and benchmark classification tree and random forest on german credit set.
 date: 04-14-2025
-aliases:
-  - ../../../gallery/2020-08-14-comparison-of-decision-boundaries/index.html
 params:
   showsolution: true
+listing: false
+search: false
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -62,8 +62,10 @@ lrn_rpart$... # access the raw model object that was fitted
 
 </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -75,6 +77,7 @@ lrn_rpart$model
 ```
 
 :::
+
 :::
 
 ## Visualize the tree structure
@@ -108,8 +111,10 @@ library("rpart.plot")
 
 </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 The possibility of visualizing a tree makes it interpretable and helps to understand how new predictions are calculated.
@@ -147,8 +152,11 @@ ggparty(partytree) +
     position = position_fill()), xlab("Credit Risk")))
 
 ```
+
 :::
+
 :::
+
 ## Fit a random forest
 
 To get a more powerful learner we decide to also fit a random forest. Therefore, fit a random forest with default hyperparameters to the `german_credit` task.
@@ -180,8 +188,10 @@ lrn_ranger$...(...) # train the learner on the task
 
 </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -193,7 +203,9 @@ lrn_ranger$train(task)
 ```
 
 :::
+
 :::
+
 ## ROC Analysis
 
 The bank wants to use a tree-based model to predict the credit risk. Conduct a simple benchmark to assess if a decision tree or a random forest works better for these purposes. Specifically, the bank wants that among credit applications the system predicts to be "good", it can expect at most 10% to be "bad". Simultaneously, the bank aims at correctly classifying 90% or more of all applications that are "good". Visualize the benchmark results in a way that helps answer this question. Can the bank expect the model to fulfil their requirements? Which model performs better?
@@ -230,6 +242,9 @@ While the random forest dominates the decision tree, neither model can fulfil th
 
 </details>
 
+```{r, eval = !show.solution, echo = FALSE, results='asis'}
+cat("-->")
+```
 
 ## Understand hyperparameters
 
@@ -278,8 +293,10 @@ lrns = list(
 ```
 </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -298,7 +315,9 @@ lrns = list(
 ```
 
 :::
+
 :::
+
 ## Comparison of trees and random forests
 
 Does it make a difference w.r.t. model performance if we use different hyperparameters? Use the learners from the previous exercise and compare them in a benchmark. Use 5-fold cross-validation as resampling technique and the classification error as performance measure. Visualize the results of the benchmark.
@@ -330,8 +349,10 @@ mlr3viz::autoplot(bmr, measure = msr("classif.ce"))
 ```
 </details>
 
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -357,8 +378,11 @@ Looking at the boxplots reveals that the performance of the learners highly depe
 <br>
 
 **Follow up question:** How to properly set the hyperparameters? Answer: Hyperparameter optimization (see next use case)
+
 :::
+
 :::
+
 # Summary
 
 - We learned how to use two of the most widely used learner for building a tree with `rpart` and a random forest with `ranger`.

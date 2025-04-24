@@ -5,18 +5,12 @@ categories:
 author:
   - name: Giuseppe Casalicchio
   - name: Essential Data Science Training GmbH
-
     url: https://www.essentialds.de
 description: |
   Use 5-fold cross validation to evaluate logistic regression and knn learner on german credit set.
-
 date: 04-14-2025
-aliases:
-  - ../../../gallery/2020-08-14-comparison-of-decision-boundaries/index.html
-
 params:
   showsolution: false
-
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -25,8 +19,6 @@ params:
 ```{r, echo=FALSE}
 show.solution = params$showsolution
 ```
-
-
 
 ```{r, include=FALSE}
 set.seed(123)
@@ -68,12 +60,10 @@ Create a logistic regression learner (store it as an R object called `log_reg`) 
   Make sure to have the `kknn` package installed.
   </details>
   
-  
-::: {.content-hidden unless-meta="params.showsolution"}
+:::{.content-hidden unless-meta="params.showsolution"}
 
+:::{.callout-note collapse="true"}
 
-
-::: {.callout-note collapse="true"}
 ### Solution
 
 ```{r, eval=show.solution}
@@ -83,10 +73,9 @@ knn = lrn("classif.kknn", k = 5)
 
 ```
 
-
 :::
 
-::: 
+:::
 
 
 ## Set up a resampling instance
@@ -104,21 +93,23 @@ A table of possible resampling techniques implemented in `mlr3` can be shown by 
   `rsmp("cv")` by default sets up a 10-fold cross-validation instance.
   The number of folds can be set using an additional argument (see the `params` column from `as.data.table(mlr_resamplings)`).
   </details>
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+  
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
-
 cv5 = rsmp("cv", folds = 5)
 cv5
-
 ```
 
 Note: `Instantiated: FALSE` means that we only created the resampling instance and did not apply the resampling technique to a task yet.
+
 :::
 
-::: 
+:::
 
 ## Run the resampling
 
@@ -135,8 +126,11 @@ After having created a resampling instance, use it to apply the chosen resamplin
   `resample(task = task, learner = log_reg, resampling = cv5)`
 
   </details>
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -147,9 +141,10 @@ res_log_reg
 res_knn
 
 ```
+
 :::
 
-::: 
+:::
 
 ## Evaluation
 
@@ -164,8 +159,11 @@ Use `msr("classif.acc")` and the `aggregate` method of the resampling object.
   <summary>**Show Hint 2:**</summary>
 `res_knn$aggregate(msr(...))` to obtain the classification accuracy averaged across all folds.
   </details>
-::: {.content-hidden unless-meta="params.showsolution"}
-::: {.callout-note collapse="true"}
+
+:::{.content-hidden unless-meta="params.showsolution"}
+
+:::{.callout-note collapse="true"}
+
 ### Solution
 
 ```{r, eval=show.solution}
@@ -175,19 +173,13 @@ res_log_reg$aggregate(msr("classif.acc"))
 
 ```
 Note: Use e.g. `res_knn$score(msr(...))` to look at the results of each individual fold.
+
 :::
 
-::: 
+:::
 
 # Summary
 
 We can now apply different resampling methods to estimate the performance of different learners and fairly compare them.
 We now have learnt how to obtain a better (in terms of variance) estimate of our model performance instead of doing a simple train and test split.
 This enables us to fairly compare different learners.
-
-
-
-
-
-
-

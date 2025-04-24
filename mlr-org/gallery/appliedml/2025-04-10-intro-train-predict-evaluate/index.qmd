@@ -10,20 +10,15 @@ author:
 description: |
   Introduction to German Credit dataset and classification. Train predict and evaluate a logistic regression learner with hold-out split.
 date: 04-14-2025
-aliases:
-  - ../../../gallery/2020-08-14-comparison-of-decision-boundaries/index.html
 params:
   showsolution: false
 ---
 
 {{< include ../../_setup.qmd >}}
 
-
 ```{r, echo=FALSE}
 show.solution = params$showsolution
 ```
-
-
 
 # Goal
 Our goal for this exercise sheet is to learn the basics of mlr3 for supervised learning
@@ -161,12 +156,10 @@ test_set = german[...,]
 </details>
 
 
+:::{.content-hidden unless-meta="params.showsolution"}
 
-::: {.content-hidden unless-meta="params.showsolution"}
+:::{.callout-note collapse="true"}
 
-
-
-::: {.callout-note collapse="true"}
 ### Solution
 
 We first sample row ids by using `sample()` and identify the non-selected rows via `setdiff()`.
@@ -187,14 +180,10 @@ Based on that, we create two datasets: one for training and one for testing.
 train_set = german[train_ids,]
 test_set = german[test_ids, ]
 ```
-:::
 
 :::
 
-
-
-
-
+:::
 
 ## Create a Classification Task
 
@@ -220,31 +209,24 @@ task = as_task_classif(x = ..., target = ..., ... = "good")
 
 </details>
 
+:::{.content-hidden unless-meta="params.showsolution"}
 
+:::{.callout-note collapse="true"}
 
-::: {.content-hidden unless-meta="params.showsolution"}
-
-
-
-::: {.callout-note collapse="true"}
 ### Solution
 
 To initialize a `TaskClassif` object, two equivalent calls exist:
 
-
 ```{r, eval=show.solution}
-
 library("mlr3verse")
 task = TaskClassif$new("german_credit", backend = train_set, target = "credit_risk", positive = "good")
 task = as_task_classif(train_set, target = "credit_risk", positive = "good")
 task
 ```
-:::
 
 :::
 
-
-
+:::
 
 
 ## Train a Model on the Training Dataset
@@ -278,12 +260,10 @@ logreg$train(...)
 
 </details>
 
+:::{.content-hidden unless-meta="params.showsolution"}
 
-::: {.content-hidden unless-meta="params.showsolution"}
+:::{.callout-note collapse="true"}
 
-
-
-::: {.callout-note collapse="true"}
 ### Solution
 
 By using the syntactic sugar method `lrn()`, we first initialize a `LearnerClassif` model.
@@ -300,10 +280,6 @@ logreg$train(task)
 :::
 
 :::
-
-
-
-
 
 ## Inspect the Model
 
@@ -328,12 +304,10 @@ summary(yourmodel$model)
 
 </details>
 
+:::{.content-hidden unless-meta="params.showsolution"}
 
-::: {.content-hidden unless-meta="params.showsolution"}
+:::{.callout-note collapse="true"}
 
-
-
-::: {.callout-note collapse="true"}
 ### Solution
 
 Similar to models fitted via `glm()` or `lm()`, we could receive a summary
@@ -361,10 +335,6 @@ The positive sign of the coefficient of `status >= 200 DM / salary for at least 
 
 :::
 
-
-
-
-
 ## Predict on the Test Dataset
 Use the trained model to predict on the hold-out/test dataset.
 
@@ -386,12 +356,10 @@ pred = yourmodel$predict_newdata(...)
 
 </details>
 
+:::{.content-hidden unless-meta="params.showsolution"}
 
-::: {.content-hidden unless-meta="params.showsolution"}
+:::{.callout-note collapse="true"}
 
-
-
-::: {.callout-note collapse="true"}
 ### Solution
 
 
@@ -403,10 +371,6 @@ pred_logreg = logreg$predict_newdata(test_set)
 :::
 
 :::
-
-
-
-
 
 ## Evaluation
 
@@ -431,12 +395,10 @@ pred_logreg$score()
 
 </details>
 
+:::{.content-hidden unless-meta="params.showsolution"}
 
-::: {.content-hidden unless-meta="params.showsolution"}
+:::{.callout-note collapse="true"}
 
-
-
-::: {.callout-note collapse="true"}
 ### Solution
 
 By using the `$score()` method, we obtain an estimate for the classification error
@@ -475,16 +437,14 @@ You can get an overview of performance measures in mlr3 using `as.data.table(msr
 </details>
 
 
-::: {.content-hidden unless-meta="params.showsolution"}
+:::{.content-hidden unless-meta="params.showsolution"}
 
+:::{.callout-note collapse="true"}
 
-
-::: {.callout-note collapse="true"}
 ### Solution
 
 
 ```{r,eval=show.solution}
-
 # Train a learner
 logreg = lrn("classif.log_reg", predict_type = "prob")
 logreg$train(task)
@@ -499,11 +459,6 @@ pred_logreg$score(measure)
 
 :::
 
-
-
-
-
-
 # Summary
 
 In this exercise sheet we learned how to fit a logistic regression model on
@@ -512,5 +467,3 @@ the help of `mlr3`.
 We showed how to split data manually into training and test data,
 but in most scenarios it is a call to resample or benchmark.
 We will learn more on this in the next sections.
-
-
