@@ -7,6 +7,11 @@ if (length(to_install)) {
   install.packages(to_install, repos = "https://cloud.r-project.org")
 }
 
+if (!staticryptR:::is_staticrypt_available()) {
+  message("staticrypt not found – downloading once …")
+  staticryptR::install_staticrypt()
+}
+
 #library(jsonlite)   # to read the _freeze/… JSON records
 #library(yaml)       # to read YAML front-matter
 
