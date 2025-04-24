@@ -41,6 +41,12 @@ jobs:
       - name: Render site
         run: quarto render mlr-org/
 
+      - name: Post-render R tasks
+        run: Rscript mlr-org/gallery/_encrypt.R
+
+      - name: Wait 10s due to delay in staticrypt
+        run: sleep 10
+
       - name: Deploy netlify preview
         if: ${{ github.event_name == 'pull_request' }}
         uses: mlr-org/actions/quarto-netlify-preview@v1
