@@ -1,8 +1,11 @@
 #!/usr/bin/env Rscript
 
 #sink("debug.log", split = TRUE)
-if (!requireNamespace("staticryptR", quietly = TRUE))
-  stop("Install the staticryptR package first.")
+required_packages = c("staticryptR", "rmarkdown")
+to_install = setdiff(required_packages, rownames(installed.packages()))
+if (length(to_install)) {
+  install.packages(to_install, repos = "https://cloud.r-project.org")
+}
 
 #library(jsonlite)   # to read the _freeze/… JSON records
 #library(yaml)       # to read YAML front-matter
