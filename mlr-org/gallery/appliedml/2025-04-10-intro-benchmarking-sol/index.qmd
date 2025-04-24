@@ -1,18 +1,20 @@
 ---
-title: Benchmarking
+title: Benchmarking solution
 categories:
   - benchmarking
 author:
   - name: Giuseppe Casalicchio
   - name: Essential Data Science Training GmbH
-    url: www.essentialds.de
+
+    url: https://www.essentialds.de
 description: |
-  Applied Machine Learning In-class exercise 01-3.
+  Hyperparameter tuning and benchmarking on german credit task.
 date: 04-14-2025
 aliases:
   - ../../../gallery/2020-08-14-comparison-of-decision-boundaries/index.html
 params:
   showsolution: true
+unlinked: true
 ---
 
 {{< include ../../_setup.qmd >}}
@@ -189,6 +191,7 @@ autoplot(bmr, measure = msr("classif.acc"))
 Interpret the plot.
 Which $k$ seems to work well given the task?
 Would you prefer a logistic regression over a KNN learner?
+
 ::: {.content-hidden unless-meta="params.showsolution"}
 ::: {.callout-note collapse="true"}
 ### Solution
