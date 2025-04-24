@@ -51,19 +51,19 @@ set.seed(20220801)
 
 # Exercise: Benchmark multiple learners
 
-We are going to compare a range of different KNN models ranging from a $k$ of 3 to 30.
+We are going to compare a range of different KNN models ranging from a $k$ of 4 to 25.
 Furthermore, we want to assess the performance of a logistic regression.
 
 ## Create the learners
 
 Create a logistic regression learner and many KNN learners.
-You should cover all KNNs with a $k$ between 3 and 30.
+You should cover all KNNs with a $k$ between 4 and 25.
 Save all learners in a list.
 Give the KNN learners an appropriate `id` that reflects their $k$.
 
 <details>
   <summary>**Show Hint 1:**</summary>
-  Use the `lapply` function or a for-loop to create the list of learners with $k$ between 3 and 30.
+  Use the `lapply` function or a for-loop to create the list of learners with $k$ between 4 and 25.
   Don't forget to also include the logistic regression learner in your list (the `append` function might be helpful here to extend a created list).
   The `lrn` function has an argument `id` that can be used to change the name of the learner (here, you should give the KNN learners an appropriate `id` that reflects their value of $k$ to be able to distinguish the learners).
   </details>
@@ -80,7 +80,7 @@ Give the KNN learners an appropriate `id` that reflects their $k$.
 
 ```{r, eval=show.solution}
 log_reg = lrn("classif.log_reg")
-knn = lapply(3:30, function(i) lrn("classif.kknn", k = i, id = paste0("classif.knn", i)))
+knn = lapply(4:25, function(i) lrn("classif.kknn", k = i, id = paste0("classif.knn", i)))
 lrns = append(log_reg, knn)
 ```
 
