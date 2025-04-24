@@ -25,7 +25,8 @@ for (html in html_files) {
   
   # Read only the YAML header
   front = tryCatch(rmarkdown::yaml_front_matter(src), error = function(e) NULL)
-  if (is.null(front) || !isTRUE(front$protect)) next
+  protect = front$params$showsolution
+  if (is.null(front) || !isTRUE(protect)) next
   
   abr = abbreviate(front$title, minlength = 8)
 
