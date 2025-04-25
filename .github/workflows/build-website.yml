@@ -32,9 +32,6 @@ jobs:
         name: Install mlr3website package
         run: R CMD INSTALL .
 
-      - name: Install dependencies for non freezed files in appliedml
-        run: Rscript -e "install.packages(unique(renv::dependencies(path = 'mlr-org/gallery/appliedml/')$Package))"
-        
       - name: Install torch
         run: Rscript -e "torch::install_torch()"
 

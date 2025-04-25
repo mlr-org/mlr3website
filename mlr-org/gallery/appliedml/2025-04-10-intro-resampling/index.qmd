@@ -18,6 +18,7 @@ params:
 
 ```{r, echo=FALSE}
 show.solution = params$showsolution
+if (show.solution) future::plan("sequential")
 ```
 
 ```{r, include=FALSE}
