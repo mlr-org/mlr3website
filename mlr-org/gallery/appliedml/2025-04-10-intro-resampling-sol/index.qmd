@@ -72,7 +72,7 @@ Create a logistic regression learner (store it as an R object called `log_reg`) 
 ```{r, eval=show.solution}
 
 log_reg = lrn("classif.log_reg")
-knn = lrn("classif.kknn", k = 5)
+knn = lrn("classif.kknn", k = 5, packages = "kknn")
 
 ```
 
