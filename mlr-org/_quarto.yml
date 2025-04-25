@@ -1,5 +1,7 @@
 project:
   type: website
+  post-render:
+    - gallery/_encrypt.R
 
 website:
   title: "mlr-org"

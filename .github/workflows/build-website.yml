@@ -35,6 +35,9 @@ jobs:
       - name: Install torch
         run: Rscript -e "torch::install_torch()"
 
+      - name: Install staticrypt binary
+        run: Rscript -e "staticryptR::install_staticrypt()"
+        
       - name: Render site
         run: quarto render mlr-org/
 
