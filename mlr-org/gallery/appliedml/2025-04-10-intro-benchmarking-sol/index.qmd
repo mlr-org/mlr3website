@@ -8,7 +8,7 @@ author:
     url: https://www.essentialds.de
 description: |
   Hyperparameter tuning and benchmarking on german credit task.
-date: 04-14-2025
+date: ""
 params:
   showsolution: true
 listing: false
@@ -24,8 +24,8 @@ show.solution = params$showsolution
 
 ```{r, include=FALSE}
 set.seed(123)
+knitr::opts_chunk$set(warning = FALSE)
 ```
-
 
 # Goal
 
@@ -44,25 +44,26 @@ The German Credit Data set.
 ```{r}
 library(mlr3verse)
 task = tsk("german_credit")
-set.seed(20220801)
+set.seed(20240801)
 ```
 
 
 # Exercise: Benchmark multiple learners
 
-We are going to compare a range of different KNN models ranging from a $k$ of 4 to 25.
+We are going to compare a range of different KNN models with even $k$ values from 4 to 30.
 Furthermore, we want to assess the performance of a logistic regression.
 
 ## Create the learners
 
 Create a logistic regression learner and many KNN learners.
-You should cover all KNNs with a $k$ between 4 and 25.
+You should evaluate all KNN models with even $k$ values from 4 to 30 (i.e., every second $k$ value between 4 and 30).
 Save all learners in a list.
 Give the KNN learners an appropriate `id` that reflects their $k$.
 
 <details>
   <summary>**Show Hint 1:**</summary>
-  Use the `lapply` function or a for-loop to create the list of learners with $k$ between 4 and 25.
+  Create a sequence from 4 to 30, e.g., using the `seq()` function.
+  Use the `lapply` function or a for-loop to create the list of learners with even $k$ values from 4 to 30.
   Don't forget to also include the logistic regression learner in your list (the `append` function might be helpful here to extend a created list).
   The `lrn` function has an argument `id` that can be used to change the name of the learner (here, you should give the KNN learners an appropriate `id` that reflects their value of $k$ to be able to distinguish the learners).
   </details>
@@ -81,7 +82,9 @@ Give the KNN learners an appropriate `id` that reflects their $k$.
 
 ```{r, eval=show.solution}
 log_reg = lrn("classif.log_reg")
-knn = lapply(4:25, function(i) lrn("classif.kknn", k = i, id = paste0("classif.knn", i)))
+kval = seq(from = 4, to = 30, by = 2)
+kval
+knn = lapply(kval, function(i) lrn("classif.kknn", k = i, id = paste0("classif.knn", i)))
 lrns = append(log_reg, knn)
 ```
 
@@ -106,7 +109,7 @@ Create a list that only contains this resampling (this is needed later for the `
 ### Solution
 
 ```{r, eval=show.solution}
-cv4 = list(rsmp("cv", folds = 4))
+cv4 = rsmp("cv", folds = 4)
 ```
 
 :::
@@ -125,7 +128,7 @@ Use the previously created task (german credit), learners (the list of many KNN 
   </details>
 <details>
   <summary>**Show Hint 2:**</summary>
-  `benchmark_grid(...`
+  `benchmark_grid(...)`
   </details>
 
 :::{.content-hidden unless-meta="params.showsolution"}
@@ -135,7 +138,7 @@ Use the previously created task (german credit), learners (the list of many KNN 
 ### Solution
 
 ```{r, eval=show.solution}
-design = benchmark_grid(list(task), lrns, cv4)
+design = benchmark_grid(task, lrns, cv4)
 ```
 
 :::
@@ -192,7 +195,6 @@ Compute these metrics and also visualize at least one of them using the `autoplo
 res = bmr$aggregate(measures = c(msr("classif.fp"), msr("classif.acc")))
 head(res)
 autoplot(bmr, measure = msr("classif.acc"))
-
 ```
 
 :::
@@ -210,7 +212,7 @@ Would you prefer a logistic regression over a KNN learner?
 :::{.callout-note collapse="true"}
 
 ### Solution
-A $k$ of approx. 12 seems to perform best (in terms of accuracy). 
+$k$ around `r if (show.solution) as.numeric(gsub(".*?(\\d+).*", "\\1",  res[grepl("knn", learner_id)][which.max(classif.acc), "learner_id"])) else "22"` seems to perform best (in terms of accuracy). 
 A too small $k$ underfits, a large one overfits.
 Not knowing the true $k$, a logistic regression seems preferable.
 If $k$ is too small, the average performance of the logistic regression is much better.
@@ -249,9 +251,11 @@ plan(sequential)
 
 ### Solution
 
-```{r, eval=show.solution, message=FALSE}
+```{r, eval=FALSE, message=FALSE}
 # load the packages
 library(mlr3)
+library(mlr3learners)
+library(kknn)
 library(future)
 library(future.apply)
 
@@ -260,7 +264,6 @@ plan(multisession)
 set.seed(100) # it is good practice to set a seed before 
 bmr_par = benchmark(design)                     
 plan(sequential)
-
 ```
 
 :::

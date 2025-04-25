@@ -29,14 +29,11 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
 
       - id: install-mlr3website
-        name:  Install mlr3website package
+        name: Install mlr3website package
         run: R CMD INSTALL .
 
       - name: Install torch
         run: Rscript -e "torch::install_torch()"
-
-      - name: Install staticrypt binary
-        run: Rscript -e "staticryptR::install_staticrypt()"
 
       - name: Render site
         run: quarto render mlr-org/

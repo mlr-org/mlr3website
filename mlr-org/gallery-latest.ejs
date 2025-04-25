@@ -1,6 +1,9 @@
 ```{=html}
 <ul>
-  <% for (let i = 0; i < 5; i++) { %>
+  <% for (let i = 0, shown = 0; i < items.length && shown < 5; i++) {
+       if (items[i].listing === false) continue;
+       shown++;
+  %>
     <li>
       <a href="<%- items[i].path %>"><%= items[i].title %></a>
       <p><%= items[i].description %></p>
