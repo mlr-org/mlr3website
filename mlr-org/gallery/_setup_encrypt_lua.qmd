@@ -25,6 +25,15 @@ hash = digest::digest(title, algo = "sha256", serialize = FALSE)
 <script>
 const correctHash = "`r hash`";   // value injected by knitr
 
+/* ---------- reusable helper ---------- */
+function b64DecodeUtf8(b64) {
+  // 1) atob  -> binary-string   (bytes 0…255)
+  // 2) map   -> Uint8Array      (array of bytes)
+  // 3) TextDecoder('utf-8')     -> real JS string
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
 async function sha256(txt) {
   const buf = await crypto.subtle.digest('SHA-256',
                  new TextEncoder().encode(txt));
@@ -42,7 +51,7 @@ async function unlockOne(btn) {
   /* --- decode only the solution that belongs to THIS button --- */
   const wrapper = btn.parentElement;             // .b64-wrapper
   wrapper.querySelectorAll('.hidden-solution').forEach(div => {
-    div.innerHTML = atob(div.dataset.encoded);
+    div.innerHTML = b64DecodeUtf8(div.dataset.encoded);
     div.classList.remove('hidden-solution');
     div.style.display = 'block';
   });
@@ -50,37 +59,15 @@ async function unlockOne(btn) {
   /* Remove the button so the user can’t click it again */
   btn.remove();
 }
-
-<!-- async function unlockSolutions() { -->
-<!--   const pass = prompt("Password:"); -->
-<!--   if (!pass) return;            // user clicked cancel -->
-<!--   if (await sha256(pass) !== correctHash) { -->
-<!--     alert("Wrong password");    // stop here -->
-<!--     return; -->
-<!--   } -->
-
-<!--   /* ------------------------------------------------------------------ -->
-<!--      1.  Decode every element that still has the class "hidden-solution" -->
-<!--      2.  Remove that class and make it visible (display:block) -->
-<!--      3.  If the element is inside an extra <div style="display:none">, -->
-<!--          make *that* wrapper visible as well. -->
-<!--   -------------------------------------------------------------------*/ -->
-<!--   document.querySelectorAll('.hidden-solution').forEach(div => { -->
-<!--     const encoded = div.dataset.encoded; -->
-<!--     div.innerHTML  = atob(encoded); -->
-<!--     div.classList.remove('hidden-solution'); -->
-<!--     div.style.display = 'block'; -->
-
-<!--     const wrapper = div.parentElement; -->
-<!--     if (wrapper && wrapper.style.display === 'none') { -->
-<!--       wrapper.style.display = 'block'; -->
-<!--     } -->
-<!--   }); -->
-
-<!--   /* Optional UX: disable the button after success */ -->
-<!--   document.getElementById('unlock-btn').disabled = true; -->
-<!-- } -->
 </script>
 
-<!-- <button id="unlock-btn" onclick="unlockSolutions()">Unlock solutions</button> -->
+<noscript>
+<div style="border: 1px solid #ccc; padding: 1em; margin-top: 1em; background: #f9f9f9;">
+    <strong>JavaScript is required to unlock solutions.</strong><br>
+    Please enable JavaScript and reload the page,<br>
+    or download the source files from
+    <a href="https://github.com/mlr-org/mlr3website/" target="_blank" rel="noopener noreferrer">GitHub</a>
+    and run the code locally.
+  </div>
+</noscript>
 ```
