@@ -11,16 +11,17 @@ description: |
 date: ""
 params:
   showsolution: true
+  base64encode: true
 listing: false
 search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
 ---
 
 {{< include ../../_setup.qmd >}}
-
-
-```{r, echo=FALSE}
-show.solution = params$showsolution
-```
+{{< include ../../_setup_encrypt_lua.qmd >}}
 
 ```{r, include=FALSE}
 set.seed(123)
@@ -61,24 +62,22 @@ Create a logistic regression learner (store it as an R object called `log_reg`) 
   <summary>**Show Hint 2:**</summary>
   Make sure to have the `kknn` package installed.
   </details>
-  
-:::{.content-hidden unless-meta="params.showsolution"}
+
 
 :::{.callout-note collapse="true"}
 
 ### Solution
 
-```{r, eval=show.solution}
+:::{.b64-solution}
 
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 log_reg = lrn("classif.log_reg")
 knn = lrn("classif.kknn", k = 5)
-
 ```
 
 :::
 
 :::
-
 
 ## Set up a resampling instance
 
@@ -96,13 +95,14 @@ A table of possible resampling techniques implemented in `mlr3` can be shown by 
   The number of folds can be set using an additional argument (see the `params` column from `as.data.table(mlr_resamplings)`).
   </details>
   
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
 
-```{r, eval=show.solution}
+:::{.b64-solution}
+
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 cv5 = rsmp("cv", folds = 5)
 cv5
 ```
@@ -129,19 +129,17 @@ After having created a resampling instance, use it to apply the chosen resamplin
 
   </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
-
 :::{.callout-note collapse="true"}
 
 ### Solution
 
-```{r, eval=show.solution}
+:::{.b64-solution}
 
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 res_log_reg = resample(task, log_reg, cv5)
 res_knn = resample(task, knn, cv5)
 res_log_reg
 res_knn
-
 ```
 
 :::
@@ -162,19 +160,18 @@ Use `msr("classif.acc")` and the `aggregate` method of the resampling object.
 `res_knn$aggregate(msr(...))` to obtain the classification accuracy averaged across all folds.
   </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
-
 :::{.callout-note collapse="true"}
 
 ### Solution
 
-```{r, eval=show.solution}
+:::{.b64-solution}
 
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 res_knn$aggregate(msr("classif.acc"))
 res_log_reg$aggregate(msr("classif.acc"))
-
 ```
-Note: Use e.g. `res_knn$score(msr(...))` to look at the results of each individual fold.
+
+Note: Use e.g.  `res_knn$score(msr(...))` to look at the results of each individual fold.
 
 :::
 

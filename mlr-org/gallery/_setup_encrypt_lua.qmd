@@ -1,0 +1,86 @@
+```{r}
+#| include: false
+# Using this file, requires the following YAML information:
+# 
+# format:
+#   html:
+#     filters:
+#       - ../../b64_solution.lua
+library(knitr)
+library(base64enc)
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+```
+
+```{r, echo=FALSE}
+#show.solution = params$showsolution
+title = abbreviate(rmarkdown::metadata$title, minlength = 8)
+hash = digest::digest(title, algo = "sha256", serialize = FALSE)
+```
+
+```{=html}
+<script>
+const correctHash = "`r hash`";   // value injected by knitr
+
+async function sha256(txt) {
+  const buf = await crypto.subtle.digest('SHA-256',
+                 new TextEncoder().encode(txt));
+  return Array.from(new Uint8Array(buf))
+              .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function unlockOne(btn) {
+  const pass = prompt("Password:");
+  if (!pass) return;
+  if (await sha256(pass) !== correctHash) {
+    alert("Wrong password"); return;
+  }
+
+  /* --- decode only the solution that belongs to THIS button --- */
+  const wrapper = btn.parentElement;             // .b64-wrapper
+  wrapper.querySelectorAll('.hidden-solution').forEach(div => {
+    div.innerHTML = atob(div.dataset.encoded);
+    div.classList.remove('hidden-solution');
+    div.style.display = 'block';
+  });
+
+  /* Remove the button so the user can’t click it again */
+  btn.remove();
+}
+
+<!-- async function unlockSolutions() { -->
+<!--   const pass = prompt("Password:"); -->
+<!--   if (!pass) return;            // user clicked cancel -->
+<!--   if (await sha256(pass) !== correctHash) { -->
+<!--     alert("Wrong password");    // stop here -->
+<!--     return; -->
+<!--   } -->
+
+<!--   /* ------------------------------------------------------------------ -->
+<!--      1.  Decode every element that still has the class "hidden-solution" -->
+<!--      2.  Remove that class and make it visible (display:block) -->
+<!--      3.  If the element is inside an extra <div style="display:none">, -->
+<!--          make *that* wrapper visible as well. -->
+<!--   -------------------------------------------------------------------*/ -->
+<!--   document.querySelectorAll('.hidden-solution').forEach(div => { -->
+<!--     const encoded = div.dataset.encoded; -->
+<!--     div.innerHTML  = atob(encoded); -->
+<!--     div.classList.remove('hidden-solution'); -->
+<!--     div.style.display = 'block'; -->
+
+<!--     const wrapper = div.parentElement; -->
+<!--     if (wrapper && wrapper.style.display === 'none') { -->
+<!--       wrapper.style.display = 'block'; -->
+<!--     } -->
+<!--   }); -->
+
+<!--   /* Optional UX: disable the button after success */ -->
+<!--   document.getElementById('unlock-btn').disabled = true; -->
+<!-- } -->
+</script>
+
+<!-- <button id="unlock-btn" onclick="unlockSolutions()">Unlock solutions</button> -->
+```
