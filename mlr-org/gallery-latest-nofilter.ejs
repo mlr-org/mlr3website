@@ -1,0 +1,10 @@
+```{=html}
+<ul>
+  <% for (let i = 0, shown = 0; i < items.length && shown < 5; i++, shown++) { %>
+    <li>
+      <a href="<%- items[i].path %>"><%= items[i].title %></a>
+      <p><%= items[i].description %></p>
+    </li>
+  <% } %>
+</ul>
+```
