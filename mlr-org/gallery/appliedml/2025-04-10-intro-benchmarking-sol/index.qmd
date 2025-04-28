@@ -22,9 +22,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, echo=FALSE}
-show.solution = params$showsolution
-```
+
 
 ```{r, include=FALSE}
 set.seed(123)
@@ -85,7 +83,7 @@ Give the KNN learners an appropriate `id` that reflects their $k$.
 
 :::{.b64-solution}
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 log_reg = lrn("classif.log_reg")
 kval = seq(from = 4, to = 30, by = 2)
 kval
@@ -114,7 +112,7 @@ Create a list that only contains this resampling (this is needed later for the `
 
 :::{.b64-solution}
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 cv4 = rsmp("cv", folds = 4)
 ```
 
@@ -144,7 +142,7 @@ Use the previously created task (german credit), learners (the list of many KNN 
 
 :::{.b64-solution}
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 design = benchmark_grid(task, lrns, cv4)
 ```
 
@@ -171,7 +169,7 @@ Make sure to store the benchmark in a new object called `bmr` as you will reuse 
 
 :::{.b64-solution}
 
-```{r, eval=show.solution, message=FALSE}
+```{r, eval=params$showsolution, base64encode=params$base64encode, message=FALSE}
 bmr = benchmark(design)
 ```
 
@@ -200,7 +198,7 @@ Compute these metrics and also visualize at least one of them using the `autoplo
 
 :::{.b64-solution}
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 res = bmr$aggregate(measures = c(msr("classif.fp"), msr("classif.acc")))
 head(res)
 autoplot(bmr, measure = msr("classif.acc"))
@@ -223,7 +221,7 @@ Would you prefer a logistic regression over a KNN learner?
 
 :::{.b64-solution}
 
-$k$ around `r if (show.solution) as.numeric(gsub(".*?(\\d+).*", "\\1",  res[grepl("knn", learner_id)][which.max(classif.acc), "learner_id"])) else "22"` seems to perform best (in terms of accuracy). 
+$k$ around `r if (params$showsolution) as.numeric(gsub(".*?(\\d+).*", "\\1",  res[grepl("knn", learner_id)][which.max(classif.acc), "learner_id"])) else "22"` seems to perform best (in terms of accuracy). 
 A too small $k$ underfits, a large one overfits.
 Not knowing the true $k$, a logistic regression seems preferable.
 If $k$ is too small, the average performance of the logistic regression is much better.

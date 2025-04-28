@@ -23,9 +23,6 @@ format:
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
 
-```{r, echo=FALSE}
-show.solution = params$showsolution
-```
 
 ```{r, include=FALSE}
 set.seed(123)
@@ -74,7 +71,7 @@ lrn_rpart$... # access the raw model object that was fitted
 
 :::{.b64-solution}
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 library(mlr3)
 task = tsk("german_credit")
 lrn_rpart = lrn("classif.rpart")
@@ -126,7 +123,7 @@ library("rpart.plot")
 
 The possibility of visualizing a tree makes it interpretable and helps to understand how new predictions are calculated.
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 library(rpart.plot)
 
 rpart.plot(lrn_rpart$model)
@@ -134,19 +131,19 @@ rpart.plot(lrn_rpart$model)
 __Note:__ Other functions to visualize an `rpart` tree are:
 
 - The (very) basic `rpart` plot method:
-```{r, fig.width=15, fig.height=15, out.width="100%", eval = show.solution}
+```{r, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
 plot(lrn_rpart$model)
 text(lrn_rpart$model, use.n = TRUE)
 ```
 - Convert the `rpart` object to a `party` object to automatically use the respective `plot()` method:
-```{r, fig.width=15, fig.height=15, out.width="100%", eval = show.solution}
+```{r, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
 library(partykit)
 partytree = as.party(lrn_rpart$model)
 plot(partytree)
 ```
 
 - Use [`ggparty`](https://cran.r-project.org/web/packages/ggparty/vignettes/ggparty-graphic-partying.html) to create highly customizable plots:
-```{r, fig.width=15, fig.height=15, out.width="100%", eval = show.solution}
+```{r, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
 library(ggparty)
 
 ggparty(partytree) +
@@ -202,7 +199,7 @@ lrn_ranger$...(...) # train the learner on the task
 
 :::{.b64-solution}
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 library(mlr3)
 library(mlr3learners)
 
@@ -232,7 +229,7 @@ A benchmark requires three arguments: a task, a list of learners, and a resampli
 :::{.b64-solution}
 
 
-```{r, eval = show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 tree = lrn("classif.rpart", predict_type = "prob")
 forest = lrn("classif.ranger", predict_type = "prob")
 
@@ -306,7 +303,7 @@ lrns = list(
 
 :::{.b64-solution}
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 library(mlr3verse)
 set.seed(31415L)
 
@@ -363,7 +360,7 @@ mlr3viz::autoplot(bmr, measure = msr("classif.ce"))
 
 :::{.b64-solution}
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 set.seed(31415L)
 
 lrns = list(
