@@ -1,0 +1,83 @@
+```{r}
+#| include: false
+
+# The :::{.b64-solution} fields need to be :::{.b64-solution style="display:none"}
+# Con: Syntax highlighting is not preserved
+
+library(knitr)
+library(base64enc)
+# Save default hooks
+default_output_hook = knit_hooks$get('output')
+default_source_hook = knit_hooks$get('source')
+
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Set a new output hook
+knit_hooks$set(output = function(x, options) {
+  if (!is.null(options$base64encode) && options$base64encode) {
+    encoded = base64enc::base64encode(charToRaw(paste(x, collapse = "\n")))
+    return(sprintf('<div class="hidden-output" data-encoded="%s"></div>', encoded))
+  } else {
+    default_output_hook(x, options)
+  }
+})
+
+# Set a new source (code input) hook
+knit_hooks$set(source = function(x, options) {
+  if (!is.null(options$base64encode) && options$base64encode) {
+    encoded = base64enc::base64encode(charToRaw(paste(x, collapse = "\n")))
+    return(sprintf('<div class="hidden-source" data-encoded="%s"></div>', encoded))
+  } else {
+    default_source_hook(x, options)
+  }
+})
+```
+
+```{r, echo=FALSE}
+#show.solution = params$showsolution
+title = abbreviate(rmarkdown::metadata$title, minlength = 8)
+hash = digest::digest(title, algo = "sha256", serialize = FALSE)
+```
+
+```{=html}
+<script>
+const correctHash = "`r hash`";
+
+async function hashMessage(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+async function unlockSolutions() {
+  const pass = prompt("Password:");
+  const passHash = await hashMessage(pass);
+
+  if (passHash === correctHash) {
+    document.querySelectorAll(".b64-solution")
+            .forEach(el => el.style.display = "block");
+    revealBase64Content();
+  } else {
+    alert("Wrong password");
+  }
+}
+
+function revealBase64Content() {
+  document.querySelectorAll('.hidden-source').forEach(el => {
+    const encoded = el.dataset.encoded;
+    el.innerHTML = `<pre><code>${atob(encoded)}</code></pre>`;
+  });
+  document.querySelectorAll('.hidden-output').forEach(el => {
+    const encoded = el.dataset.encoded;
+    el.innerHTML = `<pre>${atob(encoded)}</pre>`;
+  });
+}
+</script>
+
+<button onclick="revealBase64Content();unlockSolutions()">Unlock solutions</button>
+```

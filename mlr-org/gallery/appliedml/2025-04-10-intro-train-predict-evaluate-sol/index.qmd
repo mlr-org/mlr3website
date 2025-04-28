@@ -12,15 +12,19 @@ description: |
 date: ""
 params:
   showsolution: true
+  base64encode: true
 listing: false
 search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
 ---
 
 {{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, echo=FALSE}
-show.solution = params$showsolution
-```
+
 
 # Goal
 Our goal for this exercise sheet is to learn the basics of mlr3 for supervised learning
@@ -158,15 +162,15 @@ test_set = german[...,]
 </details>
 
 
-:::{.content-hidden unless-meta="params.showsolution"}
-
 :::{.callout-note collapse="true"}
 
 ### Solution
 
+:::{.b64-solution}
+
 We first sample row ids by using `sample()` and identify the non-selected rows via `setdiff()`.
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 
 set.seed(100L)
 train_ids = sample(row.names(german), 0.7*nrow(german))
@@ -177,7 +181,7 @@ str(test_ids)
 
 Based on that, we create two datasets: one for training and one for testing.
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 
 train_set = german[train_ids,]
 test_set = german[test_ids, ]
@@ -211,15 +215,16 @@ task = as_task_classif(x = ..., target = ..., ... = "good")
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
 
+:::{.b64-solution}
+
 To initialize a `TaskClassif` object, two equivalent calls exist:
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 library("mlr3verse")
 task = TaskClassif$new("german_credit", backend = train_set, target = "credit_risk", positive = "good")
 task = as_task_classif(train_set, target = "credit_risk", positive = "good")
@@ -262,18 +267,19 @@ logreg$train(...)
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 By using the syntactic sugar method `lrn()`, we first initialize a `LearnerClassif` model.
 Using the `$train()` method, we derive optimal hyperparameters (i.e., coefficients)
 for our logistic regression model.
 
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 
 logreg = lrn("classif.log_reg")
 logreg$train(task)
@@ -306,17 +312,18 @@ summary(yourmodel$model)
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
 
+:::{.b64-solution}
+
 Similar to models fitted via `glm()` or `lm()`, we could receive a summary
 of the coefficients (including p-values) using `summary()`.
 
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 
 summary(logreg$model)
 ```
@@ -325,7 +332,7 @@ According to the summary, e.g., `credit_history` and `status` significantly infl
 By looking on `task$positive`, we see that the class `good` (creditworthy client) is the positive class.
 This means that a positive sign of the estimated coefficient of a feature means that the feature has a positive influence on being a creditworthy client (while a negative sign will have a negative influence).
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 
 task$positive
 ```
@@ -358,14 +365,14 @@ pred = yourmodel$predict_newdata(...)
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
 
+:::{.b64-solution}
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 
 pred_logreg = logreg$predict_newdata(test_set)
 ```
@@ -397,17 +404,18 @@ pred_logreg$score()
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
 
+:::{.b64-solution}
+
 By using the `$score()` method, we obtain an estimate for the classification error
 of our model.
 
 
-```{r, eval=show.solution}
+```{r, eval=params$showsolution, base64encode=params$base64encode}
 
 pred_logreg$score()
 ```
@@ -439,14 +447,13 @@ You can get an overview of performance measures in mlr3 using `as.data.table(msr
 </details>
 
 
-:::{.content-hidden unless-meta="params.showsolution"}
-
 :::{.callout-note collapse="true"}
 
 ### Solution
 
+:::{.b64-solution}
 
-```{r,eval=show.solution}
+```{r,eval=params$showsolution, base64encode=params$base64encode}
 # Train a learner
 logreg = lrn("classif.log_reg", predict_type = "prob")
 logreg$train(task)
