@@ -13,10 +13,14 @@ params:
   showsolution: true
 listing: false
 search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
 ---
 
 {{< include ../../_setup.qmd >}}
-
+{{< include ../../_setup_encrypt_lua.qmd >}}
 
 ```{r, echo=FALSE}
 show.solution = params$showsolution
@@ -74,11 +78,12 @@ Give the KNN learners an appropriate `id` that reflects their $k$.
   `lapply(..., function(i) lrn("classif.kknn", k = i, id = paste0("classif.knn", i))`
   </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 ```{r, eval=show.solution}
 log_reg = lrn("classif.log_reg")
@@ -102,11 +107,12 @@ Create a list that only contains this resampling (this is needed later for the `
   See the previous resampling use case.
   </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 ```{r, eval=show.solution}
 cv4 = rsmp("cv", folds = 4)
@@ -131,11 +137,12 @@ Use the previously created task (german credit), learners (the list of many KNN 
   `benchmark_grid(...)`
   </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 ```{r, eval=show.solution}
 design = benchmark_grid(task, lrns, cv4)
@@ -157,11 +164,12 @@ Make sure to store the benchmark in a new object called `bmr` as you will reuse 
   <summary>**Show Hint 1:**</summary>
   </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 ```{r, eval=show.solution, message=FALSE}
 bmr = benchmark(design)
@@ -185,11 +193,12 @@ Compute these metrics and also visualize at least one of them using the `autoplo
   `autoplot(..., measure = msr(...))`
   </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 ```{r, eval=show.solution}
 res = bmr$aggregate(measures = c(msr("classif.fp"), msr("classif.acc")))
@@ -207,11 +216,13 @@ Interpret the plot.
 Which $k$ seems to work well given the task?
 Would you prefer a logistic regression over a KNN learner?
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
+
 $k$ around `r if (show.solution) as.numeric(gsub(".*?(\\d+).*", "\\1",  res[grepl("knn", learner_id)][which.max(classif.acc), "learner_id"])) else "22"` seems to perform best (in terms of accuracy). 
 A too small $k$ underfits, a large one overfits.
 Not knowing the true $k$, a logistic regression seems preferable.
@@ -245,11 +256,11 @@ plan(sequential)
 ```
   </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
-
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 ```{r, eval=FALSE, message=FALSE}
 # load the packages

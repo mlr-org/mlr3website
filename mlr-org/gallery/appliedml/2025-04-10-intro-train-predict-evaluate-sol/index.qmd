@@ -14,9 +14,14 @@ params:
   showsolution: true
 listing: false
 search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
 ---
 
 {{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
 
 ```{r, echo=FALSE}
 show.solution = params$showsolution
@@ -158,11 +163,11 @@ test_set = german[...,]
 </details>
 
 
-:::{.content-hidden unless-meta="params.showsolution"}
-
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 We first sample row ids by using `sample()` and identify the non-selected rows via `setdiff()`.
 
@@ -211,11 +216,12 @@ task = as_task_classif(x = ..., target = ..., ... = "good")
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 To initialize a `TaskClassif` object, two equivalent calls exist:
 
@@ -262,11 +268,12 @@ logreg$train(...)
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 By using the syntactic sugar method `lrn()`, we first initialize a `LearnerClassif` model.
 Using the `$train()` method, we derive optimal hyperparameters (i.e., coefficients)
@@ -306,11 +313,12 @@ summary(yourmodel$model)
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 Similar to models fitted via `glm()` or `lm()`, we could receive a summary
 of the coefficients (including p-values) using `summary()`.
@@ -358,12 +366,12 @@ pred = yourmodel$predict_newdata(...)
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
 
+:::{.b64-solution}
 
 ```{r, eval=show.solution}
 
@@ -397,11 +405,12 @@ pred_logreg$score()
 
 </details>
 
-:::{.content-hidden unless-meta="params.showsolution"}
 
 :::{.callout-note collapse="true"}
 
 ### Solution
+
+:::{.b64-solution}
 
 By using the `$score()` method, we obtain an estimate for the classification error
 of our model.
@@ -439,12 +448,11 @@ You can get an overview of performance measures in mlr3 using `as.data.table(msr
 </details>
 
 
-:::{.content-hidden unless-meta="params.showsolution"}
-
 :::{.callout-note collapse="true"}
 
 ### Solution
 
+:::{.b64-solution}
 
 ```{r,eval=show.solution}
 # Train a learner
