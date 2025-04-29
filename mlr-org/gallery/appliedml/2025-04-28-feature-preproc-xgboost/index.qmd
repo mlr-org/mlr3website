@@ -1,0 +1,619 @@
+---
+title: Xgboost
+categories:
+  - hyperparameter optimization
+  - xgboost
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Optimize hyperparameters of xgboost for german credit task.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+Our goal for this exercise sheet is to understand how to apply and work with XGBoost. 
+The XGBoost algorithm has a large range of hyperparameters. 
+We learn specifically how to tune these hyperparameters to optimize our 
+XGBoost model for the task at hand.
+
+# German Credit Dataset
+As in previous exercises, we use the German credit dataset of Prof. Dr. Hans Hoffman of the 
+University of Hamburg in 1994.
+By using XGBoost, we want to classify people as a good or bad credit risk based 
+on 20 personal, demographic and financial features. 
+The dataset is available at the UCI repository as
+[Statlog (German Credit Data) Data Set](https://archive.ics.uci.edu/ml/datasets/Statlog+%28German+Credit+Data%29).
+
+## Preprocessing
+
+To apply the XGBoost algorithm to the `credit` dataset, categorical features 
+need to be converted into numeric features e.g. using one-hot-encoding. 
+We use a factor encoding `PipeOp` from `mlr3pipelines` to do so.
+
+First, we setup a classification task:
+
+```{r}
+library(mlr3verse)
+task = tsk("german_credit")
+task$positive = "good"
+```
+
+Next, we can initialize a factor encoding and apply it to the task at hand.
+
+```{r}
+poe = po("encode")
+task = poe$train(list(task))[[1]]
+```
+
+# 1 XGBoost Learner
+
+## 1.1 Initialize an XGBoost Learner
+
+Initialize a XGBoost `mlr3` learner with 100 iterations.
+Make sure that that you have installed the `xgboost` R package.
+
+<details>
+<summary>**Details on iterations:**</summary>
+
+The number of iterations must always be chosen by the user, since 
+the hyperparameter has no proper default value in mlr3.
+
+"No proper default value" means that `mlr3` has an adjusted default 
+of 1 iteration to avoid errors when constructing the learner. 
+One single iteration is, in general, not a good default, since we only conduct a 
+single boosting step. 
+
+There is a trade-off between underfitting (not enough iterations) and 
+overfitting (too many iterations). 
+Therefore, it is always better to tune such a hyperparameter.
+In this exercise, we chose 100 iterations because we believe it is an upper bound for the 
+number of iterations. We will later conduct early stopping to avoid overfitting.
+
+</details>
+
+<details>
+<summary>**Hint 1:**</summary>
+
+The number of iterations can be specified via the `nrounds` hyperparameter 
+of the `classif.xgboost` learner, set this hyperparameter to `100`.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+xgboost_lrn = lrn(..., nrounds = ...)
+```
+
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+xgboost_lrn = lrn("classif.xgboost", nrounds = 100L)
+```
+
+:::
+
+:::
+
+## 1.2 Performance Assessment using Cross-validation
+
+Use 5-fold cross-validation to estimate the generalization error of the
+XGBoost learner with 100 boosting iterations on the one-hot-encoded credit task. 
+Measure the performance of the learner using the classification error.
+Set up a seed to make your results reproducible (e.g., `set.seed(8002L)`). 
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Specifically, you need to conduct three steps: 
+
+1. Specify a `Resampling` object using `rsmp()`.
+2. Use this object together with the task and learner specified above 
+as an input to the `resample()` method. 
+3. Measure the performance with the `$aggregate()` method of the resulting `ResampleResult` object.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+set.seed(8002L)
+resampling = rsmp("cv", ...)
+rr = resample(task = ..., learner = ..., resampling = ...)
+rr$aggregate()
+```
+
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+set.seed(8002L)
+resampling = rsmp("cv", folds = 5L)
+rr = resample(task = task, learner = xgboost_lrn, resampling = resampling)
+rr$aggregate()
+```
+
+:::
+
+:::
+
+# 2 Hyperparameters
+
+## 2.1 Overview of Hyperparameters
+
+Apart from the number of iterations (`nrounds`), the XGBoost learner has a several other hyperparameters 
+which were kept to their default values in the previous exercise. 
+Extract an overview of all hyperparameters from the initalized XGBoost learner (previous exercise) as well as its default values. 
+
+Given the extracted hyperparameter list above and the help page of `xgboost` (`?xgboost`), 
+answer the following questions:
+
+- Does the learner rely on a tree or a linear booster by default?
+- Do more hyperparameters exist for the tree or the linear booster?
+- What do `max_depth` and `eta` mean and what are their default values?
+- Does a larger value for `eta` imply a larger value for `nrounds`? 
+
+<details>
+<summary>**Hint 1:**</summary>
+
+The hyperparameters and their default values could be extracted by
+the `$param_set` field of the XGBoost learner.
+Alternatively, you could call the help page of `LearnerClassifXgboost`. 
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+You can answer all questions concerning defaults with the output of the 
+`$param_set`. A description of the hyperparameters could be found on 
+the `xgboost` help page (`?xgboost`). 
+The help page also offers an answer to the last question concerning the 
+connection between `eta` and `nrounds`. 
+
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+The `param_set` field gives an overview of the hyperparameters and their default values: 
+```{r}
+xgboost_lrn$param_set
+```
+
+Together with the help page of `xgboost` the answers to the above questions are: 
+
+- Does the learner rely on a tree or a linear booster per default?
+
+The `booster` hyperparameter reveals that it relies on a `gbtree` and, therefore, 
+a tree booster per default.
+
+- Do more hyperparameters exist for the tree or the linear booster?
+
+According to the help page of `xgboost`, tree boosters have more hyperparameters than 
+the linear booster (only three are mentioned for the latter: `lambda`, `lambda_bias` and `alpha` for 
+regularization of the linear booster).
+
+- What do `max_depth`, `eta` and `nrounds` mean and what are their default values?
+
+`max_depth` and `eta` affect the tree booster: `max_depth` gives the 
+depth of the tree with a default of 6 and `eta` specifies the learning rate, i.e., 
+how each tree contributes to the overall model, the default is `0.3`.
+
+- Does a larger value for `eta` imply a larger value for `nrounds`? 
+
+A larger value of `eta` implies a lower value of `nrounds` according to the
+help page. Since each tree contributes more to the overall model due to a larger 
+`eta`, the boosting 
+model also starts to overfit faster which necessitates a lower value for `nrounds`.
+
+:::
+
+:::
+
+## 2.2 Tune Hyperparameters
+
+Tune the the depth of tree of the `xgboost` learner on the German credit data using random search
+
+  - with the search space for `max_depth` between 1 and 8 and for `eta` between 0.2 and 0.4
+  - with 20 evaluations as termination criterion
+  - the classification error `msr("classif.ce")` as performance measure
+  - 3-fold CV as resampling strategy.
+  
+Set a seed for reproducibility (e.g., `set.seed(8002L)`).
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Specifically, you should conduct the following steps: 
+
+1. Setup a search space with `ps()` consisting of a `p_int()` for `max_depth` and `p_dbl()` for `eta`.
+2. Setup the classification error as a tuning measure with `msr()`. 
+3. Initialize cross-validation as the resampling strategy using `rsmp()`. 
+4. Setup 10 evaluations as the termination criterion using `trm()`. 
+5. Initialize a `TuningInstanceSingleCrit` object using `ti()` and the objects
+produced in steps 1.-4. as well as the task and learner as an input. 
+6. Define random search as the tuner object using `tnr()`. 
+7. Call the `$optimize()` method of the tuner object with the initialized 
+`TuningInstanceSingleCrit` as an input. 
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+
+```{r, eval=FALSE}
+set.seed(8002L)
+
+search_space = ps(
+  max_depth = ...(1L, 8L),
+  eta = ...(0.2, 0.4)
+)
+measure = msr("classif....")
+resampling = rsmp("cv", folds = ...)
+terminator = trm("evals", n_evals = ...)
+
+instance_random = ti(
+  task = ..., 
+  learner = ..., 
+  measure = ..., 
+  resampling = ..., 
+  terminator = ..., 
+  search_space = ...
+)
+ 
+tuner_random = tnr(...)
+tuner_random$optimize(...)
+```
+
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+Define all tuning related objects
+
+```{r}
+set.seed(8002L)
+
+search_space = ps(
+  max_depth = p_int(1L, 8L),
+  eta = p_dbl(0.2, 0.4)
+)
+measure = msr("classif.ce")
+resampling = rsmp("cv", folds = 3L)
+terminator = trm("evals", n_evals = 20L)
+```
+
+Instantiate a tuning instance
+
+```{r}
+instance_random = ti(
+  task = task, 
+  learner = xgboost_lrn, 
+  measure = measure, 
+  resampling = resampling, 
+  terminator = terminator, 
+  search_space = search_space
+)
+
+```
+
+Use random search as the tuning approach
+
+```{r,results="hide"} 
+tuner_random = tnr("random_search")
+tuner_random$optimize(instance_random)
+```
+
+:::
+
+:::
+
+## 2.3 Inspect the the Best Performing Setup
+
+Which tree depth was the best performing one?
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Inspect the tuned instance (of class `TuningInstanceSingleCrit`, it was the input to `$optimize()`). 
+Look, for example, at the `$result` field. 
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+instance_random$result
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+instance_random$result
+```
+
+The best performing instance had `eta` set to `r instance_random$result$eta`  
+and `max_depth` set to `r instance_random$result$max_depth`. 
+
+:::
+
+:::
+
+# 3 Early Stopping
+
+## 3.1 Set up an XGBoost Learner with Early Stopping
+
+Now that we derived the best hyperparameter for the maximum depth and eta, 
+we could train our final model. 
+To avoid overfitting we conduct early stopping - 
+meaning that the algorithm stops as soon as a the performance 
+does not improve for a given number of rounds to avoid overfitting.
+The performance for stopping should be assessed via a validation data set.
+
+Set up an XGBoost learner with the following hyperparameters:
+
+- `max_depth` and `eta` set to the best configurations according to the previous 
+tuning task.
+- `nrounds` set to 100L.
+- The number of early stopping rounds set to 5 (this could be tuned, as well, but we simplify things) in order to stop earlier if there was no improvement in the previous 5 iterations.
+
+```{r}
+library("xgboost")
+set.seed(2001L)
+
+split = partition(task, ratio = 0.9)
+task$set_row_roles(split$test)
+# task$set_row_roles(split$test, "test") ??
+```
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Specify the hyperparameters within `lrn()`.
+The number of rounds could be specified with `early_stopping_rounds`. 
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+lrn("...", nrounds = ..., 
+  max_depth = instance_random$result$..., 
+  eta = instance_random$result$..., 
+  early_stopping_rounds = ....
+  #early_stopping_set = .... ??
+) 
+```
+
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+xgboost_lrn2 = lrn("classif.xgboost", 
+  nrounds = 100L, 
+  max_depth = instance_random$result$max_depth, 
+  eta = instance_random$result$eta, 
+  early_stopping_rounds = 5L,
+  #early_stopping_set = "test" ??
+) 
+```
+
+:::
+
+:::
+
+
+## 3.2 Training on Credit Data
+
+Train the XGBoost learner from the previous exercise on the credit data set 
+How many iterations were conducted before the boosting algorithm stopped?
+
+<details>
+<summary>**Hint 1:**</summary>
+
+By calling `$train()` a model is trained which can be accessed via 
+`$model`. This model has a field `$niter` - the number of conducted iterations.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+xgboost$train(...)
+xgboost$...$niter
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+xgboost_lrn2$train(task) #?? Learner (classif.xgboost): Configure field 'validate' to enable early stopping.
+xgboost_lrn2$model$niter
+```
+
+:::
+
+:::
+
+# 4 Extra: Nested Resampling
+
+To receive an unbiased performance estimate when tuning hyperparameters and 
+using early stopping, conduct nested resampling with
+
+- 3-fold cross-validation for the outer and inner resampling loop. 
+- a search space for `max_depth` between 1 and 8 and `eta` between 0.2 and 0.4.
+- random search with 20 evaluations
+- the classification error `msr("classif.ce")` as performance measure.
+
+Extract the performance estimate on the outer resampling folds. 
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Specifically, you need to conduct the following steps:
+
+1. Initialize a search space for `max_depth` and `eta` using `ps()`. 
+2. Initialize an `AutoTuner` with the xgboost model from the previous exercise an an input. 
+The `AutoTuner` reflects the inner resampling loop. It should be initialized for
+3-fold CV, random search with 20 evaluations and the classification error as performance 
+measure.
+3. Specify a `Resampling` object using `rsmp()`.
+4. Use this object with the credit task and `AutoTuner` 
+as an input to `resample()`. 
+5. Extract the results via `$aggregate()`.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+tune_ps = ps(
+  max_depth = p_int(..., ...),
+  eta = p_dbl(..., ...)
+)
+
+at = auto_tuner(xgboost_lrn2, 
+  resampling = rsmp("cv", folds = ...),
+  search_space = ...,
+  measure = msr("..."),
+  terminator = trm("none"),
+  tuner = tnr("...", resolution = 5L))
+
+resampling = rsmp("...", folds = ...)
+
+set.seed(8002L)
+nestrr = resample(task = ..., learner = ..., resampling = resampling)
+
+nestrr$aggregate()
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+At first, we setup a search space for tuning `max_depth`
+```{r}
+tune_ps = ps(
+  max_depth = p_int(1L, 8L),
+  eta = p_dbl(0.2, 0.4)
+)
+```
+
+Next, we setup the inner resampling loop and the tuning approach using 
+an `AutoTuner`
+
+```{r}
+at = auto_tuner(xgboost_lrn2, 
+  resampling = rsmp("cv", folds = 3L),
+  search_space = tune_ps,
+  measure = msr("classif.ce"),
+  terminator = trm("evals", n_evals = 20L),
+  tuner = tnr("random_search"))
+```
+
+Then, we can setup an outer resampling loop and call `resample()`. 
+
+```{r, results="hide"}
+resampling = rsmp("cv", folds = 3L)
+
+set.seed(8002L)
+nestrr = resample(task = task, learner = at, resampling = resampling)
+```
+
+We can extract the results via `$aggregate()`
+
+```{r}
+nestrr$aggregate()
+```
+
+We obtain a higher classification error than we received without 
+nested resampling. 
+
+:::
+
+:::
+
+
+# Summary
+In this exercise sheet, we learned how to apply a XGBoost learner to the credit 
+data set By using resampling, we estimated the performance. 
+XGBoost has a lot of hyperparameters and we only had a closer look on two of them. 
+We also saw how early stopping could be facilitated which should help to 
+avoid overfitting of the XGBoost model.
+
+Interestingly, we obtained best results, when we used 100 iterations, 
+without tuning or early stopping. However, performance differences were quite 
+small - if we set a different seed, we might see a different ranking. 
+Furthermore, we could extend our tuning search space such that more hyperparameters are 
+considered to increase overall performance of the learner for the task at hand. 
+Of course, this also requires more budget for the tuning (e.g., more evaluations 
+of random search).
