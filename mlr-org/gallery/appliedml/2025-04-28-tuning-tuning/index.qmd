@@ -1,0 +1,368 @@
+---
+title: Tuning
+categories:
+  - tuning
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Optimize hyperparameters for k-NN and SVM classifier on german credit set.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+After this exercise, you should be able to define search spaces for learning algorithms and apply different hyperparameter (HP) optimization (HPO) techniques to search through the search space to find a well-performing hyperparameter configuration (HPC).
+
+# Exercises
+
+Again, we are looking at the `german_credit` data set and corresponding task (you can quickly load the task with `tsk("german_credit")`). We want to train a k-NN model but ask ourselves what the best choice of $k$ might be? Furthermore, we are not sure how to set other HPs of the learner, e.g., if we should scale the data or not. In this exercise, we conduct HPO for k-NN to automatically find a good HPC.
+
+```{r}
+library(mlr3verse)
+task = tsk("german_credit")
+```
+
+<details>
+  <summary>**Recap: k-NN**</summary>
+  k-NN is a machine learning method that predicts new data by averaging over the responses of the k nearest neighbors.
+</details>
+
+## Parameter spaces
+  
+Define a meaningful search space for the HPs `k` and `scale`.
+You can checkout the help page `lrn("classif.kknn")$help()` for an overview of the k-NN learner.
+
+<details>
+  <summary>**Hint 1**</summary>
+  Each learner has a slot `param_set` that contains all HPs that can be used for the tuning. In this use case we tune a       learner with the key `"classif.kknn"`. The functions to define the search space are `ps` and `p_int`, `p_dbl`, `p_fct`, or   `p_lgl` for HPs in the search space.
+</details>
+  
+<details>
+  <summary>**Hint 2**</summary>
+```{r, eval=FALSE}
+library(mlr3tuning)
+
+search_space = ps(
+  k = p_int(...),
+  scale = ...
+)
+```
+</details>
+  
+  
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3tuning)
+
+search_space = ps(
+  k = p_int(1, 100),
+  scale = p_lgl()
+)
+```
+
+:::
+  
+:::
+
+
+## Hyperparameter optimization
+  
+Now, we want to tune the k-NN model with the search space from the previous exercise. As resampling strategy we use a 3 fold cross validation. The tuning strategy should be a random search. As termination criteria we choose 40 evaluations.
+
+<details>
+  <summary>**Hint 1**</summary>
+  The elements required for the tuning are:
+  
+  - Task: German credit
+  - Algorithm: k-NN algorithm from `lrn()`
+  - Resampling: 3-fold cross validation using `rsmp()`
+  - Terminator: 40 evaluations using `trm()`
+  - Search space: See previous exercise
+  - We use the default performance measure (`msr("classif.ce")` for classification and `msr("classif.mse")` for regression)
+  
+  The tuning instance is then defined by calling `ti()`. 
+  The random search optimization algorithm is obtained from `tnr()` with the corresponding key as argument.
+  Furthermore, we allow parallel computations and set the batch size as well as the number of cores to four.
+</details>
+  
+<details>
+  <summary>**Hint 2**</summary>
+  
+  The optimization algorithm is obtained from `tnr()` with the corresponding key as argument. Furthermore we allow parallel   computations using four cores:
+  
+```{r, eval=FALSE}
+library(mlr3)
+library(mlr3learners)
+library(mlr3tuning)
+
+future::plan("multicore", workers = 4L)
+
+task = tsk(...)
+lrn_knn = lrn(...)
+
+search_space = ps(
+  k = p_int(1, 100),
+  scale = p_lgl()
+)
+resampling = rsmp(...)
+
+terminator = trm(..., ... = 40L)
+
+instance = ti(
+  task = ...,
+  learner = ...,
+  resampling = ...,
+  terminator = ...,
+  search_space = ...
+)
+
+optimizer = tnr(...)
+optimizer$...(...)
+```
+
+Finally, the optimization is started by passing the tuning instance to the `$optimize()` method of the tuner.
+</details>
+  
+  
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3)
+library(mlr3learners)
+library(mlr3tuning)
+
+future::plan("multicore", workers = 4L)
+
+task = tsk("german_credit")
+lrn_knn = lrn("classif.kknn")
+
+search_space = ps(
+  k = p_int(1, 100),
+  scale = p_lgl()
+)
+resampling = rsmp("cv", folds = 3L)
+
+terminator = trm("evals", n_evals = 40L)
+
+instance = ti(
+  task = task,
+  learner = lrn_knn,
+  resampling = resampling,
+  terminator = terminator,
+  search_space = search_space
+)
+
+optimizer = tnr("random_search", batch_size = 4L)
+
+optimizer$optimize(instance)
+instance$result_y
+instance$result
+```
+
+__Syntactic sugar to define the HP space__
+
+`mlr3` provides syntactic sugar to shorten the process of search space definition. To do so, it is possible to directly specify the HP range in the learner construction:
+  
+<details>
+  <summary>**Click me**</summary>
+```{r, eval = params$showsolution}
+task = tsk("german_credit")
+
+lrn_knn = lrn("classif.kknn", k = to_tune(1, 100), scale = to_tune())
+```
+
+This adjust the parameter set (`lrn_knn$param_set`) attached to the learner and flags it as "tunable". 
+</details>
+  
+:::
+  
+:::
+
+
+## Analyzing the tuning archive
+  
+Inspect the archive of hyperparameters evaluated during the tuning process with `instance$archive`. Create a simple plot with the goal of illustrating the association between the hyperparametere `k` and the estimated classification error.
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+plot(x = instance$archive$data$k, y = instance$archive$data$classif.ce)
+```
+
+:::
+
+:::
+
+
+## Visualizing hyperparameters
+
+To see how effective the tuning was, it is useful to look at the effect of the HPs on the performance. It also helps us to understand how important different HPs are. Therefore, access the archive of the tuning instance and visualize the effect.
+
+
+<details>
+  <summary>**Hint 1**</summary>
+  Access the `archive` of the tuning instance to get all information about the tuning. You can use all known plotting        techniques after transforming it to a `data.table`.
+</details>
+  
+<details>
+  <summary>**Hint 2**</summary>
+```{r, eval=FALSE}
+arx = as...(instance$...)
+
+library(ggplot2)
+library(patchwork)
+
+gg_k = ggplot(..., aes(...)) + ...()
+gg_scale = ggplot(..., aes(...)) + ...()
+
+gg_k + gg_scale & theme(legend.position = "bottom")
+```
+</details>
+  
+  
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, fig.width=15, fig.height=5, out.width="100%", eval = params$showsolution}
+arx = as.data.table(instance$archive)
+
+library(ggplot2)
+library(patchwork)
+
+gg_k = ggplot(arx, aes(x = k, y = classif.ce)) + geom_point()
+gg_scale = ggplot(arx, aes(x = scale, y = classif.ce, fill = scale)) + geom_boxplot()
+
+gg_k + gg_scale & theme(legend.position = "bottom")
+
+## ALTERNATIVE:
+
+# The `mlr3viz` automatically creates plots for getting an idea of the
+# effect of the HPs:
+
+library(mlr3viz)
+
+autoplot(instance)
+```
+
+The number of neighbours `k` and `scale` seem to have a big impact on the performance of the model. 
+
+:::
+  
+:::
+
+## Hyperparameter dependencies
+  
+When defining a hyperparameter search space via the `ps()` function, we sometimes encounter nested search spaces, also called hyperparameter dependencies. One example for this are SVMs. Here, the hyperparameter `degree` is only relevant if the hyperparameter `kernel` is set to `"polynomial"`. Therefore, we only have to consider different configurations for `degree` if we evaluate candidate configurations with polynomial kernel. Construct a search space for a SVM with hyperparameters `kernel` (candidates should be `"polynomial"` and `"radial"`) and `degree` (integer ranging from 1 to 3, but only for polynomial kernels), and account for the dependency structure. 
+
+<details>
+  <summary>**Hint 1**</summary>
+  In the `p_fct`, `p_dbl`, ... functions, we specify this using the `depends` argument, which takes a named argument of the   form `<param> == value` or `<param> %in% <vector>`.
+</details>
+  
+  
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+ps(
+  kernel = p_fct(c("polynomial", "radial")),
+  degree = p_int(1, 3, depends = (kernel == "polynomial"))
+)
+```
+
+:::
+  
+:::
+
+
+## Hyperparameter transformations
+  
+When tuning non-negative hyperparameters with a broad range, using a logarithmic scale can be more efficient. This approach works especially well if we want to test many small values, but also a few very large ones. By selecting values on a logarithmic scale and then exponentiating them, we ensure a concentrated exploration of smaller values while still considering the possibility of very large values, allowing for a targeted and efficient search in finding optimal hyperparameter configurations.
+
+A simple way to do this is to pass `logscale = TRUE` when using `to_tune()` to define the parameter search space while constructing the learner:
+  
+```{r}
+lrn = lrn("classif.svm", cost = to_tune(1e-5, 1e5, logscale = TRUE))
+lrn$param_set$search_space()
+```
+
+To manually create the same transformation, we can pass the transformation to the more general `trafo` argument in `p_dbl()` and related functions and set the bounds using the `log()` function. For the following search space, implement a logarithmic transformation. the output should look exactly as the search space above.
+
+```{r, eval = FALSE}
+# Change this to a log trafo:
+ps(cost = p_dbl(1e-5, 1e5))
+```
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+search_space = ps(cost = p_dbl(log(1e-5), log(1e5),
+                               trafo = function(x) exp(x))) # alternatively: 'trafo = exp'
+search_space
+```
+
+:::
+  
+:::
+
+
+# Summary
+  
+- In this use-case we learned how to define search spaces for learner HPs.
+- Based on this search space, we defined a tuning strategy to try a number of random configurations.
+- We visualized the tested configurations to get an idea how the HP effect the performance of our learner.
+- We learned about scale transformations in tuning.
+- Finally we added a transformation to favor a certain range in the parameter space.
+
+# Further information
+
+Other (more advanced) tuning algorithms:
+  
+- `Simuated annealing`: Random HPC are sampled and accepted based on an acceptance probability function which states how likely an improvement in performance is. The method is implemented in `tnr("gensa")`.
+- `Model-based optimization (MBO)`: Guess the most promising HPC by estimating the expected improvement of new points. Available in [`mlr3mbo`](https://mlr3mbo.mlr-org.com/).
+- `Multifidelity optimization/Successive halving algorithm`: This technique starts with multiple HPC and throws away unpromising candidates. This is repeated several times to efficiently use the tuning budget. The method is implemented in [`mlr3hyperband`](https://mlr3hyperband.mlr-org.com/).
+
+  
