@@ -70,6 +70,8 @@ n = 1,000 observations of credits
 
 ```{r}
 library(mlr3)
+library(mlr3learners)
+library(xgboost)
 task = tsk("german_credit")
 ```
 
