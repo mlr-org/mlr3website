@@ -1,0 +1,279 @@
+---
+title: Nested Resampling
+categories:
+  - resampling
+  - hyperparameter tuning
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Estimate the generalization error of a k-NN model on german credit set via nested resampling.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+After this exercise, you should be able to understand the importance of nested resampling when tuning ML algorithms to avoid overtuning of HPs and how to apply nested resampling.
+
+# Exercises
+
+As a follow-up on the tuning use case, we continue with the German credit task (`tsk("german_credit")`) and perform nested resampling. The purpose is to get a valid estimation of the generalization error without an optimistic bias introduced by tuning without nested resampling. For this task, we estimate the generalization error of a k-NN model implemented in `kknn`.
+
+<details>
+<summary>**Recap: Nested Resampling**</summary>
+Nested resampling evaluates a learner combined with a tuning strategy to correctly estimate the generalization error. Linking a tuning strategy with a learner uses the training data to find a good hyperparameter configuration (HPC). Using the same data for performance estimation and hence taking the best-estimated generalization error of the best-performing model leads to an over-optimistic estimation. This is because information on the resampling splits may favor specific HPCs (overtuning) by chance.
+</details>
+
+## The AutoTuner
+
+For this exercise, we use the same setup as for the tuning use-case with a 3-fold CV, `msr("classif.ce")` as performance measure, a random search, and a termination combination of 40 evaluations. Define an `AutoTuner` with `auto_tuner()` and train it on the `german_credit` task:
+
+```{r}
+library(mlr3verse)
+task = tsk("german_credit")
+```
+
+<details>
+<summary>**Recap: `AutoTuner`**</summary>
+The [`AutoTuner`](https://mlr3tuning.mlr-org.com/reference/AutoTuner.html) class of [`mlr3tuning`](https://mlr3tuning.mlr-org.com/index.html) combines the learner and the HPO to encapsulate the learner from its HPs. When training an `AutoTuner`, two steps are executed. (1) Conduct tuning based on the defined tuning strategy and (2) take the best HPC and fit a model with that HPs to the full data set.
+</details>
+
+<details>
+<summary>**Hint 1**</summary>
+The `AutoTuner` is defined by `auto_tuner()` by specifying the `learner`, `resampling`, `measure`, `terminator`, `search_space`, and the `tuner`. The `AutoTuner` then behaves like a normal learner. We can use `$train` to fit the `AutoTuner` (tuning + model fit on best HPC) with the `AutoTuner`.
+</details>
+
+<details>
+<summary>**Hint 2**</summary>
+```{r, eval=FALSE}
+library(mlr3)
+library(mrl3learners)
+library(mlr3tuning)
+
+# Parts from the previous exercise:
+task = tsk("german_credit")
+lrn_knn = lrn("classif.kknn")
+
+search_space = ps(
+  k = p_int(1, 100),
+  scale = p_lgl())
+)
+
+resampling = rsmp("cv", folds = 3L)
+
+terminator = trm("evals", n_evals = 40L)
+
+tuner = tnr("random_search", batch_size = 4L)
+
+# AutoTuner definition:
+at = auto_tuner(
+  learner = ...,
+  resampling = ...,
+  measure = ...,
+  terminator = ...,
+  search_space = ...,
+  tuner = ...
+)
+
+at$...(...)
+```
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3)
+library(mlr3learners)
+library(mlr3tuning)
+
+# Parts from the previous exercise:
+task = tsk("german_credit")
+lrn_knn = lrn("classif.kknn")
+
+search_space = ps(
+  k = p_int(1, 100),
+  scale = p_lgl()
+)
+
+resampling = rsmp("cv", folds = 3L)
+
+terminator = trm("evals", n_evals = 40L)
+
+tuner = tnr("random_search", batch_size = 4L)
+
+# AutoTuner definition:
+at = auto_tuner(
+  learner = lrn_knn,
+  resampling = resampling,
+  measure = msr("classif.ce"),
+  terminator = terminator,
+  search_space = search_space,
+  tuner = tuner
+)
+
+at$train(task)
+```
+
+The tuning archive of the internal tuning instance can be accessed via:
+```{r, eval = params$showsolution}
+arx = at$tuning_instance$archive
+# or
+arx = at$archive
+```
+
+The trained learner on the best parameter configuration is stored in `at$learner`:
+```{r, eval = params$showsolution}
+at$learner
+```
+
+The configuration aligns with the result of the tuning (on the scale of the param set):
+```{r, eval = params$showsolution}
+at$tuning_result
+```
+
+As already mentioned, the tuning instance can addressed via `at$tuning_instance`. From this instance we can obtain all information from the tuning:
+```{r, eval = params$showsolution}
+at$tuning_instance$result_y
+at$tuning_instance$result_x_domain
+```
+
+:::
+
+:::
+
+
+## Perform nested resampling
+
+Setting the resampling strategy in the `AutoTuner` defines how the HPC are internally evaluated and is hence called _inner resampling_. To get the final estimate of the generalization error, we have to resample the `AutoTuner`. This resampling is also called _outer resampling_. Use `resample` to conduct a 3-fold CV as outer resampling strategy:
+
+
+<details>
+<summary>**Hint 1**</summary>
+As for normal learner, we first have to define the resampling strategy and then call `resample` with the `task`, `learner`, and `resampling` as arguments.
+</details>
+
+<details>
+<summary>**Hint 2**</summary>
+```{r, eval=FALSE}
+outer = rsmp(...)
+res = ...(task = ..., learner = ..., resampling = outer)
+```
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+set.seed(31415)
+
+outer = rsmp("cv", folds = 3)
+outer$instantiate(task)
+
+res = resample(task = task, learner = at, resampling = outer)
+```
+
+The estimated generalization error then can be obtained by calling `$aggregate()` with the specific measure. The results from the individual folds can be obtained with `$score()`:
+```{r, eval = params$showsolution}
+res$aggregate(msr("classif.ce"))
+res$score(msr("classif.ce"))
+```
+
+:::
+
+:::
+
+
+## Benchmark comparison
+
+Conduct a benchmark to compare the previous KNN-AutoTuner that automatically finds the best hyperparameters with an untuned k-NN and two further but untuned learners in with their default hyperparametervalues (e.g., a decision tree and a random forest without tuning them). 
+Think about suitable learners (which you already know) and run a benchmark with `benchmark()`. What can you observe (especially when looking at the untuned methods vs. the tuned k-NN model)?
+
+<details>
+<summary>**Hint 1**</summary>
+A list of all possible learners can be achieved via `as.data.table(mlr_learners)`. Note that the previously defined KNN-AutoTuner behaves like a normal learner that automatically finds the best hyperparameters (internally, it performs an _inner resampling_ to evaluate the hyperparameter configurations of the random search). As we want to get the final estimate of the generalization error, we have to define another so-called _outer resampling_ to compare the different learners within the `benchmark()` function (you can use e.g. a 4-fold CV as outer resampling strategy). This will perform nested resampling for the KNN-AutoTuner.
+</details>
+
+<details>
+<summary>**Hint 2**</summary>
+Conducting the benchmark requires to pass a `benchmark_grid()` to the `benchmark()` function:
+```{r, eval=FALSE}
+l1 = lrn(...)
+l2 = lrn(...)
+l3 = lrn(...)
+
+bmr = ...(...(
+  tasks = ..,
+  learners = list(...),
+  resamplings = ...))
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+set.seed(31415)
+
+l1 = lrn("classif.ranger")
+l2 = lrn("classif.rpart")
+l3 = lrn("classif.kknn")
+
+outer = rsmp("cv", folds = 4)
+outer$instantiate(task)
+
+bmr = benchmark(benchmark_grid(
+  tasks = task,
+  learners = list(at, l1, l2, l3),
+  resamplings = outer))
+```
+
+Again, we can calculate the generalization error with `$aggregate()` or visualize the result with `mlr3viz` and the `autoplot()` function:
+
+```{r, eval = params$showsolution}
+bmr$aggregate(msr("classif.ce"))
+
+library(mlr3verse)
+autoplot(bmr, measure = msr("classif.ce"))
+```
+
+We observe that the random forest is very good out of the box without tuning. For k-NN the tuning has a high impact w.r.t. performance.
+
+:::
+
+:::
+
+
+# Summary
+
+- We learned how to encapsulate a learner from its HPs by wrapping it in an `AutoTuner`.
+- The `AutoTuner` does so by applying internal HPO using an inner resampling. 
+- We have to additionally resample the `AutoTuner` to get valid estimations (outer resampling) and be able to compare it with other learners. The outer resampling that is applied to a learner that already performs resampling intrinsically (the inner resampling) for finding the best HPC is called nested resampling.
