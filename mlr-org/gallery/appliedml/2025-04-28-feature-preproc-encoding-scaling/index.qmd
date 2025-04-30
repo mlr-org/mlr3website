@@ -269,6 +269,8 @@ The solution shows that the decision tree structure is exactly the same (althoug
 
 ```{r, eval = params$showsolution}
 library(mlr3pipelines)
+library(mlr3learners)
+library(xgboost)
 rp = lrn("classif.rpart")
 rpscale = as_learner(pos %>>% rp)
 rpboxcox = as_learner(pobc %>>% rp)

@@ -243,6 +243,8 @@ bmr = ...(...(
 ```{r, eval = params$showsolution}
 set.seed(31415)
 
+library(mlr3learners)
+
 l1 = lrn("classif.ranger")
 l2 = lrn("classif.rpart")
 l3 = lrn("classif.kknn")
