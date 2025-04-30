@@ -453,6 +453,7 @@ xgboost_lrn2$param_set$set_values(nrounds = 100L)
 xgboost_lrn2$param_set$set_values(max_depth = instance_random$result$max_depth)
 xgboost_lrn2$param_set$set_values(eta = instance_random$result$eta)
 xgboost_lrn2$param_set$set_values(early_stopping_rounds = 5L)
+xgboost_lrn2$validate = 0.9
 
   #early_stopping_set = "test" ??
 
@@ -580,6 +581,7 @@ at = auto_tuner(xgboost_lrn2,
   measure = msr("classif.ce"),
   terminator = trm("evals", n_evals = 20L),
   tuner = tnr("random_search"))
+print(at$learner$validate) # ??
 ```
 
 Then, we can setup an outer resampling loop and call `resample()`. 
