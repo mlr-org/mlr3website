@@ -195,7 +195,7 @@ Fitting the surrogate model will require calling one of the methods of `surrogat
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r Dice-1, eval = params$showsolution}
 requireNamespace("DiceKriging")
 library(DiceKriging)
 
@@ -225,7 +225,8 @@ In `mlr3mbo`, acquisition functions are stored in the `mlr_acqfunctions` diction
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r Dice-2, eval = params$showsolution}
+requireNamespace("DiceKriging")
 library(DiceKriging)
 
 acq_function = acqf("ei", surrogate = surrogate)
