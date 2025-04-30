@@ -113,8 +113,9 @@ xgboost_lrn = lrn(..., nrounds = ...)
 
 :::{.b64-solution}
 
-```{r}
-xgboost_lrn = lrn("classif.xgboost", nrounds = 100L)
+```{r lrn-1}
+xgboost_lrn = lrn("classif.xgboost")
+xgboost_lrn$param_set$set_values(nrounds = 100L)
 ```
 
 :::
@@ -446,14 +447,15 @@ lrn("...", nrounds = ...,
 
 :::{.b64-solution}
 
-```{r}
-xgboost_lrn2 = lrn("classif.xgboost", 
-  nrounds = 100L, 
-  max_depth = instance_random$result$max_depth, 
-  eta = instance_random$result$eta, 
-  early_stopping_rounds = 5L,
+```{r lrn-2}
+xgboost_lrn2 = lrn("classif.xgboost")
+xgboost_lrn2$param_set$set_values(nrounds = 100L)
+xgboost_lrn2$param_set$set_values(max_depth = instance_random$result$max_depth)
+xgboost_lrn2$param_set$set_values(eta = instance_random$result$eta)
+xgboost_lrn2$param_set$set_values(early_stopping_rounds = 5L)
+
   #early_stopping_set = "test" ??
-) 
+
 ```
 
 :::
