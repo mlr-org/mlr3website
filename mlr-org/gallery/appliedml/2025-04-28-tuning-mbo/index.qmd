@@ -196,6 +196,7 @@ Fitting the surrogate model will require calling one of the methods of `surrogat
 :::{.b64-solution}
 
 ```{r, eval = params$showsolution}
+requireNamespace("DiceKriging")
 library(DiceKriging)
 
 surrogate$update()
