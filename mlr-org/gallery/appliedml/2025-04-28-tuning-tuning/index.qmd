@@ -157,6 +157,7 @@ Finally, the optimization is started by passing the tuning instance to the `$opt
 library(mlr3)
 library(mlr3learners)
 library(mlr3tuning)
+library(kknn)
 
 future::plan("multicore", workers = 4L)
 
@@ -193,6 +194,9 @@ __Syntactic sugar to define the HP space__
 <details>
   <summary>**Click me**</summary>
 ```{r, eval = params$showsolution}
+library(mlr3learners)
+library(kknn)
+
 task = tsk("german_credit")
 
 lrn_knn = lrn("classif.kknn", k = to_tune(1, 100), scale = to_tune())
