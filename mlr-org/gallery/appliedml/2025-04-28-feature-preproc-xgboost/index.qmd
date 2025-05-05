@@ -409,14 +409,20 @@ tuning task.
 - `nrounds` set to 100L.
 - The number of early stopping rounds set to 5 (this could be tuned, as well, but we simplify things) in order to stop earlier if there was no improvement in the previous 5 iterations.
 
-```{r}
+```{r, eval = FALSE, include = FALSE}
+# does not work as the task has no predefined role Test
 library("xgboost")
 set.seed(2001L)
 
 split = partition(task, ratio = 0.9)
-task$set_row_roles(split$test)
-# task$set_row_roles(split$test, "test") ??
+task$set_row_roles(rows = split$test, roles = "test")
 ```
+
+```{r}
+library("xgboost")
+set.seed(2001L)
+```
+
 
 <details>
 <summary>**Hint 1:**</summary>
@@ -434,7 +440,6 @@ lrn("...", nrounds = ...,
   max_depth = instance_random$result$..., 
   eta = instance_random$result$..., 
   early_stopping_rounds = ....
-  #early_stopping_set = .... ??
 ) 
 ```
 
@@ -454,9 +459,6 @@ xgboost_lrn2$param_set$set_values(max_depth = instance_random$result$max_depth)
 xgboost_lrn2$param_set$set_values(eta = instance_random$result$eta)
 xgboost_lrn2$param_set$set_values(early_stopping_rounds = 5L)
 xgboost_lrn2$validate = 0.9
-
-  #early_stopping_set = "test" ??
-
 ```
 
 :::
@@ -494,7 +496,7 @@ xgboost$...$niter
 :::{.b64-solution}
 
 ```{r}
-xgboost_lrn2$train(task) #?? Learner (classif.xgboost): Configure field 'validate' to enable early stopping.
+xgboost_lrn2$train(task)
 xgboost_lrn2$model$niter
 ```
 
@@ -504,8 +506,7 @@ xgboost_lrn2$model$niter
 
 # 4 Extra: Nested Resampling
 
-To receive an unbiased performance estimate when tuning hyperparameters and 
-using early stopping, conduct nested resampling with
+To receive an unbiased performance estimate when tuning hyperparameters, conduct nested resampling with
 
 - 3-fold cross-validation for the outer and inner resampling loop. 
 - a search space for `max_depth` between 1 and 8 and `eta` between 0.2 and 0.4.
@@ -519,15 +520,18 @@ Extract the performance estimate on the outer resampling folds.
 
 Specifically, you need to conduct the following steps:
 
-1. Initialize a search space for `max_depth` and `eta` using `ps()`. 
-2. Initialize an `AutoTuner` with the xgboost model from the previous exercise an an input. 
+1. Set up an XGBoost learner.
+2. Initialize a search space for `max_depth` and `eta` using `ps()`. 
+3. Initialize an `AutoTuner` with the xgboost model from the previous exercise an an input. 
 The `AutoTuner` reflects the inner resampling loop. It should be initialized for
 3-fold CV, random search with 20 evaluations and the classification error as performance 
 measure.
-3. Specify a `Resampling` object using `rsmp()`.
-4. Use this object with the credit task and `AutoTuner` 
+4. Specify a `Resampling` object using `rsmp()`.
+5. Use this object with the credit task and `AutoTuner` 
 as an input to `resample()`. 
-5. Extract the results via `$aggregate()`.
+6. Extract the results via `$aggregate()`.
+
+Important: Early stopping requires a validation set. But `AutoTuner` uses internal resampling instead of splitting the data manually, and does not provide a "validate" set to the learner by default. That is why we should not use early stopping here.
 
 </details>
 
@@ -535,6 +539,8 @@ as an input to `resample()`.
 <summary>**Hint 2:**</summary>
 
 ```{r, eval=FALSE}
+xgboost_lrn3 = lrn(...)
+
 tune_ps = ps(
   max_depth = p_int(..., ...),
   eta = p_dbl(..., ...)
@@ -563,7 +569,16 @@ nestrr$aggregate()
 
 :::{.b64-solution}
 
-At first, we setup a search space for tuning `max_depth`
+At first, we setup the learner
+
+```{r lrn-3}
+xgboost_lrn3 = lrn("classif.xgboost")
+xgboost_lrn3$param_set$set_values(nrounds = 100L)
+xgboost_lrn3$param_set$set_values(max_depth = instance_random$result$max_depth)
+xgboost_lrn3$param_set$set_values(eta = instance_random$result$eta)
+```
+
+Then, we setup a search space for tuning `max_depth`
 ```{r}
 tune_ps = ps(
   max_depth = p_int(1L, 8L),
@@ -575,16 +590,12 @@ Next, we setup the inner resampling loop and the tuning approach using
 an `AutoTuner`
 
 ```{r}
-xgboost_lrn2$validate = "test"
-at = auto_tuner(xgboost_lrn2, 
+at = auto_tuner(xgboost_lrn3, 
   resampling = rsmp("cv", folds = 3L),
   search_space = tune_ps,
   measure = msr("classif.ce"),
   terminator = trm("evals", n_evals = 20L),
   tuner = tnr("random_search"))
-print(at$learner$validate) # ??
-set_validate(at, 0.9)
-set_validate(at$learner, 0.9, ids = "classif.xgboost")
 ```
 
 Then, we can setup an outer resampling loop and call `resample()`. 
@@ -593,16 +604,16 @@ Then, we can setup an outer resampling loop and call `resample()`.
 resampling = rsmp("cv", folds = 3L)
 
 set.seed(8002L)
-#nestrr = resample(task = task, learner = at, resampling = resampling)
+nestrr = resample(task = task, learner = at, resampling = resampling)
 ```
 
 We can extract the results via `$aggregate()`
 
 ```{r}
-#nestrr$aggregate()
+nestrr$aggregate()
 ```
 
-We obtain a higher classification error than we received without 
+We obtain a similar classification error as we received without 
 nested resampling. 
 
 :::
