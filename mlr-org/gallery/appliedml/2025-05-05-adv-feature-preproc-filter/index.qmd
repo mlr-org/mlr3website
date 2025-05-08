@@ -1,0 +1,302 @@
+---
+title: Filter
+categories:
+  - advanced feature preprossesing
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Use filters in a mlr3 pipeline
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+Learn how to rank features of a supervised task by their importance / strength of relationship with the target variable using a feature filter method.
+
+# German Credit Dataset 
+
+We create the task as for the resampling exercise: The German Credit Data set.
+
+```{r}
+library("mlr3verse")
+library("data.table")
+task = tsk("german_credit")
+```
+
+# Exercises
+
+Within the `mlr3` ecosystem, feature filters are implemented in the `mlr3filters` package and are typically used in combination with `mlr3pipelines` to be able to include the whole preprocessing step in a pipeline.
+In exercises 1 to 3, we apply feature filtering to preprocess the data of a task without using a pipeline. 
+In exercise 4, we will set up a pipeline that combines a learner with the feature filtering as preprocessing step.
+
+## Exercise 1: Find a suitable Feature Filter
+
+<!-- Feature filters are comprised of a set of methods for feature selection that aim at quantifying the ''usefulness'' of a feature in a supervised task. -->
+<!-- Often, it is desirable to reduce the number of features to both decrease the computational cost of fitting a learner and in some cases even improving the performance of the model. -->
+
+<!-- Based on the metric of a feature filter, features can be ranked and the ones with the strongest relationship with the target variable can be selected to be included in the modelling process. -->
+<!-- Typically, feature filters are used when a large number of similar features are available. -->
+<!-- Nevertheless, feature filters also are useful when only a medium number of features is available, as they allow for quantifying the importance of a feature in a supervised setting providing insight into the relationship of a feature and the target variable. -->
+<!-- Here, we will use feature filters to illuminate the strength of the relationship between features and the target variable. -->
+
+<!-- #FIXME: comment /additional info + link on logistic regression -->
+
+Make yourself familiar with the `mlr3filters` package ([link](https://mlr3filters.mlr-org.com/)).
+Which `Filter`s are applicable to all feature types from the task we created above?
+
+<details>
+<summary>**Hint:**</summary>
+
+Some filters are only applicable to either classification or regression or either numeric or categorical features.
+Therefore, we are looking for a `Filter` that is applicable to our classification task and that can be computed for `integer` and `factor` features (as these types of features are present in task, see `task$feature_types`).
+
+The website linked above includes a table that provides detailed information for each `Filter`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+Our task is a classification task and we have `integer`, and `factor` and features:
+
+```{r, eval = params$showsolution}
+task$task_type
+ftypes = unique(task$feature_types$type)
+ftypes
+
+# subset all filters that support integer and factor features
+library(mlr3filters)
+filters = as.data.table(mlr_filters)
+check_ftypes = sapply(filters$feature_types, function(x) all(ftypes %in% x))
+filters[check_ftypes, ]
+```
+
+Looking at the table [here](https://mlr3filters.mlr-org.com/), potential filters are:
+
+`cmim`, `disr`, `importance`, `information_gain`, `jmi`, `jmim`, `mim`, `mrmr`, `njmim`, `performance`, `permutation`, `relief`, `selected_features`.
+
+You can read their documentation by looking at `?mlr_filters_<id>`, (`<id>` should be replaced with the filter id, e.g., `cmim`).
+
+Note that `importance`, `performance`, `permutation`, and `selected_features` are special in the sense that they require `Learner`s themselves.
+
+:::
+
+:::
+
+## Exercise 2: Information Gain Filter
+
+We now want to use the `information_gain` filter which requires to install the `FSelectorRcpp` package.
+This filter quantifies the gain in information by considering the following difference: `H(Target) + H(Feature) - H(Target, Feature)`
+Here, `H(X)` is the Shannon entropy for variable `X` and `H(X, Y)` is the joint Shannon entropy for variable `X` conditioned on `Y`.
+
+Create an information gain filter and compute the information gain for each feature.
+
+Visualize the score for each feature and decide how many and which features to include.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Use `flt("information_gain")` to create an `information_gain` filter and calculate the filter scores of the features.
+See `?mlr_filters_information_gain` (or equivalently `flt("information_gain")$help()`) for more details on how to use a filter.
+If it does not work, you can use e.g. `flt("importance", learner = lrn("classif.rpart"))` which uses the feature importance of a `classif.rpart` decision tree to rank the features for the feature filter.
+
+For visualization, you can, for example, create a scree plot (similar as in principle component analysis) that plots the filter score for each feature on the y-axis and the features on the x-axis.
+
+Using a rule of thumb, e.g., the ''elbow rule'' you can determine the number of features to include.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval = FALSE}
+library(mlr3filters)
+library(mlr3viz)
+library(FSelectorRcpp)
+filter = flt(...)
+filter$calculate()
+autoplot(...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3filters)
+library(mlr3viz)
+library(FSelectorRcpp)
+filter = flt("information_gain")
+filter$calculate(task)
+autoplot(filter)  # status, credit_history and savings
+```
+
+:::
+
+:::
+
+## Exercise 3: Create and Apply a PipeOpFilter to a Task
+
+Since the k-NN learner suffers from the curse of dimensionality, we want set up a preprocessing `PipeOp` to subset our set of features to the 5 most important ones according to the information gain filter (see `flt("information_gain")$help()`). 
+In general, you can see a list of other possible filters by looking at the dictionary `as.data.table(mlr_filters)`.
+You can construct a `PipeOp` object with the `po()` function from the `mlr3pipelines` package. See `mlr_pipeops$keys()` for possible choices. 
+Create a `PipeOp` that filters features of the `german_credit` task and creates a new task containing only the 5 most important ones according to the information gain filter.
+
+<!-- <details> -->
+<!-- <summary>**Details on the ANOVA F-test filter:**</summary> -->
+
+<!-- The filter conducts an analysis of variance for each feature, where the feature explains the target class variable. -->
+<!-- The score is determined by the F statistic's value. -->
+<!-- The more different the mean values of a feature between the target classes are, the higher is the F statistic. -->
+<!-- </details> -->
+
+<details>
+<summary>**Hint 1:**</summary>
+
+- The filter can be created by `flt("information_gain")` (see also the help page `flt("information_gain")$help()`). 
+- In our case, we have to pass the `"filter"` key to the first argument of the `po()` function and the filter previously created with the `flt` function to the `filter` argument of the `po()` function to construct a `PipeOpFilter` object that performs feature filtering (see also code examples in the help page `?PipeOpFilter`).
+- The help page of `?PipeOpFilter` also reveals the parameters we can specify. For example, to select the 5 most important features, we can set `filter.nfeat`. This can be done using the `param_vals` argument of the `po()` function during construction or by adding the parameter value to the `param_set$values` field of an already created `PipeOpFilter` object (see also code examples in the help page).
+- The created `PipeOpFilter` object can be applied to a `Task` object to create the filtered `Task`. To do so, we can use the `$train(input)` field of the `PipeOpFilter` object and pass a **list** containing the task we want to filter.
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+library(mlr3pipelines)
+# Set the filter.nfeat parameter directly when constructing the PipeOp:
+pofilter = po("...",
+  filter = flt(...),
+   ... = list(filter.nfeat = ...))
+
+# Alternative (first create the filter PipeOp and then set the parameter):
+pofilter = po("...", filter = flt(...))
+pofilter$...$filter.nfeat = ...
+
+# Train the PipeOpFilter on the task
+filtered_task = pofilter$train(input = list(...))
+filtered_task
+task
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3pipelines)
+# Set the filter.nfeat parameter directly when constructing the PipeOp:
+pofilter = po("filter",
+  filter = flt("information_gain"),
+   param_vals = list(filter.nfeat = 5L))
+
+# Alternative (first create the filter PipeOp and then set the parameter):
+pofilter = po("filter", filter = flt("information_gain"))
+pofilter$param_set$values$filter.nfeat = 5L
+
+filtered_task = pofilter$train(list(task))[[1]]
+filtered_task
+task
+```
+
+:::
+
+:::
+
+
+## Exercise 4: Combine PipeOpFilter with a Learner
+
+Do the following tasks:
+
+1. Combine the `PipeOpFilter` from the previous exercise with a k-NN learner to create a so-called `Graph` (it can contain multiple preprocessing steps) using the `%>>%` operator.
+2. Convert the `Graph` to a `GraphLearner` so that it behaves like a new learner that first does feature filtering and then trains a model on the filtered data and run the `resample()` function to estimate the performance of the `GraphLearner` with a 5-fold cross-validation.
+3. Change the value of the `nfeat.filter` parameter (which was set to 5 in the previous exercise) and run again `resample()`.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+- Create a kNN learner using `lrn()`. Remember that the shortcut for a kNN classifier ist `"classif.kknn"`.
+- You can concatenate different preprocessing steps and a learner using the `%>>%` operator.
+- Use `as_learner` to create a `GraphLearner` (see also the code examples in the help page `?GraphLearner`).
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+library(mlr3learners)
+graph = ... %>>% lrn("...")
+glrn = as_learner(...)
+rr = resample(task = ..., learner = ..., resampling = ...)
+rr$aggregate()
+
+# Change `nfeat.filter` and run resampling again using same train-test splits
+...
+rr2 = resample(task = ..., learner = ..., resampling = rr$resampling)
+rr2$aggregate()
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+set.seed(1)
+library(mlr3learners)
+graph = pofilter %>>% lrn("classif.kknn")
+glrn = as_learner(graph)
+rr = resample(task = task, learner = glrn, resampling = rsmp("cv", folds = 5))
+rr$aggregate()
+
+# Change `nfeat.filter` and run resampling again using same train-test splits
+glrn$param_set$values$information_gain.filter.nfeat = 2
+rr2 = resample(task = task, learner = glrn, resampling = rr$resampling)
+rr2$aggregate()
+```
+
+:::
+
+:::
+
+# Summary
+
+We learned how to use feature filters to rank the features w.r.t. a feature filter method in a supervised setting and how to subset a task accordingly.
+
+Ideally, feature filtering is directly incorporated into the learning procedure by making use of a pipeline so that performance estimation after feature filtering is not biased.
+
+<!-- In later exercises, we will see how the performance of a whole pipeline can be properly evaluated. -->
+  

@@ -1,0 +1,784 @@
+---
+title: Greedy Ensemble Selection and Stacking 
+categories:
+  - ensembles stacking
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Implement greedy ensemble selection and stacking on german credit set.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+Implement Greedy Ensemble Selection from scratch.
+Learn how to do stacking with `mlr3pipelines`.
+
+# German Credit Data
+
+## Description
+
+- Data from 1973 to 1975 from a large regional bank in southern Germany classifying credits described by a set of attributes to good or bad credit risks.
+- Stratified sample of 1000 credits (300 bad ones and 700 good ones).
+- Customers with good credit risks perfectly complied with the conditions of the contract while customers with bad credit risks did not comply with the contract as required.
+- Available in `tsk("german_credit")`.
+
+## Data Dictionary
+
+n = 1,000 observations of credits
+
+- `credit_risk`: Has the credit contract been complied with (good) or not (bad)?
+- `age`: Age of debtor in years
+- `amount`: Credit amount in DM
+- `credit_history`: History of compliance with previous or concurrent credit contracts
+- `duration`: Credit duration in months
+- `employment_duration`: Duration of debtor's employment with current employer
+- `foreign_worker`: Whether the debtor is a foreign worker
+- `housing`: Type of housing the debtor lives in
+- `installment_rate`: Credit installments as a percentage of debtor's disposable income
+- `job`: Quality of debtor's job
+- `number_credits`: Number of credits including the current one the debtor has (or had) at this bank
+- `other_debtors`: Whether there is another debtor or a guarantor for the credit
+- `other_installment_plans`: Installment plans from providers other than the credit-giving bank
+- `people_liable`: Number of persons who financially depend on the debtor
+- `personal_status_sex`: Combined information on sex and marital status
+- `present_residence`: Length of time (in years) the debtor lives in the present residence
+- `property`: The debtor's most valuable property
+- `purpose`: Purpose for which the credit is needed
+- `savings`: Debtor's saving
+- `status`: Status of the debtor's checking account with the bank
+- `telephone`: Whether there is a telephone landline registered on the debtor's name
+
+# Prerequisites
+
+```{r}
+library(mlr3)
+library(mlr3learners)
+library(mlr3pipelines)
+library(mlr3viz)
+library(bbotk)
+library(mlr3misc)
+
+task = tsk("german_credit")
+
+set.seed(2409)
+```
+
+# 1 Implement Greedy Ensemble Selection
+
+In previous exercises we have seen how to do weighted model averaging and how to optimize weights numerically.
+We now want to implement a popular method for optimizing the weights when performing model averaging: Greedy ensemble selection (GES)
+
+First, read the original paper (https://www.cs.cornell.edu/~caruana/ctp/ct.papers/caruana.icml04.icdm06long.pdf) and make yourself familiar with the slides covering greedy ensemble selection.
+Then, revisit the in-class exercise set.
+
+In the in-class exercises, we wanted to do model averaging of a decision tree, a k-NN (k = 7) and a logistic regression.
+To optimize the weights numerically, we wrote an objective function, that allows for optimizing the weights of each model so that the resulting weighted model averaging is optimal.
+
+We now want to use GES instead of the CMA-ES.
+First, we will implement GES without relying on the `bbotk` infrastructure.
+Afterwards, you are free to take a look at how `Optimizer`s are implemented in `bbotk`, see, e.g., https://github.com/mlr-org/bbotk/blob/70f3f96ff0023066aa8eaa7c97484f0d6e518663/R/OptimizerCmaes.R
+and implement greedy ensemble selection as a proper `Optimizer`.
+
+In this exercise, we will also use an outer test split to properly evaluate the performance of our ensemble with optimized weight in an unbiased manner.
+After you have implemented GES, make sure to benchmark the weights it found against the weights found by CMA-ES.
+
+You can use the following code to do this:
+```{r, eval=FALSE}
+bg = benchmark_grid(task, list(grl, grl_weights_optimized_cmaes, dt, kknn, log_reg, featureless), outer_split)
+b = benchmark(bg)
+b$aggregate(msr("classif.auc"))
+```
+
+Note that this exercise is quite lengthy and rather complicated.
+It might be best to more or less directly work along the code skeleton provided in `Hint 2:`.
+
+<details>
+  <summary>**Hint 1:**</summary>
+GES is conceptually very simple:
+
+* You start with the empty ensemble and add the model that has highest validation performance.
+* Then, you check for each model what the validation performance of the ensemble would be if you add that model to the ensemble.
+* To calculate the weights for each model, you simply count the number of the times the model has been added to the ensemble so far and divide it by the total number of models added.
+* Finally, to calculate the probability predictions of the ensemble, you perform weighted model averaging as usual.
+* You repeat this until a given number of iterations has been reached.
+
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+ 
+```{r, eval = FALSE}
+outer_split = rsmp("holdout")$instantiate(task)
+
+#########################################################################################
+### old code part from previous exercise using CMA-ES to numerically optimize the weights
+### modified to work with the newly introduced outer split
+dt = lrn("classif.rpart")
+dt$predict_type = "prob"
+kknn = lrn("classif.kknn", k = 7L)
+kknn$predict_type = "prob"
+log_reg = lrn("classif.log_reg")
+log_reg$predict_type = "prob"
+featureless = lrn("classif.featureless")
+featureless$predict_type = "prob"
+
+gr = gunion(list(dt, kknn, log_reg)) %>>% po("classifavg")
+grl = as_learner(gr)
+
+# optimize weights on the train/validation split from the outer_split
+train_valid_task = task$clone(deep = TRUE)$filter(outer_split$train_set(1L))
+k = 10L
+resampling = rsmp("cv", folds = k)$instantiate(train_valid_task)
+
+dt_pred = resample(train_valid_task, dt, resampling)
+kknn_pred = resample(train_valid_task, kknn, resampling)
+log_reg_pred = resample(train_valid_task, log_reg, resampling)
+
+objective_function = function(xs) {
+  weights = unlist(xs)
+  weights = weights / sum(weights)  # sum to 1 normalization
+  aucs = map_dbl(seq_len(k), function(fold) {
+    dt_p = dt_pred$predictions()[[fold]]
+    kknn_p = kknn_pred$predictions()[[fold]]
+    log_reg_p = log_reg_pred$predictions()[[fold]]
+    row_ids = dt_p$row_ids
+    stopifnot(all(row_ids == kknn_p$row_ids) && all(row_ids == log_reg_p$row_ids))
+    truth = dt_p$truth
+    weighted_probs = Reduce("+", list(dt_p$prob * weights[1L], kknn_p$prob * weights[2L], log_reg_p$prob * weights[3L]))
+    weighted_response = colnames(weighted_probs)[apply(weighted_probs, MARGIN = 1L, FUN = which.max)]
+    weighted_p = PredictionClassif$new(row_ids = row_ids, truth = truth, response = weighted_response, prob = weighted_probs)
+    weighted_p$score(msr("classif.auc"))
+  })
+  list(classif.auc = mean(aucs), weights = list(weights))
+}
+
+domain = ps(w_dt = p_dbl(0, 1), w_kknn = p_dbl(0, 1), w_log_reg = p_dbl(0, 1))
+codomain = ps(classif.auc = p_dbl(0.5, 1, tags = "maximize"))
+
+objective = ObjectiveRFun$new(
+  fun = objective_function,
+  domain = domain,
+  codomain = codomain,
+  id = "optimize_grl_weights_cmaes"
+)
+
+instance = OptimInstanceSingleCrit$new(
+  objective = objective,
+  terminator = trm("evals", n_evals = 100L)
+)
+
+optimizer = opt("cmaes")
+optimizer$optimize(instance)
+
+# configure the ensemble with the optimized weights and evaluate on the outer split
+grl_weights_optimized_cmaes = grl$clone(deep = TRUE)
+grl_weights_optimized_cmaes$param_set$set_values(.values = list(classifavg.weights = instance$archive$best()$weights[[1L]]))
+grl_weights_optimized_cmaes$id = paste0(grl_weights_optimized_cmaes$id, ".optimized_cmaes")
+#########################################################################################
+
+#########################################################################################
+### GES implementation
+# selected is an integer vector of length t where t is the current iteration within GES
+# learner_num_ids is an integer vector from 1, ..., M where M is the number of models
+# get_ges_weights should calculate the weights for each model based on the number of times is has been selected
+get_ges_weights = function(selected, learner_num_ids) {
+  ...
+  weights
+}
+
+# learner_preds is a list of the resampled learner predictions, e.g., list(dt_pred, kknn_pred, log_reg_pred)
+# iterations is an integer specifying the number of iterations GES should be performed
+# measure is the measure used to score the predictions
+ges = function(learner_preds, iterations = 100L, measure = msr("classif.auc")) {
+  iteration = 0
+  learner_num_ids = seq_along(learner_preds)
+  performance = numeric(iterations)
+  selected = integer(iterations)
+  for (iteration in seq_len(iterations)) {
+    cat("Iteration: ", iteration, "\n")
+    performance_tmp = map_dbl(learner_num_ids, function(learner_num_id) {
+      # for each model: add it to the ensemble and calculate the average validation performance of the k folds by performing model averaging
+      # use get_ges_weights to calculate the weights for each model
+      selected_tmp = selected
+      selected_tmp[iteration] = learner_num_id
+      weights = get_ges_weights(...)
+      performances = map_dbl(seq_len(k), function(fold) {
+        # similar steps as in the ObjectiveRFun we constructed to optimize the weights numerically with CMA-ES
+        ...
+      })
+      mean(performances)
+    })
+    cat("Performance if learner added: ", round(performance_tmp, 3), "\n")
+    if (!measure$minimize) {
+      performance_tmp = - performance_tmp
+    }
+    select = ... # best model if added to the ensemble
+    performance[iteration] = performance_tmp[select]
+    selected[iteration] = select
+  }
+  best_iteration = which.min(performance)
+  weights = get_ges_weights(selected[seq_len(best_iteration)], learner_num_ids = learner_num_ids)
+  if (!measure$minimize) {
+    performance = - performance
+  }
+  list(best_iteration = best_iteration, performance_best = performance[best_iteration], weights = weights, selected = selected, performance = performance)
+}
+
+ges_results = ges(list(dt_pred, kknn_pred, log_reg_pred))
+
+# configure the ensemble with the optimized weights and evaluate on the outer split
+grl_weights_optimized_ges = grl$clone(deep = TRUE)
+grl_weights_optimized_ges$param_set$set_values(.values = list(classifavg.weights = ...))
+grl_weights_optimized_ges$id = paste0(grl_weights_optimized_ges$id, ".optimized_cmaes")
+#########################################################################################
+
+bg = benchmark_grid(task, list(grl, grl_weights_optimized_cmaes, grl_weights_optimized_ges, dt, kknn, log_reg, featureless), outer_split)
+b = benchmark(bg)
+b$aggregate(msr("classif.auc"))
+
+# compare the weights
+grl_weights_optimized_cmaes$param_set$get_values()[["classifavg.weights"]]
+grl_weights_optimized_ges$param_set$get_values()[["classifavg.weights"]]
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+outer_split = rsmp("holdout")$instantiate(task)
+
+#########################################################################################
+### old code part from previous exercise using CMA-ES to numerically optimize the weights
+### modified to work with the newly introduced outer split
+dt = lrn("classif.rpart")
+dt$predict_type = "prob"
+kknn = lrn("classif.kknn", k = 7L)
+kknn$predict_type = "prob"
+log_reg = lrn("classif.log_reg")
+log_reg$predict_type = "prob"
+featureless = lrn("classif.featureless")
+featureless$predict_type = "prob"
+
+gr = gunion(list(dt, kknn, log_reg)) %>>% po("classifavg")
+grl = as_learner(gr)
+
+# optimize weights on the train/validation split from the outer_split
+train_valid_task = task$clone(deep = TRUE)$filter(outer_split$train_set(1L))
+k = 10L
+resampling = rsmp("cv", folds = k)$instantiate(train_valid_task)
+
+dt_pred = resample(train_valid_task, dt, resampling)
+kknn_pred = resample(train_valid_task, kknn, resampling)
+log_reg_pred = resample(train_valid_task, log_reg, resampling)
+
+objective_function = function(xs) {
+  weights = unlist(xs)
+  weights = weights / sum(weights)  # sum to 1 normalization
+  aucs = map_dbl(seq_len(k), function(fold) {
+    dt_p = dt_pred$predictions()[[fold]]
+    kknn_p = kknn_pred$predictions()[[fold]]
+    log_reg_p = log_reg_pred$predictions()[[fold]]
+    row_ids = dt_p$row_ids
+    stopifnot(all(row_ids == kknn_p$row_ids) && all(row_ids == log_reg_p$row_ids))
+    truth = dt_p$truth
+    weighted_probs = Reduce("+", list(dt_p$prob * weights[1L], kknn_p$prob * weights[2L], log_reg_p$prob * weights[3L]))
+    weighted_response = colnames(weighted_probs)[apply(weighted_probs, MARGIN = 1L, FUN = which.max)]
+    weighted_p = PredictionClassif$new(row_ids = row_ids, truth = truth, response = weighted_response, prob = weighted_probs)
+    weighted_p$score(msr("classif.auc"))
+  })
+  list(classif.auc = mean(aucs), weights = list(weights))
+}
+
+domain = ps(w_dt = p_dbl(0, 1), w_kknn = p_dbl(0, 1), w_log_reg = p_dbl(0, 1))
+codomain = ps(classif.auc = p_dbl(0.5, 1, tags = "maximize"))
+
+objective = ObjectiveRFun$new(
+  fun = objective_function,
+  domain = domain,
+  codomain = codomain,
+  id = "optimize_grl_weights_cmaes"
+)
+
+instance = OptimInstanceSingleCrit$new(
+  objective = objective,
+  terminator = trm("evals", n_evals = 100L)
+)
+
+optimizer = opt("cmaes")
+optimizer$optimize(instance)
+
+# configure the ensemble with the optimized weights and evaluate on the outer split
+grl_weights_optimized_cmaes = grl$clone(deep = TRUE)
+grl_weights_optimized_cmaes$param_set$set_values(.values = list(classifavg.weights = instance$archive$best()$weights[[1L]]))
+grl_weights_optimized_cmaes$id = paste0(grl_weights_optimized_cmaes$id, ".optimized_cmaes")
+#########################################################################################
+```
+```{r, eval = params$showsolution}
+#########################################################################################
+### GES implementation
+get_ges_weights = function(selected, learner_num_ids) {
+  selected = selected[selected != 0]
+  n = length(selected)
+  weights = map_dbl(learner_num_ids, function(learner_num_id) {
+    sum(learner_num_id == selected) / n
+  })
+  weights
+}
+
+ges = function(learner_preds, iterations = 100L, measure = msr("classif.auc")) {
+  iteration = 0
+  learner_num_ids = seq_along(learner_preds)
+  performance = numeric(iterations)
+  selected = integer(iterations)
+  for (iteration in seq_len(iterations)) {
+    cat("Iteration: ", iteration, "\n")
+    performance_tmp = map_dbl(learner_num_ids, function(learner_num_id) {
+      selected_tmp = selected
+      selected_tmp[iteration] = learner_num_id
+      weights = get_ges_weights(selected_tmp, learner_num_ids = learner_num_ids)
+      performances = map_dbl(seq_len(k), function(fold) {
+        learner_ps = map(learner_preds, function(learner_pred) learner_pred$predictions()[[fold]])
+        row_ids = learner_ps[[1L]]$row_ids
+        stopifnot(all(map_lgl(learner_ps[-1L], function(learner_p) all(learner_p$row_ids == row_ids))))
+        truth = learner_ps[[1L]]$truth
+        weighted_probs = Reduce("+", mapply(FUN = function(prob, weight) prob * weight, map(learner_ps, function(learner_p) learner_p$prob), as.list(weights), SIMPLIFY = FALSE))
+        stopifnot(all.equal(rowSums(weighted_probs),  rep(1, nrow(weighted_probs))))
+        weighted_response = colnames(weighted_probs)[apply(weighted_probs, MARGIN = 1L, FUN = which.max)]
+        weighted_p = PredictionClassif$new(row_ids = row_ids, truth = truth, response = weighted_response, prob = weighted_probs)
+        weighted_p$score(measure)
+      })
+      mean(performances)
+    })
+    cat("Performance if learner added: ", round(performance_tmp, 3), "\n")
+    if (!measure$minimize) {
+      performance_tmp = - performance_tmp
+    }
+    select = which.min(performance_tmp)
+    performance[iteration] = performance_tmp[select]
+    selected[iteration] = select
+  }
+  best_iteration = which.min(performance)
+  weights = get_ges_weights(selected[seq_len(best_iteration)], learner_num_ids = learner_num_ids)
+  if (!measure$minimize) {
+    performance = - performance
+  }
+  list(best_iteration = best_iteration, performance_best = performance[best_iteration], weights = weights, selected = selected, performance = performance)
+}
+
+ges_results = ges(list(dt_pred, kknn_pred, log_reg_pred))
+
+# configure the ensemble with the optimized weights and evaluate on the outer split
+grl_weights_optimized_ges = grl$clone(deep = TRUE)
+grl_weights_optimized_ges$param_set$set_values(.values = list(classifavg.weights = ges_results$weights))
+grl_weights_optimized_ges$id = paste0(grl_weights_optimized_ges$id, ".optimized_ges")
+#########################################################################################
+```
+```{r, eval = params$showsolution}
+bg = benchmark_grid(task, list(grl, grl_weights_optimized_cmaes, grl_weights_optimized_ges, dt, kknn, log_reg, featureless), outer_split)
+b = benchmark(bg)
+b$aggregate(msr("classif.auc"))
+
+# compare the weights
+grl_weights_optimized_cmaes$param_set$get_values()[["classifavg.weights"]]
+grl_weights_optimized_ges$param_set$get_values()[["classifavg.weights"]]
+```
+
+We already discussed that GES effectively optimizes weights on an integer scale.
+CMA-ES in contrast can overfit to the validation data.
+In this example, both performed well with respect to generalization performance.
+For some more background, see, e.g., https://arxiv.org/pdf/2307.00286
+
+:::
+
+:::
+
+# 2 Single- and Multilayer Stacking
+
+## 2.1 Level 0
+
+We now want to do stacking.
+Use six learners on level 0: A decision tree, k-NN (with k = 7), an elastic net (alpha = 0.5 and s = 0.1) with categorical features target encoded, naive bayes with categorical features target encoded, XGBoost (nrounds = 100) with categorical features target encoded and a random forest (num.trees = 100).
+Do not cross-validate on level 0 for now.
+Train on the task and inspect the output of the level 0 graph.
+Now combine level 0 with a logistic regression on level 1.
+
+Proceed to benchmark the stacked ensemble against each level 0 learner and the random forest.
+Use 5-fold CV to evaluate the ROC AUC of the models.
+
+<details>
+  <summary>**Hint 1:**</summary>
+  To wrap a learner within an ensemble and use its predictions, the learner_cv `PipeOp` is essential.
+  Its `resampling.method` hyperparameter allows you to cross-validate the predictions or not.
+  Similarly `resampling.folds` allows you to specify the number of folds if predictions should be cross-validated.
+  To combine the level 0 output, use the featureunion `PipeOp`.
+  The following gallery post is helpful: https://mlr-org.com/gallery/pipelines/2020-04-27-tuning-stacking/index.html
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+ 
+```{r, eval = FALSE}
+resampling = rsmp("cv", folds = ...)$instantiate(task)
+dt = lrn("classif.rpart")
+dt$predict_type = "prob"
+kknn = lrn(..., k = ...)
+kknn$predict_type = "prob"
+elnet = lrn(..., alpha = ..., s = ...)
+elnet$predict_type = "prob"
+elnet = as_learner(po(...) %>>% ...)
+naive_bayes = lrn(...)
+naive_bayes$predict_type = "prob"
+naive_bayes = as_learner(po(...) %>>% ...)
+xgboost = lrn(..., nrounds = ...)
+xgboost = as_learner(po(...) %>>% ...)
+xgboost$predict_type = "prob"
+rf = lrn(..., num.trees = ..._
+rf$predict_type = "prob"
+
+level0 = gunion(
+  list(
+    po("learner_cv", learner = ..., resampling.method = ...),
+    ...
+  )
+) %>>% po(...)
+level0$plot()
+
+level0_train_output = level0$train(task)
+level0_train_output
+
+level1 = lrn(..., id = "log_reg_out")
+level1$predict_type = "prob"
+
+ensemble = as_learner(level0 %>>% level1)
+ensemble$id = "Simple Stacked Ensemble Insample"
+ensemble$graph$plot()
+
+bg = benchmark_grid(..., list(...), ...)
+b = benchmark(bg)
+autoplot(..., measure = ...)
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+resampling = rsmp("cv", folds = 5L)$instantiate(task)
+dt = lrn("classif.rpart")
+dt$predict_type = "prob"
+kknn = lrn("classif.kknn", k = 7L)
+kknn$predict_type = "prob"
+elnet = lrn("classif.glmnet", alpha = 0.5, s = 0.01)
+elnet$predict_type = "prob"
+elnet = as_learner(po("encodeimpact") %>>% elnet)
+naive_bayes = lrn("classif.naive_bayes")
+naive_bayes$predict_type = "prob"
+naive_bayes = as_learner(po("encodeimpact") %>>% naive_bayes)
+xgboost = lrn("classif.xgboost", nrounds = 100L)
+xgboost = as_learner(po("encodeimpact") %>>% xgboost)
+xgboost$predict_type = "prob"
+rf = lrn("classif.ranger", num.trees = 100L)
+rf$predict_type = "prob"
+
+level0 = gunion(
+  list(
+    po("learner_cv", learner = dt, resampling.method = "insample"),
+    po("learner_cv", learner = kknn, resampling.method = "insample"),
+    po("learner_cv", learner = elnet, resampling.method = "insample"),
+    po("learner_cv", learner = naive_bayes, resampling.method = "insample"),
+    po("learner_cv", learner = xgboost, resampling.method = "insample"),
+    po("learner_cv", learner = rf, resampling.method = "insample")
+  )
+) %>>% po("featureunion")
+level0$plot()
+
+level0_train_output = level0$train(task)
+level0_train_output
+```
+
+This is a task that contains the probability predictions for each class from each learner.
+To also have the predicted class, we could set the `resampling.keep_response` of the learner_cv `PipeOp`.
+
+```{r, eval = params$showsolution}
+level1 = lrn("classif.log_reg", id = "log_reg_out")
+level1$predict_type = "prob"
+
+ensemble = as_learner(level0 %>>% level1)
+ensemble$id = "Simple Stacked Ensemble Insample"
+ensemble$graph$plot()
+
+bg = benchmark_grid(task, list(ensemble, dt, kknn, elnet, naive_bayes, xgboost, rf), resampling)
+b = benchmark(bg)
+autoplot(b, measure = msr("classif.auc"))
+```
+
+:::
+
+:::
+
+## 2.2 Cross Validation
+
+So far, we have not cross-validated the level 0 predictions.
+Create another stacked ensemble where you use 3-fold CV to cross-validate the level 0 predictions.
+
+Proceed to benchmark the cross-validated stacked ensemble against the stacked ensemble, and the random forest.
+Use 5-fold CV to evaluate the ROC AUC of the models.
+
+<details>
+  <summary>**Hint 1:**</summary>
+  You can essentially reuse most of your logic on how to build the graph from the previous exercise. 
+  To wrap a learner within an ensemble and use its predictions, the learner_cv `PipeOp` is essential.
+  Have a look at its `resampling.method` parameter to see how to cross-validate level 0 predictions.
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+ 
+```{r, eval = FALSE}
+level0 = gunion(
+  list(
+    po("learner_cv", learner = dt, resampling.method = "cv", resampling.folds = 3L),
+    .
+    .
+    .
+  )
+) %>>% po("featureunion")
+
+ensemble_cv = as_learner(level0 %>>% level1)
+ensemble_cv$id = "Simple Stacked Ensemble 3-fold CV"
+
+bg = benchmark_grid(...)
+b = benchmark(...)
+autoplot(...)
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+level0 = gunion(
+  list(
+    po("learner_cv", learner = dt, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = kknn, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = elnet, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = naive_bayes, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = xgboost, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = rf, resampling.method = "cv", resampling.folds = 3L)
+  )
+) %>>% po("featureunion")
+
+ensemble_cv = as_learner(level0 %>>% level1)
+ensemble_cv$id = "Simple Stacked Ensemble 3-fold CV"
+
+bg = benchmark_grid(task, list(ensemble, ensemble_cv, rf), resampling)
+b = benchmark(bg)
+autoplot(b, measure = msr("classif.auc"))
+```
+
+:::
+
+:::
+
+## 2.3 Add the Original Features of the Task
+
+So far we have dropped the original features of the task.
+Create another stacked ensemble where you additionally keep the original features of the task.
+Similarly to before, cross-validate the level 0 predictions.
+
+Proceed to benchmark the cross-validated stacked ensemble with features passed through against the cross-validated stacked ensemble, stacked ensemble, and the random forest.
+Use 5-fold CV to evaluate the ROC AUC of the models.
+
+<details>
+  <summary>**Hint 1:**</summary>
+  You can essentially reuse most of your logic on how to build the graph from the previous exercise.
+  To keep the original features of the task in the output of level 0, use the nop `PipeOp` along the learners.
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+ 
+```{r, eval = FALSE}
+level0 = gunion(
+  list(
+    po("learner_cv", learner = dt, resampling.method = "cv", resampling.folds = 3L),
+    ...
+    po("nop")
+  )
+) %>>% po("featureunion")
+level0_train_output = level0$train(task)[[1L]]
+level0_train_output
+# The task now also contains the original features of the task passed through
+
+ensemble_cv_pass = as_learner(level0 %>>% level1)
+ensemble_cv_pass$id = "Simple Stacked Ensemble 3-fold CV + Orig Features"
+
+bg = benchmark_grid(...)
+b = benchmark(...)
+autoplot(...)
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+level0 = gunion(
+  list(
+    po("learner_cv", learner = dt, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = kknn, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = elnet, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = naive_bayes, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = xgboost, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", learner = rf, resampling.method = "cv", resampling.folds = 3L),
+    po("nop")
+  )
+) %>>% po("featureunion")
+level0_train_output = level0$train(task)[[1L]]
+level0_train_output
+# The task now also contains the original features of the task passed through
+
+ensemble_cv_pass = as_learner(level0 %>>% level1)
+ensemble_cv_pass$id = "Simple Stacked Ensemble 3-fold CV + Orig Features"
+
+bg = benchmark_grid(task, list(ensemble, ensemble_cv, ensemble_cv_pass, rf), resampling)
+b = benchmark(bg)
+autoplot(b, measure = msr("classif.auc"))
+```
+
+Usefulness of passing through the original features of the task usually strongly depends on the higher level learners.
+If you have time, you may want to play around with the choice of the level 1 learner (or optimize it directly).
+
+:::
+
+:::
+
+## 2.4 Multilayer Stacking Ensemple
+Finally, create a multi-layer stacking ensemble by passing the output of the current level 0 into a level 1 that is built similar as level 1.
+Similarly to before, keep the original features of the task and cross-validate the level 0 and level 1 predictions.
+Then use a logistic regression on the final level 2.
+Make sure that when you pass the original features of the task to the final level 2 that you do not also pass the cross-validated predictions from level 0.
+
+Proceed to benchmark the this cross-validated multi-layer stacked ensemble with features passed through against the cross-validated stacked ensemble with features passed, the cross-validated stacked ensemble, stacked ensemble, and the random forest.
+Use 5-fold CV to evaluate the ROC AUC of the models.
+
+<details>
+  <summary>**Hint 1:**</summary>
+  To make sure that when you pass the original features of the task to the final level 2 that you do not also pass the cross-validated predictions from level 1, use an appropriately configured select `PipeOp`.
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+ 
+```{r, eval = FALSE}
+level0 = gunion(
+  list(
+    po("learner_cv", id = "dt1_0", learner = dt, resampling.method = "cv", resampling.folds = 3L),
+    .
+    .
+    .
+  )
+) %>>% po("featureunion", id = "featureunion_0")
+level1 = gunion(
+  list(
+    po("learner_cv", id = "dt1_1", learner = dt, resampling.method = "cv", resampling.folds = 3L),
+    .
+    .
+    .
+    po("nop", id = "nop_1") %>>% po("select", selector = selector_name(...))  # pass the names of the original features
+  )
+) %>>% po("featureunion", id = "featureunion_1")
+level2 = lrn("classif.log_reg", id = "log_reg_out")
+level2$predict_type = "prob"
+
+ensemble_multilayer_cv_pass = as_learner(level0 %>>% level1 %>>% level2)
+ensemble_multilayer_cv_pass$id = "Multilayer Stacked Ensemble 3-fold CV + Orig Features"
+ensemble_multilayer_cv_pass$graph$plot()
+
+bg = benchmark_grid(...)
+b = benchmark(...)
+autoplot(...)
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+level0 = gunion(
+  list(
+    po("learner_cv", id = "dt1_0", learner = dt, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "kknn_0", learner = kknn, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "elnet_0", learner = elnet, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "naive_bayes_0", learner = naive_bayes, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "xgboost_0", learner = xgboost, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "rf_0", learner = rf, resampling.method = "cv", resampling.folds = 3L),
+    po("nop", id = "nop_0")
+  )
+) %>>% po("featureunion", id = "featureunion_0")
+level1 = gunion(
+  list(
+    po("learner_cv", id = "dt1_1", learner = dt, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "kknn_1", learner = kknn, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "elnet_1", learner = elnet, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "naive_bayes_1", learner = naive_bayes, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "xgboost_1", learner = xgboost, resampling.method = "cv", resampling.folds = 3L),
+    po("learner_cv", id = "rf_1", learner = rf, resampling.method = "cv", resampling.folds = 3L),
+    po("nop", id = "nop_1") %>>% po("select", selector = selector_name(task$feature_names))
+  )
+) %>>% po("featureunion", id = "featureunion_1")
+level2 = lrn("classif.log_reg", id = "log_reg_out")
+level2$predict_type = "prob"
+
+ensemble_multilayer_cv_pass = as_learner(level0 %>>% level1 %>>% level2)
+ensemble_multilayer_cv_pass$id = "Multilayer Stacked Ensemble 3-fold CV + Orig Features"
+ensemble_multilayer_cv_pass$graph$plot()
+
+bg = benchmark_grid(task, list(ensemble, ensemble_cv, ensemble_cv_pass, ensemble_multilayer_cv_pass, rf), resampling)
+b = benchmark(bg)
+autoplot(b, measure = msr("classif.auc"))
+# Sometimes beating a random forest baseline can be really difficult.
+```
+
+:::
+
+:::
+
+# Summary
+We implemented Greedy Ensemble Selection from scratch.
+Then we looked at how to implement various ways of stacked ensemblings and benchmarked them.

@@ -1,0 +1,257 @@
+---
+title: Parallelization
+categories:
+  - benchmark
+  - parallelization
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Set up a large scale benchmark experiment with parallelization
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+The objective of this exercise is to get hands-on experience with conducting large-scale machine learning experiments using MLR3, Batchtools, and the OpenML connector. You will learn how to set up a parallelized benchmark experiment on your laptop.
+
+# Prerequisites
+
+We need the following libraries:
+
+```{r library}
+library('mlr3verse')
+library('mlr3oml')
+library('data.table')
+library('batchtools')
+library('ggplot2')
+```
+
+# Exercise 1: Getting Data from OpenML
+
+To draw meaningful conclusions from benchmark experiments, a good choice of data sets and tasks is essential. [OpenML](https://www.openml.org) is an open-source online platform that facilitates the sharing of machine learning research data, algorithms, and experimental results in a standardized format. Finding data from OpenML is possible via the website or its API. The `mlr3oml` package offers an elegant connection between `mlr3` and OpenML. The function `list_oml_tasks()` can be used to filter tasks for specific properties. To get started, utilize this to create a list of tasks with 10-20 features, 500-1000 rows and a categorical outcome with two classes. From this list, remove duplicate instances with similar names (sometimes, different versions of more or less the same data set are produced). For example, you could do this by removing instances where the first 3 letters of the name column match those of other instances. Further, exclude instances where the minority class is less than 10% of the overall number of observations.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+# Get data
+odata = list_oml_tasks(
+  number_features = c(10, 20),
+  number_instances = c(500, 1000),
+  number_classes = 2
+)
+
+# Remove duplicates
+odata <- odata[!duplicated(substr(odata$name, 1, 3)), ]
+
+# Remove imbalanced data sets
+odata <- odata[9 * odata$MinorityClassSize >= odata$MajorityClassSize, ]
+
+# View result
+nrow(odata)
+head(odata)
+```
+
+:::
+
+:::
+
+# Exercise 2: Working with OpenML data
+
+Notably, `list_oml__data_tasks()` only retrieves relevant information about the tasks, and not the data itself. Convert this list of tasks by directly transforming it to `mlr3` tasks with applying `otsk()` to each `data_id`. Find out how you can load and inspect the data from a single task in the list. 
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+# List of tasks
+tasklist <- lapply(odata$task_id, otsk)
+
+# Example data of a single task
+tasklist[[17]]$data$data
+```
+
+:::
+
+:::
+
+# Exercise 3: Batch Tools
+
+## Exercise 3.1: OpenML Task and Learners
+
+For this task, look at the german credit data set. 
+Download it from OpenML (task id: 31) and create a task.
+Define a tree, an SVM and a Random Forest as they shall be benchmarked later.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+oml_task = OMLTask$new(31)
+oml_data = as_data_backend(oml_task$data)
+task = as_task_classif(oml_data, target = "class")
+learners = list(
+  lrn("classif.rpart"),
+  lrn("classif.ranger")
+)
+```
+
+:::
+
+:::
+
+
+## Exercise 3.2: Batchtools experiment registry
+
+Create and configure a Batchtools experiment registry:
+```{r, eval = params$showsolution}
+reg = makeExperimentRegistry(
+  file.dir = "mlr3_experiments",
+  packages = c("mlr3", "mlr3verse"),
+  seed = 1
+)
+```
+You can add problems and algorithms to the registry using the following code: 
+```{r, eval = params$showsolution}
+addProblem("task", data = task)
+addAlgorithm(name = "mlr3", fun = function(job, data, instance, learner) {
+  learner = lrn(learner)
+  task = as_task(data)
+  learner$train(task)
+})
+```
+Define the design of experiments:
+```{r, eval = params$showsolution}
+prob_design = list(task = data.table())
+algo_design = list(mlr3 = data.frame(learner = sapply(learners, function(x) {x$id}),
+                                     stringsAsFactors = FALSE))
+addExperiments(prob.designs = prob_design, algo.designs = algo_design)
+summarizeExperiments()
+```
+Test a single job to ensure it works correctly:
+```{r, eval = params$showsolution}
+testJob(1)
+```
+
+1. Add at least two more learners to the benchmark experiment. Choose any classification learners from the `mlr3learners` package.
+2. Configure and run a resampling strategy (e.g., 10-fold cross-validation) instead of using the whole dataset for training and testing.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+# Adding more learners
+learners2 = list(
+  lrn("classif.rpart"),
+  lrn("classif.ranger"),
+  lrn("classif.kknn"),       # Added k-Nearest Neighbors
+  lrn("classif.naive_bayes") # Added Naive Bayes
+)
+
+# Define the algorithm with resampling
+addAlgorithm(name = "mlr3res", fun = function(job, data, instance, learner) {
+  learner = lrn(learner)
+  task = as_task(data)
+  resampling = rsmp("cv", folds = 10)$instantiate(task)
+  rr = resample(task, learner, resampling, store_models = TRUE)
+  list(measure = rr$aggregate(msr("classif.acc")))
+})
+
+# Define the design of experiments
+prob_design2 = list(task = data.table())
+algo_design2 = list(mlr3res = data.frame(learner = sapply(learners2, 
+                                                          function(x) {x$id}), 
+                                         stringsAsFactors = FALSE))
+addExperiments(prob.designs = prob_design2, algo.designs = algo_design2)
+summarizeExperiments()
+```
+```{r, eval = params$showsolution}
+# Test a single job to ensure it works correctly
+testJob(1)
+```
+
+:::
+
+:::
+
+## Exercise 3.3: Benchmark
+
+Submit jobs to be executed in parallel:   
+```{r, eval = FALSE}
+submitJobs()
+waitForJobs() # Wait for the jobs to finish
+```
+
+Collect and analyze the results:
+```{r, eval = FALSE}
+res = reduceResultsList()
+print(res)
+```
+
+Plot the performance metrics of the different learners using the `ggplot2` package.
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+submitJobs()
+waitForJobs() # Wait for the jobs to finish
+res = reduceResultsList()
+print(res)
+```
+
+```{r, eval = params$showsolution}
+# Collect results into a data.table
+results = rbindlist(lapply(res, function(x) data.table(acc = x$measure)))
+results$learner = algo_design2$mlr3res$learner
+
+# Plot the performance metrics using ggplot2
+ggplot(results, aes(x = learner, y = acc)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Performance of Different Learners",
+       x = "Learner",
+       y = "Classification Accuracy")
+```
+
+:::
+
+:::
+
+
+# Summary
+
+We downloaded various data sets from OpenML and used batch tools to parallelize a benchmark study.

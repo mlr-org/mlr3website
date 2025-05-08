@@ -1,0 +1,409 @@
+---
+title: Feature Selection
+categories:
+  - feature preprocessing
+  - performance evaluation
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Select features from the german credit set and evaluate model performance.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+After this exercise, you should understand and be able to perform feature selection using wrapper functions with `mlr3fselect`. You should also be able to integrate various performance measures and calculate the generalization error.
+
+# Wrapper Methods
+
+In addition to filtering, wrapper methods are another variant of selecting features. While in filtering conditions for the feature values are set, in wrapper methods the learner is applied to different subsets of the feature set. As models need to be refitted, this method is computationally expensive.
+
+For wrapper methods, we need the package `mlr3fselect`, at whose heart the following `R6` classes are:
+
+- `FSelectInstanceSingleCrit`, `FSelectInstanceMultiCrit`: These two classes describe the feature selection problem and store the results.
+- `FSelector`: This class is the base class for implementations of feature selection algorithms.
+
+# Prerequisites
+
+We load the most important packages and use a fixed seed for reproducibility. 
+
+```{r}
+library(mlr3verse)
+library(data.table)
+library(mlr3fselect)
+set.seed(7891)
+```
+
+In this exercise, we will use the `german_credit` data and the learner `classif.ranger`:
+
+```{r}
+task_gc = tsk("german_credit")
+lrn_ranger = lrn("classif.ranger")
+```
+
+# 1 Basic Application
+
+## 1.1 Create the Framework
+
+Create an `FSelectInstanceSingleCrit` object using `fsi()`. The instance should use a 3-fold cross validation, classification accuracy as the `measure` and terminate after 20 evaluations. For simplification only consider the features `age`, `amount`, `credit_history` and `duration`.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval = FALSE}
+task_gc$select(...)
+
+instance = fsi(
+  task = ...,
+  learner = ...,
+  resampling = ...,
+  measure = ...,
+  terminator = ...
+)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+task_gc$select(c("age", "amount", "credit_history", "duration"))
+
+instance = fsi(
+  task = task_gc,
+  learner = lrn_ranger,
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.acc"),
+  terminator = trm("evals", n_evals = 20)
+)
+```
+
+:::
+
+:::
+
+
+## 1.2 Start the Feature Selection
+
+Start the feature selection step by selecting `sequential` using the `FSelector` class via `fs()` and pass the `FSelectInstanceSingleCrit` object to the `$optimize()` method of the initialized `FSelector` object.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval = FALSE}
+fselector = fs(...)
+```
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval = FALSE}
+fselector = fs(...)
+fselector$optimize(...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+fselector = fs("sequential")
+fselector$optimize(instance)
+```
+
+The two calls (`fsi()`and `fs()`) can also be executed by one sugar function (`fselect()`): 
+
+```{r, eval = FALSE}
+instance = fselect(
+  fselector = fs("sequential"),
+  task =  task_gc,
+  learner = lrn_ranger,
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.acc")
+)
+```
+
+:::
+
+:::
+
+## 1.3 Evaluate 
+
+View the four characteristics and the accuracy from the instance archive for each of the first two batches. 
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval = FALSE}
+instance$archive$data[...]
+```
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval = FALSE}
+instance$archive$data[batch_nr == ..., ...]
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+instance$archive$data[batch_nr == 1, 1:5]
+```
+
+The highest accuracy results when the model relies on `credit_history`. So for the next batch, only combinations with `credit_history` are considered:
+
+```{r, eval = params$showsolution}
+instance$archive$data[batch_nr == 2, 1:5]
+```
+
+We see that the accuracy increases when using the two features `amount` and `credit_history` compared to using only `credit_history`.
+
+Alternatively with `data.table`:
+
+```{r, eval = params$showsolution}
+as.data.table(instance$archive)[batch_nr == 1, 1:5]
+as.data.table(instance$archive)[batch_nr == 2, 1:5]
+```
+
+A visualization of all batches can be created via `autoplot`:
+
+```{r, eval = params$showsolution}
+autoplot(instance, type = "performance")
+```
+
+:::
+
+:::
+
+## 1.4 Model Training
+
+Which feature(s) should be selected? Train the model.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Compare the accuracy values for the different feature combinations and select the feature(s) accordingly.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval = FALSE}
+task_gc = ...
+task_gc$select(...)
+lrn_ranger$train(...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+The feature(s) resulting in the highest accuracy should be selected, so, here `amount` and `credit_history`:
+
+```{r, eval = params$showsolution}
+task_gc = tsk("german_credit")
+task_gc$select(instance$result_feature_set)
+task_gc$feature_names
+lrn_ranger$train(task_gc)
+```
+
+:::
+
+:::
+
+# 2 Multiple Performance Measures
+
+To optimize multiple performance metrics, the same steps must be followed as above except that multiple metrics are passed. Create an ´instance´ object as above considering the measures `classif.tpr` and `classif.tnr`. For the second step use `random search` and take a look at the results in a third step.
+
+We again use the `german_credit` data:
+
+```{r}
+task_gc = tsk("german_credit")
+```
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval = FALSE}
+instance = fsi(...)
+```
+
+```{r, eval = FALSE}
+fselector = fs(...)
+fselector$...(...)
+```
+
+```{r, eval = FALSE}
+features = unlist(lapply(...))
+cbind(features,...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution, results='hide'}
+instance = fsi(
+  task = task_gc,
+  learner = lrn_ranger,
+  resampling = rsmp("cv", folds = 3),
+  measure = msrs(c("classif.tpr", "classif.tnr")),
+  terminator = trm("evals", n_evals = 20)
+)
+```
+
+```{r, eval = params$showsolution, results='hide'}
+fselector = fs("random_search")
+fselector$optimize(instance)
+```
+
+```{r, eval = params$showsolution}
+features = unlist(lapply(instance$result$features, paste, collapse = ", "))
+cbind(features,instance$result[,c("classif.tpr", "classif.tnr")])
+```
+Or with `data.table`:
+```{r, eval = params$showsolution, results='hide'}
+as.data.table(instance$result)[, .(features, classif.tpr, classif.tnr)]
+```
+
+Note that the measures can not be optimal at the same time so one has to choose according to their preferences. Here, we see different tradeoffs of sensitivity and specificity but no feature subset is dominated by another, i.e. has worse sensitivity and specificity than any other subset.
+
+:::
+
+:::
+
+# 3 Nested Resampling
+
+Nested resampling enables finding unbiased performance estimators for the selection of features. In `mlr3` this is possible with the class `AutoFSelector`, whose instance can be created by the function `auto_fselector()`.
+
+## 3.1 Create an `AutoFSelector` Instance
+
+Implement an `AutoFSelector` object that uses random search to find a feature selection that gives the highest accuracy for a logistic regression with holdout resampling. It should terminate after 10 evaluations.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval = FALSE}
+afs = auto_fselector(
+  fselector = ...,
+  learner = ...,
+  resampling = ...,
+  measure = ...,
+  terminator = ...
+)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+afs = auto_fselector(
+  fselector = fs("random_search"),
+  learner = lrn("classif.log_reg"),
+  resampling = rsmp("holdout"),
+  measure = msr("classif.acc"),
+  terminator = trm("evals", n_evals = 10)
+)
+afs
+```
+
+:::
+
+:::
+
+## 3.2 Benchmark
+
+Compare the `AutoFSelector` with a normal logistic regression using 3 fold cross-validation.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+The `AutoFSelector` inherits from the `Learner` base class, which is why it can be used like any other learner.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+Implement a benchmark grid and aggregate the result.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution, results='hide'}
+grid = benchmark_grid(tsk("sonar"), list(afs, lrn("classif.log_reg")),
+  rsmp("cv", folds = 3))
+
+bmr = benchmark(grid)$aggregate(msr("classif.acc"))
+```
+
+```{r, eval = params$showsolution}
+as.data.table(bmr)[, .(learner_id, classif.acc)]
+```
+
+:::
+
+:::
+
+# Summary
+
+- Wrapper methods calculate performance measures for various combinations of features in order to perform feature selection.
+- They are computationally expensive since several models need to be fitted.
+- The `AutoFSelector` inherits from the `Learner` base class, which is why it can be used like any other learner.
+  

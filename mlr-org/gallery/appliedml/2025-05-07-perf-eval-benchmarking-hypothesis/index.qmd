@@ -1,0 +1,614 @@
+---
+title: Benchmarking Hypothesis
+categories:
+  - performance evaluation
+  - benchmarking
+  - hypotheis tests
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Benchmark models in multiple scenarios, using hypothesis tests as an additional diagnostic tool to make the benchmark more rigorous.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+Our goal for this exercise sheet is to use `mlr3` to benchmark models in multiple scenarios, using hypothesis tests as an additional diagnostic tool to make the benchmark more rigorous.
+
+# Required packages
+
+```{r, message = FALSE}
+library(mlr3oml)
+library(mlr3verse)
+library(mlr3learners)
+library(mlr3benchmark)
+library(tidyverse)
+library(ggplot2)
+library(PMCMRplus)
+set.seed(20220801)
+```
+
+# 1 Two Algorithms on One Data Set
+
+Let's start with a simple example that compares two different learners on a single data set.
+
+## 1.1 Train Models
+
+Train a random forest from the `ranger` package and a regression tree from the `rpart` package using `mlr3` with default hyperparameters on the German credit task `"german_credit"`. The models are used in the next step to predict class probabilities.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+credit.task = tsk("german_credit")
+
+rpart.model = mlr_learners$get("classif.rpart")
+rpart.model$predict_type = "prob"
+rpart.model$train(credit.task)
+
+ranger.model = mlr_learners$get("classif.ranger")
+ranger.model$predict_type = "prob"
+ranger.model$train(credit.task)
+```
+
+:::
+
+:::
+
+## 1.2 Get Predictions
+
+Create a `data.frame`. For each row in the credit data, it should contain the ground truth label as well as both the predicted probabilities and predicted labels by `rpart` and `ranger`, respectively.
+
+<details>
+  <summary>**Hint 1:**</summary>
+  
+You can call `$predict_newdata()` on the trained model object to make predictions.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+rpart.predictions = rpart.model$predict_newdata(newdata = credit.task$data())$print()
+ranger.predictions = ranger.model$predict_newdata(newdata = credit.task$data())$print()
+conf.mat = rpart.predictions[ , c("row_ids", "truth", "response", "prob.good")]
+conf.mat$ranger = ranger.predictions$response
+conf.mat$ranger_prob = ranger.predictions$prob.good
+colnames(conf.mat) = c("id", "truth", "rpart", "rpart_prob", "ranger", "ranger_prob")
+conf.mat
+```
+
+:::
+
+:::
+
+## 1.3 Evaluate models
+
+Add two new columns with the observation-wise loss value for the Brier score. Compare the performance of both models using these columns.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+conf.mat = conf.mat %>%
+  mutate(
+    rpart_loss = (rpart_prob - ifelse(truth == "good", 1, 0))^2
+  ) %>%
+  mutate(
+    ranger_loss = (ranger_prob - ifelse(truth == "good", 1, 0))^2
+  )
+
+mean(conf.mat$rpart_loss)
+mean(conf.mat$ranger_loss)
+```
+
+:::
+
+:::
+
+## 1.4 Two sample t-test
+
+Use a two sample t-test for an alpha of 5% to evaluate whether both samples of performance scores come from different populations.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Add another column with the difference between observation-wise loss values. Then run the t-test. The value of the quantile function of the t-distribution can be computed with `qt()`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+conf.mat = conf.mat %>%
+  mutate(
+    diff_loss = rpart_loss - ranger_loss
+  )
+
+mean_diff_loss = conf.mat %>%
+  ungroup() %>%
+  summarize(diff_loss = mean(diff_loss))
+
+t_var = sqrt((1 / (nrow(conf.mat) - 1)) * sum((conf.mat$diff_loss - as.numeric(mean_diff_loss))^2))
+
+t_statistic = sqrt(nrow(conf.mat)) * (mean_diff_loss / t_var)
+t_statistic
+# lower critical value, reject H0 if t-stat smaller
+qt(0.025, df = nrow(conf.mat) - 1)
+# OR
+# upper critical value, reject H0 if t-stat larger
+qt(0.975, df = nrow(conf.mat) - 1)
+
+t_statistic > qt(0.975, df = nrow(conf.mat) - 1)
+```
+
+<!-- We reject the null. This means the difference in model performance is significant. -->
+
+:::
+
+:::
+
+## 1.5 McNemar test
+
+Now run the McNemar test for an alpha of 5%. This is a non-parametric test that compares only the labels predicted by two models.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You will need the total number of observations that are classified correctly by `rpart` only and those that are classified correctly by `ranger` only. The value of the quantile function of the chi-sqaured-distribution can be computed with `qchisq()`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+conf.mat = conf.mat %>%
+  rowwise() %>%
+  mutate(
+    rpart_correct = case_when(
+      truth == "good" & rpart == "good" |
+        truth == "bad" & rpart == "bad"
+      ~ 1,
+      .default = 0)) %>% 
+  mutate(
+    ranger_correct = case_when(
+      truth == "good" & ranger == "good" |
+        truth == "bad" & ranger == "bad"
+      ~ 1,
+      .default = 0)) %>%
+  mutate(
+    only_rpart_correct = case_when(
+      rpart_correct == 1 & ranger_correct == 0
+      ~ 1,
+      .default = 0)) %>% 
+  mutate(
+    only_ranger_correct = case_when(
+      rpart_correct == 0 & ranger_correct == 1
+      ~ 1,
+      .default = 0))
+
+n_only_rpart_correct = sum(conf.mat$only_rpart_correct)
+n_only_ranger_correct = sum(conf.mat$only_ranger_correct)
+
+mcnemar_stat = (abs(n_only_rpart_correct - n_only_ranger_correct) - 1)^2 / (n_only_rpart_correct + n_only_ranger_correct)
+mcnemar_stat
+
+# critical value for alpha = 5%, reject H0 if mcnemar_stat larger
+crit = qchisq(0.95, df = 1)
+
+mcnemar_stat > crit
+```
+
+<!-- We reject the null. This means that also for the McNemar test, the difference in performance is statistically significant. -->
+
+:::
+
+:::
+
+# 2 Two Algorithms on Multiple Data Sets
+
+Let us now confirm whether this result holds for other data sets as well. We will first scout `OpenML` (package `mlr3oml`) for suitable classification tasks. 
+
+## 2.1 Get Tasks from OpenML
+
+Use the function `list_oml_tasks()` to look for tasks with the following characteristics: 
+
+- binary classification
+- number of features between 5 and 10
+- number of instances between 500 and 10000
+- no missing values
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+otasks = list_oml_tasks(
+  type = "classif",
+  number_features = c(5, 10),
+  number_instances = c(500, 10000),
+  number_classes = 2,
+  number_missing_values = 0
+)
+```
+
+:::
+
+:::
+
+## 2.2 Filter tasks 
+
+Filter out tasks with the same `data_id`. Use only tasks with balanced data sets where the ratio between the majority and minority class is smaller than 1.2. Also, remove tasks with a `data_id` of 720 and with target "gender" or "Class". You should receive a total number of 29 tasks.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+otasks = otasks %>%
+  filter(data_id != 720) %>%
+  filter(MajorityClassSize / MinorityClassSize < 1.2) %>%
+  group_by(name) %>%
+  filter(row_number(data_id) == 1) %>%
+  group_by(data_id) %>%
+  filter(row_number(data_id) == 1)
+
+nrow(otasks)
+```
+
+```{r}
+tasklist = lapply(otasks$task_id, FUN = otsk)
+unlist(lapply(tasklist, FUN = function(x) x[["data_name"]]))
+```
+
+```{r}
+tasklist = Filter(function(task) task$target_names!="gender", tasklist)
+tasklist = Filter(function(task) task$target_names!="Class", tasklist)
+```
+
+
+```{r}
+length(tasklist)
+```
+
+
+:::
+
+:::
+
+## 2.3 Benchmark tasks 
+
+Benchmark `rpart` and `ranger` on all found tasks with `mlr3`. Use one-hot encoding and three-fold cross-validation.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Use `po("encode", method = "one-hot")`.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+A benchmark design can be created with `design = benchmark_grid(tasklist, learners, resampling)` and evaluated with `benchmark(design)`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+
+```{r, eval = params$showsolution}
+learners = lrns(c("classif.rpart", "classif.ranger"))
+poe = po("encode", method = "one-hot")
+learners = lapply(learners, FUN = function(x) {po("encode") %>>% x})
+
+resampling = rsmp("cv", folds = 3)
+design = benchmark_grid(tasklist, learners, resampling)
+
+bmr = benchmark(design)
+```
+
+:::
+
+:::
+
+## 2.4 Compare Learners
+
+Apply the `$aggregate()` function to the `mlr3` benchmark object and compare the ranks of both algorithms on all tasks.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+aggr = bmr$aggregate()
+aggr = aggr %>%
+  mutate(learner_id = replace(learner_id, learner_id == "encode.classif.ranger", "ranger")) %>%
+  mutate(learner_id = replace(learner_id, learner_id == "encode.classif.rpart", "rpart"))
+
+ranktable_wide_rpart_ranger = aggr %>%
+  group_by(task_id) %>%
+  mutate(rank_on_task = rank(classif.ce)) %>%
+  mutate(ce_rank = rank_on_task) %>%
+  select(c(task_id, learner_id, ce_rank)) %>%
+  pivot_wider(names_from = learner_id, values_from = ce_rank)
+
+ranktable_wide_rpart_ranger
+```
+
+:::
+
+:::
+
+## 2.5 Wilcoxon test
+
+Run the Wilcoxon signed rank test using the ranks you computed. You can use `qsignrank(p = 0.05 / 2, n = M)` to compute the critical value for the lower tail of the two-sided test for a 5% significance level.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+# Test Statistic
+r_plus = sum(as.numeric(ranktable_wide_rpart_ranger$rpart == 1))
+r_minus = sum(as.numeric(ranktable_wide_rpart_ranger$rpart == 2))
+M = nrow(ranktable_wide_rpart_ranger)
+wilcoxon = (min(r_plus, r_minus) - ((1 / 4) * M * (M + 1))) / sqrt((1 / 24) * M * (M + 1) * (2 * M + 1)) 
+# Critical value for the lower tail
+lower_crit <- qsignrank(p = 0.05 / 2, n = M)
+# Perform test
+wilcoxon < lower_crit
+# We reject H0
+```
+
+:::
+
+:::
+
+# 3 Multiple Algorithms on Multiple Data Sets
+
+## 3.1 Benchmark learners
+
+Let us now compare more algorithms on each task. Rerun the benchmark with the learners "classif.featureless", "classif.cv_glmnet", "classif.rpart", "classif.ranger", "classif.kknn", and "classif.svm". As before, use one-hot encodings.
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+learners = lapply(c("classif.featureless",  "classif.cv_glmnet", "classif.rpart", "classif.ranger", "classif.kknn", "classif.svm"), lrn)
+poe = po("encode", method = "one-hot")
+learners = lapply(learners, FUN = function(x) {po("encode") %>>% x})
+
+resampling = rsmp("cv", folds = 3)
+design = benchmark_grid(tasklist, learners, resampling)
+
+bmr = benchmark(design)
+
+aggr = bmr$aggregate()
+aggr = aggr %>%
+  mutate(learner_id = replace(learner_id, learner_id == "encode.classif.featureless", "featureless")) %>%
+  mutate(learner_id = replace(learner_id, learner_id == "encode.classif.ranger", "ranger")) %>%
+  mutate(learner_id = replace(learner_id, learner_id == "encode.classif.kknn", "kknn")) %>%
+  mutate(learner_id = replace(learner_id, learner_id == "encode.classif.rpart", "rpart")) %>%
+  mutate(learner_id = replace(learner_id, learner_id == "encode.classif.svm", "svm")) %>%
+  mutate(learner_id = replace(learner_id, learner_id == "encode.classif.cv_glmnet", "cv_glmnet"))
+```
+
+:::
+
+:::
+
+## 3.2 Friedman test
+
+Given multiple algorithms on multiple data sets, we have to use an omnibus test such as the Friedman test. Compute a rank table that tells you the rank of each algorithm for each task. Then, compute the average rank of each algorithm and proceed with the computation of the Friedman statistic.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+ranktable = aggr %>%
+  group_by(task_id) %>%
+  mutate(rank_on_task = rank(classif.ce)) %>%
+  mutate(ce_rank = paste(round(classif.ce, 4), " (", rank_on_task, ")", sep =  ""))
+
+averageranks = ranktable %>%
+  group_by(learner_id) %>%
+  summarize(average_rank_on_task = mean(rank_on_task))
+
+meanrank = (1 / nrow(ranktable)) * sum(ranktable$rank_on_task)
+
+sstotal = length(tasklist) *
+  sum((averageranks$average_rank_on_task- meanrank)^2)
+
+sserror = (1 / (length(tasklist) * (length(learners) - 1))) * sum((ranktable$rank_on_task - meanrank)^2)
+
+friedmanstat = sstotal / sserror
+friedmanstat
+```
+
+:::
+
+:::
+
+## 3.3 Friedman test (stats)
+
+Run a sanity check with the `friedman.test` function implemented in the `stats` package.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+ce_table_wide = ranktable %>%
+  select(c(task_id, learner_id, classif.ce)) %>%
+  pivot_wider(names_from = learner_id, values_from = classif.ce) %>%
+  ungroup() %>%
+  select(-task_id) %>%
+  as.matrix()
+ce_table_wide
+
+friedman.test(ce_table_wide)
+```
+
+:::
+
+:::
+
+## 3.4 Nemenyi test
+
+As the Friedman test indicates that at least one algorithm performs differently, we can run pairwise comparisons with post-hoc tests such as the Nemenyi or Bonferroni-Dunn test.
+
+Use the function `frdAllPairsNemenyiTest` from the `PMCMRplus` package to run all pairwise Nemenyi tests.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+rownames(ce_table_wide) = LETTERS[1:nrow(ce_table_wide)]
+nemenyi_test = frdAllPairsNemenyiTest(y = ce_table_wide)
+nemenyi_test$statistic
+nemenyi_test$p.value
+```
+
+:::
+
+:::
+
+## 3.5 Compute critical difference
+
+Manually compute the critical difference for rpart and ranger.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Use the `qtukey` function.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+mean_diff_rpart_ranger = averageranks[averageranks$learner_id == "rpart", 2] - averageranks[averageranks$learner_id == "ranger", 2]
+# # critical mean rank difference
+crit_value_mean_rank_diff = (qtukey(p = 0.05, df = Inf, nmeans = 6, lower.tail = FALSE) / sqrt(2)) * (sqrt((6 * (6 + 1)) / (6 * 20)))
+
+mean_diff_rpart_ranger > crit_value_mean_rank_diff
+# reject H_0!
+```
+
+:::
+
+:::
+
+## 3.6 Bonferroni-Dunn test
+
+Manually compare `rpart` and `ranger` with the Bonferroni-Dunn test. 
+
+<details>
+<summary>**Hint 1:**</summary>
+
+The probability of observing the test statistic under the null hypothesis is given by `pnorm(..., 0, 1, lower.tail = FALSE)`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+# bonferroni dunn test
+dunn_stat = (abs(mean_diff_rpart_ranger$average_rank_on_task) / sqrt((6 * 7) / 6 * 20))
+# prob of observing dunn statistic under h0:
+pnorm(dunn_stat, 0, 1, lower.tail = FALSE)
+# do not reject H_0
+```
+
+:::
+
+:::
+
+## 3.7 Criticial difference plot
+
+Interestingly, both tests differ in this case. The Nemenyi test lets us reject the null, while the Bonferroni-Dunn test does not let us reject the null. Next, compute a critical difference plot with `mlr3`.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+# Sanity check with mlr3
+benchmark_aggr = as_benchmark_aggr(bmr, measures = msr("classif.ce"))
+benchmark_aggr$friedman_test()
+cd_plot = autoplot(benchmark_aggr, type = "cd", meas = "ce", minimize = TRUE)
+cd_plot
+```
+
+:::
+
+:::
