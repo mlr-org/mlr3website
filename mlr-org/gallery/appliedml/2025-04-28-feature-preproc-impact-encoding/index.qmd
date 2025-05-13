@@ -1,0 +1,271 @@
+---
+title: Impact of Encoding
+categories:
+  - hyperparameter optimization
+  - xgboost
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Construct pipelines for benchmark experiments on kc_housing set.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+Apply what you have learned about using pipelines for efficient pre-processing and model training on a regression problem.
+
+# House Prices in King county
+
+In this exercise, we want to model house sale prices in King county in the state of Washington, USA. 
+
+```{r}
+set.seed(124)
+library(mlr3verse)
+library("mlr3tuningspaces")
+data("kc_housing", package = "mlr3data")
+```
+
+We do some simple feature pre-processing first:
+
+```{r}
+# Transform time to numeric variable:
+library(anytime)
+dates = anytime(kc_housing$date)
+kc_housing$date = as.numeric(difftime(dates, min(dates), units = "days"))
+# Scale prices:
+kc_housing$price = kc_housing$price / 1000
+# For this task, delete columns containing NAs:
+kc_housing[,c(13, 15)] = NULL
+# Create factor columns:
+kc_housing[,c(8, 14)] = lapply(c(8, 14), function(x) {as.factor(kc_housing[,x])})
+# Get an overview:
+str(kc_housing)
+```
+
+# Train-test Split
+
+Before we train a model, let's reserve some data for evaluating our model later on:
+
+```{r}
+task = as_task_regr(kc_housing, target = "price")
+split = partition(task, ratio = 0.6)
+
+tasktrain = task$clone()
+tasktrain$filter(split$train)
+tasktrain
+
+tasktest = task$clone()
+tasktest$filter(split$test)
+tasktest
+```
+
+# XGBoost
+
+XGBoost ([Chen and Guestrin, 2016](https://dl.acm.org/doi/10.1145/2939672.2939785) is a highly performant library for gradient-boosted trees. As some other ML learners, it cannot handle categorical data, so categorical features must be encoded as numerical variables. In the King county data, there are two categorical features encoded as `factor`:
+
+```{r}
+ft = task$feature_types
+ft[ft[[2]] == "factor"]
+```
+
+Categorical features can be grouped by their cardinality, which refers to the number of levels they contain: binary features (two levels), low-cardinality features, and high-cardinality features; there is no universal threshold for when a feature should be considered high-cardinality and this threshold can even be tuned. Low-cardinality features can be handled by one-hot encoding. One-hot encoding is a process of converting categorical features into a binary representation, where each possible category is represented as a separate binary feature. Theoretically, it is sufficient to create one less binary feature than levels. This is typically called dummy or treatment encoding and is required if the learner is a generalized linear model (GLM) or additive model (GAM). For now, let's check the cardinality of `waterfront` and `zipcode`:
+
+```{r}
+lengths(task$levels())
+```
+
+Obviously, `waterfront` is a low-cardinality feature suitable for dummy (also called treatment) encoding and `zipcode` is a very high-cardinality feature. Some learners support handling categorical features but may still crash for high-cardinality features if they internally apply encodings that are only suitable for low-cardinality features, such as one-hot encoding. 
+
+# Impact encoding
+
+Impact encoding ([Micci-Barreca 2001](https://dl.acm.org/doi/10.1145/507533.507538)) is a good approach for handling high-cardinality features. Impact encoding converts categorical features into numeric values. The idea behind impact encoding is to use the target feature to create a mapping between the categorical feature and a numerical value that reflects its importance in predicting the target feature. Impact encoding involves the following steps:
+
+1. Group the target variable by the categorical feature.
+2. Compute the mean of the target variable for each group.
+3. Compute the global mean of the target variable.
+4. Compute the impact score for each group as the difference between the mean of the target variable for the group and the global mean of the target variable.
+5. Replace the categorical feature with the impact scores.
+
+Impact encoding preserves the information of the categorical feature while also creating a numerical representation that reflects its importance in predicting the target. Compared to one-hot encoding, the main advantage is that only a single numeric feature is created regardless of the number of levels of the categorical features, hence it is especially useful for high-cardinality features. As information from the target is used to compute the impact scores, the encoding process must be embedded in cross-validation to avoid leakage between training and testing data.
+
+# Exercises
+
+## Exercise 1: Create a pipeline
+
+Create a pipeline that pre-processes each factor variable with impact encoding. The pipeline should run an `autotuner` that automatically conducts hyperparameter optimization (HPO) with an XGBoost learner that learns on the pre-processed features using random search and MSE as performance measure. You can use CV with a suitable number of folds for the resampling stragegy. For the search space, you can use `lts("regr.xgboost.default")` from the `mlr3tuningspaces` package. This constructs a search space customized for Xgboost based on theoretically and empirically validated considerations on which variables to tune or not. However, you should set the parameter `nrounds = 100` for speed reasons. Further, set `nthread = parallel::detectCores()` to prepare multi-core computing later on.
+
+
+<details>
+  <summary>**Hint 1:**</summary>
+  
+The pipeline must be embedded in the `autotuner`: the learner supplied to the `autotuner` must include the feature preprocessing and the XGboost learner.
+
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+  
+```{r, eval = FALSE}
+# Create xgboost learner:
+xgb = lrn(...)
+
+# Set search space from mlr3tuningspaces:
+xgb_ts = ...
+
+# Set nrounds and nthread:
+xgb_ts$... = ....
+xgb_ts$... = ....
+
+# Combine xgb_ts with impact encoding:
+xgb_ts_impact = as_learner(...)
+
+# Use random search:
+tuner = tnr(...)
+
+#Autotuner pipeline component:
+at = auto_tuner(
+  tuner = ...,
+  learner = ...,
+  search_space = ...,
+  resampling = ...,
+  measure = ...,
+  term_time = ...) # Maximum allowed time in seconds.
+
+# Combine pipeline:
+glrn_xgb_impact = as_learner(...)
+glrn_xgb_impact$id = "XGB_enc_impact"
+```
+
+</details>
+
+```{r, eval = !params$showsolution, echo = FALSE, results='asis'}
+cat("<!--")
+```
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+# Create xgboost learner 
+xgb = lrn("regr.xgboost")
+as.data.table(xgb$param_set$values)
+
+# Set search space from mlr3tuningspaces
+xgb_ts = lts(xgb)
+as.data.table(xgb_ts$param_set$values)
+
+# Set nrounds and nthread:
+xgb_ts$param_set$values$nrounds = 100
+xgb_ts$param_set$values$nthread = parallel::detectCores()
+
+# Combine xgb_ts with impact encoding
+xgb_ts_impact = as_learner(po("encodeimpact") %>>% xgb_ts)
+as.data.table(xgb_ts_impact$param_set$values)
+
+# Use random search:
+tuner = tnr("random_search")
+
+# Create auto-tuned xgboost
+auto_xgb_impact = auto_tuner(
+  tuner = tuner,
+  learner = xgb_ts_impact,
+  resampling = rsmp("cv", folds = 2),
+  measure = msr("regr.mse"),
+  term_time = 20
+)
+```
+
+
+:::
+
+:::
+
+## Exercise 2: Benchmark a pipeline
+
+Benchmark your impact encoding pipeline from the previous task against a simple one-hot encoding pipeline that uses one-hot encoding for all factor variables. Use the same `autotuner` setup as element for both. Use two-fold CV as resampling strategy for the benchmark. Afterwards, evaluate the benchmark with MSE. Finally, assess the performance via the "untouched test set principle" by training both autotuners on `tasktrain` and evaluate their performance on `tasktest`.
+
+
+<details>
+  <summary>**Hint 1:**</summary>
+  
+To conduct the benchmark, use `benchmark(benchmark_grid(...))`.
+
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+  
+To conduct performance evaluation, use `$aggregate()` on the benchmark object.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution, results = 'hide'}
+# Pipeline for One-Hot Encoding only:
+auto_xgb_oh = auto_tuner(
+  tuner = tuner,
+  learner = as_learner(po("encode") %>>% xgb_ts),
+  resampling = rsmp("cv", folds = 2),
+  measure = msr("regr.mse"),
+  term_time = 20
+)
+
+# Resampling design for benchmark:
+rsmp_cv2 = rsmp("cv", folds = 2)
+rsmp_cv2$instantiate(tasktrain)
+
+# Conduct benchmark:
+lgr::get_logger("mlr3")$set_threshold("warn")
+bmr = benchmark(benchmark_grid(tasktrain, c(auto_xgb_oh, auto_xgb_impact), rsmp_cv2))
+```
+
+```{r, eval = params$showsolution}
+# Aggregate results:
+bmr$aggregate(measure = msr("regr.mse"))[, .(learner_id, regr.mse)]
+```
+
+```{r, eval = params$showsolution, results = 'hide'}
+auto_xgb_oh$train(tasktrain)
+auto_xgb_impact$train(tasktrain)
+```
+
+```{r, eval = params$showsolution}
+auto_xgb_oh$predict(tasktest)$score()
+auto_xgb_impact$predict(tasktest)$score()
+```
+
+
+:::
+
+:::
+
+# Summary
+
+We learned how to apply pre-processing steps together with tuning to construct refined pipelines for benchmark experiments.
+

@@ -29,7 +29,7 @@ content = as.data.table(mlr3::mlr_resamplings)[, .(key, label, iters)]
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3website::ref(sprintf("%s_%s", "mlr_resamplings", value), text = value, format = "htmltools")
+  #mlr3website::ref(sprintf("%s_%s", "mlr_resamplings", value), text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(
