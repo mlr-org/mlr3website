@@ -9,7 +9,7 @@ author:
   - name: Essential Data Science Training GmbH
     url: https://www.essentialds.de
 description: |
-  Create a pipeline to do feature preprocessing (one-hot-encoding, Box-Cox transformation) for the german credit task.
+  Create a pipeline to do feature preprocessing (one-hot-encoding, Yeo-Johnson transformation) for the german credit task.
 date: ""
 params:
   showsolution: true
@@ -217,11 +217,11 @@ The structure of a decision tree is insensitive to monotonic transformations of 
 This means that although the scaled features are different to non-scaled features, the decision tree will have the same structure (the values of the split points for numeric feature might be different as the numeric features will have a different scale, but the structure of the decision tree will stay the same).
 
 ## 3.1 Preprocessing
-Use the `PipeOp` to scale all numeric features from the `german_credit` task and create a preprocessed task the scaled numeric features. Do this for standard scaling (i.e. normalization by centering and scaling) and for box-cox transformation. You can look up the corresponding keys by inspecting the table `as.data.table(mlr_pipeops)[,1:2]`. Create the preprocessed tasks `task_scaled` and `task_boxcox` and check the values of the numeric features. You may have to first install the `bestNormalize` package for the boxcox transformation.
+Use the `PipeOp` to scale all numeric features from the `german_credit` task and create a preprocessed task the scaled numeric features. Do this for standard scaling (i.e., normalization by centering and scaling) and for Yeo-Johnson transformation (i.e., a power transformation to make data more Gaussian-like). You can look up the corresponding keys by inspecting the table `as.data.table(mlr_pipeops)[,1:2]`. Create the preprocessed tasks `task_scaled` and `task_yeojohnson` and check the values of the numeric features. You may have to first install the `bestNormalize` package for the Yeo-Johnson transformation.
 
 <details>
   <summary>**Hint:**</summary>
-  Proceed as in Exercise 1, but use `scale` and `boxcox` instead of `encode` as keys in the `po()` function. If installing the `bestNormalize` package does not work, you can also select a different scaling approach such as `scalemaxabs` or `scalerange`.
+  Proceed as in Exercise 1, but use `scale` and `yeojohnson` instead of `encode` as keys in the `po()` function. If installing the `bestNormalize` package does not work, you can also select a different scaling approach such as `scalemaxabs` or `scalerange`. Yeo-Johnson transformation is a generalization of the Box-Cox transformation that can be applied to both positive and negative values, while Box-Cox transformation is only applicable to non-negative values.
 </details>
 
 
@@ -234,14 +234,14 @@ Use the `PipeOp` to scale all numeric features from the `german_credit` task and
 ```{r, eval = params$showsolution}
 library(mlr3pipelines)
 pos = po("scale")
-pobc = po("boxcox")
+poyj = po("yeojohnson")
 
 task_scaled = pos$train(list(task))$output
-task_boxcox = pobc$train(list(task))$output
+task_yeojohnson = poyj$train(list(task))$output
 
 numfeat = task$feature_types$id[task$feature_types$type == "integer"]
 task_scaled$data(cols = numfeat)
-task_boxcox$data(cols = numfeat)
+task_yeojohnson$data(cols = numfeat)
 ```
 
 :::
@@ -249,12 +249,12 @@ task_boxcox$data(cols = numfeat)
 :::
 
 ## 3.2 Visual Comparison
-Create two ML pipelines, one that combines the `classif.rpart` learner with the standard scaling and another one that combines `classif.rpart` learner with the boxcox scaling. Then use the `classif.rpart` learner and the two ML pipelines on the `german_credit` task to fit 3 different decision trees (one trained on the raw task and the other two trained on the scaled and box-cox transformed task). Visualize the decision tree structure using the `rpart.plot` function from the `rpart.plot` package.
+Create two ML pipelines, one that combines the `classif.rpart` learner with the standard scaling and another one that combines `classif.rpart` learner with the Yeo-Johnson scaling. Then use the `classif.rpart` learner and the two ML pipelines on the `german_credit` task to fit 3 different decision trees (one trained on the raw task and the other two trained on the scaled and Yeo-Johnson transformed task). Visualize the decision tree structure using the `rpart.plot` function from the `rpart.plot` package.
 
 
 <details>
   <summary>**Hint:**</summary>
-  Proceed as in Exercise 2 to create two `GraphLearner`s, one with `po("scale")` and the other one with `po("boxcox")`. Then, train the `classif.rpart` learner and the two `GraphLearner`s on the `german_credit` task. Apply the `rpart.plot` function to the trained model objects to compare the structure of the decision trees.
+  Proceed as in Exercise 2 to create two `GraphLearner`s, one with `po("scale")` and the other one with `po("yeojohnson")`. Then, train the `classif.rpart` learner and the two `GraphLearner`s on the `german_credit` task. Apply the `rpart.plot` function to the trained model objects to compare the structure of the decision trees.
   Note: While for the `classif.rpart` learner, the model object is directly contained in the `$model` slot of the learner after training, the `$model` slot of the two `GraphLearners` is a list and you have to access the trained model via `$model$classif.rpart$model`.
 </details>
 
@@ -273,16 +273,16 @@ library(mlr3learners)
 library(xgboost)
 rp = lrn("classif.rpart")
 rpscale = as_learner(pos %>>% rp)
-rpboxcox = as_learner(pobc %>>% rp)
+rpyeojohnson = as_learner(poyj %>>% rp)
 
 rp$train(task)
 rpscale$train(task)
-rpboxcox$train(task)
+rpyeojohnson$train(task)
 
 library(rpart.plot)
 rpart.plot(rp$model)
 rpart.plot(rpscale$model$classif.rpart$model)
-rpart.plot(rpboxcox$model$classif.rpart$model)
+rpart.plot(rpyeojohnson$model$classif.rpart$model)
 ```
 
 ```{r, eval = FALSE}
@@ -296,7 +296,7 @@ rpart.plot(rp$model)
 rp$train(task_scaled)
 rpart.plot(rp$model)
 
-rp$train(task_boxcox)
+rp$train(task_yeojohnson)
 rpart.plot(rp$model)
 ```
 
@@ -305,7 +305,7 @@ rpart.plot(rp$model)
 :::
 
 
-# 4 Benchmark k-NN and Decison Tree with Scaling and Box-Cox Transformation
+# 4 Benchmark k-NN and Decison Tree with Scaling and Yeo-Johnson Transformation
 
 In the previous exercise we saw that scaling does not affect a decision tree structure.
 That is scaling numeric features of a decision tree will not have any (strong) effect on the performance.
@@ -313,7 +313,7 @@ However, for some learners, scaling numeric features is important, especially if
 
 In this exercise we want to conduct a benchmark that illustrates these claims.
 Consider the k-NN learner without scaling `lrn("classif.kknn", scale = FALSE)` and the decision tree `lrn("classif.rpart")`.
-Combine these two learners once with `po("scale")` (for normalization, i.e., substracting the mean and dividing by the standard deviation) and once with `po("boxcox")` for box-cox transformation of the numeric features.
+Combine these two learners once with `po("scale")` (for normalization, i.e., subtracting the mean and dividing by the standard deviation) and once with `po("yeojohnson")` for Yeo-Johnson transformation of the numeric features.
 Then, setup a benchmark to compare their performance (including the non-scaled k-NN `lrn("classif.kknn", scale = FALSE)` and decision tree `lrn("classif.rpart")`) using 10-fold cross-validation.
 In total, you will benchmark 6 learners, the 4 ML pipelines and the 2 learners. 
 For reproducibility, use the seed `set.seed(2023)`.
@@ -329,7 +329,7 @@ set.seed(2023)
 lrns = list(
   lrn("classif.kknn", scale = FALSE),
   po("scale") %>>% ...,
-  po("boxcox") %>>% ..,
+  po("yeojohnson") %>>% ..,
   lrn("classif.rpart"),
   ... %>>% lrn(...),
   ... %>>% ...
@@ -353,16 +353,16 @@ autoplot(bmr)
 ```{r, eval = params$showsolution}
 library(mlr3pipelines)
 pos = po("scale")
-pobc = po("boxcox")
+poyj = po("yeojohnson")
 
 set.seed(2023)
 lrns = list(
   lrn("classif.kknn", scale = FALSE),
   pos %>>% lrn("classif.kknn", scale = FALSE),
-  pobc %>>% lrn("classif.kknn", scale = FALSE),
+  poyj %>>% lrn("classif.kknn", scale = FALSE),
   lrn("classif.rpart"),
   pos %>>% lrn("classif.rpart"),
-  pobc %>>% lrn("classif.rpart")
+  poyj %>>% lrn("classif.rpart")
 )
 
 cv = rsmp("cv", folds = 10)
@@ -379,5 +379,5 @@ autoplot(bmr)
 
 # Summary
 
-We learned how to apply preprocessing steps such as factor encoding or scaling directly on a task. Furthermore, we have also seen how to create a `GraphLearner` which applies a ML pipeline on a task that first does all preprocessing steps defined in the `Graph` and then trains a learner on the preprocessed task.
+We learned how to apply preprocessing steps such as factor encoding, standard scaling, or Yeo-Johnson transformation directly on a task. Furthermore, we have also seen how to create a `GraphLearner` which applies a ML pipeline on a task that first does all preprocessing steps defined in the `Graph` and then trains a learner on the preprocessed task.
 We also saw that scaling is important for the k-NN learner but not for a decision tree as neither the decision tree structure nor the performance of the decision tree changes.
