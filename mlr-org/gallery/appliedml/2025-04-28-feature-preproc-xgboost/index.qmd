@@ -74,7 +74,7 @@ Make sure that that you have installed the `xgboost` R package.
 <summary>**Details on iterations:**</summary>
 
 The number of iterations must always be chosen by the user, since 
-the hyperparameter has no proper default value in mlr3.
+the hyperparameter has no proper default value in `mlr3`.
 
 "No proper default value" means that `mlr3` has an adjusted default 
 of 1 iteration to avoid errors when constructing the learner. 
