@@ -88,10 +88,8 @@ create_table = function(data) {
 # Scope
 
 This report analyzes the runtime and memory usage of the `mlr3fselect` package across different versions.
-The benchmarks include `fselect()` and `fselect_nested()` both in sequential and parallel mode.
-
+The benchmarks include the `fselect()` and `fselect_nested()` functions both in sequential and parallel mode.
 The benchmarks vary the training time of the models and the size of the dataset.
-Additionally, the experiments are conducted in parallel to assess the impact of parallelization on both runtime and memory usage.
 
 Given the extensive package ecosystem of mlr3, performance bottlenecks can occur at multiple stages.
 This report aims to help users determine whether the runtime of their workflows falls within expected ranges.
@@ -100,23 +98,28 @@ If significant runtime or memory anomalies are observed, users are encouraged to
 Benchmarks are conducted on a high-performance cluster optimized for multi-core performance rather than single-core speed.
 Consequently, runtimes may be faster on a local machine.
 
-
 # Summary of Latest mlr3fselect Version
 
-The benchmarks are comprehensive; therefore, we present a summary of the results for the latest mlr3fselect version.
-The overhead introduced by `fselect` should always be considered relative to the training time of the models.
+The benchmarks are comprehensive; therefore, we present a summary of the results for the latest `mlr3fselect` version.
+The overhead introduced by `fselect()` and `fselect_nested()` should always be considered relative to the training time of the models.
 For models with longer training times, such as 1 second, the overhead is minimal.
 For models with a training time of 100 ms, the overhead is approximately 20%.
 For models with a training time of 10 ms, the overhead approximately doubles or triples the runtime.
-In cases where the training time is only 1 ms, the overhead results in the runtime being 16 times larger than the actual model training time.
+In cases where the training time is only 1 ms, the overhead results in the runtime being 16 to 20 times larger than the actual model training time.
 Running an empty R session consumes 131 MB of memory.
 
-mlr3fselect utilizes the `future` package to enable parallelization over resampling iterations.
-However, running `fselect()` in parallel introduces overhead due to the initiation of worker processes.
+`mlr3fselect` utilizes the `future` package to enable parallelization over resampling iterations.
+However, running `fselect()` and `fselect_nested()` in parallel introduces overhead due to the initiation of worker processes.
 Therefore, we compare the runtime of parallel execution with that of sequential execution.
-For all models parallel execution is faster than sequential execution.
+For models with a 1-second, 100 ms, and 10 ms training time, using `fselect()`  in parallel reduces runtime.
+For models 1 ms training times, sequential execution becomes slower than parallel execution.
+Memory usage increases significantly with the number of cores since each core initiates a separate R session.
+Utilizing 10 cores results in a total memory usage of around 1.8 GB.
+The `fselect_nested()` functions parallelize over the outer resampling loop.
+For all training times, the parallel version is faster than the sequential version.
+The memory usage is around 3.3 GB.
 
-# fselect {#fselect}
+# Feature Selection {#fselect}
 
 ```{r}
 #| include: false
@@ -202,7 +205,7 @@ fselect(
 plot_memory(data_memory[task == "data_1000"])
 ```
 
-# fselect Parallel {#fselect-parallel}
+# Feature Selection in Parallel {#fselect-parallel}
 
 ```{r}
 #| include: false
@@ -371,9 +374,7 @@ fselect(
 plot_memory(data_memory[task == "data_1000"])
 ```
 
-# fselected nested {#fselect-nested}
-
-1000 evals are missing!
+# Nested Feature Selection {#fselect-nested}
 
 ```{r}
 #| include: false
@@ -390,7 +391,7 @@ setorderv(data_runtime, c("task", "model_time", "mlr3fselect"), order = c(1, 1, 
 data_runtime = data_runtime[, -c("renv_project")]
 data_runtime[, median_runtime := median_runtime / 1000]
 data_runtime[, mad_runtime := mad_runtime / 1000]
-data_runtime[, total_model_time := model_time]
+data_runtime[, total_model_time := model_time * 10]
 
 data_runtime = merge(data_runtime, data_memory, by = c("task", "mlr3fselect", "bbotk", "mlr3", "paradox"), sort = FALSE)
 
@@ -519,7 +520,7 @@ fselect_nested(
 plot_memory(data_memory[task == "data_1000"])
 ```
 
-# fselect nested Parallel {#fselect-parallel}
+# Nested Feature Selection in Parallel {#fselect-nested-parallel}
 
 ```{r}
 #| include: false
@@ -536,7 +537,7 @@ setorderv(data_runtime, c("task", "model_time", "mlr3fselect"), order = c(1, 1, 
 data_runtime = data_runtime[, -c("renv_project")]
 data_runtime[, median_runtime := median_runtime / 1000]
 data_runtime[, mad_runtime := mad_runtime / 1000]
-data_runtime[, total_model_time := model_time]
+data_runtime[, total_model_time := model_time * 10]
 
 data_runtime = merge(data_runtime, data_memory, by = c("task", "mlr3fselect", "bbotk", "mlr3", "paradox"), sort = FALSE)
 
@@ -553,35 +554,14 @@ data_runtime_2 = data_runtime_2[, c("task",  "mlr3fselect", "bbotk", "mlr3", "pa
 setnames(data_runtime_2, "median_runtime", "median_runtime_sequential")
 data_runtime = merge(data_runtime, data_runtime_2, by = c("task",  "mlr3fselect", "bbotk", "mlr3", "paradox", "model_time"), sort = FALSE)
 
-plot_runtime = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_runtime)) +
-  geom_col(group = 1, fill = "#008080") +
-  geom_errorbar(aes(ymin = pmax(median_runtime - mad_runtime, 0), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
-  geom_hline(aes(yintercept = total_model_time), linetype = "dashed") +
-  labs(x = "mlr3Version", y = "Runtime [s]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-plot_memory = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_memory)) +
-  geom_col(group = 1, fill = "#ff6347") +
-  geom_errorbar(aes(ymin = median_memory - mad_memory, ymax = median_memory + mad_memory), width = 0.5, position = position_dodge(0.9)) +
-  geom_hline(aes(yintercept = 131), linetype = "dashed") +
-  #facet_wrap(~scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
-  labs(x = "mlr3 Version", y = "Memory [MB]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
 create_table = function(data) {
   data = data[, -c("mad_memory", "mad_runtime")]
 
   data_1000 = data[task == "data_1000", -"task"]
-  data_10000 = data[task == "data_10000", -c("task", "k", "total_model_time")]
+  data_10000 = data[task == "data_10000", -c("task", "k", "total_model_time", "median_runtime_sequential")]
   data = merge(data_1000, data_10000, by = c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time"), suffixes = c("", "_10000"))
 
-  setcolorder(data, c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time", "total_model_time", "median_runtime", "median_runtime_10000", "k", "median_memory", "median_memory_10000"))
+  setcolorder(data, c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time", "total_model_time", "median_runtime", "median_runtime_sequential", "median_runtime_10000", "k", "median_memory", "median_memory_10000"))
 
   data %>%
     gt() %>%
@@ -593,11 +573,12 @@ create_table = function(data) {
       model_time = "Model Time [ms]",
       total_model_time = "Total Model Time [s]",
       median_runtime = "Median Runtime [s]",
+      median_runtime_sequential = "Median Runtime Sequential [s]",
       median_runtime_10000 = "Median Runtime 10,000 [s]",
       k = "K",
       median_memory = "Median Memory [MB]",
       median_memory_10000 = "Median Memory 10,000 [s]") %>%
-    fmt_number(columns = c("k", "median_runtime", "median_runtime_10000"), n_sigfig = 2) %>%
+    fmt_number(columns = c("k", "median_runtime", "median_runtime_10000", "median_runtime_sequential"), n_sigfig = 2) %>%
     fmt_number(columns = c("median_memory", "median_memory_10000"), decimals = 0) %>%
     tab_style(
       style = list(
@@ -608,8 +589,37 @@ create_table = function(data) {
         columns = "k",
         rows = k > 3
       )
+    )  %>%
+    tab_style(
+      style = list(
+        cell_fill(color = "crimson"),
+        cell_text(weight = "bold")
+      ),
+      locations = cells_body(
+        columns = "median_runtime",
+        rows = median_runtime_sequential < median_runtime
+      )
     )
-  }
+}
+
+plot_runtime = function(data) {
+  ggplot(data, aes(x = mlr3fselect, y = median_runtime)) +
+  geom_col(group = 1, fill = "#008080") +
+  geom_errorbar(aes(ymin = pmax(0, median_runtime - mad_runtime), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
+  geom_hline(aes(yintercept = total_model_time / 10), linetype = "dashed") +
+  labs(x = "mlr3Version", y = "Runtime [s]") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+plot_memory = function(data) {
+  ggplot(data, aes(x = mlr3fselect, y = median_memory)) +
+  geom_col(group = 1, fill = "#ff6347") +
+  geom_errorbar(aes(ymin = median_memory - mad_memory, ymax = median_memory + mad_memory), width = 0.5, position = position_dodge(0.9)) +
+  labs(x = "mlr3 Version", y = "Memory [MB]") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
 ```
 
 The runtime and memory usage of the `fselect_nested()` function is measured for different mlr3fselect versions.
