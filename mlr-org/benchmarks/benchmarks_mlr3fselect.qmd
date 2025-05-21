@@ -142,8 +142,8 @@ data_runtime = merge(data_runtime, data_memory, by = c("task", "mlr3fselect", "b
 ```
 
 The runtime and memory usage of the `fselect()` function is measured for different mlr3fselect versions.
+A random search is used with a batch size of 1000.
 The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
-The random search evaluates 1000 feature subsets in total.
 
 ```{r}
 #| eval: false
@@ -309,9 +309,9 @@ data_runtime = merge(data_runtime, data_runtime_2, by = c("task",  "mlr3fselect"
 ```
 
 The runtime and memory usage of the `fselect()` function is measured for different mlr3fselect versions.
+A random search is used with a batch size of 1000.
 The feature selection is conducted in parallel on 10 cores with `future::multisession`.
 The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
-The random search evaluates 1000 feature subsets in total.
 
 ```{r}
 #| eval: false
@@ -455,8 +455,8 @@ create_table = function(data) {
 ```
 
 The runtime and memory usage of the `fselect_nested()` function is measured for different mlr3fselect versions.
+The outer resampling has 10 iterations and the inner random search evaluates 1000 feature subsets in total.
 The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
-The inner random search evaluates 1000 feature subsets in total.
 
 ```{r}
 #| eval: false
@@ -623,9 +623,9 @@ plot_memory = function(data) {
 ```
 
 The runtime and memory usage of the `fselect_nested()` function is measured for different mlr3fselect versions.
+The outer resampling has 10 iterations and the inner random search evaluates 1000 feature subsets in total.
 The outer resampling is run in parallel on 10 cores with `future::multisession`.
 The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
-The inner random search evaluates 1000 feature subsets in total.
 
 ```{r}
 #| eval: false
