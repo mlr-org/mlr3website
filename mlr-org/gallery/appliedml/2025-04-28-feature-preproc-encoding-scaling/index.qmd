@@ -1,0 +1,383 @@
+---
+title: Encoding and Scaling
+categories:
+  - feature preprocessing
+  - encoding
+  - scaling
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Create a pipeline to do feature preprocessing (one-hot-encoding, Yeo-Johnson transformation) for the german credit task.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+Learn how to do preprocessing steps directly on a mlr3 `Task` object and how to combine a preprocessing with a learner to create a simple linear ML pipeline that first applies the preprocessing and then trains a learner.
+
+# German Credit Data
+
+## Description
+
+- Data from 1973 to 1975 from a large regional bank in southern Germany classifying credits described by a set of attributes to good or bad credit risks.
+- Stratified sample of 1000 credits (300 bad ones and 700 good ones).
+- Customers with good credit risks perfectly complied with the conditions of the contract while customers with bad credit risks did not comply with the contract as required.
+- Available in `tsk("german_credit")`.
+
+## Data Dictionary
+
+n = 1,000 observations of credits
+
+- `credit_risk`: Has the credit contract been complied with (good) or not (bad)?
+- `age`: Age of debtor in years
+- `amount`: Credit amount in DM
+- `credit_history`: History of compliance with previous or concurrent credit contracts
+- `duration`: Credit duration in months
+- `employment_duration`: Duration of debtor's employment with current employer
+- `foreign_worker`: Whether the debtor is a foreign worker
+- `housing`: Type of housing the debtor lives in
+- `installment_rate`: Credit installments as a percentage of debtor's disposable income
+- `job`: Quality of debtor's job
+- `number_credits`: Number of credits including the current one the debtor has (or had) at this bank
+- `other_debtors`: Whether there is another debtor or a guarantor for the credit
+- `other_installment_plans`: Installment plans from providers other than the credit-giving bank
+- `people_liable`: Number of persons who financially depend on the debtor
+- `personal_status_sex`: Combined information on sex and marital status
+- `present_residence`: Length of time (in years) the debtor lives in the present residence
+- `property`: The debtor's most valuable property
+- `purpose`: Purpose for which the credit is needed
+- `savings`: Debtor's saving
+- `status`: Status of the debtor's checking account with the bank
+- `telephone`: Whether there is a telephone landline registered on the debtor's name
+
+```{r}
+library(mlr3)
+library(mlr3learners)
+library(xgboost)
+task = tsk("german_credit")
+```
+
+<details>
+  <summary>**Recap: mlr3 Tasks**</summary> 
+
+An `mlr3` `Task` encapsulates data with meta-information, such as the name of the target variable and the type of the learning problem (in our example this would be a **classification** task, where the target is a factor label with relatively few distinct values).
+
+```{r}
+task
+```
+
+We get a short summary of the task: It has 1000 observations and 21 columns of which 20 are features. 17 features are categorical (i.e., factors) and 3 features are integer.
+
+By using the `$data()` method, we get access to the data (in the form of a `data.table`):
+
+```{r}
+str(task$data())
+```
+
+Note that a `mlr3` `Task` object comes with plenty of functionality in the form of fields, methods and active bindings, see `?Task`, e.g., to get a summary of all feature names, you can use:
+
+```{r}
+task$feature_names
+```
+
+To obtain information about the types of features of the task (similarly like in the data dictionary above), we can inspect the active binding fields of the task object (see, `?Task`):
+
+```{r}
+task$feature_types
+```
+
+</details>
+
+# 1 Preprocess a Task (with One-Hot Encoding)
+
+Use the one-hot encoding `PipeOp` to convert all categorical features from the `german_credit` task into a preprocessed task containing 0-1 indicator variables for each category level instead of categorical features.
+
+
+<details>
+  <summary>**Hint 1:**</summary>
+  
+  Load the `mlr3pipelines` package and get an overview of possible `PipeOp` that can be used for different preprocessing steps by printing `mlr_pipeops` or the first two columns of the corresponding table `as.data.table(mlr_pipeops)[,1:2]`. Look for a **factor encoding** and pass the corresponding `key` for factor encoding to the `po()` function (see also the help page `?PipeOpEncode`). Then, use the `$train()` method of the `PipeOp` object which expects a **list** containing the task to be converted as input and produces a **list** containing the converted task.
+
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+  
+```{r, eval = FALSE}
+library(mlr3pipelines)
+# Create a PipeOp object that applies one-hot encoding
+poe = po(...) 
+# Apply a created PipeOp to e.g. preprocess an input
+encoded_task = poe$train(input = ...)$output
+str(...$data())
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3pipelines)
+poe = po("encode", method = "one-hot")
+# Use the $help() method to open a help page of any PipeOp object
+# poe$help()
+encoded_task = poe$train(input = list(task))$output
+str(encoded_task$data())
+```
+
+:::
+
+:::
+
+
+# 2 Create a Simple ML Pipeline (with One-Hot Encoding)
+
+Some learners cannot handle categorical features such as the the `xgboost` learner (which gives an error message when applied to a task containing categorical features):
+
+```{r, error=TRUE}
+library(mlr3verse)
+lrnxg = lrn("classif.xgboost")
+lrnxg$train(task)
+lrnxg$predict(task)
+```
+
+Combine the `xgboost` learner with a preprocessing step that applies one-hot encoding to create a ML pipeline that first converts all categorical features to 0-1 indicator variables and then applies the `xgboost` learner.
+Train the ML pipeline on the `german_credit` task and make predictions on the training data.
+
+<details>
+  <summary>**Hint 1:**</summary>
+  You can create a `Graph` that combines a `PipeOp` object with a learner object (or further `PipeOp` objects) by concatenating them using the `%>>%` operator. The `Graph` contains all information of a sequential ML pipeline.
+  Convert the `Graph` into a `GraphLearner` to be able to run the whole ML pipeline like a usual learner object with which we can train, predict, resample, and benchmark the `GraphLearner` as we have learned. See also the help page `?GraphLearner`.
+
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+  
+```{r, eval = FALSE}
+library(mlr3verse)
+lrnxg = lrn("classif.xgboost")
+poe = po(...)
+graph = ...
+
+glrn = as_learner(...) 
+...$train(...)
+...$predict(...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3verse)
+lrnxg = lrn("classif.xgboost")
+poe = po("encode", method = "one-hot")
+graph = poe %>>% lrnxg
+
+glrn = as_learner(graph) # Alternative: glrn = GraphLearner$new(graph) 
+glrn$train(task)
+glrn$predict(task)
+```
+
+:::
+
+:::
+
+
+# 3 Feature Transformation for Decision Trees
+
+The structure of a decision tree is insensitive to monotonic transformations of the features (and scaling is a monotonic transformation). 
+This means that although the scaled features are different to non-scaled features, the decision tree will have the same structure (the values of the split points for numeric feature might be different as the numeric features will have a different scale, but the structure of the decision tree will stay the same).
+
+## 3.1 Preprocessing
+Use the `PipeOp` to scale all numeric features from the `german_credit` task and create a preprocessed task the scaled numeric features. Do this for standard scaling (i.e., normalization by centering and scaling) and for Yeo-Johnson transformation (i.e., a power transformation to make data more Gaussian-like). You can look up the corresponding keys by inspecting the table `as.data.table(mlr_pipeops)[,1:2]`. Create the preprocessed tasks `task_scaled` and `task_yeojohnson` and check the values of the numeric features. You may have to first install the `bestNormalize` package for the Yeo-Johnson transformation.
+
+<details>
+  <summary>**Hint:**</summary>
+  Proceed as in Exercise 1, but use `scale` and `yeojohnson` instead of `encode` as keys in the `po()` function. If installing the `bestNormalize` package does not work, you can also select a different scaling approach such as `scalemaxabs` or `scalerange`. Yeo-Johnson transformation is a generalization of the Box-Cox transformation that can be applied to both positive and negative values, while Box-Cox transformation is only applicable to non-negative values.
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3pipelines)
+pos = po("scale")
+poyj = po("yeojohnson")
+
+task_scaled = pos$train(list(task))$output
+task_yeojohnson = poyj$train(list(task))$output
+
+numfeat = task$feature_types$id[task$feature_types$type == "integer"]
+task_scaled$data(cols = numfeat)
+task_yeojohnson$data(cols = numfeat)
+```
+
+:::
+
+:::
+
+## 3.2 Visual Comparison
+Create two ML pipelines, one that combines the `classif.rpart` learner with the standard scaling and another one that combines `classif.rpart` learner with the Yeo-Johnson scaling. Then use the `classif.rpart` learner and the two ML pipelines on the `german_credit` task to fit 3 different decision trees (one trained on the raw task and the other two trained on the scaled and Yeo-Johnson transformed task). Visualize the decision tree structure using the `rpart.plot` function from the `rpart.plot` package.
+
+
+<details>
+  <summary>**Hint:**</summary>
+  Proceed as in Exercise 2 to create two `GraphLearner`s, one with `po("scale")` and the other one with `po("yeojohnson")`. Then, train the `classif.rpart` learner and the two `GraphLearner`s on the `german_credit` task. Apply the `rpart.plot` function to the trained model objects to compare the structure of the decision trees.
+  Note: While for the `classif.rpart` learner, the model object is directly contained in the `$model` slot of the learner after training, the `$model` slot of the two `GraphLearners` is a list and you have to access the trained model via `$model$classif.rpart$model`.
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+The solution shows that the decision tree structure is exactly the same (although the split points of the numeric features such as `amount` and `duration` are different due to the transformed features):
+
+```{r, eval = params$showsolution}
+library(mlr3pipelines)
+library(mlr3learners)
+library(xgboost)
+rp = lrn("classif.rpart")
+rpscale = as_learner(pos %>>% rp)
+rpyeojohnson = as_learner(poyj %>>% rp)
+
+rp$train(task)
+rpscale$train(task)
+rpyeojohnson$train(task)
+
+library(rpart.plot)
+rpart.plot(rp$model)
+rpart.plot(rpscale$model$classif.rpart$model)
+rpart.plot(rpyeojohnson$model$classif.rpart$model)
+```
+
+```{r, eval = FALSE}
+# Alternative solution using the transformed tasks:
+rp = lrn("classif.rpart")
+
+library(rpart.plot)
+rp$train(task)
+rpart.plot(rp$model)
+
+rp$train(task_scaled)
+rpart.plot(rp$model)
+
+rp$train(task_yeojohnson)
+rpart.plot(rp$model)
+```
+
+:::
+
+:::
+
+
+# 4 Benchmark k-NN and Decison Tree with Scaling and Yeo-Johnson Transformation
+
+In the previous exercise we saw that scaling does not affect a decision tree structure.
+That is scaling numeric features of a decision tree will not have any (strong) effect on the performance.
+However, for some learners, scaling numeric features is important, especially if they are based on computing distances such as the k-NN learner (because scaling will convert all numeric features into a comparable scale).
+
+In this exercise we want to conduct a benchmark that illustrates these claims.
+Consider the k-NN learner without scaling `lrn("classif.kknn", scale = FALSE)` and the decision tree `lrn("classif.rpart")`.
+Combine these two learners once with `po("scale")` (for normalization, i.e., subtracting the mean and dividing by the standard deviation) and once with `po("yeojohnson")` for Yeo-Johnson transformation of the numeric features.
+Then, setup a benchmark to compare their performance (including the non-scaled k-NN `lrn("classif.kknn", scale = FALSE)` and decision tree `lrn("classif.rpart")`) using 10-fold cross-validation.
+In total, you will benchmark 6 learners, the 4 ML pipelines and the 2 learners. 
+For reproducibility, use the seed `set.seed(2023)`.
+
+
+<details>
+  <summary>**Hint:**</summary>
+
+```{r, eval = FALSE}
+library(mlr3pipelines)
+
+set.seed(2023)
+lrns = list(
+  lrn("classif.kknn", scale = FALSE),
+  po("scale") %>>% ...,
+  po("yeojohnson") %>>% ..,
+  lrn("classif.rpart"),
+  ... %>>% lrn(...),
+  ... %>>% ...
+)
+
+design = benchmark_grid(...)
+bmr = benchmark(...)
+bmr$aggregate()
+autoplot(bmr)
+```
+
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3pipelines)
+pos = po("scale")
+poyj = po("yeojohnson")
+
+set.seed(2023)
+lrns = list(
+  lrn("classif.kknn", scale = FALSE),
+  pos %>>% lrn("classif.kknn", scale = FALSE),
+  poyj %>>% lrn("classif.kknn", scale = FALSE),
+  lrn("classif.rpart"),
+  pos %>>% lrn("classif.rpart"),
+  poyj %>>% lrn("classif.rpart")
+)
+
+cv = rsmp("cv", folds = 10)
+design = benchmark_grid(list(task), lrns, cv)
+bmr = benchmark(design)
+bmr$aggregate()
+autoplot(bmr)
+```
+
+:::
+
+:::
+
+
+# Summary
+
+We learned how to apply preprocessing steps such as factor encoding, standard scaling, or Yeo-Johnson transformation directly on a task. Furthermore, we have also seen how to create a `GraphLearner` which applies a ML pipeline on a task that first does all preprocessing steps defined in the `Graph` and then trains a learner on the preprocessed task.
+We also saw that scaling is important for the k-NN learner but not for a decision tree as neither the decision tree structure nor the performance of the decision tree changes.

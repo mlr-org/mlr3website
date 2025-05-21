@@ -1,0 +1,410 @@
+---
+title: Advanced Resampling with Custom Measure Solution
+categories:
+  - resampling
+  - startified resampling
+  - grouping
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Use stratified resampling to evaluate the german credit set and blocking for BreastCancer set. Define custom measures in mlr3 and use them to evaluate a model on the mtcars task.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+After this exercise, you should be able to control the resampling process when using `mlr3` in order to account for data specificities, such as class imbalances in classification settings or grouping phenomena. Further, you will have learned how to construct and utilize custom measures for performance evaluation within `mlr3`.
+
+# Prerequisites
+
+We load the most important packages and use a fixed seed for reproducibility.
+
+```{r}
+library(mlr3verse)
+library(mlbench)
+library(data.table)
+set.seed(7832)
+```
+
+# 1 Stratified Resampling
+
+In classification tasks, the ratio of the target class distribution should be similar in each train/test split, which is achieved by stratification. This is particularly useful in the case of imbalanced classes and small data sets.
+
+Stratification can also be performed with respect to explanatory categorical variables to ensure that all subgroups are represented in all training and test sets.
+
+In `mlr3`, each `task` has a slot `$col_roles`.
+This slot shows general roles certain features will have throughout different stages of the machine learning process.
+At least, the `$col_roles` slot shows which variables will be used as `feature` and as `target`.
+However, the `$col_roles` slot can be more diverse and some variables might even serve multiple roles.
+For example, `task$col_roles$stratum` specify the variable used for stratification.
+In this exercise, we will illustrate this using the `german_credit` data:
+
+```{r}
+task_gc = tsk("german_credit")
+task_gc$col_roles
+```
+
+## 1.1 Set stratification variable
+
+Modify the `task_gc` object such that the target variable `credit_risk` is used to for stratification.
+
+<details>
+<summary>**Hint 1**</summary>
+```{r, eval = FALSE}
+task_gc$col_roles$... = "credit_risk"
+```
+</details>
+
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+task_gc$col_roles$stratum = "credit_risk"
+```
+
+After the specification of `task$col_roles$stratum`, the active binding `task$strata` will show the number of observations in each group and the corresponding row ids:
+
+```{r, eval = params$showsolution}
+task_gc$strata
+```
+
+:::
+
+:::
+
+## 1.2 Create resampling procedure
+
+Next, specify a 3-fold cross validation and instantiate the resampling on the task.
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+cv3 = rsmp("cv", folds = 3)
+cv3$instantiate(task_gc)
+cv3$instance
+```
+
+:::
+
+:::
+
+## 1.3 Sanity check
+
+As a sanity check, the target class distribution should be similar within each CV fold. Compute and check the target class distribution in form of a ratio within each fold.
+
+<details>
+<summary>**Hint 1**</summary>
+First, merge the data with the corresponding cv fold. Second, aggregate for each fold.
+</details>
+
+<details>
+<summary>**Hint 2**</summary>
+```{r, eval = FALSE}
+dt <- merge(cv3$..., transform(..., row_id = seq_len(...)), by = ...)
+aggregate(..., data = ..., FUN = function(x) ...)
+```
+</details>
+
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+With `base R`:
+
+```{r, eval = params$showsolution}
+dt <- merge(cv3$instance, transform(task_gc$data(), row_id = seq_len(nrow(task_gc$data()))), by = "row_id")
+aggregate(credit_risk ~ fold, data = dt, FUN = function(x) sum(x == "bad") / sum(x == "good"))
+with(dt, sum(credit_risk == "bad") / sum(credit_risk == "good"))
+```
+
+With `data.table`:
+
+```{r, eval = params$showsolution}
+dt = merge(cv3$instance, task_gc$data()[, row_id := .I], by = "row_id")
+dt[, .(class_ratio = sum(credit_risk == "bad") /
+  sum(credit_risk == "good")), by = fold]
+```
+
+Indeed, we can see that the target class is distributed similarly within each CV fold, matching the overall class distribution:
+
+```{r, eval = params$showsolution}
+dt[, .(class_ratio = sum(credit_risk == "bad") / sum(credit_risk == "good"))]
+```
+
+:::
+
+:::
+
+# 2 Block Resampling
+
+An additional concern when specifying resampling is respecting the natural grouping of the data. Blocking refers to the situation where subsets of observations belong together and must not be separated during resampling. Hence, for one train/test set pair the entire block is either in the training set or in the test set.
+
+In the following example, wel will consider the `BreastCancer` data set from the `mlbench` package:
+
+```{r}
+data(BreastCancer, package = "mlbench")
+task_bc = as_task_classif(BreastCancer, target = "Class", positive = "malignant")
+```
+
+In this data set, several observations have the same `Id` (sample code number), which implies these are samples taken from the same patient at different times.
+
+## 2.1 Count groups
+
+Let's count how many observation actually have the same `Id` more than once.
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+sum(table(BreastCancer$Id) > 1)
+```
+
+There are 46 `Id`s with more than one observation (row).
+
+:::
+
+:::
+
+The model trained on this data set will be used to predict cancer status of new patients. Hence, we have to make sure that each Id occurs exactly in one fold, so that all observations with the same Id should be either used for training or for evaluating the model. This way, we get less biased performance estimates via k-fold cross validation. This can be achieved by block cross validation.
+
+## 2.2 Set up block resampling
+
+Similarly to stratified resampling, block resampling uses `task$col_roles$group` to specify the name of a grouping variable included in the feature set. Now, set the column `Id` as grouping variable in the `task` object. 
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+task_bc$col_roles$group = "Id"
+```
+
+:::
+
+:::
+
+## 2.3 Instantiate resampling
+
+Next, set up a 5-fold CV and instantiate it on the task.
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+cv5 = rsmp("cv", folds = 5)
+cv5$instantiate(task_bc)
+cv5$instance
+```
+
+:::
+
+:::
+
+## 2.4 Sanity check
+
+If the specified blocking groups are respected, each `Id` appears only in exactly one fold. To inspect if blocking was successful when generating the folds, count how often each `Id` appears in a specific fold and print the `Id`s that appear in more than one fold.
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+With `base R`:
+```{r, eval = params$showsolution}
+dt <- aggregate(fold ~ Id,
+                 data = merge(task_bc$data(),
+                              cv5$instance,
+                              by.x = "Id",
+                              by.y = "row_id"),
+                 FUN = function(x) length(unique(x)))
+dt[dt$fold > 1,]
+```
+
+With `data.table`:
+```{r, eval = params$showsolution}
+dt = merge(task_bc$data(), cv5$instance, by.x = "Id", by.y = "row_id")
+dt = dt[, .(unique_folds = length(unique(fold))), by = Id]
+dt[unique_folds > 1, ]
+```
+
+:::
+
+:::
+
+As expected, the table is empty as there are no Id’s present in more than one fold.
+
+# 3 Custom Performance Measures
+
+Many domain applications require custom measures for performance evaluations not supported in `mlr3`. You can inspect all available measures by calling `as.data.table(mlr_measures)`. Luckily, you can design your own measures for evaluating model performance. To do so, we simply create a new `R6` class that inherits either from `MeasureRegr` (for a regression measure) or `MeasureClassif` (for a classification measure). Let's see how this works in practice. Let us consider a regression measure that scores a prediction as 1 if the difference between the true and predicted values is less than one standard deviation of the truth, or scores the prediction as 0 otherwise. In maths this would be defined as $f(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(|y_i - \hat{y}_i| < \sigma_y)$, where $\sigma_y$ is the standard deviation of the truth and $\mathbb{I}$ is the indicator function. In this case, we need the following code to construct a corresponding measure class:
+
+```{r}
+MeasureRegrThresholdAcc = R6::R6Class("MeasureRegrThresholdAcc",
+  inherit = mlr3::MeasureRegr, # regression measure
+  public = list(
+    initialize = function() { # initialize class
+      super$initialize(
+        id = "thresh_acc", # unique ID
+        packages = character(), # no package dependencies
+        properties = character(), # no special properties
+        predict_type = "response", # measures response prediction
+        range = c(0, 1), # results in values between (0, 1)
+        minimize = FALSE # larger values are better
+      )
+    }
+  ),
+
+  private = list(
+    # define score as private method
+    .score = function(prediction, ...) {
+      # define loss
+      threshold_acc = function(truth, response) {
+        mean(ifelse(abs(truth - response) < sd(truth), 1, 0))
+      }
+      # call loss function
+      threshold_acc(prediction$truth, prediction$response)
+    }
+  )
+)
+```
+
+1. In the first two lines we name the class, here `MeasureRegrThresholdAcc`, and then state this is a regression measure that inherits from `MeasureRegr`.
+2. We initialize the class by stating its unique ID is `"thresh_acc"`, that it does not require any external packages (`packages = character()`) and that it has no special properties (`properties = character()`).
+3. We then pass specific details of the loss function which are: it measures the quality of a `"response"` type prediction, its values range between `(0, 1)`, and that the loss is optimized as its maximum (`minimize = FALSE`).
+4. Finally, we define the score itself as a private method called `.score` where we pass the predictions to the function we defined just above. The private method is a function assigned to the R6 class `MeasureRegrThresholdAcc`, such that one can (internally) call `object$.score(prediction,...)` for an object of class `MeasureRegrThresholdAcc`. The method is "private" as it is not intended to be visible for the end user. 
+
+Once you have defined your custom measure, you can add it to the `mlr3measures` dictionary like this:
+
+```{r}
+mlr3::mlr_measures$add("regr.thresh_acc", MeasureRegrThresholdAcc)
+```
+
+## 3.1 MSE-MAE
+
+Define you own risk measure for regression, the maximum of MSE and MAE: $f(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^n \max((y_i - \hat{y}_i)^2,|y_i - \hat{y}_i|)$, using the code skeleton supplied above.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You need to change the code chunk containing the `MeasureRegrThresholdAcc` class definition in at least 7 lines.
+
+</details>
+
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+MeasureRegrMaxMseMae = R6::R6Class("MeasureRegrMaxMseMae",
+  inherit = mlr3::MeasureRegr, # regression measure
+  public = list(
+    initialize = function() { # initialize class
+      super$initialize(
+        id = "max_mse_mae", # unique ID
+        packages = character(), # no package dependencies
+        properties = character(), # no special properties
+        predict_type = "response", # measures response prediction
+        range = c(0, Inf), # results in values between (0, 1)
+        minimize = TRUE # smaller values are better
+      )
+    }
+  ),
+
+  private = list(
+    # define score as private method
+    .score = function(prediction, ...) {
+      # define loss
+      max_mse_mae = function(truth, response) {
+        mean(max((truth - response)^2, abs(truth - response)))
+      }
+      # call loss function
+      max_mse_mae(prediction$truth, prediction$response)
+    }
+  )
+)
+```
+
+:::
+
+:::
+
+## 3.2 Evaluate a custom measure
+
+Add your custom measure to the `mlr3measures` dictionary and use it to evaluate the following model prediction:
+
+```{r}
+tsk_mtcars = tsk("mtcars")
+split = partition(tsk_mtcars)
+lrn_ranger = lrn("regr.ranger")$train(tsk_mtcars, split$train)
+prediction = lrn_ranger$predict(tsk_mtcars, split$test)
+```
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+mlr3::mlr_measures$add("regr.max_mse_mae", MeasureRegrMaxMseMae)
+prediction$score(msr("regr.max_mse_mae"))
+```
+
+:::
+
+:::
+
+# Summary
+
+- Stratified resampling helps with balancing classes and features within CV folds, to ensure each fold represents the data well enough.
+- Block resampling reduces bias in generalization error estimates by ensuring that observations from the same group end up in the same fold.
+- Custom domain applications require custom performance measures. In `mlr3`, you can define custom measures by creating a new `R6` class.

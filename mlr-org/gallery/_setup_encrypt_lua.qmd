@@ -1,0 +1,73 @@
+```{r}
+#| include: false
+# Using this file, requires the following YAML information:
+# 
+# format:
+#   html:
+#     filters:
+#       - ../../b64_solution.lua
+library(knitr)
+library(base64enc)
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+```
+
+```{r, echo=FALSE}
+#show.solution = params$showsolution
+title = abbreviate(rmarkdown::metadata$title, minlength = 8)
+hash = digest::digest(title, algo = "sha256", serialize = FALSE)
+```
+
+```{=html}
+<script>
+const correctHash = "`r hash`";   // value injected by knitr
+
+/* ---------- reusable helper ---------- */
+function b64DecodeUtf8(b64) {
+  // 1) atob  -> binary-string   (bytes 0…255)
+  // 2) map   -> Uint8Array      (array of bytes)
+  // 3) TextDecoder('utf-8')     -> real JS string
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+async function sha256(txt) {
+  const buf = await crypto.subtle.digest('SHA-256',
+                 new TextEncoder().encode(txt));
+  return Array.from(new Uint8Array(buf))
+              .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function unlockOne(btn) {
+  const pass = prompt("Password:");
+  if (!pass) return;
+  if (await sha256(pass) !== correctHash) {
+    alert("Wrong password"); return;
+  }
+
+  /* --- decode only the solution that belongs to THIS button --- */
+  const wrapper = btn.parentElement;             // .b64-wrapper
+  wrapper.querySelectorAll('.hidden-solution').forEach(div => {
+    div.innerHTML = b64DecodeUtf8(div.dataset.encoded);
+    div.classList.remove('hidden-solution');
+    div.style.display = 'block';
+  });
+
+  /* Remove the button so the user can’t click it again */
+  btn.remove();
+}
+</script>
+
+<noscript>
+<div style="border: 1px solid #ccc; padding: 1em; margin-top: 1em; background: #f9f9f9;">
+    <strong>JavaScript is required to unlock solutions.</strong><br>
+    Please enable JavaScript and reload the page,<br>
+    or download the source files from
+    <a href="https://github.com/mlr-org/mlr3website/" target="_blank" rel="noopener noreferrer">GitHub</a>
+    and run the code locally.
+  </div>
+</noscript>
+```

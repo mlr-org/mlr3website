@@ -1,0 +1,380 @@
+---
+title: Deep dive into Bayesian Optimization
+categories:
+  - Bayesian Optimization
+  - Hyperparameter Optimization
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Use Bayesian optimization (BO) using `bbotk` and `mlr3mbo` for general black box optimization problems, and more specifically, hyperparameter optimization (HPO).
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+After this exercise, you should be able to navigate the building blocks of Bayesian optimization (BO) using `bbotk` and `mlr3mbo` for general black box optimization problems, and more specifically, hyperparameter optimization (HPO).
+
+# Introduction
+
+This section is a deep dive into Bayesian optimization (BO), also known as Model Based Optimization (MBO). BO is more complex than other tuning methods, so we will motivate theory and methodology first.
+
+**Black Box Optimization**
+
+In hyperparameter optimization, learners are passed a hyperparameter configuration and evaluated on a given task via a resampling technique to estimate its generalization performance with the goal to find the optimal hyperparameter configuration. In general, this is a black box optimization problem, which considers the optimization of a function whose mathematical structure is unknown or unexploitable. The only thing we can observe is the generalization performance of the function given a hyperparameter configuration. As evaluating the performance of a learner can take a lot of time, HPO is an expensive black box optimization problem.
+
+**Bayesian Optimization**
+
+There is many ways of doing black box optimization, grid and random search being examples for simple strategies. Bayesian optimization are a class of black box optimization algorithms that rely on a ‘surrogate model’ trained on observed hyperparameter evaluations to model the black box function. This surrogate model tries to capture the unknown function between hyperparameter configuations and estimated generalization performance using (the very low number of) observed function evaluations. During each iteration, BO algorithms employ an ‘acquisition function’ to determine the next candidate point for evaluation. This function measures the expected ‘utility’ of each point within the search space based on the prediction of the surrogate model. The algorithm then selects the candidate point with the best acquisition function value and evaluates the black box function at that point to then update the surrogate model. This iterative process continues until a termination criterion is met, such as reaching a pre-specified maximum number of evaluations or achieving a desired level of performance. BO is a powerful method that often results in good optimization performance, especially if the cost of the black box evaluation becomes expensive and the optimization budget is tight.
+
+In the rest of this section, we will first provide an introduction to black box optimization with the bbotk package and then introduce the building blocks of BO algorithms and examine their interplay and interaction during the optimization process before we assemble these building blocks in a ready to use black box optimizer with `mlr3mbo`.
+
+# Prerequisites
+
+Let's load the packages required for this exercise:
+
+```{r}
+library(bbotk)
+library(mlr3verse)
+library(mlr3mbo)
+set.seed(123)
+```
+
+Before we apply BO to hyperparamter optimization (HPO), we try to optimize the following simple sinusoidal function:
+
+```{r}
+sinus_1D = function(xs) 2 * xs$x1 * sin(14 * xs$x1) * sin(xs$x2) * xs$x2
+```
+
+# 1 Building Blocks of BO
+
+Bayesian optimization (BO) usually follows this process:
+
+1. Generate and evaluate an initial design
+2. Loop:
+
+    + 2.1. Fit a surrogate model on the archive of all observations made so far to model the unknown black box function.
+    + 2.2. Optimize an acquisition function to determine which points of the search space are promising candidate(s) that should be evaluated next.
+    + 2.3. Evaluate the next candidate(s) and update the archive of all observations made so far.
+    + 2.4. Check if a given termination criterion is met, if not go back to 2.1.
+
+The acquisition function relies on the mean and standard deviation prediction of the surrogate model and requires no evaluation of the true black box function, making it comparably cheap to optimize. A good acquisition function will balance exploiting knowledge about regions where we observed that performance is good and the surrogate model has low uncertainty with exploring regions where it has not yet evaluated points and as a result the uncertainty of the surrogate model is high.
+
+BO is a highly modular algorithm: as long as the above structure is in place, then the surrogate models, acquisition functions, and acquisition function optimizers are all interchangeable to a certain extent. The design of `mlr3mbo` reflects this modularity, with the base class for `OptimizerMbo` holding all the key elements: the BO algorithm loop structure (`loop_function`), surrogate model (`Surrogate`), acquisition function (`AcqFunction`), and acquisition function optimizer (`AcqOptimizer`). Let's explore the interplay and interaction of these building blocks during optimization.
+
+## 1.1 Initial design
+
+The initial set of points that is evaluated before a surrogate model can be fit is referred to as the initial design. `mlr3mbo` allows you to either construct this manually or let a `loop_function` do this for you. We will demonstrate the first method here.
+
+To construct an initial design, we will use one of the four design generators available in `paradox`. Let's try grid search first, assuming an initial design of nine points on a domain of two numeric variables ranging from 0 to 1:
+
+```{r}
+domain = ps(x1 = p_dbl(0, 1), x2 = p_dbl(0, 1))
+generate_design_grid(domain, resolution = 3)$data
+```
+
+As you can see, this is more or less a simple `data.table` that encodes the set of hyperparameter configurations we want to evaluate first, before any of the real BO magic starts.
+
+**Task: Construct a more refined initial design, using `paradox` to implement a Sobol design with 30 points, which has better coverage properties than grid or random search. If you are interested in why the Sobol design has favorable properties, you can take a look at the original paper by Niederreiter ([1988](https://doi.org/10.1016/0022-314X(88)90025-X)).**
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+sobol_design = generate_design_sobol(domain, n = 30)$data
+head(sobol_design)
+```
+
+:::
+
+:::
+
+
+## 1.2 Generate data from initial design
+
+To generate training data for our surrogate model, we need a few more things:
+
+- An `Objective` function that wraps the actual mapping from a domain (all possible function inputs) to a codomain (all possible function outputs). Objective functions can be created using different classes, all of which inherit from `Objective`. Here, we will use `ObjectiveRFun`.
+
+```{r}
+# We have already defined our domain, but will do here again:
+domain = ps(x1 = p_dbl(0, 1), x2 = p_dbl(0, 1))
+# Our codomain:
+codomain = ps(y = p_dbl(tags = "minimize"))
+# Our objective: 
+objective = ObjectiveRFun$new(sinus_1D, domain = domain, codomain = codomain)
+```
+
+Further:
+
+- `OptimInstanceSingleCrit` to construct an optimization instance that describes the optimization problem and stores the results
+- `Optimizer` which is used to construct and configure optimization algorithms.
+Optimization Instance
+
+Let's define our optimization instance and evaluate it on our initial Sobol design:
+
+```{r, echo = FALSE}
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+```{r}
+instance = OptimInstanceSingleCrit$new(objective,
+  terminator = trm("evals", n_evals = 20))
+instance$eval_batch(sobol_design)
+```
+**Task: Extract the training archive data from the tuning instance to find the data that we will now use to train our surrogate model with in the first iteration.**
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+instance$archive$data
+```
+
+:::
+
+:::
+
+## 1.3 Train surrogate model
+
+A surrogate model wraps a regression learner that models the unknown black box function based on observed data. In `mlr3mbo`, the `SurrogateLearner` is a higher-level `R6` class inheriting from the base Surrogate class, designed to construct and manage the surrogate model, including automatic construction of the `TaskRegr` that the learner should be trained on at each iteration of the BO loop.
+
+Any regression learner in `mlr3` can be used. However, most acquisition functions depend on both mean and standard deviation predictions from the surrogate model, the latter of which requires the `"se"` `predict_type` to be supported. Therefore not all learners are suitable for all scenarios. Typical choices  are random forests or Gaussian processes `(lrn("regr.km"))`, which we will use here. You can learn more about Gaussian processes in Williams and Rasmussen ([2006](https://gaussianprocess.org/gpml/chapters/RW.pdf)). 
+
+```{r}
+lrn_gp = lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS",
+  control = list(trace = FALSE))
+```
+
+The Matérn covariance function is a kernel used in Gaussian processes to model the smoothness of the random function, offering a flexible class of smoothness parameters. The BFGS algorithm is a type of quasi-Newton method used for optimization, particularly effective in maximizing the likelihood in Gaussian process models by efficiently finding parameter estimates.
+
+A `SurrogateLearner` can be constructed by passing a `LearnerRegr` object to the sugar function `srlrn()`, alongside the archive of the instance:
+
+```{r}
+surrogate = srlrn(lrn_gp, archive = instance$archive)
+```
+
+Internally, the regression learner is fit on a `TaskRegr` where features are the variables of the domain and the target is the codomain, the data is from the archive of the `OptimInstance` that is to be optimized.
+
+**Task: Update the surrogate model, which essentially fits the gaussian process. Then, inspect the trained random forest model that is contained within the surrogate:**
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Fitting the surrogate model will require calling one of the methods of `surrogate`. See `?surrogate` for help.
+
+</details>
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r Dice-1, eval = params$showsolution}
+requireNamespace("DiceKriging")
+library(DiceKriging)
+
+surrogate$update()
+surrogate$learner$model
+```
+
+:::
+
+:::
+
+
+## 1.4 Define an acquisition function
+
+Roughly speaking, an acquisition function relies on the prediction of a surrogate model and quantifies the perceived ‘utility’ of each point of the search space if it were to be evaluated in the next iteration.
+
+A popular example is the **expected improvement**, which tells us how much we can expect a candidate point to improve over the best function value observed so far (the ‘incumbent’), given the performance prediction of the surrogate model. Calculating the expected improvement requires mean and standard deviation predictions from the model.
+
+In `mlr3mbo`, acquisition functions are stored in the `mlr_acqfunctions` dictionary and can be constructed with `acqf()`, passing the key of the method you want to use and our surrogate learner. In our running example, we will use the expected improvement to choose the next candidate for evaluation. 
+
+**Task: Construct an aquisition function object using expected improvement. Then, update the aquisition function object.**
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r Dice-2, eval = params$showsolution}
+requireNamespace("DiceKriging")
+library(DiceKriging)
+
+acq_function = acqf("ei", surrogate = surrogate)
+acq_function$update()
+```
+
+The best y-value the acquisition function has seen so far:
+
+```{r, eval = params$showsolution}
+acq_function$y_best
+```
+
+:::
+
+:::
+
+## 1.5 Optimize acquisition function
+
+Why would we need to optimize the acquisition function? Well, the acquisition function can tell us how "promising" an arbitrary hyperparameter configuration is. If we want to find the "most promising" hyperparameter configuration, we again need to optimize the acquisition function. Consequently the optimization problem of the acquisition function is handled as a black box optimization problem itself, but it is a much cheaper one than the original.
+
+An acquisition function optimizer of class `AcqOptimizer` is used to optimize the acquisition function by efficiently searching the space of potential candidates within a limited computational budget. Widely used approaches for optimizing acquisition functions include derivative-free global optimization methods, such as the DIRECT algorithm. Consequently the optimization problem of the acquisition function can be handled as a black box optimization problem itself, but a much cheaper one than the original.
+
+`AcqOptimizer` objects are constructed with `acqo()`, which takes as input an `Optimizer`, a Terminator, and the acquisition function. Optimizers are stored in the `mlr_optimizers` dictionary and can be constructed with the sugar function `opt()`. Let's select an optimizer first:
+
+```{r}
+optimizer = opt("nloptr", algorithm = "NLOPT_GN_ORIG_DIRECT")
+```
+
+**Task: Construct an acquisition function optimizer using the optimizer above, a termination criterion of your choice and the acquisition function from the previous exercise. Then, call $optimize() on the optimizer to suggest the next candidate hyperparameter configuration.**
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+acq_optimizer = acqo(
+  optimizer = optimizer,
+  terminator = trm("evals", n_evals = 200),
+  acq_function = acq_function
+)
+
+candidate = acq_optimizer$optimize()
+candidate
+```
+
+This is the next hyperparameter configuration we would want to evaluate. This restarts the loop: add it to the archive, train surrogate model, optimize the acquisition function with the new surrogate model, get the next candidate, etc. We would do this until some termination criterion is met.
+
+:::
+
+:::
+
+# 2  Automating BO with `OptimizerMbo`
+
+We have now shown how to run a single iteration of the BO algorithm loop manually. In practice, one would use `OptimizerMbo` to put all these pieces together to automate the process. To determine the behavior of the BO algorithm on a global level, we need a **loop function**. We use the Efficient Global Optimization (EGO) algorithm, aka `bayesopt_ego` provided by `mlr_loop_functions`. You do not need to pass any of these building blocks to each other manually as the `opt()` constructor will do this for you:
+
+```{r}
+loop_function = mlr_loop_functions$get("bayesopt_ego")
+
+surrogate = srlrn(lrn("regr.km",
+                      covtype = "matern5_2",
+                      optim.method = "BFGS",
+                      control = list(trace = FALSE)))
+
+acq_function = acqf("ei")
+
+acq_optimizer = acqo(opt("nloptr",
+                         algorithm = "NLOPT_GN_ORIG_DIRECT"),
+                         terminator = trm("evals", n_evals = 100))
+
+optimizer = opt("mbo",
+  loop_function = loop_function,
+  surrogate = surrogate,
+  acq_function = acq_function,
+  acq_optimizer = acq_optimizer)
+```
+
+**Task: Use the MBO optimizer constructed above to solve the optimization problem. To do so, define an optimization instance (as in 1.2) and an initial design (as in 1.1). Then, evaluate the optimization instance on the initial design (as in 1.2). Then, call `optimizer$optimize()` on the instance.**
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+instance = OptimInstanceSingleCrit$new(objective,
+  terminator = trm("evals", n_evals = 100))
+sobol_design = generate_design_sobol(domain, n = 100)$data
+instance$eval_batch(sobol_design)
+optimizer$optimize(instance)
+```
+
+:::
+
+:::
+
+
+# 3 BO for HPO with `TunerMbo`
+
+`mlr3mbo` can be used for HPO by making use of `TunerMbo`, which is a wrapper around `OptimizerMbo` and works in the exact same way. As an example, we want to tune the cost and gamma parameters of `lrn("classif.svm")` with a radial kernel on `tsk("sonar")` with three-fold CV. 
+
+```{r}
+lrn_svm = lrn("classif.svm", kernel = "radial",
+  type = "C-classification",
+  cost  = to_tune(1e-5, 1e5, logscale = TRUE),
+  gamma = to_tune(1e-5, 1e5, logscale = TRUE)
+)
+
+tuner = tnr("mbo",
+  loop_function = bayesopt_ego,
+  surrogate = surrogate,
+  acq_function = acq_function,
+  acq_optimizer = acq_optimizer)
+```
+
+**Task: Run the tuner on the lrn_svm for the sonar task and 3-fold CV. Use misclassification error as performance measure. What is the best HP configuration?**
+
+<details>
+<summary>**Hint 1:**</summary>
+
+See `?mlr3tuning::tune` for help.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+instance = tune(tuner,
+                tsk("sonar"),
+                lrn_svm,
+                rsmp("cv", folds = 3),
+                msr("classif.ce"), 25)
+
+instance$result
+```
+
+:::
+
+:::
+
+# Summary
+
+We have learned how Bayesian Optimization can be used to solve black box optimization problems, and HPO problems specifically. Rather than simply spending a compute budget on evaluating arbitrary configurations, we optimize an acquisition function based on a surrogate model that maps hyperparameter configurations to their estimated generalization performance, to iteratively suggest new candidates.
