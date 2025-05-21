@@ -87,7 +87,9 @@ create_table = function(data) {
 
 # Scope
 
-This report analyzes the runtime and memory usage of the mlr3fselect package across different versions.
+This report analyzes the runtime and memory usage of the `mlr3fselect` package across different versions.
+The benchmarks include `fselect()` and `fselect_nested()` both in sequential and parallel mode.
+
 The benchmarks vary the training time of the models and the size of the dataset.
 Additionally, the experiments are conducted in parallel to assess the impact of parallelization on both runtime and memory usage.
 
