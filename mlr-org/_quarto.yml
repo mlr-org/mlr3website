@@ -10,7 +10,7 @@ website:
   announcement:
     icon: info-circle
     dismissable: true
-    content: "The website features runtime and memory [benchmarks](benchmarks_mlr3.html) of the mlr3 base package now."
+    content: "The website features runtime and memory [benchmarks](benchmarks/benchmarks_mlr3.qmd) of the mlr3 base package now."
     type: primary
     position: below-navbar
   page-footer:
@@ -59,8 +59,10 @@ website:
         menu:
           - text: "mlr3"
             href: benchmarks/benchmarks_mlr3.qmd
-          - text: "mlr3tuning"
-            href: benchmarks/benchmarks_mlr3tuning.qmd
+          - text: "mlr3fselect"
+            href: benchmarks/benchmarks_mlr3fselect.qmd
+          - text: "mlr3tuning async"
+            href: benchmarks/benchmarks_async.qmd
       - team.qmd
       - text: "More"
         menu:
