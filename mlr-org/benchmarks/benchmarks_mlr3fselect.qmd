@@ -101,11 +101,14 @@ Consequently, runtimes may be faster on a local machine.
 # Summary of Latest mlr3fselect Version
 
 The benchmarks are comprehensive; therefore, we present a summary of the results for the latest `mlr3fselect` version.
+We measure the runtime and memory usage of a random search with 1000 resampling iterations on the spam dataset with 1000 and 10,000 instances.
+The nested resampling is conducted with 10 outer resampling iterations and uses the same random search for the inner resampling loop.
 The overhead introduced by `fselect()` and `fselect_nested()` should always be considered relative to the training time of the models.
 For models with longer training times, such as 1 second, the overhead is minimal.
 For models with a training time of 100 ms, the overhead is approximately 20%.
 For models with a training time of 10 ms, the overhead approximately doubles or triples the runtime.
 In cases where the training time is only 1 ms, the overhead results in the runtime being 16 to 20 times larger than the actual model training time.
+The memory usage of `fselect()` and `fselect_nested()` is between 450 MB and 550 MB.
 Running an empty R session consumes 131 MB of memory.
 
 `mlr3fselect` utilizes the `future` package to enable parallelization over resampling iterations.
