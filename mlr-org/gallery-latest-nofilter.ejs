@@ -1,10 +1,26 @@
 ```{=html}
-<ul>
-  <% for (let i = 0, shown = 0; i < items.length && shown < 5; i++, shown++) { %>
-    <li>
-      <a href="<%- items[i].path %>"><%= items[i].title %></a>
-      <p><%= items[i].description %></p>
-    </li>
-  <% } %>
-</ul>
+<% 
+  const grouped = {};
+  for (const item of items) {
+    const group = item.group || "Other";
+    if (!grouped[group]) grouped[group] = [];
+    grouped[group].push(item);
+  }
+
+  const sortedGroups = Object.keys(grouped).sort();
+%>
+
+<% for (const group of sortedGroups) { %>
+  <h2><%= group %></h2>
+  <ul>
+    <% for (const item of grouped[group]) { %>
+      <li>
+        <a href="<%- item.path %>"><%= item.title %></a>
+        <p><%= item.description %></p>
+        <p><%= item.date %> - <%= item.author %></p>
+      </li>
+    <% } %>
+  </ul>
+<% } %>
+
 ```

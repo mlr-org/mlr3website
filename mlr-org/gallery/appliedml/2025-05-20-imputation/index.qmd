@@ -1,0 +1,393 @@
+---
+title: Imputation
+group: Imputation
+categories:
+  - imputation
+  - mlr3benchmarking
+author:
+  - name: Fiona Ewald
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Learn the basics of imputation (i.e. filling in missing data) with `mlr3pipelines`.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+Our goal for this exercise sheet is to learn the basics of imputation within the `mlr3` universe, specifically, `mlr3pipelines`.
+Imputation is the process of filling in missing data in a data set using statistical methods like mean, median, mode, or predictive models.
+
+# Required packages
+
+We will use `mlr3` for machine learning and `mlr3oml` for data access from OpenML:
+
+```{r, message = FALSE}
+library(mlr3verse)
+library(mlr3tuning)
+library(mlr3oml)
+set.seed(12345)
+```
+
+# Data: Miami house prices
+
+We will use house price data on 13,932 single-family homes sold in Miami in 2016. The target variable is `"SALE_PRC"`.
+
+Let's load the data and remove an unwanted column: 
+
+```{r}
+miami = as.data.frame(odt(id = 43093)$data[,-c(3)])
+miami[1:16] = lapply(miami[1:16], as.numeric)
+miami[,c(14,16)] = lapply(miami[,c(14,16)], as.factor)
+```
+
+Further, we artificially generate missing data entries for three features:
+
+```{r}
+indices = which(miami$age > 50)
+
+for (i in c("OCEAN_DIST", "TOT_LVG_AREA", "structure_quality")) {
+  sample_indices <- sample(indices, 2000, replace = FALSE)
+  miami[sample_indices, i] <- NA
+}
+```
+
+# 1 Create simple imputation PipeOps
+
+Imputation can be executed via standard pipeline workflows using `PipeOp` objects. You can get an overview of the relevant options with `?PipeOpImpute`, which is the abstract base class for feature imputation. Create a `PipeOp` that imputes numerical features based on randomly sampling feature values from the non-missing values and another `PipeOp` that imputes factor/categorical (including ordinal) features by out of range imputation. The latter introduces a new level “.MISSING” for missings.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You can set up a `PipeOp` with the `po()` function and use the `affect_columns` argument to address the columns to which the preprocessing should be applied (see also `?PipeOpImpute` for how to use the `affect_columns` argument).
+There exists a shortcut for setting up the imputation based on randomly sampling feature values from the non-missing values which is `imputesample` (see also `?PipeOpImputeSample`) and for out of range imputation which is `imputeoor` (see also `?PipeOpImputeOOR`).
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+impute_numeric = po("...", affect_columns = selector_type("..."))
+impute_factor = po("...", affect_columns = ...(c("factor", "ordered")))
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+impute_numeric = po("imputesample", affect_columns = selector_type("numeric"))
+impute_factor = po("imputeoor", affect_columns = selector_type(c("factor", "ordered")))
+```
+
+:::
+
+:::
+
+# 2 Create and plot a graph
+
+Combine both imputation `PipeOps` with a random forest learning algorithm into a `Graph`. Then, plot the graph.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Create a random forest learner using `lrn()`.
+You can concatenate different pre-processing steps and a learner using the `%>>%` operator.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+You can plot a graph using the corresponding R6 method of the graph object.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+graph = impute_numeric %>>%
+  impute_factor %>>%
+  lrn("regr.ranger")
+
+graph$plot()
+```
+
+:::
+
+:::
+
+## Simple Imputation
+
+Alternative to a pipeline that includes a learner, we can even set up a simpler pipeline that only creates imputations for missing data and apply it to a data set. For this, define first a simpler pipeline with only the imputation steps from above, create a task for the `miami` data, use the `$train()` method to impute the missing rows. Then, inspect the imputed data set with `...[[1]]$head()`.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+graph_im = impute_numeric %>>% impute_factor
+
+task = TaskRegr$new(id = "miami", backend = miami, target = "SALE_PRC")
+
+abs = graph_im$train(task)[[1]]$head()
+```
+
+:::
+
+:::
+
+## Assessing Performance
+
+Use 3-fold cross-validation to estimate the error of the first pipeline (the one that contains a random forest learner) stored in the graph.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Specifically, you need three things:
+
+1. A `Resampling` object using `rsmp()` and instantiate the train-test splits on the task.
+2. Use this object together with the task and the graph learner specified above as an input to the `resample()` method.
+3. Measure the performance with `$aggregate()`.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+```{r, eval=FALSE}
+resampling = rsmp("cv", ...)
+resampling$instantiate(...)
+rr = resample(task = ..., learner = ..., resampling = ...)
+rr$...()
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, messages=FALSE}
+resampling = rsmp("cv", folds = 3L)
+resampling$instantiate(task)
+rr = resample(task = task, learner = graph, resampling = resampling)
+rr$aggregate()
+```
+
+:::
+
+:::
+
+# 3 Model-based imputation
+
+We can use a learner to impute missing values, which works by learning a model that treats the feature to-be-imputed as target and the other features as covariates. This has to be done separately for each feature that we impute. Obviously, the performance of learner-based imputation can depend on the type of learner used. Set up two distinct pipelines, modifying the pipeline from the previous exercise. Now, for numeric features, use learner-based imputation, using a linear model for the first and a decision tree for the second pipeline.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You can learn about the mechanics of using learners for imputation in `?mlr_pipeops_imputelearner`.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+As the documentation states, if a learner used for imputation is itself supposed to train on features containing missing data, it needs to be able handle missing data natively. Otherwise, it needs its own imputation, requiring a more complicated pipeline. In this case, use histogram-based imputation within the learner-based imputation. Similarly, if categorical features are to be imputed, they need to be imputed before the numeric features in this case.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+impute_rpart = po("imputelearner",
+                  learner = lrn("regr.rpart"),
+                  affect_columns = selector_type("numeric"))
+
+impute_lm = po("imputelearner",
+                  learner = po("imputehist") %>>% lrn("regr.lm"),
+                  affect_columns = selector_type("numeric"))
+
+graph_rpart = impute_factor %>>%
+  impute_rpart %>>%
+  lrn("regr.ranger")
+
+graph_lm = impute_factor %>>%
+  impute_lm %>>%
+  lrn("regr.ranger")
+```
+
+:::
+
+:::
+
+## Assessing Performance
+
+As before, use 3-fold cross-validation to compare the error of the two pipelines to identify which learner seems to work best for imputation for this data set.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, messages=FALSE}
+rr_rpart = resample(task = task, learner = graph_rpart, resampling = resampling)
+rr_lm = resample(task = task, learner = graph_lm, resampling = resampling)
+rr_rpart$aggregate()
+rr_lm$aggregate()
+```
+
+In this case, using a linear model for model-based imputation seems to outperform a decision tree with default hyperparameter settings.
+
+:::
+
+:::
+
+# 3 Branches in pipelines
+
+Pipelines can become very complex. Within a pipeline, we could be interested which imputation method works best. An elegant way to find out is to treat the imputation method as just another hyperparameter that we tune alongside other hyperparameters when we tune the pipeline. A way to do this is by using path branching. Set up a graph that contains the following elements:
+1. A branch with two different imputation methods, a) histogram-based and b) learner-based using a decision tree
+2. A random forest fit on the (fully imputed) data.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You can read more about branching in `??mlr_pipeops_branch`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, messages=FALSE}
+impute = list(
+  "imputehist" = po("imputehist"),
+  "imputerpart" = po("imputelearner", learner = lrn("regr.rpart"))
+)
+forest = lrn("regr.ranger")
+graph_branch = ppl("branch", impute) %>>% forest
+plot(graph_branch)
+```
+
+:::
+
+:::
+
+## Define a search space
+
+We want to tune a number of hyperparameters in the pipeline:
+1) The `mtry` parameter in the random forest between 2 and 8,
+2) The imputation method, as represented by our graph, and
+3) the `maxdepth` parameter of the decision tree-based imputation between 1 and 30.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Remember that a graph can be treated as any other learner, and therefore, its parameter set can be accessed correspondingly. This means you can find the relevant parameter names in the correct field of the graph object.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+A parameter space can be defined using the `ps()` sugar function.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, messages=FALSE}
+tune_ps = ps(
+  regr.ranger.mtry = p_int(2L, 8L),
+  branch.selection = p_fct(c("imputehist", "imputerpart")),
+  imputelearner.maxdepth = p_int(1L, 30L)
+)
+```
+
+:::
+
+:::
+
+## Tuning the pipeline
+
+Now, tune the pipeline using an AutoTuner with 3-fold CV and random search. You can terminate after 10 evaluations to reduce run time. Then, display the optimal hyperparameter set as chosen by the tuner based on the mean squared error.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval=FALSE}
+# AutoTuner
+glrn_tuned = AutoTuner$new(...)
+# Train
+...
+# Optimal HP set
+...
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, messages=FALSE}
+# AutoTuner
+glrn_tuned = AutoTuner$new(graph_branch,
+  resampling = rsmp("cv", folds = 3L),
+  search_space = tune_ps,
+  measure = msr("regr.mse"),
+  terminator = trm("evals", n_evals = 10),
+  tuner = tnr("random_search"))
+
+# Train
+glrn_tuned$train(task)
+# Optimal HP set
+glrn_tuned$tuning_result
+```
+
+:::
+
+:::

@@ -1,0 +1,186 @@
+---
+title: Imputation Homework
+group: Imputation
+categories:
+  - imputation
+  - mlr3benchmarking
+author:
+  - name: Fiona Ewald
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Learn the basics of imputation (i.e. filling in missing data) with `mlr3pipelines`.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+
+# Goal
+
+Our goal for this homework is to learn the basics of imputation within the `mlr3` universe, specifically, `mlr3pipelines`.
+Imputation is the process of filling in missing data in a data set using statistical methods like mean, median, mode, or predictive models.
+
+# Required packages
+
+We will use `mlr3` for machine learning and `mlr3oml` for data access from OpenML:
+
+```{r, message = FALSE}
+library(mlr3verse)
+library(mlr3tuning)
+library(mlr3oml)
+set.seed(12345)
+```
+
+# Data: Washington bike rentals
+
+We will use bike sharing data for 731 days in Washington, D.C, where the target variable is `"rentals"`.
+
+Let's load the data and remove an unwanted column: 
+
+```{r}
+bikes = as.data.frame(odt(id = 45103)$data)[,-c(10)]
+bikes[1:12] = lapply(bikes[1:12], as.numeric)
+```
+
+Further, we artificially generate missing data entries for the feature `temp`:
+
+```{r}
+rows <- sample(nrow(bikes), 300, replace = FALSE)
+bikes[rows, "temp"] <- NA
+```
+
+# Compare different learners
+
+In this exercise, we want to compare the performance of two learners that are used to impute the missing values in `temp`: a linear model (LM) and a k-nearest neighbor (kNN), where we want to tune the hyperparameter `k`. We benchmark the performance of a pipeline that connects the different imputation methods with a random forest learner.
+
+## Construct a pipeline graph
+
+First, we need a pipeline that contains both imputation methods as alternatives, effectively treating them as a hyperparameter. This is then connected to the random forest learner. Define and plot the appropriate graph object.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Expressing two competing imputation methods in a graph can be done with branching, see more in `??mlr_pipeops_branch`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+
+```{r, messages=FALSE}
+impute = list(
+  "impute_lm" = po("imputelearner", id = "impute_lm", learner = po("imputehist") %>>% lrn("regr.lm")),
+  "impute_knn" = po("imputelearner", id = "impute_knn", learner = po("imputehist") %>>% lrn("regr.kknn"))
+)
+forest = lrn("regr.ranger")
+graph = ppl("branch", impute) %>>% forest
+plot(graph)
+```
+
+:::
+
+:::
+
+## Tunable HPs
+
+We want to tune a number of hyperparameters in the pipeline:
+1) The imputation method, as represented in the graph, and
+2) the `k` parameter of the kNN-based imputation method for values from 1 to 8.
+Define an appropriate search space.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Remember that a graph can be treated as any other learner, and therefore, its parameter set can be accessed correspondingly. This means you can find the relevant parameter names in the correct field of the graph object.
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+A parameter space can be defined using the `ps()` sugar function.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+
+```{r, messages=FALSE}
+tune_ps = ps(
+  branch.selection = p_fct(c("impute_lm", "impute_knn")),
+  impute_knn.k = p_int(1L, 8L)
+)
+```
+
+:::
+
+:::
+
+## Tune the pipeline and visualize results
+
+Create a task for the bike rental data and tune a graph learner with grid search over the defined search space, using 4-fold CV repeated 3 times, MSE as performance measure and no terminator. Visualize and interpret the results.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval=FALSE}
+task = ...
+
+instance = tune(...)
+
+autoplot(...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+
+```{r, messages=FALSE}
+task = TaskRegr$new(id = "bikes", backend = bikes, target = "rentals")
+
+instance = tune(
+  tuner = tnr("grid_search"),
+  task = task,
+  learner = graph,
+  search_space = tune_ps,
+  resampling = rsmp("repeated_cv", folds = 4, repeats = 3),
+  measure = msr("regr.mse"),
+  terminator = trm("none")
+)
+
+autoplot(instance)
+```
+
+As can be seen, LM-based imputation performs much better than kNN imputation. Note, that the right plot might be misleading since the lower values, where LM was used for imputation, does not depend on the choice of `k`.
+
+:::
+
+:::
