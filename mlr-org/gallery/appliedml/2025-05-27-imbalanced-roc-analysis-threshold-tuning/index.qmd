@@ -1,6 +1,6 @@
 ---
-title: Imputation Homework
-group: Imputation
+title: Imabalanced ROC-Analysis threshold Tuning
+group: Imbalanced
 categories:
   - imputation
   - mlr3benchmarking
@@ -9,7 +9,7 @@ author:
   - name: Essential Data Science Training GmbH
     url: https://www.essentialds.de
 description: |
-  Learn the basics of imputation (i.e. filling in missing data) with `mlr3pipelines`.
+  Train a classifier on German Credit set and tune the output of a probabilistic model with ROC threshold analysis.
 date: ""
 params:
   showsolution: true
@@ -32,92 +32,241 @@ set.seed(123)
 
 # Goal
 
-Our goal for this homework is to learn the basics of imputation within the `mlr3` universe, specifically, `mlr3pipelines`.
-Imputation is the process of filling in missing data in a data set using statistical methods like mean, median, mode, or predictive models.
+In this exercise, we will create a machine learning model that predicts the
+credit risk of an individual (e.g., the probability of being a `good` or `bad` credit applicant for the bank). Our goal is not to
+obtain an optimal classifier for this task, but to learn how to get a better
+understanding of the  predictions made by this model. This means looking at its
+sensitivity (ability to correctly identify positives) and specificity (ability
+to correctly identify negatives). The sensitivity is also known as the true positive rate (TPR) and the
+specificity is equal to (1 - FPR) where FPR is the false positive rate.
 
-# Required packages
+We will also cover how to obtain different response predictions from a probabilistic
+model by modifying the threshold. We will inspect this relationship via the ROC curve and tune
+the threshold for a given classifier to optimize our response predictions.
 
-We will use `mlr3` for machine learning and `mlr3oml` for data access from OpenML:
 
-```{r, message = FALSE}
-library(mlr3verse)
-library(mlr3tuning)
-library(mlr3oml)
-set.seed(12345)
-```
+# 1 Training a classification tree on the german credit task
 
-# Data: Washington bike rentals
-
-We will use bike sharing data for 731 days in Washington, D.C, where the target variable is `"rentals"`.
-
-Let's load the data and remove an unwanted column: 
-
-```{r}
-bikes = as.data.frame(odt(id = 45103)$data)[,-c(10)]
-bikes[1:12] = lapply(bikes[1:12], as.numeric)
-```
-
-Further, we artificially generate missing data entries for the feature `temp`:
-
-```{r}
-rows <- sample(nrow(bikes), 300, replace = FALSE)
-bikes[rows, "temp"] <- NA
-```
-
-# Compare different learners
-
-In this exercise, we want to compare the performance of two learners that are used to impute the missing values in `temp`: a linear model (LM) and a k-nearest neighbor (kNN), where we want to tune the hyperparameter `k`. We benchmark the performance of a pipeline that connects the different imputation methods with a random forest learner.
-
-## Construct a pipeline graph
-
-First, we need a pipeline that contains both imputation methods as alternatives, effectively treating them as a hyperparameter. This is then connected to the random forest learner. Define and plot the appropriate graph object.
+First load the pre-defined German credit task and set the positive class to `"good"`.
+Train a random forest on 2/3 of the data (training data) and make probabilistic predictions on the remaining 1/3 (test data).
 
 <details>
 <summary>**Hint 1:**</summary>
-
-Expressing two competing imputation methods in a graph can be done with branching, see more in `??mlr_pipeops_branch`.
-
-</details>
-
-:::{.callout-note collapse="true"}
-
-### Solution
-
-:::{.b64-solution}
-
-
-```{r, messages=FALSE}
-impute = list(
-  "impute_lm" = po("imputelearner", id = "impute_lm", learner = po("imputehist") %>>% lrn("regr.lm")),
-  "impute_knn" = po("imputelearner", id = "impute_knn", learner = po("imputehist") %>>% lrn("regr.kknn"))
-)
-forest = lrn("regr.ranger")
-graph = ppl("branch", impute) %>>% forest
-plot(graph)
-```
-
-:::
-
-:::
-
-## Tunable HPs
-
-We want to tune a number of hyperparameters in the pipeline:
-1) The imputation method, as represented in the graph, and
-2) the `k` parameter of the kNN-based imputation method for values from 1 to 8.
-Define an appropriate search space.
-
-<details>
-<summary>**Hint 1:**</summary>
-
-Remember that a graph can be treated as any other learner, and therefore, its parameter set can be accessed correspondingly. This means you can find the relevant parameter names in the correct field of the graph object.
-
+- Create the German credit task using `tsk()` and set the positive class by modifying e.g. `task$positive`.
+- Create a learner using `lrn()` and make sure to specify the `predict_type` so that the learner will predict probabilities instead of classes.
+- When calling the methods `$train()` and `$predict()` of the learner, you can pass an argument `row_ids` to specify which observations should be used for the train and test data. 
+- You can generate random train-test splits using, e.g., the `partition()` function.
 </details>
 
 <details>
 <summary>**Hint 2:**</summary>
+```{r, eval = FALSE}
+library(mlr3verse)
 
-A parameter space can be defined using the `ps()` sugar function.
+task = tsk(...)
+task$positive = ...
+learner = lrn(..., predict_type = ...)
+ids = partition(...)
+learner$train(..., row_ids = ...)
+pred = learner$predict(..., row_ids = ...)
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+library(mlr3verse)
+task = tsk("german_credit")
+task$positive = "good"
+learner = lrn("classif.ranger", predict_type = "prob")
+ids = partition(task)
+str(ids)
+learner$train(task, row_ids = ids$train)
+pred = learner$predict(task, row_ids = ids$test)
+pred
+```
+
+:::
+
+:::
+
+# 2 Confusion matrices and classification thresholds
+
+Inspect and save the confusion matrix of the predictions made in the previous exercise.
+Manually calculate the FPR and TPR using the values from the confusion matrix.
+Can you think of another way to compute the TPR and FPR using `mlr3` instead of manually computing them using the confusion matrix?
+
+<details>
+  <summary>**Recap**</summary>
+A confusion matrix is a special kind of contingency table with two
+dimensions "actual" and "predicted" to summarize the ground truth classes (truth) vs. the predicted classes of a classifier (response).
+
+Binary classifiers can be understood as first predicting a score (possibly a probability) and then classifying all instances with a score greater than a certain threshold $t$ as positive and all others as negative. This means that one can obtain different class predictions using different threshold values $t$.
+</details>
+
+<details>
+  <summary>**Hint 1:**</summary>
+A prediction object has a field `$confusion`.
+Since `good` was used as the positive class here, the TPR is $P(\hat{Y} = good | Y = good)$ and the FPR is $P(\hat{Y} = good | Y = bad)$ (where $\hat{Y}$ refers to the predicted response of the classifier and $Y$ to the ground truth class labels). Instead of manually computing the TPR and FPR, there are appropriate performance measures implemented in `mlr3` that you could use.
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+You need to replace `...` in the code below to access the appropriate columns and rows, e.g., `confusion1[1, 1]` is the element in the first row and first column of the confusion matrix and tells you how many observations with ground truth $Y = good$ were classified into the class $\hat{Y} = good$ by the learner.
+```{r, eval = FALSE}
+confusion1 = pred$confusion
+TPR1 =  confusion1[...] / sum(confusion1[...])
+TPR1
+FPR1 = confusion1[...] / sum(confusion1[...])
+FPR1
+```
+
+The names of the TPR and FPR performance measures implemented in `mlr3` can be found by looking at `as.data.table(mlr_measures)`. You can use the code below and pass the names of the `mlr3` measures in a vector to compute both the TPR and FPR: 
+```{r, eval = FALSE}
+pred$score(msrs(...))
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+confusion1 = pred$confusion
+TPR1 = confusion1[1, 1] / sum(confusion1[, 1])
+TPR1
+FPR1 = confusion1[1, 2] / sum(confusion1[, 2])
+FPR1
+```
+
+Instead of manually computing the TPR and FPR, you could also just use 
+```{r, eval = params$showsolution}
+pred$score(msrs(c("classif.tpr", "classif.fpr")))
+```
+
+:::
+
+:::
+
+# 3 Asymmetric costs
+
+Think about which type of error is worse for the given task and obtain new predictions
+(without retraining the model) that takes this into account.
+
+Then calculate the FPR and TPR and compare it with the results from the previous exercise.
+
+<details>
+<summary>**Hint 1:**</summary>
+A prediction object has the method `$set_threshold()` that can be used to set a custom threshold and which will update the predicted classes according to the selected threshold value.
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+```{r, eval = FALSE}
+pred$set_threshold(...)
+confusion2 = pred$confusion
+TPR2 =  confusion2[...] / sum(...)
+FPR2 = confusion2[...] / sum(...)
+
+TPR2 - TPR1
+FPR2 - FPR1
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+The error of making a false positive - in this case classifying someone who is not creditworthy ($Y = bad$)
+as creditworthy ($\hat Y = good$) - is likely considerably higher than classifying someone who is creditworthy as not creditworthy. 
+In the first scenario, the company may lose all the money that was not paid back duly. In the letter case, it only misses out on the profit.
+
+We can take this fact into account by using a higher threshold to predict the positive class (`good`), i.e., being more conservative in classifying a good credit risk.
+For illustration purposes, we will use the threshold $0.7$ which is higher than the default threshold $0.5$.
+
+```{r, eval = params$showsolution}
+pred$set_threshold(0.7)
+pred
+```
+We can then access the updated confusion matrix and calculate the new FPR and TPR as before.
+
+```{r, eval = params$showsolution}
+confusion2 = pred$confusion
+TPR2 =  confusion2[1, 1] / sum(confusion2[, 1])
+FPR2 = confusion2[1, 2] / sum(confusion2[, 2])
+```
+
+When comparing it with the previous values, we observe a lower TPR and FPR.
+
+```{r, eval = params$showsolution}
+TPR2 - TPR1
+FPR2 - FPR1
+```
+
+:::
+
+:::
+
+# 4 ROC curve
+
+In the previous two exercises, we have calculated the FPR and TPR for two thresholds.
+Now visualize the FPR and TPR for all possible thresholds, i.e. the ROC curve.
+
+<details>
+<summary>**Recap**</summary>
+The receiver operating characteristic (ROC) displays the sensitivity and specificity for all
+possible thresholds.
+</details>
+
+
+<details>
+<summary>**Hint 1:**</summary>
+You can use `autoplot()` on the prediction object and set the `type` argument to produce a ROC curve. 
+You can open the help page of `autoplot` for a prediction object using `?mlr3viz::autoplot.PredictionClassif`.
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+```{r, eval = FALSE}
+autoplot(pred, type = ...)
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+autoplot(pred, type = "roc", show_cb = FALSE)
+```
+
+:::
+
+:::
+
+# 5 Threshold tuning
+
+In this exercise, we assume that predicting a false positive is 4 times worse than a false negative.
+Use a measure that considers classification costs (e.g., misclassification costs `msr("classif.costs")$help()`) and tune the threshold of our classifier to systematically optimize the asymmetric cost function. 
+
+## 5.1 Cost Matrix
+
+First, define the cost matrix. Here, this is a 2x2 matrix with rows corresponding to the predicted class and columns corresponding to the true class. The first row/column implies `"good"`, the second `"bad"` credit rating.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+The order of the classes in the rows and columns of the matrix must correspond to the order of classes in `task$class_names`.
 
 </details>
 
@@ -127,60 +276,272 @@ A parameter space can be defined using the `ps()` sugar function.
 
 :::{.b64-solution}
 
-
-```{r, messages=FALSE}
-tune_ps = ps(
-  branch.selection = p_fct(c("impute_lm", "impute_knn")),
-  impute_knn.k = p_int(1L, 8L)
-)
+```{r, eval = params$showsolution}
+costs = matrix(c(0, 1, 4, 0), nrow = 2, dimnames =
+  list("Predicted Credit" = c("good", "bad"),
+    Truth = c("good", "bad")))
+costs
 ```
 
 :::
 
 :::
 
-## Tune the pipeline and visualize results
+## 5.2 Cost-Sensitive Measure
 
-Create a task for the bike rental data and tune a graph learner with grid search over the defined search space, using 4-fold CV repeated 3 times, MSE as performance measure and no terminator. Visualize and interpret the results.
+Next, define a cost-sensitive measure. This measure takes one argument, which is a matrix with row and column names corresponding to the class labels in the task of interest. 
 
 <details>
 <summary>**Hint 1:**</summary>
+You can use `as.data.table(mlr_measures)` to find the relevant measure.
+</details>
 
-```{r, eval=FALSE}
-task = ...
+:::{.callout-note collapse="true"}
 
-instance = tune(...)
+### Solution
 
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+msr_costs = msr("classif.costs", costs = costs)
+msr_costs
+```
+
+:::
+
+:::
+
+## 5.3 Thresholding
+
+In default settings, a model will classify a customer as good credit if the predicted probability is greater than 0.5. Here, this might not be a sensible approach as we would likely act more conservatively and reject more credit applications with a higher threshold due to the non-uniform costs. Use the `autplot()` function to plot the costs associated with predicting at various thresholds between 0 and 1 for the random forest predictions stored in the `pred` object from before.
+
+<details>
+<summary>**Hint 1:**</summary>
+You need to specify `type = "threshold` within autoplot as well as the previously defined measure.
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+autoplot(pred, type = "threshold", measure = msr_costs)
+```
+
+As expected, the optimal threshold is greater than 0.5 which means the optimal model should predict ‘bad’ credit more often than not.
+
+# Alternative without autoplot
+
+```{r, eval = params$showsolution}
+library(ggplot2)
+thresholds = seq(0, 1, by = 0.01)
+eval_threshold = function(pred, threshold, measure, task) {
+  pred$set_threshold(threshold)
+  score = pred$score(measure, task = task)
+  return(score)
+}
+costs = matrix(c(0, 1, 4, 0), nrow = 2)
+dimnames(costs) = list(truth = task$class_names, response = task$class_names)
+measure = msr("classif.costs", costs = costs)
+scores = sapply(thresholds, function(threshold) eval_threshold(pred, threshold, measure, task))
+thresholds[which.min(scores)]
+min(scores)
+qplot(x = thresholds, y = scores) + geom_vline(xintercept = thresholds[which.min(scores)])
+
+```
+
+:::
+
+:::
+
+## 5.4 Tuning the Threshold
+
+The optimal threshold can be automated via `po("tunethreshold")`. Create a graph that consists of a logistic regression learner and this threshold tuning pipeline object. Then, turn the graph into a learner as in previous tutorials. Finally, benchmark the pipeline against a standard logistic regression learner using 3-fold CV.
+
+<details>
+<summary>**Hint 1:**</summary>
+You can use this code skeleton for the pipeline:
+```{r, eval = FALSE}
+logreg = po("learner_cv", lrn(...)) # base learner
+graph =  logreg %>>% po(...) # graph with threshold tuning
+```
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+You can use this code skeleton for the benchmark:
+```{r, eval = FALSE}
+learners = list(..., lrn("classif.log_reg"))
+bmr = benchmark(benchmark_grid(task, learners,
+  rsmp("cv", folds = 3)))
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+# Pipeline:
+po_cv = po("learner_cv", lrn("classif.log_reg", predict_type = "prob"))
+graph =  po_cv %>>% po("tunethreshold", measure = msr_costs)
+
+# Benchmark:
+learners = list(as_learner(graph), lrn("classif.log_reg"))
+bmr = benchmark(benchmark_grid(task, learners,
+  rsmp("cv", folds = 3)))
+
+# Evaluate:
+bmr$aggregate(msr_costs)[, c(4, 7)]
+```
+
+:::
+
+:::
+
+# 6 ROC Comparison
+
+In this exercise, we will explore how to compare to learners by looking at their ROC curve.
+
+The basis for this exercise will be a benchmark experiment that
+compares a classification tree with a random forest on the german credit task.
+
+Because we are now not only focused on the analysis of a given prediction, but on the
+comparison of two learners, we selected a 10-fold cross-validation to reduce the
+uncertainty of this comparison.
+
+Conduct the benchmark experiment and show both ROC curves in one plot.
+Which learner learner performs better in this case?
+
+<details>
+<summary>**Hint 1:**</summary>
+Use `benchmark_grid()` to create the experiment design and execute it using `benchmark()`.
+You can also apply the function `autoplot()` to benchmark results.
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+```{r, eval = FALSE}
+resampling = rsmp(..)
+learners = lrns(...)
+design = benchmark_grid(...)
+bmr = benchmark(...)
 autoplot(...)
 ```
 
 </details>
 
+
 :::{.callout-note collapse="true"}
 
 ### Solution
 
 :::{.b64-solution}
 
+We create and execute the benchmark experiment in the usual fashion.
 
-```{r, messages=FALSE}
-task = TaskRegr$new(id = "bikes", backend = bikes, target = "rentals")
-
-instance = tune(
-  tuner = tnr("grid_search"),
-  task = task,
-  learner = graph,
-  search_space = tune_ps,
-  resampling = rsmp("repeated_cv", folds = 4, repeats = 3),
-  measure = msr("regr.mse"),
-  terminator = trm("none")
+```{r, eval = params$showsolution}
+resampling = rsmp("cv", folds = 10)
+learners = list(
+  lrn("classif.rpart", predict_type = "prob"),
+  lrn("classif.ranger", predict_type = "prob")
 )
-
-autoplot(instance)
+design = benchmark_grid(task, learners, resampling)
+bmr = benchmark(design)
 ```
 
-As can be seen, LM-based imputation performs much better than kNN imputation. Note, that the right plot might be misleading since the lower values, where LM was used for imputation, does not depend on the choice of `k`.
+Now we proceed with showing the ROC curve. 
+
+```{r, eval = params$showsolution}
+autoplot(bmr, type = "roc", show_cb = FALSE)
+```
+
+The random forest is clearly better, as for virtually every specificity it has a higher
+sensitivity.
 
 :::
 
 :::
+
+# 7 Area under the curve
+
+In the previous exercise we have learned how to compare to learners using the ROC curve.
+Although the random forest was dominating the classification tree in this specific case,
+the more common case is that the ROC curves of two models are crossing, making a comparison
+in the sense of $>$ / $<$ impossible.
+
+The area under the curve tries to solve this problem by summarizing the ROC curve by its area
+under the curve (normalized to 1), which allows for a scalar comparison.
+
+Compare the AUC for the benchmark result.
+
+<details>
+<summary>**Hint 1:**</summary>
+You can use the `autoplot()` function and use the AUC as performance measure in the `measure` argument.
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+```{r, eval = FALSE}
+autoplot(bmr, measure = msr(...))
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+autoplot(bmr, measure = msr("classif.auc"))
+```
+
+As expected, the AUC for the random forest is higher than the AUC for the classification tree.
+
+:::
+
+:::
+
+# Bonus exercise: Unbiased performance estimation
+
+Revisit the exercise where we tuned the threshold.
+Is the performance estimate for the best threshold unbiased?
+If no, does this mean that our tuning strategy was invalid?
+
+<details>
+<summary>**Hint 1:**</summary>
+Did we use an independent test set?
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+Think of the uncertainty when estimating the ROC curve.
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+No, although our method is valid with respect to determining our "best guess"
+for the optimal threshold, the obtained performance estimate suffers from
+optimization bias. We would need an independent test set to evaluate our
+method, i.e. nested holdout or cross-validation.
+
+:::
+
+:::
+
+
+# Summary
+
+In this exercise we improved our understanding of the performance of binary classifiers
+by the means of the confusion matrix and a focus on different error types.
+We have seen how we can analyze and compare classifiers using the ROC and
+how to improve our response predictions using threshold tuning.
