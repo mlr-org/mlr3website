@@ -270,57 +270,6 @@ plot(kc_housing$x2, kc_housing$price)
 
 :::
 
-## Exercise 4: Imputation
-
-In the three exercises before, we excluded two variables from the `kc_housing` data with missing values. Let's add them back to the data set and try to impute missing values automatically with a pipeline.
-
-```{r}
-kc_housing$yr_renovated = yr_renovated
-kc_housing$sqft_basement = sqft_basement
-task = as_task_regr(kc_housing, target = "price")
-# Check again which features in the task have NAs:
-names(which(task$missings() > 0))
-```
-
-Further, we use a simple train-test split as before:
-
-```{r}
-split = partition(task, ratio = 0.6)
-
-tasktrain = task$clone()
-tasktrain$filter(split$train)
-
-tasktest = task$clone()
-tasktest$filter(split$test)
-```
-
-As the two features with missing values are both numeric, we can compare two simple strategies for imputation: mean imputation and histogram imputation. While the former replaces `NAs` with the mean value of a feature, the latter samples from the empirical distribution of the non-`NA` values of the feature, ensuring that the marginal distribution is preserved. For each imputation method, construct a simple pipeline that trains a random forest without any HPO on the `tasktrain`, and evaluate the model on `tasktest` using MSE.
-
-:::{.callout-note collapse="true"}
-
-### Solution
-
-:::{.b64-solution}
-
-```{r, eval = params$showsolution}
-# Mean imputation:
-imp_mean_ranger = as_learner(po("imputemean") %>>% lrn("regr.ranger"))
-imp_mean_ranger$train(tasktrain)
-
-# Histogram imputation:
-imp_hist_ranger = as_learner(po("imputehist") %>>% lrn("regr.ranger"))
-imp_hist_ranger$train(tasktrain)
-
-# Evaluate performance:
-imp_mean_ranger$predict(tasktest)$score()
-imp_hist_ranger$predict(tasktest)$score()
-```
-
-
-:::
-
-:::
-
 # Summary
 
-We learned about more complex pipelines, including pre-processing methods for imputation, variable encoding and feature filtering.
+We learned about more complex pipelines, including pre-processing methods such as variable encoding and feature filtering.
