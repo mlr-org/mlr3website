@@ -1,0 +1,518 @@
+---
+title: Pipeline Imbalanced Classification
+group: Imbalanced
+categories:
+  - imbalanced
+author:
+  - name: Fiona Ewald
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Learn how to deal with imbalanced classification problems.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+
+# Goal
+
+The goal of this exercise is to learn how to deal with imbalanced
+classification problems. This consists of being able to select an appropriate
+performance metric and learn about methods to adjust the standard machine learning models to improve with respect to that metric.
+
+# Oil spill data
+
+## Data description
+
+The data we will be using in this exercise was first used in the 1998 paper by Miroslav Kubat, et al. named
+["Machine Learning for the Detection of Oil Spills in Satellite Radar Images."](https://link.springer.com/article/10.1023/A:1007452223027).
+
+The dataset contains a total of 937 observations.
+Each observation represents a patch of one of nine satellite images and contains information about the patch number and whether an oil spill is present. The rows in the dataset are ordered by image and patch.
+The data does not contain the original images but extracted numerical features.
+
+## Data dictionary
+
+* V1: The patch number
+* V2 - V49: The features that were extracted from the images by the Canadian Environmental Hazards Detection System (CEHDS).
+* V50: Whether an oil spill is present (encoded as 0) or not (encoded as 1)
+
+## Descriptive analysis and preprocessing
+
+```{r}
+library(data.table)
+oil = fread("../data/oil_spill.csv")
+```
+In our modeling approach we ignore spatial correlation in the patches and therefore drop the first column.
+
+```{r}
+oil$V1 = NULL
+```
+
+We also encode the target variable as a factor and rename it.
+
+```{r}
+oil$oilspill = factor(oil$V50, levels = c(0, 1), labels = c("no", "yes"))
+oil$V50 = NULL
+```
+
+The following gives us a nice compact summary of the data.
+
+```{r, echo=TRUE, out.width='.8\\textwidth', fig.width=8, fig.height=3}
+skimr::skim(oil)
+```
+
+After inspecting the distribution in more detail, we notice the following:
+
+* The target feature oilspill is highly imbalanced. There are 896 observations without and only 41 with an oil spill
+* The feature V23 is constantly 0 and we can remove it
+* The feature V33  only has 4 non-zero values and we could drop it, as we do not expect our machine learning algorithm to learn a lot from it
+* The features are not scaled. Because we will only use tree-based learners in this exercise, this is not a problem
+
+``` {r}
+oil$V33 = NULL
+oil$V23 = NULL
+```
+
+
+# 1 Benchmarking standard algorithms
+
+We will start by comparing two standard ML algorithms - a classification tree and a random forest - without taking the imbalanced class distribution into account.
+Inspecting some standard measures will reveal problems that will be addressed in the subsequent exercises.
+
+Start by creating a classification task with `"oilspill"` as the target variable and all other variables as features (except the ones we removed earlier).
+Set "yes" as the positive class and stratify with respect to the target variable to ensure the same class distribution in each fold.
+
+Then, compare a classification tree with a random forest with respect to their accuracy, FPR and TPR.
+As a validation strategy we use repeated (5 times) 3-fold stratified crossvalidation.
+We only use 3 folds because we have very few positive labels and we repeat the crossvalidation because the dataset is small.
+
+Inspect the results and answer whether accuracy is a good metric for this problem.
+
+<details>
+  <summary>**Recap: Stratification**</summary>
+  
+  Stratification consists of dividing the population into subsets (called strata) within each of which an independent sample is selected. When setting the column role `"stratum"`, resamplings that are applied to the task will automatically take the set stratum into account.
+
+  For binary classification problems, the column role `"positive"` is important, because metrics like the TPR and FPR can only be understood when knowing what is defined as the positive class.
+  
+</details>
+
+<details>
+  <summary>**Hint 1:**</summary>
+  
+  The function `as_task_classif()` can help to create a classification task from the dataset.
+  You can set the positive class and the stratification role by changing `task$positive` and `task$col_roles$stratum` after creating the task.
+
+  Then, create the benchmark design using `benchmark_grid()` and execute it using `benchmark()`. To calculate the performance metrics use the method `$aggregate()`, which takes a list of measures that can be constructed using `msrs()`.
+
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+
+```{r, eval = FALSE}
+library(mlr3verse)
+task = as_task_classif(...)
+task$col_roles$stratum = ...
+task$positive = ...
+
+learners = lrns(...)
+design = benchmark_grid(...)
+bmr = benchmark(...)
+bmr$aggregate(...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+  We convert the dataset to a task and set the stratum and the positive class.
+```{r}
+library(mlr3verse)
+task = as_task_classif(oil, target = "oilspill")
+task$col_roles$stratum = "oilspill"
+task$positive = "yes"
+```
+
+  Now we conduct the benchmark experiment and compare the resulting predictions using the accuracy, FPR and TPR.
+
+```{r}
+learners = lrns(c("classif.rpart", "classif.ranger"))
+res = rsmp("repeated_cv", folds = 3, repeats = 5)$instantiate(task)
+design = benchmark_grid(task, learners, res)
+
+bmr = benchmark(design)
+bmr$aggregate(msrs(c("classif.acc", "classif.fpr", "classif.tpr")))
+```
+
+  The accuracy is problematic for this task, because it focuses too heavily on the majority class.
+  The FPR and TPR show that, despite the high accuracy, we classify most of the positive instances incorrectly for both models. Interestingly, the simple classification tree has a higher TPR than the - usually superior - random forest.
+
+:::
+
+:::
+
+# 2 Selecting a suitable performance metric
+
+When selecting a suitable performance metric, we have to take the properties of
+the task into consideration. The detection of a spill
+requires mobilizing an expensive response, and missing an event is equally
+expensive, causing damage to the environment. Therefore, both class labels are
+important.
+
+For that reason we want to select a measure that is insensitive to
+changes in the class distribution in the test data. Can you modify the
+definition of the accuracy so that it does not depend on the distribution of the target
+variable? Compare this new metric with the standard accuracy used in the previous exercise.
+
+<details>
+  <summary>**Hint 1:**</summary>
+
+  The accuracy can be defined as $$ACC = P(\hat{Y} = 1 | Y = 1) \times P(Y = 1) + P(\hat{Y} = 0 | Y = 0) \times P(Y = 0)$$
+  Note that $TPR = P(\hat{Y} = 1 | Y = 1)$ is the true positive rate and $TNR = P(\hat{Y} = 0 | Y = 0)$ the true negative rate, where TNR = 1 - FPR (false positive rate). Hence, the accuracy can be viewed as a weighted average of TPR and TNR, where $P(Y = 1)$ (and $P(Y = 0) = 1 - P(Y = 1)$) are used as the corresponding weights.
+  The new metric should **not** depend on the class distribution $P(Y = 1)$ (and $P(Y = 0) = 1 - P(Y = 1)$), i.e., we can equally weight the TPR and TNR to obtain a metric that does not take into account the class distribution. The resulting metric is known as the balanced accuracy: $BACC = 0.5 \cdot TPR + 0.5 \cdot TNR = 0.5 \cdot TPR + 0.5 \cdot (1-FPR)$
+
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+
+  Read `msr("classif.bacc")$help()`.
+
+</details>
+
+```{r, eval = !params$showsolution, echo = FALSE, results='asis'}
+cat("<!--")
+```
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+  As defined in the hint, we have the accuracy $$ACC = P(\hat{Y} = 1 | Y = 1) \times P(Y = 1) + P(\hat{Y} = 0 | Y = 0) \times P(Y = 0)$$
+  We can remove the effects of the class distribution by dividing the first term by $P(Y = 1)$ and the second term by $P(Y = 0)$. When dividing the resulting expression by 2, we get what is referred to as the balanced accuracy (BACC). $$BACC = 0.5 \times (P(\hat{Y} = 1 | Y = 1) + P(\hat{Y} = 0 | Y = 0))$$
+
+  The balanced accuracy is the mean of sensitivity and specificity.
+
+  Comparing the balanced accuracy with the standard accuracy paints a very different picture.
+
+```{r}
+bmr$aggregate(msrs(c("classif.acc", "classif.bacc")))
+```
+
+:::
+
+:::
+
+
+# 3 Upsamling the minority class
+
+Although we have selected a performance metric (balanced accuracy) that is insensitive to the class distribution in the **test** data, we have considerably fewer positive than negative observations in the **training** data.
+This will make the random forest focus on the latter (no spill).
+
+To address that, create a machine learning pipeline that first upsamples the minority class by a factor of two and then fits a random forest.
+Add it to the benchmark result and compare the models with respect to the balanced accuracy.
+
+<details>
+  <summary>**Recap: Upsampling**</summary>
+
+  Upsampling is a procedure where synthetically generated data points (corresponding to minority class) are injected into the dataset.
+
+</details>
+
+<details>
+  <summary>**Hint 1:**</summary>
+
+  Use `po("classbalancing")` and combine it with the learner. PipeOps can be chained to a graph using `%>>%`. You can convert a graph to a learner using `as_learner()`
+  Remember to use the instantiated resampling from the previous benchmark experiment. A new resample result can be added to a benchmark result using `c(...)`.
+
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+
+```{r, eval = FALSE}
+graph = po(
+  "classbalancing",
+  ratio = ...,
+  reference = ...,
+  adjust = ...
+) %>>%
+  lrn(...)
+
+resampling = design$resampling[[1L]]
+
+learner_balanced = as_learner(...)
+
+rr = resample(...)
+
+bmr = c(...)
+
+autoplot(bmr, measure = ...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+  We start by creating and visualizing the machine learning pipeline.
+
+```{r, eval = params$showsolution}
+graph = po("classbalancing", ratio = 2, reference = "minor", adjust = "minor") %>>%
+  lrn("classif.ranger")
+
+graph$plot()
+```
+
+  The instantiated resampling can be retrieved from the design. We can select any row, because all instantiated resamplings from the previous benchmark experiment are identical.
+
+```{r, eval = params$showsolution}
+resampling = design$resampling[[1L]]
+identical(design$resampling[[1L]], design$resampling[[2L]])
+```
+
+  We convert the graph to a learner and execute our usual routine.
+```{r, eval = params$showsolution}
+learner_balanced = as_learner(graph)
+
+rr = resample(task, learner_balanced, resampling)
+
+bmr = c(bmr, rr)
+```
+
+  This time we compare the balanced accuracy values using a boxplot. The individual data-points for each boxplot are folds of the repeated crossvalidation.
+
+```{r, eval = params$showsolution}
+autoplot(bmr, measure = msr("classif.bacc"))
+```
+
+  Although the upsampling approach is superior to the vanilla random forest, there is still room for improvement
+
+:::
+
+:::
+
+
+# 4 Additional downsampling of the majority class
+
+
+Repeat the previous experiment, but now not only upsample the minority class like in the previous exercise, but also downsample the majority class to the same count.
+
+<details>
+  <summary>**Recap: Downsampling**</summary>
+  
+  Downsampling is a mechanism that reduces the count of training samples falling
+under the majority class.
+
+</details>
+
+<details>
+  <summary>**Hint 1:**</summary>
+  
+  Adjust the pipeline from the previous exercise.
+  Have a look what the `adjust` parameter of `po("classbalancing")` can be set to.
+
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+
+```{r, eval = FALSE}
+graph = po(
+  "classbalancing",
+  ratio = ...,
+  reference = ...,
+  adjust = ...
+) %>>%
+  ...
+
+learner_balanced_all = as_learner(graph)
+learner_balanced_all$id = ... # Set an id so that you can distinguish the pipelines when plotting the results
+...
+
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+graph = po(
+  "classbalancing",
+  ratio = 2,
+  reference = "minor",
+  adjust = "all"
+) %>>%
+  lrn("classif.ranger")
+
+learner_balanced_all = as_learner(graph)
+learner_balanced_all$id = "upanddown"
+
+rr = resample(task, learner_balanced_all, resampling)
+
+bmr = c(bmr, rr)
+
+autoplot(bmr, measure = msr("classif.bacc"))
+```
+
+  Additional downsampling of the majority class improved the result even further and is our best model so far.
+
+:::
+
+:::
+
+# 5 Instance-specific weights
+
+Add another logistic learner to the benchmark that uses instance-specific weights, assigning each observation in the minorty class double the weight compared to the majority class. Further, add a simple logistic regression learner to assess the additional performance difference due to instance-specific weights-
+
+<details>
+  <summary>**Hint 1:**</summary>
+  
+Use a graph that contains `po("classweights")` to specify the weights before the model training.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+# Learner with instance-specific weights
+graph = po("classweights", minor_weight = 2) %>>%
+  lrn("classif.log_reg")
+
+learner_classweights = as_learner(graph)
+learner_classweights$id = "classweights"
+
+rr1 = resample(task, learner_classweights, resampling)
+
+# Logistic regression learner
+logreg = lrn("classif.log_reg")
+
+rr2 = resample(task, logreg, resampling)
+
+bmr = c(bmr, rr1, rr2)
+
+autoplot(bmr, measure = msr("classif.bacc"))
+```
+
+While not as good as a combination of up- and down-sampling, using instance-specific weights improved the performance of logistic regression.
+
+:::
+
+:::
+
+# Bonus exercise: Tuning the sampling rate
+
+In the previous exercise we set the ratio to 2.
+See if tuning this value improves the result.
+Construct an `auto_tuner` with a 3-fold inner CV and a grid search over a suitable range of ratio.
+
+<details>
+  <summary>**Hint 1:**</summary>
+
+```{r, eval = FALSE}
+graph = po("classbalancing", reference = "minor", adjust = "all") %>>%
+  lrn("classif.ranger")
+
+learner_balanced_tuned = as_learner(graph)
+
+search_space = ps(classbalancing.ratio = ...)
+
+balanced_autotuner = auto_tuner(
+  tuner = tnr(..., resolution = ...),
+  learner = ...,
+  resampling = rsmp(...),
+  measure = msr(...),
+  search_space = search_space
+)
+
+rr = resample(task, balanced_autotuner, resampling)
+
+bmr = c(bmr, rr)
+
+autoplot(bmr, measure = msr("classif.bacc"))
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r, eval = params$showsolution}
+
+graph = po("classbalancing", reference = "minor", adjust = "all") %>>%
+  lrn("classif.ranger")
+
+learner_balanced_tuned = as_learner(graph)
+
+search_space = ps(classbalancing.ratio = p_dbl(1, 6))
+
+balanced_autotuner = auto_tuner(
+  tuner = tnr("grid_search", resolution = 6),
+  learner = learner_balanced_tuned,
+  resampling = rsmp("cv", folds = 3),
+  measure = msr("classif.bacc"),
+  search_space = search_space
+)
+
+rr = resample(task, balanced_autotuner, resampling)
+
+bmr = c(bmr, rr)
+
+autoplot(bmr, measure = msr("classif.bacc"))
+
+```
+
+  There is no (real) improvement in tuning, so a ratio of 2 seems like a reasonable choice.
+
+:::
+
+:::
+
+# Summary
+
+In this exercise we addressed the problem of imbalanced class
+distribution in classification problems. We have seen that standard metrics
+like accuracy can be misleading for such problems and learned how it can be
+modified to obtain a balanced accuracy. We then learned how to change the
+training distribution - using up- and downsampling - to improve the results.
+Finally, we got a better understanding of the importance of using
+stratification when having only very few positive labels.
+
+A similar usecase can be found here: https://mlr-org.com/gallery/2020-03-30-imbalanced-data/
