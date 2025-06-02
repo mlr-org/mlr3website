@@ -54,7 +54,7 @@ Let's load the data and remove an unwanted column:
 
 ```{r}
 bikes = as.data.frame(odt(id = 45103)$data)[,-c(10)]
-bikes[1:12] = lapply(bikes[1:12], as.numeric)
+bikes$rentals = as.numeric(as.character(bikes$rentals))
 ```
 
 Further, we artificially generate missing data entries for the feature `temp`:
