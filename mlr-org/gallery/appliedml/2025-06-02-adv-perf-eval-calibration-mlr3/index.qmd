@@ -109,7 +109,7 @@ Train an XBOOST model on the training data. To do so, initialize an XGBOOST lear
 
 :::{.b64-solution}
 
-```{r}
+```{r} 
 learner = lrn("classif.xgboost", predict_type = "prob")
 learner$id <- "Uncalibrated Learner"
 learner$train(task_train)
