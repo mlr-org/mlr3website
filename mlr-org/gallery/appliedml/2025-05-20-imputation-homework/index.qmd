@@ -54,7 +54,7 @@ Let's load the data and remove an unwanted column:
 
 ```{r}
 bikes = as.data.frame(odt(id = 45103)$data)[,-c(10)]
-bikes[1:12] = lapply(bikes[1:12], as.numeric)
+bikes$rentals = as.numeric(as.character(bikes$rentals))
 ```
 
 Further, we artificially generate missing data entries for the feature `temp`:
@@ -105,12 +105,17 @@ plot(graph)
 We want to tune a number of hyperparameters in the pipeline:
 1) The imputation method, as represented in the graph, and
 2) the `k` parameter of the kNN-based imputation method for values from 1 to 8.
-Define an appropriate search space.
+For the latter, we have to define a dependency to only vary `k` if kNN is chosen as imputation learner.
 
 <details>
 <summary>**Hint 1:**</summary>
 
 Remember that a graph can be treated as any other learner, and therefore, its parameter set can be accessed correspondingly. This means you can find the relevant parameter names in the correct field of the graph object.
+You can use the following code snippet to define dependencies:
+```{r, eval=FALSE}
+tune_ps$add_dep("...", "...", CondEqual$new("..."))
+```
+Take a look at `??ParamSet` for further information.
 
 </details>
 
@@ -131,8 +136,10 @@ A parameter space can be defined using the `ps()` sugar function.
 ```{r, messages=FALSE}
 tune_ps = ps(
   branch.selection = p_fct(c("impute_lm", "impute_knn")),
-  impute_knn.k = p_int(1L, 8L)
+  impute_knn.regr.kknn.k = p_int(1L, 8L)
 )
+# Tune k only when kNN is selected
+tune_ps$add_dep("impute_knn.regr.kknn.k", "branch.selection", CondEqual$new("impute_knn"))
 ```
 
 :::
