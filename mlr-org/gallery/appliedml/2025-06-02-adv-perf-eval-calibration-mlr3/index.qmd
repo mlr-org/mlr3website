@@ -1,0 +1,266 @@
+---
+title: Calibration with mlr3
+group: Advanced Performance Evaluation
+categories:
+  - calibration
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Learn the basics of `tidymodels` for supervised learning, assess if a model is well-calibrated, and calibrate it with `mlr3`.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+
+# Goal
+
+Our goal for this exercise sheet is to learn the basics of model calibration for supervised classification with `mlr3calibration`.
+In a calibrated model, the predicted probability for an input feature vector can be interpreted as the true likelihood of the outcome belonging to the positive class, meaning that among all instances assigned a probability of $p$, approximately $p\%$ will belong to the positive class.
+
+# Required packages
+
+We will use `mlr3` for machine learning, and `mlr3calibration` specifically for calibration:
+
+```{r, message = FALSE}
+if (!require("mlr3calibration")) {
+  remotes::install_github("AdriGl117/mlr3calibration")
+}
+library(mlr3calibration)
+library(mlr3verse)
+
+set.seed(12345)
+```
+
+# Data: predicting cell segmentation quality
+
+The `modeldata` package contains a data set called `cells`. Initially distributed by [Hill and Haney (2007)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-340), they showed how to create models that predict the _quality_ of the image analysis of cells. The outcome has two levels: `"PS"` (for poorly segmented images) or `"WS"` (well-segmented). There are 56 image features that can be used to build a classifier. 
+
+Let's load the data and remove an unwanted column: 
+
+```{r}
+library(modeldata)
+data(cells, package = "modeldata")
+cells$case <- NULL
+```
+
+# 1 Calibrate a model with Platt scaling
+
+We will apply Platt scaling to calibrate a model trained on the `cells` data. Platt scaling is a post-processing calibration method that fits a logistic regression model to the outputs of an uncalibrated classifier, transforming raw scores into calibrated probabilities.
+
+## 1.1 Creating a train-test split and tasks
+
+First, define a `task` object for the `cells` data set. Then, create a simple train-test split on the task to reserve test data for performance evaluation later on. As result, there should be a `task_train` and a `task_test`.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You can use `partition()` on a given task object to create simple train-test split.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+task = as_task_classif(cells, target = "class")
+splits = partition(task)
+task_train = task$clone()$filter(splits$train)
+task_test = task$clone()$filter(splits$test)
+```
+
+:::
+
+:::
+
+## 1.2 Assess model calibration
+
+Train an XBOOST model on the training data. To do so, initialize an XGBOOST learner with `predict_type = "prob"`. Then, set `learner$id <- "Uncalibrated Learner"` for later reference. Train the learner on the correct task. Then, assess if the model is calibrated with `calibrationplot()`. The calibration plot shows the relationship between the predicted probabilities and the true outcomes. The plot is divided into bins, and within each bin, the mean predicted probability and the mean observed outcome are calculated. The calibration plot can be smoothed by setting `smooth = TRUE`.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+`calibrationplot()` requires a `list` of learners even if the list contains only one argument.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r} 
+learner = lrn("classif.xgboost", predict_type = "prob")
+learner$id <- "Uncalibrated Learner"
+learner$train(task_train)
+calibrationplot(list(learner), task_test, smooth = TRUE)
+```
+
+The model is not well-calibrated. For predicted probabilities from 0 to 0.4, it seems to underestimate the true probability, for predicted probabilities higher than 0.4, it tends to overestimate the true probability.
+
+:::
+
+:::
+
+## 1.3 Calibration strategy
+
+In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibration method (Platt, Beta or Isotonic). Initialize 1) another XGBOOST base learner, 2) a 5-fold CV resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibration` object. It requires the base learner (`learner`), the calibration method (`method`), and the resampling method (`rsmp`) as arguments to be initialized. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval = FALSE}
+learner_uncal = ...
+rsmp = ...
+learner_cal = as_learner(PipeOpCalibration$new(...))
+learner_cal$id <- "Platt Calibrated Learner"
+```
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+Check the documentation of `PipeOpCalibration` with `??PipeOpCalibration`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+learner_uncal = lrn("classif.xgboost", predict_type = "prob")
+rsmp = rsmp("cv", folds = 5)
+learner_cal = as_learner(PipeOpCalibration$new(learner = learner_uncal, method = "platt", rsmp = rsmp))
+learner_cal$id <- "Platt Calibrated Learner"
+```
+
+:::
+
+:::
+
+## 1.4 Calibrate learner
+
+The calibrated learner can be trained on a `task` as any other learner. Train the learner on `task_train`. Afterwards, plot the calibration plot again, comparing the uncalibrated XGBOOST model with the Platt-scaled XGBOOST model.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+learner_cal$train(task_train)
+calibrationplot(list(learner, learner_cal), task_test, smooth = TRUE)
+```
+
+While the calibrated learner does not exhibit perfect calibration, it is much better calibrated then the uncalibrated learner, especially for predicted probabilities smaller than 0.5.
+
+:::
+
+:::
+
+# 2 Calibration measures
+
+`mlr3calibration` features measures for performance evaluation specifically to assess model calibration: the Expected Calibration Error (ECE) and the Integrated Calibration Index (ICI). The ECE is a measure of the difference between the predicted probabilities and the true outcomes. The ICI is a weighted average of the absolute differences between the calibration curve and
+the diagonal perfectly calibrated line. Compute the ECE for both models. The calibration measures are implemented similarly to other measures in `mlr3`. Therefore, you need to 1) predict on the test data and then 2) score the predictions while specifying the correct calibration measure.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+Check `??mlr3calibration::ece` on how to initialize the ECE measure within `$score()`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+# Predictions
+preds_uncal = learner$predict(task_test)
+preds_cal = learner_cal$predict(task_test)
+# Calculate the ECE
+ece_uncal = preds_uncal$score(ece$new())
+ece_cal = preds_cal$score(ece$new())
+# Uncalibrated ECE
+ece_uncal
+# Calibrated ECE
+ece_cal
+```
+
+The calibrated model has a much lower ECE. Therefore, we can infer that Platt scaling was successful in producing a more well-calibrated model.
+
+:::
+
+:::
+
+# 3 Tuning and Pipelines
+
+`PipeOpCalibration` can be treated as any other `PipeOp` object. Therefore, we can use them within more complex tuning and pipeline constructs. There are many sensible options. For example, we could pass a tuned base learner to the calibrator or tune the base learner within the calibrator. Similarly, we can include a calibrated learner in a pipeline or choose to calibrate the entire pipeline. Let's try how to connect a feature filter to a calibrator. Construct a pipeline that 1) filters the 10 most relevant features according to their information gain, 2) then fits a random forest, and 3) calibrate this pipeline with beta calibration using 5-fold CV. Express this calibrated pipeline as learner, train it on the training task and plot the calibration plot with the Platt scaled and beta-calibrated models.
+
+
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You may use this skeleton code for the required steps.
+
+```{r, eval = FALSE}
+po_filter = po(...)
+pipeline = as_learner(... %>>% ...)
+pipeline_cal = as_learner(PipeOpCalibration$new(...))
+pipeline_cal$id <- "Beta Calibrated Learner"
+pipeline_cal$train(...)
+calibrationplot(...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+po_filter = po("filter", filter = flt("information_gain"), param_vals = list(filter.nfeat = 10L))
+pipeline = as_learner(po_filter %>>% lrn("classif.ranger", predict_type = "prob"))
+pipeline_cal = as_learner(PipeOpCalibration$new(learner = pipeline,
+                                                rsmp = rsmp("cv", folds = 10),
+                                                method = "beta"))
+pipeline_cal$id <- "Beta Calibrated Learner"
+pipeline_cal$train(task_train)
+calibrationplot(list(learner_cal, pipeline_cal), task_test, smooth = TRUE)
+```
+
+The beta-calibrated random forest model seems very well-calibrated.
+
+:::
+
+:::
