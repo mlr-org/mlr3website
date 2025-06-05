@@ -1,0 +1,375 @@
+---
+title: Calibration with mlr3 V2
+group: Advanced Performance Evaluation
+categories:
+  - calibration
+author:
+  - name: Giuseppe Casalicchio
+  - name: Essential Data Science Training GmbH
+    url: https://www.essentialds.de
+description: |
+  Learn the basics of `tidymodels` for supervised learning, assess if a model is well-calibrated, and calibrate it with `mlr3`.
+date: ""
+params:
+  showsolution: true
+  base64encode: true
+listing: false
+search: false
+format:
+  html:
+    filters:
+      - ../../b64_solution.lua
+---
+
+{{< include ../../_setup.qmd >}}
+{{< include ../../_setup_encrypt_lua.qmd >}}
+
+```{r, include=FALSE}
+set.seed(123)
+```
+
+# Goal
+
+Our goal for this exercise sheet is to learn the basics of model calibration for supervised classification with `mlr3calibration`.
+In a calibrated model, the predicted probability for an input feature vector can be interpreted as the true likelihood of the outcome belonging to the positive class, meaning that among all instances assigned a probability of $p$, approximately $p\%$ will belong to the positive class.
+
+# Required packages
+
+We will use `mlr3` for machine learning, and `mlr3calibration` specifically for calibration:
+
+```{r, message = FALSE}
+if (!require("mlr3calibration")) {
+  remotes::install_github("AdriGl117/mlr3calibration")
+}
+library(mlr3calibration)
+library(mlr3verse)
+library(mlr3learners)
+
+set.seed(12345)
+```
+
+# Data: predicting cell segmentation quality
+
+The `modeldata` package contains a data set called `cells`. Initially distributed by [Hill and Haney (2007)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-340), they showed how to create models that predict the _quality_ of the image analysis of cells. The outcome has two levels: `"PS"` (for poorly segmented images) or `"WS"` (well-segmented). There are 56 image features that can be used to build a classifier. 
+
+Let's load the data and remove an unwanted column: 
+
+```{r}
+library(modeldata)
+data(cells, package = "modeldata")
+cells$case <- NULL
+```
+
+# 1 Checking cardinality properties
+
+## 1.1 Creating a split
+
+First, define a `task` object for the `cells` data set. Then, create a simple train-test split on the task to reserve test data for performance evaluation later on. As result, there should be a `cells_train` and a `cells_test`..
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You can use `partition()` on a given task object to create simple train-test split.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+task = as_task_classif(cells, target = "class")
+splits = partition(task)
+cells_train = task$clone()$filter(splits$train)
+cells_test = task$clone()$filter(splits$test)
+```
+
+:::
+
+:::
+
+## 1.2 Training a Naive Bayes model
+
+We'll show the utility of calibration tools by using a type of model that, in this instance, is likely to produce a poorly calibrated model. The Naive Bayes classifier is a well-established model that assumes that the predictors are statistically _independent_ of one another (to simplify the calculations).  While that is certainly not the case for this data, the model can be effective at discriminating between the classes. Unfortunately, when there are many predictors in the model, it has a tendency to produce class probability distributions that are pathological. The predictions tend to gravitate to values near zero or one, producing distributions that are "U"-shaped ([Kuhn and Johnson, 2013](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q=%22Applied+Predictive+Modeling%22&btnG=)). 
+
+To demonstrate, let's set up a Naive Bayes learner and train it using the training data.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+First, create and train the learner.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r} 
+learner = lrn("classif.naive_bayes", predict_type = "prob")
+learner$id <- "Uncalibrated Learner"
+learner$train(cells_train)
+```
+
+:::
+
+:::
+
+## 1.3 Predicting on unseen test data
+
+Next, use the trained model to predict on unseen test data. In `mlr3`, this will return two columns of predicted probabilities, one for `"PS"` and one for `"WS"`.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You can use this code skeleton to produce the desired output:
+
+```{r, eval = FALSE}
+learner$predict(...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+prediction = learner$predict(cells_test)
+prediction
+```
+
+:::
+
+:::
+
+## 1.4 Assessing model performance
+
+We want to use two metrics to judge how well the model performs. First, the area under the ROC curve (ROC AUC) is used to measure the ability of the model to separate the classes (its mere ability to discriminate correctly). Second, the Brier score is used to measure how close the probability estimates are to the actual outcome values (its ability to express confidence in the label predictions). Compute the ROC AUC and the Brier Score on the test data predictions.
+
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+measures = msrs(c("classif.auc", "classif.bbrier"))
+prediction$score(measures)
+```
+
+:::
+
+:::
+
+## 1.5 Assessing model calibration
+
+Let's assess if our model is well-calibrated. Spoiler: it is not. The first clue is the extremely U-shaped distribution of the probability scores:
+
+```{r, message = FALSE}
+hist(prediction$data$prob, breaks = (0:10)/10)
+```
+
+There are almost no cells with moderate probability estimates.
+
+Then, assess if the model is calibrated with `calibrationplot()`. The calibration plot shows the relationship between the predicted probabilities and the true outcomes. The plot is divided into bins, and within each bin, the mean predicted probability and the mean observed outcome are calculated. The calibration plot can be smoothed by setting `smooth = TRUE`.
+
+<details>
+<summary>**Hint 1:**</summary>
+
+`calibrationplot()` requires a `list` of learners even if the list contains only one argument.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+calibrationplot(list(learner), cells_test, smooth = TRUE)
+```
+The model is not well-calibrated. For predicted probabilities from 0 to 0.4, it seems to underestimate the true probability, for predicted probabilities higher than 0.4, it tends to overestimate the true probability.
+
+:::
+
+:::
+
+## 1.6 Platt Scaling
+
+The good news is that we can do something about this. There are tools to "fix" the probability estimates so that they have better properties, such as falling along the diagonal lines in the diagnostic plots shown above. Different methods improve the predictions in different ways. 
+
+The most common approach is Platt scaling, also called logistic calibration. This works in the following way: The original model is used to predict on the validation data set, returning predicted probabilities. We already know these probabilities are off, i.e., not well-calibrated. Then, we fit a simple logistic regression model, using the predicted probabilities from the original model as "x/feature" and the true labels as "y/target". In this way, we stack a second model on top of the first one: Original Model -> Probabilities -> Logistic Regression Model -> Calibrated Probabilities.
+
+If effective, the logistic regression model estimates the probability regions where the original model is off (as shown in the diagnostic plot). For example, suppose that when the model predicts a 2% event rate, the logistic regression model estimates that it under-predicts the probability by 5% (relative to the observed data). Given this gap, new predictions are adjusted up so that the probability estimates are more in-line with the data.
+
+In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibration method (Platt, Beta or Isotonic). Initialize 1) another Naive Bayes base learner, 2) a 5-fold CV resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibration` object. It requires the base learner (`learner`), the calibration method (`method`), and the resampling method (`rsmp`) as arguments to be initialized. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
+
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval = FALSE}
+learner_uncal = ...
+rsmp = ...
+learner_cal = as_learner(PipeOpCalibration$new(...))
+learner_cal$id <- "Platt Calibrated Learner"
+```
+
+</details>
+
+<details>
+<summary>**Hint 2:**</summary>
+
+Check the documentation of `PipeOpCalibration` with `??PipeOpCalibration`.
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+learner_uncal = lrn("classif.naive_bayes", predict_type = "prob")
+rsmp = rsmp("cv", folds = 5)
+learner_cal = as_learner(PipeOpCalibration$new(learner = learner_uncal, method = "platt", rsmp = rsmp))
+learner_cal$id <- "Platt Calibrated Learner"
+```
+
+:::
+
+:::
+
+The calibrated learner can be trained on a `task` as any other learner. Train the learner on `cells_train`. Afterwards, plot the calibration plot again, comparing the uncalibrated Naive Bayes model with the Platt-scaled Naive Bayes model.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+learner_cal$train(cells_train)
+calibrationplot(list(learner, learner_cal), cells_test)
+```
+
+While the calibrated learner does not exhibit perfect calibration, it is better calibrated than the plain learner. #TODO
+
+:::
+
+:::
+
+ 
+# 2 Isotonic regression
+
+A different approach to calibration is to use isotonic regression. In a manner similar to logistic calibration, use `mlr3` to calibrate the Naive Bayes model using isotonic regression. Do we improve the calibration in comparison to Platt scaling?
+
+<details>
+<summary>**Hint 1:**</summary>
+
+```{r, eval = FALSE}
+learner_uncal = ...
+rsmp = ...
+learner_cal = as_learner(PipeOpCalibration$new(...))
+learner_cal$id <- "Isotonic Calibrated Learner"
+learner_cal$train(cells_train)
+
+# Did we improve?
+prediction_iso = ...
+measures = ...
+prediction_iso$score(measures)
+
+calibrationplot(...)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+Yes, we can see in the plot that it is very close to the true probabilities: #TODO why other way round?
+
+```{r}
+# Train base model on training set
+learner_uncal <- lrn("classif.naive_bayes", predict_type = "prob")
+rsmp = rsmp("cv", folds = 5)
+
+# Train isotonic calibrator using validation predictions
+learner_cal_iso = as_learner(PipeOpCalibration$new(learner = learner_uncal, method = "isotonic", rsmp = rsmp))
+learner_cal_iso$id <- "Isotonic Calibrated Learner"
+learner_cal_iso$train(cells_train)
+
+# Did we improve?
+prediction_iso = learner_cal_iso$predict(cells_test)
+measures = msrs(c("classif.auc", "classif.bbrier"))
+prediction_iso$score(measures)
+
+calibrationplot(list(learner, learner_cal, learner_cal_iso), cells_test, smooth = TRUE)
+```
+:::
+
+:::
+
+# 3 Resamping for Calibration with mlr3
+
+`PipeOpCalibration` can be treated as any other `PipeOp` object. Therefore, we can use them within more complex tuning and pipeline constructs, i.e. in cross-validation (CV), to assess calibration methods.
+
+Fit 10 Naive Bayes models using 10-fold CV and calibrate each of these models using beta calibration, another calibration method.
+
+
+
+<details>
+<summary>**Hint 1:**</summary>
+
+You can use the following code skeleton, detailing the required steps:
+
+```{r, eval = FALSE}
+pipeline_cal = as_learner(PipeOpCalibration$new(learner = ...,
+                                                rsmp = ...,
+                                                method = ...))
+pipeline_cal$id <- "Beta Calibrated Learner"
+pipeline_cal$...
+calibrationplot(..., smooth = TRUE)
+```
+
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+pipeline_cal = as_learner(PipeOpCalibration$new(learner = lrn("classif.naive_bayes", predict_type = "prob"),
+                                                rsmp = rsmp("cv", folds = 10),
+                                                method = "beta"))
+pipeline_cal$id <- "Beta Calibrated Learner"
+pipeline_cal$train(cells_train)
+calibrationplot(list(pipeline_cal), cells_test, smooth = TRUE)
+```
+
+:::
+
+:::
+
+# Summary
+
+In this exercise sheet we learned how to fit a classification model on
+a training task and how to assess its performance on unseen test data with
+the help of `mlr3`.
+We showed how to split data manually into training and test data, and use `mlr3` to assess if a model is calibrated.
+We discussed how Platt scaling/logistic calibration and isotonic regression can be used to improve calibration (although not perfectly calibrate the model here).
