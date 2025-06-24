@@ -110,18 +110,18 @@ What is missing to actually mimic a Random Forest?
 ```{r, eval = FALSE}
 resampling = rsmp("cv", folds  = 10L)$instantiate(task)
 pl = po("...") %>>% po("...", learner = ...)
-gr = ppl("greplicate", ...)
-gr = gr %>>% po("classifavg")
-grl = as_learner(gr)
-grl$id = "bagged_trees"
-grl$graph$plot()
-grl$train(task)
+graph = ppl("greplicate", ...)
+graph = graph %>>% po("classifavg")
+graphLearner = as_learner(graph)
+graphLearner$id = "bagged_trees"
+graphLearner$graph$plot()
+graphLearner$train(task)
 
 dt = lrn("classif.rpart")
 dt$id = "tree"
 dt$train(task)
 
-rpart.plot(grl$...)
+rpart.plot(graphLearner$...)
 ...
 ```
 </details>
@@ -135,20 +135,20 @@ rpart.plot(grl$...)
 ```{r, eval = params$showsolution}
 resampling = rsmp("cv", folds  = 10L)$instantiate(task)
 pl = po("subsample") %>>% po("learner", learner = lrn("classif.rpart", maxdepth = 3L))
-gr = ppl("greplicate", graph = pl, n = 3L)
-gr = gr %>>% po("classifavg")
-grl = as_learner(gr)
-grl$id = "bagged_trees"
-grl$graph$plot()
-grl$train(task)
+graph = ppl("greplicate", graph = pl, n = 3L)
+graph = graph %>>% po("classifavg")
+graphLearner = as_learner(graph)
+graphLearner$id = "bagged_trees"
+graphLearner$graph$plot()
+graphLearner$train(task)
 
 dt = lrn("classif.rpart", maxdepth = 3L)
 dt$id = "tree"
 dt$train(task)
 
-rpart.plot(grl$state$model$classif.rpart_1$model)
-rpart.plot(grl$state$model$classif.rpart_2$model)
-rpart.plot(grl$state$model$classif.rpart_3$model)
+rpart.plot(graphLearner$state$model$classif.rpart_1$model)
+rpart.plot(graphLearner$state$model$classif.rpart_2$model)
+rpart.plot(graphLearner$state$model$classif.rpart_3$model)
 rpart.plot(dt$state$model)
 ```
 Although each of the 3 trees sees different data during training, the first split is the same as if we had trained on all data.
@@ -175,7 +175,7 @@ As a follow up question, would it make sense to change the weights used by the c
  
 ```{r, eval = FALSE}
 dt$param_set$set_values(.values = list(maxdepth = NULL))
-grl$...
+graphLearner$...
 ...
 
 ranger3 = lrn("classif.ranger", ...)
@@ -185,7 +185,7 @@ ranger10$id = "rf_10"
 ranger100 = lrn("classif.ranger", ...)
 ranger100$id = "rf_100"
 
-grl$predict_type = "prob"
+graphLearner$predict_type = "prob"
 ...
 
 bg = benchmark_grid(...)
@@ -202,7 +202,7 @@ autoplot(..., measure = ...)
 
 ```{r, eval = params$showsolution}
 dt$param_set$set_values(.values = list(maxdepth = NULL))
-grl$param_set$set_values(.values = list(classif.rpart_1.maxdepth = NULL, classif.rpart_2.maxdepth = NULL, classif.rpart_3.maxdepth = NULL))
+graphLearner$param_set$set_values(.values = list(classif.rpart_1.maxdepth = NULL, classif.rpart_2.maxdepth = NULL, classif.rpart_3.maxdepth = NULL))
 
 ranger3 = lrn("classif.ranger", num.trees = 3L)
 ranger3$id = "rf_3"
@@ -211,13 +211,13 @@ ranger10$id = "rf_10"
 ranger100 = lrn("classif.ranger", num.trees = 100L)
 ranger100$id = "rf_100"
 
-grl$predict_type = "prob"
+graphLearner$predict_type = "prob"
 dt$predict_type = "prob"
 ranger3$predict_type = "prob"
 ranger10$predict_type = "prob"
 ranger100$predict_type = "prob"
 
-bg = benchmark_grid(task, list(grl, dt, ranger3, ranger10, ranger100), resampling)
+bg = benchmark_grid(task, list(graphLearner, dt, ranger3, ranger10, ranger100), resampling)
 b = benchmark(bg)
 autoplot(b, measure = msr("classif.auc"))
 ```
@@ -257,14 +257,14 @@ log_reg$predict_type = "prob"
 featureless = lrn(...)
 featureless$predict_type = "prob"
 
-gr = gunion() %>>% po(...)
-grl = as_learner(gr)
+graph = gunion() %>>% po(...)
+graphLearner = as_learner(graph)
 
 bg = benchmark_grid(...)
 b = benchmark(...)
 b$aggregate(...)
 
-grl_weights_adjusted = grl$clone(deep = TRUE)
+grl_weights_adjusted = graphLearner$clone(deep = TRUE)
 grl_weights_adjusted$param_set$set_values(...)
 grl_weights_adjusted$id = paste0(grl_weights_adjusted$id, ".weights_adjusted")
 
@@ -290,18 +290,18 @@ log_reg$predict_type = "prob"
 featureless = lrn("classif.featureless")
 featureless$predict_type = "prob"
 
-gr = gunion(list(dt, kknn, log_reg)) %>>% po("classifavg")
-grl = as_learner(gr)
+graph = gunion(list(dt, kknn, log_reg)) %>>% po("classifavg")
+graphLearner = as_learner(graph)
 
-bg = benchmark_grid(task, list(grl, dt, kknn, log_reg, featureless), resampling)
+bg = benchmark_grid(task, list(graphLearner, dt, kknn, log_reg, featureless), resampling)
 b = benchmark(bg)
 b$aggregate(msr("classif.auc"))
 
-grl_weights_adjusted = grl$clone(deep = TRUE)
+grl_weights_adjusted = graphLearner$clone(deep = TRUE)
 grl_weights_adjusted$param_set$set_values(.values = list(classifavg.weights = c(0.3, 0.1, 0.6)))
 grl_weights_adjusted$id = paste0(grl_weights_adjusted$id, ".weights_adjusted")
 
-bg = benchmark_grid(task, list(grl, grl_weights_adjusted, dt, kknn, log_reg, featureless), resampling)
+bg = benchmark_grid(task, list(graphLearner, grl_weights_adjusted, dt, kknn, log_reg, featureless), resampling)
 b = benchmark(bg)
 b$aggregate(msr("classif.auc"))
 ```
@@ -346,7 +346,7 @@ Why is our approach (i.e., how we constructed the objective function) ineffectiv
   <summary>**Hint 2:**</summary>
  
 ```{r, eval = FALSE}
-grl_weights_optimized = grl$clone(deep = TRUE)
+grl_weights_optimized = graphLearner$clone(deep = TRUE)
 grl_weights_optimized$id = paste0(grl_weights_optimized$id, ".weights_optimized_naive")
 
 objective_function = function(xs) {
@@ -385,7 +385,7 @@ optimizer$optimize(instance)
 :::{.b64-solution}
 
 ```{r, eval = params$showsolution, results = "hide"}
-grl_weights_optimized = grl$clone(deep = TRUE)
+grl_weights_optimized = graphLearner$clone(deep = TRUE)
 grl_weights_optimized$id = paste0(grl_weights_optimized$id, ".weights_optimized_naive")
 
 objective_function = function(xs) {
