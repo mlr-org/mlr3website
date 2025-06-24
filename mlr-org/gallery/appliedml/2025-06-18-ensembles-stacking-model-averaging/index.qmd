@@ -85,11 +85,9 @@ set.seed(2409)
 
 # 1 Build a "Random Forest" From Scratch
 
-## 1.1 Create three Bagged Trees
+## 1.1 Create a Pipeline for Tree Fitting
 
-### 1.1.1 Create a Pipeline for Tree Fitting
-
-Create a pipeline training a desicion tree with maximum depth of 3. Use 10-fold CV. Create subsamples of data, using the subsample `PipeOp`. This simulates Random Forest for later. Each tree sees a slightly different sample, similar to bagging.
+Create a pipeline to train a decision tree with a maximum depth of 3, using 10-fold cross-validation (CV). Use the subsample `PipeOp` to generate subsamples. This approach simulates the behavior of a Random Forest, as each tree will be trained on slightly different samples, similar to the bagging technique.
 
 :::{.callout-note collapse="true"}
 
@@ -100,7 +98,6 @@ Create a pipeline training a desicion tree with maximum depth of 3. Use 10-fold 
 ```{r}
 resampling = rsmp("cv", folds  = 10L)$instantiate(task)
 pl = po("subsample") %>>% po("learner", learner = lrn("classif.rpart", maxdepth = 3L))
-pl$train(task)
 pl$plot()
 ```
 
@@ -108,10 +105,10 @@ pl$plot()
 
 :::
 
-### 1.1.2 Create three Bagged Trees
+## 1.2 Create three Bagged Trees
 
 Use the pipeline in 1.1.1 to create three bagged trees. Plot the graph learner representing your ensemble.
-Plot each of the 3 decision trees of the ensemble after training on all data.
+Plot each of the three decision trees of the ensemble after training on all data.
 
 <details>
   <summary>**Hint 1:**</summary>
@@ -151,9 +148,9 @@ rpart.plot(grl$state$model$classif.rpart_3$model)
 
 :::
 
-### 1.1.3 Comparision to Single Decision Tree and Random Forest
+## 1.3 Compare to a Single Decision Tree
 
-Compare this to a single decision tree with a maximum depth of 3 trained on all data.
+Compare this graph learner to a single decision tree with a maximum depth of 3 trained on all data.
 What is missing to actually mimic a Random Forest?
 
 :::{.callout-note collapse="true"}
@@ -169,20 +166,20 @@ dt$train(task)
 rpart.plot(dt$state$model)
 ```
 
-Although each of the 3 trees sees different data during training, the first split is the same as if we had trained on all data.
-In an actual Random Forest, feature variables are randomly selected as potential splitting candidates which makes trees more heterogeneous.
+Although each of the three trees is trained on different data, the first split remains the same as if we had trained on the entire dataset.
+In an actual Random Forest, feature variables are randomly selected as potential splitting candidates, which makes trees more heterogeneous.
+
 
 :::
 
 :::
 
 
-## 1.2 Reset Maximum Depth and compare to Random Forest
+## 1.4 Reset Maximum Depth and Compare to Random Forest
 
 Reset the maximum depth hyperparameter values for each tree of your ensemble and the decision tree.
 Proceed to benchmark the ensemble of three trees against the decision tree and an actual ranger Random Forest with 3, 10 and 100 trees.
 Use 10-fold CV to evaluate the ROC AUC of the models.
-As a follow up question, would it make sense to change the weights used by the classifavg `PipeOp` to combine the predictions?
 
 <details>
   <summary>**Hint 1:**</summary>
@@ -260,9 +257,7 @@ By default classifavg uses equal weights to combine the predictions of the model
 
 <details>
   <summary>**Hint 1:**</summary>
-  If you are not familiar with a k-NN learner, you may catch up here: https://slds-lmu.github.io/i2ml/chapters/05_knn/
-  You can largely reuse parts of the graph learner you previously constructed (excluding the subsampling part).
-  To manually set a weight vector as a hyperparameter of the graph learner, inspect its `$param_set` and make use of the `$set_values()` function.
+  If you are not familiar with a k-NN learner, you may catch up here: https://slds-lmu.github.io/i2ml/chapters/05_knn/ .
 </details>
 
 <details>
@@ -321,6 +316,11 @@ Can you manually find a weighting scheme that results in better performance than
 
 <details>
   <summary>**Hint 1:**</summary>
+  To manually set a weight vector as a hyperparameter of the graph learner, inspect its `$param_set` and make use of the `$set_values()` function.
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
  
 ```{r, eval = FALSE}
 grl_weights_adjusted = grl$clone(deep = TRUE)
@@ -367,11 +367,11 @@ To construct the `OptimInstanceSingleCrit` do the following:
 
 ## 3.1 Objective Function
 
-create the `objective_function` (a standard R function) accepting `xs` (a list) as input:
-  - `xs` will be the weights in the form of a list
-  - extract the weights and use them within the ensemble (e.g., clone the graph learner from the previous exercise and set the `classifavg.weights`)
-  - use `resample` on  this weighted ensemble
-  - extract the ROC AUC and return it in a list
+Create the `objective_function` (a standard R function) accepting `xs` (a list) as input:
+* `xs` will be the weights in the form of a list
+* extract the weights and use them within the ensemble (e.g., clone the graph learner from the previous exercise and set the `classifavg.weights`)
+* use `resample` on  this weighted ensemble
+* extract the ROC AUC and return it in a list
 
 <details>
   <summary>**Hint 1:**</summary>
@@ -423,8 +423,12 @@ objective_function = function(xs) {
   
 ## 3.2 Domain
 
-create the `domain` (the space we optimize over):
-  - we optimize over the three numeric weight parameters with values from 0 to 1 (have a look at `?p_dbl`) 
+Create the `domain` (the space we optimize over): Here, we optimize over the three numeric weight parameters with values from 0 to 1. 
+
+<details>
+  <summary>**Hint 1:**</summary>
+  Eventally, have a look at `?p_dbl`.
+</details>
   
 <details>
   <summary>**Hint 2:**</summary>
@@ -451,9 +455,9 @@ domain = ps(w_dt = p_dbl(0, 1), w_kknn = p_dbl(0, 1), w_log_reg = p_dbl(0, 1))
   
 ## 3.3 Codomain
 
-create the codomain (describing the output space):
-  - we maximize the numeric ROC AUC value
-  - to make sure that we maximize instead of minimize (the `bbotk` default) set `tags = "maximize"`of this `p_dbl`
+Create the codomain (describing the output space):
+* we maximize the numeric ROC AUC value
+* to make sure that we maximize instead of minimize (the `bbotk` default) set `tags = "maximize"`of this `p_dbl`
   
 <details>
   <summary>**Hint 2:**</summary>
@@ -477,12 +481,17 @@ codomain = ps(classif.auc = p_dbl(0.5, 1, tags = "maximize"))
 
 :::
   
-## 3.4 Collect everything
+## 3.4 Wrap up
 
-collect everything in an `OptimInstanceSingleCrit`
+Collect everything in an `OptimInstanceSingleCrit`.
  
 Use random search as an optimizer and terminate after 10 function evaluations.
 Why is our approach (i.e., how we constructed the objective function) ineffective?
+
+<details>
+  <summary>**Hint 1:**</summary>
+  You first have to create an `ObjectiveRFun` object.
+</details>
 
 <details>
   <summary>**Hint 2:**</summary>
