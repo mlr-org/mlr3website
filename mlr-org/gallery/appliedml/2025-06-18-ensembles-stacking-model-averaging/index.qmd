@@ -1,5 +1,5 @@
 ---
-title: Model Averaging 
+title: Model Averaging
 group: Ensembles Stacking
 categories:
   - ensembles stacking
@@ -8,7 +8,7 @@ author:
   - name: Essential Data Science Training GmbH
     url: https://www.essentialds.de
 description: |
-  Do ensembling and model averaging on german credit set.
+  Learn how to do ensembling and model averaging with `mlr3pipelines` and optimizing weights with `bbotk`.
 date: ""
 params:
   showsolution: true
@@ -85,45 +85,36 @@ set.seed(2409)
 
 # 1 Build a "Random Forest" From Scratch
 
-## 1.1 Create three Bagged Trees
+## 1.1 Create a Pipeline for Tree Fitting
 
-Use the classifavg `PipeOP` to combine predictions of decision trees trained on different subsamples of the `german_credit` task similarly as in a Random Forest.
-Use 3 decision trees with a maximum depth of 3.
-To create subsamples of data, the subsample `PipeOp` comes in handy.
-Plot the graph learner representing your ensemble.
-Plot each of the 3 decision trees of the ensemble after training on all data.
-Compare this to a single decision tree with a maximum depth of 3 trained on all data.
-What is missing to actually mimic a Random Forest?
+Create a pipeline to train a decision tree with a maximum depth of 3, using 10-fold cross-validation (CV). Use the subsample `PipeOp` to generate subsamples. This approach simulates the behavior of a Random Forest, as each tree will be trained on slightly different samples, similar to the bagging technique.
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+resampling = rsmp("cv", folds  = 10L)$instantiate(task)
+pl = po("subsample") %>>% po("learner", learner = lrn("classif.rpart", maxdepth = 3L))
+pl$plot()
+```
+
+:::
+
+:::
+
+## 1.2 Create three Bagged Trees
+
+Use the pipeline in 1.1.1 to create three bagged trees. Plot the graph learner representing your ensemble.
+Plot each of the three decision trees of the ensemble after training on all data.
 
 <details>
   <summary>**Hint 1:**</summary>
-  Subsample with the subsample `PipeOp` and pass the output into the decision tree.
-  This is one pipeline part.
-  You can then `greplicate` (creates disjoint graph union of copies of a graph) this part three times to create an actual graph and combine the output of the decision trees via the classifavg `PipeOp`.
+  You can `greplicate` (creates disjoint graph union of copies of a graph) this part three times to create an actual graph and combine the output of the decision trees via the classifavg `PipeOp`.
   To plot the trees, the `rpart.plot` package is helpful.
   If you are unsure how the different parts fit together, maybe plot the intermediate graphs you construct via `graph$plot()`.
-</details>
-
-<details>
-  <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
-resampling = rsmp("cv", folds  = 10L)$instantiate(task)
-pl = po("...") %>>% po("...", learner = ...)
-graph = ppl("greplicate", ...)
-graph = graph %>>% po("classifavg")
-graphLearner = as_learner(graph)
-graphLearner$id = "bagged_trees"
-graphLearner$graph$plot()
-graphLearner$train(task)
-
-dt = lrn("classif.rpart")
-dt$id = "tree"
-dt$train(task)
-
-rpart.plot(graphLearner$...)
-...
-```
 </details>
 
 :::{.callout-note collapse="true"}
@@ -132,38 +123,63 @@ rpart.plot(graphLearner$...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
-resampling = rsmp("cv", folds  = 10L)$instantiate(task)
-pl = po("subsample") %>>% po("learner", learner = lrn("classif.rpart", maxdepth = 3L))
-graph = ppl("greplicate", graph = pl, n = 3L)
-graph = graph %>>% po("classifavg")
-graphLearner = as_learner(graph)
-graphLearner$id = "bagged_trees"
-graphLearner$graph$plot()
-graphLearner$train(task)
+```{r}
+# Greplicate: The pipeline is reproduced 3x, to build a simple bagging structure
+gr = ppl("greplicate", graph = pl, n = 3L)
+gr = gr %>>% po("classifavg")  # average class prediction
 
+# Use as learner object
+grl = as_learner(gr)
+grl$id = "bagged_trees"
+
+# Train
+grl$train(task)
+
+# Visualize pipeline
+grl$plot()
+
+# Visualize three trees in pipeline
+rpart.plot(grl$state$model$classif.rpart_1$model)
+rpart.plot(grl$state$model$classif.rpart_2$model)
+rpart.plot(grl$state$model$classif.rpart_3$model)
+```
+
+:::
+
+:::
+
+## 1.3 Compare to a Single Decision Tree
+
+Compare this graph learner to a single decision tree with a maximum depth of 3 trained on all data.
+What is missing to actually mimic a Random Forest?
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
 dt = lrn("classif.rpart", maxdepth = 3L)
 dt$id = "tree"
 dt$train(task)
-
-rpart.plot(graphLearner$state$model$classif.rpart_1$model)
-rpart.plot(graphLearner$state$model$classif.rpart_2$model)
-rpart.plot(graphLearner$state$model$classif.rpart_3$model)
 rpart.plot(dt$state$model)
 ```
-Although each of the 3 trees sees different data during training, the first split is the same as if we had trained on all data.
-In an actual Random Forest, feature variables are randomly selected as potential splitting candidates which makes trees more heterogeneous.
+
+Although each of the three trees is trained on different data, the first split remains the same as if we had trained on the entire dataset.
+In an actual Random Forest, feature variables are randomly selected as potential splitting candidates, which makes trees more heterogeneous.
+
 
 :::
 
 :::
 
-## 1.2 Reset Maximum Depth and compare to Random Forest
+
+## 1.4 Reset Maximum Depth and Compare to Random Forest
 
 Reset the maximum depth hyperparameter values for each tree of your ensemble and the decision tree.
 Proceed to benchmark the ensemble of three trees against the decision tree and an actual ranger Random Forest with 3, 10 and 100 trees.
 Use 10-fold CV to evaluate the ROC AUC of the models.
-As a follow up question, would it make sense to change the weights used by the classifavg `PipeOp` to combine the predictions?
 
 <details>
   <summary>**Hint 1:**</summary>
@@ -175,7 +191,7 @@ As a follow up question, would it make sense to change the weights used by the c
  
 ```{r, eval = FALSE}
 dt$param_set$set_values(.values = list(maxdepth = NULL))
-graphLearner$...
+grl$...
 ...
 
 ranger3 = lrn("classif.ranger", ...)
@@ -185,7 +201,7 @@ ranger10$id = "rf_10"
 ranger100 = lrn("classif.ranger", ...)
 ranger100$id = "rf_100"
 
-graphLearner$predict_type = "prob"
+grl$predict_type = "prob"
 ...
 
 bg = benchmark_grid(...)
@@ -202,7 +218,7 @@ autoplot(..., measure = ...)
 
 ```{r, eval = params$showsolution}
 dt$param_set$set_values(.values = list(maxdepth = NULL))
-graphLearner$param_set$set_values(.values = list(classif.rpart_1.maxdepth = NULL, classif.rpart_2.maxdepth = NULL, classif.rpart_3.maxdepth = NULL))
+grl$param_set$set_values(.values = list(classif.rpart_1.maxdepth = NULL, classif.rpart_2.maxdepth = NULL, classif.rpart_3.maxdepth = NULL))
 
 ranger3 = lrn("classif.ranger", num.trees = 3L)
 ranger3$id = "rf_3"
@@ -211,16 +227,17 @@ ranger10$id = "rf_10"
 ranger100 = lrn("classif.ranger", num.trees = 100L)
 ranger100$id = "rf_100"
 
-graphLearner$predict_type = "prob"
+grl$predict_type = "prob"
 dt$predict_type = "prob"
 ranger3$predict_type = "prob"
 ranger10$predict_type = "prob"
 ranger100$predict_type = "prob"
 
-bg = benchmark_grid(task, list(graphLearner, dt, ranger3, ranger10, ranger100), resampling)
+bg = benchmark_grid(task, list(grl, dt, ranger3, ranger10, ranger100), resampling)
 b = benchmark(bg)
 autoplot(b, measure = msr("classif.auc"))
 ```
+
 Ensemble of 3 trees maybe slightly better than a single tree.\\
 Real random forests with many trees much better.\\
 If you have the time, maybe set the number of our tree ensemble higher and see how that compares.
@@ -231,17 +248,16 @@ If you have the time, maybe set the number of our tree ensemble higher and see h
 
 # 2 Model Averaging
 
+## 2.1 Ensemble Benchmark
+
 Use the classifavg `PipeOP` to combine the predictions of a decision tree, a k-NN (with k = 7) and a logistic regression.
 Benchmark the ensemble against each learner and a featureless learner.
 Use 10-fold CV evaluate the ROC AUC of the models.
 By default classifavg uses equal weights to combine the predictions of the models.
-Can you manually find a weighting scheme that results in better performance than equal weights?
 
 <details>
   <summary>**Hint 1:**</summary>
-  If you are not familiar with a k-NN learner, you may catch up here: https://slds-lmu.github.io/i2ml/chapters/05_knn/
-  You can largely reuse parts of the graph learner you previously constructed (excluding the subsampling part).
-  To manually set a weight vector as a hyperparameter of the graph learner, inspect its `$param_set` and make use of the `$set_values()` function.
+  If you are not familiar with a k-NN learner, you may catch up here: https://slds-lmu.github.io/i2ml/chapters/05_knn/ .
 </details>
 
 <details>
@@ -257,16 +273,8 @@ log_reg$predict_type = "prob"
 featureless = lrn(...)
 featureless$predict_type = "prob"
 
-graph = gunion() %>>% po(...)
-graphLearner = as_learner(graph)
-
-bg = benchmark_grid(...)
-b = benchmark(...)
-b$aggregate(...)
-
-grl_weights_adjusted = graphLearner$clone(deep = TRUE)
-grl_weights_adjusted$param_set$set_values(...)
-grl_weights_adjusted$id = paste0(grl_weights_adjusted$id, ".weights_adjusted")
+gr = gunion() %>>% po(...)
+grl = as_learner(gr)
 
 bg = benchmark_grid(...)
 b = benchmark(...)
@@ -290,18 +298,10 @@ log_reg$predict_type = "prob"
 featureless = lrn("classif.featureless")
 featureless$predict_type = "prob"
 
-graph = gunion(list(dt, kknn, log_reg)) %>>% po("classifavg")
-graphLearner = as_learner(graph)
+gr = gunion(list(dt, kknn, log_reg)) %>>% po("classifavg")
+grl = as_learner(gr)
 
-bg = benchmark_grid(task, list(graphLearner, dt, kknn, log_reg, featureless), resampling)
-b = benchmark(bg)
-b$aggregate(msr("classif.auc"))
-
-grl_weights_adjusted = graphLearner$clone(deep = TRUE)
-grl_weights_adjusted$param_set$set_values(.values = list(classifavg.weights = c(0.3, 0.1, 0.6)))
-grl_weights_adjusted$id = paste0(grl_weights_adjusted$id, ".weights_adjusted")
-
-bg = benchmark_grid(task, list(graphLearner, grl_weights_adjusted, dt, kknn, log_reg, featureless), resampling)
+bg = benchmark_grid(task, list(grl, dt, kknn, log_reg, featureless), resampling)
 b = benchmark(bg)
 b$aggregate(msr("classif.auc"))
 ```
@@ -309,6 +309,50 @@ b$aggregate(msr("classif.auc"))
 :::
 
 :::
+
+## 2.2 Better weighting scheme
+
+Can you manually find a weighting scheme that results in better performance than equal weights?
+
+<details>
+  <summary>**Hint 1:**</summary>
+  To manually set a weight vector as a hyperparameter of the graph learner, inspect its `$param_set` and make use of the `$set_values()` function.
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+ 
+```{r, eval = FALSE}
+grl_weights_adjusted = grl$clone(deep = TRUE)
+grl_weights_adjusted$param_set$set_values(...)
+grl_weights_adjusted$id = paste0(grl_weights_adjusted$id, ".weights_adjusted")
+
+bg = benchmark_grid(...)
+b = benchmark(...)
+b$aggregate(...)
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+grl_weights_adjusted = grl$clone(deep = TRUE)
+grl_weights_adjusted$param_set$set_values(.values = list(classifavg.weights = c(0.3, 0.1, 0.6)))
+grl_weights_adjusted$id = paste0(grl_weights_adjusted$id, ".weights_adjusted")
+
+bg = benchmark_grid(task, list(grl, grl_weights_adjusted, dt, kknn, log_reg, featureless), resampling)
+b = benchmark(bg)
+b$aggregate(msr("classif.auc"))
+```
+
+:::
+
+:::
+
 
 # 3 Optimizing Weights
 
@@ -321,20 +365,13 @@ We will ignore this in the following and simply optimize each weight on a scale 
 
 To construct the `OptimInstanceSingleCrit` do the following:
 
-* create the `objective_function` (a standard R function) accepting `xs` (a list) as input:
-  - `xs` will be the weights in the form of a list
-  - extract the weights and use them within the ensemble (e.g., clone the graph learner from the previous exercise and set the `classifavg.weights`)
-  - use `resample` on  this weighted ensemble
-  - extract the ROC AUC and return it in a list
-* create the `domain` (the space we optimize over):
-  - we optimize over the three numeric weight parameters with values from 0 to 1 (have a look at `?p_dbl`) 
-* create the codomain (describing the output space):
-  - we maximize the numeric ROC AUC value
-  - to make sure that we maximize instead of minimize (the `bbotk` default) set `tags = "maximize"`of this `p_dbl`
-* collect everything in an `OptimInstanceSingleCrit`
- 
-Use random search as an optimizer and terminate after 10 function evaluations.
-Why is our approach (i.e., how we constructed the objective function) ineffective?
+## 3.1 Objective Function
+
+Create the `objective_function` (a standard R function) accepting `xs` (a list) as input:
+* `xs` will be the weights in the form of a list
+* extract the weights and use them within the ensemble (e.g., clone the graph learner from the previous exercise and set the `classifavg.weights`)
+* use `resample` on  this weighted ensemble
+* extract the ROC AUC and return it in a list
 
 <details>
   <summary>**Hint 1:**</summary>
@@ -346,7 +383,7 @@ Why is our approach (i.e., how we constructed the objective function) ineffectiv
   <summary>**Hint 2:**</summary>
  
 ```{r, eval = FALSE}
-grl_weights_optimized = graphLearner$clone(deep = TRUE)
+grl_weights_optimized = grl$clone(deep = TRUE)
 grl_weights_optimized$id = paste0(grl_weights_optimized$id, ".weights_optimized_naive")
 
 objective_function = function(xs) {
@@ -356,11 +393,110 @@ objective_function = function(xs) {
   rr = resample(...)
   # returning the normalized weights as the second element in the list allows us to also store them in the archive
   list(classif.auc = ..., weights = list(weights))
+```
+</details>
+
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+grl_weights_optimized = grl$clone(deep = TRUE)
+grl_weights_optimized$id = paste0(grl_weights_optimized$id, ".weights_optimized_naive")
+
+objective_function = function(xs) {
+  weights = unlist(xs)
+  weights = weights / sum(weights)  # sum to 1 normalization
+  grl_weights_optimized$param_set$set_values(.values = list(classifavg.weights = weights))
+  rr = resample(task, grl_weights_optimized, resampling)
+  # returning the normalized weights as the second element in the list allows us to also store them in the archive
+  list(classif.auc = rr$aggregate(msr("classif.auc")), weights = list(weights))
 }
+```
 
+:::
+
+:::
+
+  
+## 3.2 Domain
+
+Create the `domain` (the space we optimize over): Here, we optimize over the three numeric weight parameters with values from 0 to 1. 
+
+<details>
+  <summary>**Hint 1:**</summary>
+  Eventally, have a look at `?p_dbl`.
+</details>
+  
+<details>
+  <summary>**Hint 2:**</summary>
+ 
+```{r, eval = FALSE}
 domain = ps(w_dt = ..., w_kknn = ..., w_log_reg = ...)
-codomain = ps(classif.auc = ...) # make sure to specify `tags = "maximize"`
+```
+</details>
+  
+:::{.callout-note collapse="true"}
 
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+domain = ps(w_dt = p_dbl(0, 1), w_kknn = p_dbl(0, 1), w_log_reg = p_dbl(0, 1))
+```
+
+:::
+
+:::
+
+  
+## 3.3 Codomain
+
+Create the codomain (describing the output space):
+* we maximize the numeric ROC AUC value
+* to make sure that we maximize instead of minimize (the `bbotk` default) set `tags = "maximize"`of this `p_dbl`
+  
+<details>
+  <summary>**Hint 2:**</summary>
+ 
+```{r, eval = FALSE}
+codomain = ps(classif.auc = ...) # make sure to specify `tags = "maximize"`
+```
+</details>
+  
+:::{.callout-note collapse="true"}
+
+### Solution
+
+:::{.b64-solution}
+
+```{r}
+codomain = ps(classif.auc = p_dbl(0.5, 1, tags = "maximize"))
+```
+
+:::
+
+:::
+  
+## 3.4 Wrap up
+
+Collect everything in an `OptimInstanceSingleCrit`.
+ 
+Use random search as an optimizer and terminate after 10 function evaluations.
+Why is our approach (i.e., how we constructed the objective function) ineffective?
+
+<details>
+  <summary>**Hint 1:**</summary>
+  You first have to create an `ObjectiveRFun` object.
+</details>
+
+<details>
+  <summary>**Hint 2:**</summary>
+ 
+```{r, eval = FALSE}
 objective = ObjectiveRFun$new(
   fun = ...,
   domain = ...,
@@ -384,22 +520,7 @@ optimizer$optimize(instance)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution, results = "hide"}
-grl_weights_optimized = graphLearner$clone(deep = TRUE)
-grl_weights_optimized$id = paste0(grl_weights_optimized$id, ".weights_optimized_naive")
-
-objective_function = function(xs) {
-  weights = unlist(xs)
-  weights = weights / sum(weights)  # sum to 1 normalization
-  grl_weights_optimized$param_set$set_values(.values = list(classifavg.weights = weights))
-  rr = resample(task, grl_weights_optimized, resampling)
-  # returning the normalized weights as the second element in the list allows us to also store them in the archive
-  list(classif.auc = rr$aggregate(msr("classif.auc")), weights = list(weights))
-}
-
-domain = ps(w_dt = p_dbl(0, 1), w_kknn = p_dbl(0, 1), w_log_reg = p_dbl(0, 1))
-codomain = ps(classif.auc = p_dbl(0.5, 1, tags = "maximize"))
-
+```{r}
 objective = ObjectiveRFun$new(
   fun = objective_function,
   domain = domain,
@@ -416,7 +537,7 @@ optimizer = opt("random_search")
 optimizer$optimize(instance)
 ```
 
-```{r, eval = params$showsolution}
+```{r}
 instance$result
 ```
 
@@ -498,8 +619,6 @@ optimizer$optimize(instance)
 :::{.b64-solution}
 
 ```{r, eval = params$showsolution, results = "hide"}
-library(adagio)
-
 k = resampling$param_set$get_values()[["folds"]]
 
 dt_pred = resample(task, dt, resampling)
