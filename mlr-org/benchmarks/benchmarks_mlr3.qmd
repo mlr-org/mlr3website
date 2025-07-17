@@ -48,14 +48,14 @@ The benchmarks are comprehensive; therefore, we present a summary of the results
 The runtime of mlr3 should always be considered relative to the training and prediction time of the underlying models.
 For example, if the training step of a random forest model `ranger::ranger()` takes 100 ms and the `$train()` method of `lrn("classif.ranger")` takes 110 ms, the overhead is 10%.
 When the same model takes 1 second to train, the overhead introduced by mlr3 is only 1%.
-Instead of using real models, we simulate the train and predict time of models by sleeping for 1, 10, 100, and 1000 ms.
+Instead of using real models, we simulate the training and prediction time for models by sleeping for 1, 10, 100, and 1000 ms.
 
 We start by measuring the runtime of the `$train()` methods of the learner.
 For models with a training time of 1000 and 100 ms, the overhead introduced by mlr3 is minimal.
 Models with a training time of 10 ms take 2 times longer to train in mlr3.
 For models with a training time of 1 ms, the overhead is approximately 10 times larger than the actual model training time.
 The overhead of `$predict()` is similar to `$train()` and the size of the dataset being predicted plays only a minor role.
-The `$predict_newdata()` method is slower than `$predict()` because the data is converted to a task.
+The `$predict_newdata()` methods converts the data to a task and then predicts on it which doubles the overhead of the `$predict()` method.
 The recently introduced `$predict_newdata_fast()` method is much faster than `$predict_newdata()`.
 For models with a prediction time of 10 ms, the overhead is around 10%.
 For models with a prediction time of 1 ms, the overhead is around 50%.
