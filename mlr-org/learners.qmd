@@ -35,8 +35,12 @@ content[, packages := pmap(list(packages, base_package), function(x, y) setdiff(
 learners = set_names(content$object, content$key)
 content[, `:=`(object = NULL, task_type = NULL)]
 
+# fix mlr3probaproba
+content[is.na(base_package), base_package := "mlr3proba"]
+
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
+  if (is.null(learners[[value]]$man) || is.na(learners[[value]]$man)) return(NULL)
   mlr3website::ref(learners[[value]]$man, text = value, format = "htmltools")
 }
 

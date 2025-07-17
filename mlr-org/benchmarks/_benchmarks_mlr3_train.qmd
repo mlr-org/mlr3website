@@ -1,0 +1,15 @@
+## Model Time `r .model_time` ms
+
+```{r}
+#| echo: false
+#| column: body-outset
+#| fig-cap: !expr sprintf("Median runtime of `$train()` with models trained for %i ms depending on the mlr3 version. The dashed line indicates the total training time of the models. Error bars represent the median absolute deviation of the runtime.", .model_time)
+plot_runtime(data_runtime[model_time == .model_time])
+```
+
+```{r}
+#| echo: false
+#| column: body-outset
+#| tbl-cap: !expr sprintf("Runtime usage of `$train()` with models trained for %i ms depending on the mlr3 version. The K factor shows how much longer the runtime is than the model training. A red background indicates that the runtime is 3 times larger than the total training time of the models.", .model_time)
+create_table(data_runtime[model_time == .model_time])
+```

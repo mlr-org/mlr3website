@@ -3,13 +3,13 @@
 ```{r}
 #| echo: false
 #| column: body-outset
-#| fig-cap: !expr sprintf("Median runtime of `fselect_nested()` with models trained for %i ms depending on the mlr3 version. The dashed line indicates the total training time of the models. Error bars represent the median absolute deviation of the runtime.", .model_time)
+#| fig-cap: !expr sprintf("Median runtime of `fselect_nested()` with models trained for %i ms depending on the mlr3fselect version. The dashed line indicates the total training time of the models. Error bars represent the median absolute deviation of the runtime.", .model_time)
 plot_runtime(data_runtime[model_time == .model_time & task == "data_1000"])
 ```
 
 ```{r}
 #| echo: false
 #| column: body-outset
-#| tbl-cap: !expr sprintf("Runtime and memory usage of `fselect_nested()` with models trained for %i ms depending on the mlr3 version. The K factor shows how much longer the runtime is than the model training. A red background indicates that the runtime is 3 times larger than the total training time of the models. The table includes runtime and memory usage for tasks of size 1000 and 10,000.", .model_time)
+#| tbl-cap: !expr sprintf("Runtime and memory usage of `fselect_nested()` with models trained for %i ms depending on the mlr3fselect version. The K factor shows how much longer the runtime is than the model training. A red background indicates that the runtime is 3 times larger than the total training time of the models. The table includes runtime and memory usage for tasks of size 1000 and 10,000.", .model_time)
 create_table(data_runtime[model_time == .model_time])
 ```
