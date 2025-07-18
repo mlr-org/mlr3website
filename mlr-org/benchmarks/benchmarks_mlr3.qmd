@@ -50,12 +50,12 @@ For example, if the training step of a random forest model `ranger::ranger()` ta
 When the same model takes 1 second to train, the overhead introduced by mlr3 is only 1%.
 Instead of using real models, we simulate the training and prediction time for models by sleeping for 1, 10, 100, and 1000 ms.
 
-We start by measuring the runtime of the `$train()` methods of the learner.
+We start by measuring the runtime of the `$train()` method of the learner.
 For models with a training time of 1000 and 100 ms, the overhead introduced by mlr3 is minimal.
 Models with a training time of 10 ms take 2 times longer to train in mlr3.
 For models with a training time of 1 ms, the overhead is approximately 10 times larger than the actual model training time.
 The overhead of `$predict()` is similar to `$train()` and the size of the dataset being predicted plays only a minor role.
-The `$predict_newdata()` methods converts the data to a task and then predicts on it which doubles the overhead of the `$predict()` method.
+The `$predict_newdata()` method converts the data to a task and then predicts on it which doubles the overhead of the `$predict()` method.
 The recently introduced `$predict_newdata_fast()` method is much faster than `$predict_newdata()`.
 For models with a prediction time of 10 ms, the overhead is around 10%.
 For models with a prediction time of 1 ms, the overhead is around 50%.
@@ -115,7 +115,8 @@ create_table = function(data) {
       task = "Task Size",
       median_runtime = "Median Runtime [ms]",
       k = "K") %>%
-    fmt_number(columns = c("k", "median_runtime"), n_sigfig = 2,  sep_mark = "") %>%
+    fmt_number(columns = c("median_runtime"), decimals = 0, sep_mark = "") %>%
+    fmt_number(columns = c("k"), n_sigfig = 2, sep_mark = "") %>%
     tab_style(
       style = list(
         cell_fill(color = "crimson"),
@@ -156,7 +157,7 @@ data_runtime = data_runtime[, -c("renv_project")]
 ```
 
 The runtime and memory usage of the `$train()` method is measured for different mlr3 versions.
-The train step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 instances.
+The train step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 observations.
 
 ```{r}
 #| eval: false
@@ -208,7 +209,7 @@ plot_runtime = function(data) {
   geom_col(group = 1, fill = "#008080") +
   geom_errorbar(aes(ymin = pmax(median_runtime - mad_runtime, 0), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
   geom_hline(aes(yintercept = model_time), linetype = "dashed") +
-  facet_wrap(~task, scales = "free_y", labeller = labeller(task = function(value) sprintf("%s Instances", value))) +
+  facet_wrap(~task, scales = "free_y", labeller = labeller(task = function(value) sprintf("%s Observations", value))) +
   labs(x = "mlr3Version", y = "Runtime [ms]") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -228,7 +229,8 @@ create_table = function(data) {
       task = "Task Size",
       median_runtime = "Median Runtime [ms]",
       k = "K") %>%
-    fmt_number(columns = c("k", "median_runtime"), n_sigfig = 2) %>%
+    fmt_number(columns = c("median_runtime"), decimals = 0, sep_mark = "") %>%
+    fmt_number(columns = c("k"), n_sigfig = 2, sep_mark = "") %>%
     tab_style(
       style = list(
         cell_fill(color = "crimson"),
@@ -529,7 +531,7 @@ data_runtime = merge(data_runtime, data_memory, by = c("task", "evals", "mlr3", 
 ```
 
 The runtime and memory usage of the `resample()` function is measured for different mlr3 versions.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
+The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 observations.
 The resampling iterations (`evals`) are set to 1000, 100, and 10.
 
 ```{r}
@@ -607,7 +609,7 @@ data_runtime = merge(data_runtime, data_memory, by = c("task", "evals", "mlr3", 
 ```
 
 The runtime and memory usage of the `benchmark()` function is measured for different mlr3 versions.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
+The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 observations.
 The resampling iterations (`evals`) are set to 1000, 100, and 10.
 
 ```{r}
@@ -762,7 +764,7 @@ data_runtime = merge(data_runtime, data_runtime_2, by = c("task", "evals", "mlr3
 
 The runtime and memory usage of the `resample()` function with `future::multisession` parallelization is measured for different mlr3 versions.
 The parallelization is conducted on 10 cores.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
+The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 observations.
 The resampling iterations (`evals`) are set to 1000, 100, and 10.
 
 ```{r}
@@ -858,7 +860,7 @@ data_runtime = merge(data_runtime, data_runtime_2, by = c("task", "evals", "mlr3
 
 The runtime and memory usage of the `benchmark()` function with `future::multisession` parallelization is measured for different mlr3 versions.
 The parallelization is conducted on 10 cores.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
+The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 observations.
 The resampling iterations (`evals`) are set to 1000, 100, and 10.
 
 ```{r}
