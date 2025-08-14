@@ -1,0 +1,366 @@
+---
+title: "paradox - Runtime Benchmarks"
+sidebar: false
+toc: true
+cache: false
+lazy-cache: false
+format:
+  html:
+    fig-width: 12
+    fig-height: 9
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r}
+#| include: false
+library(data.table)
+library(ggplot2)
+library(gt)
+library(DBI)
+
+con = dbConnect(RSQLite::SQLite(), here::here("mlr-org/benchmarks/results_lrz.db"))
+snapshot = setDT(dbReadTable(con, "paradox_snapshots"))
+snapshot[, paradox := factor(paradox)]
+
+jobs = rowwise_table(
+  ~function_name,           ~package,  ~minimum_version,   ~args,
+  "initialize",             "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "ids",                    "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "ids_class",              "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "ids_tags",               "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "ids_class_tags",         "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "get_values",             "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "get_values_class",       "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "get_values_tags",        "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "get_values_class_tags",  "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "set_values",             "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "lower",                  "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "upper",                  "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "levels",                 "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "class",                  "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
+  "subspaces",              "paradox", "1.0.0",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed")))
+)
+
+results = set_names(pmap(jobs, function(function_name, args, ...) {
+  arg_names = names(args)
+  data_runtime = setDT(dbReadTable(con, sprintf("paradox_%s", function_name)))[, c(arg_names, "renv_project", "median_runtime", "mad_runtime"), with = FALSE]
+  data_runtime = data_runtime[snapshot, on = "renv_project", nomatch = 0]
+  setorderv(data_runtime, c(arg_names, "paradox"), order = c(rep(1, length(arg_names)), -1))
+  data_runtime[, -c("renv_project")]
+}), jobs$function_name)
+```
+
+# Scope
+
+This report analyzes the runtime and memory usage of the paradox package across different versions.
+<!-- It focuses on the `$train()` and `$predict()` methods of the learner and the `resample()` and `benchmark()` functions used for model evaluation.
+The benchmarks vary the training time of the models, the number of resampling iterations, and the size of the dataset.
+Additionally, the experiments are conducted in parallel to assess the impact of parallelization on both runtime and memory usage.
+The overhead introduced by encapsulation is examined by comparing different encapsulation methods.
+Furthermore, the report evaluates the object sizes of various mlr3 objects.
+
+Given the extensive package ecosystem of mlr3, performance bottlenecks can occur at multiple stages.
+This report aims to help users determine whether the runtime of their workflows falls within expected ranges.
+If significant runtime or memory anomalies are observed, users are encouraged to report them by opening a GitHub issue.
+
+Benchmarks are conducted on a high-performance cluster optimized for multi-core performance rather than single-core speed.
+Consequently, runtimes may be faster on a local machine.
+The benchmarks for `$train()` and `$predict()` were conducted on a different, slower cluster. -->
+
+# Summary of Latest paradox Version
+
+The benchmarks are comprehensive; therefore, we present a summary of the results for the latest paradox version.
+<!-- The runtime of mlr3 should always be considered relative to the training and prediction time of the underlying models.
+For example, if the training step of a random forest model `ranger::ranger()` takes 100 ms and the `$train()` method of `lrn("classif.ranger")` takes 110 ms, the overhead is 10%.
+When the same model takes 1 second to train, the overhead introduced by mlr3 is only 1%.
+Instead of using real models, we simulate the training and prediction time for models by sleeping for 1, 10, 100, and 1000 ms.
+
+We start by measuring the runtime of the `$train()` method of the learner.
+For models with a training time of 1000 and 100 ms, the overhead introduced by mlr3 is minimal.
+Models with a training time of 10 ms take 2 times longer to train in mlr3.
+For models with a training time of 1 ms, the overhead is approximately 10 times larger than the actual model training time.
+The overhead of `$predict()` is similar to `$train()` and the size of the dataset being predicted plays only a minor role.
+The `$predict_newdata()` method converts the data to a task and then predicts on it which doubles the overhead of the `$predict()` method.
+The recently introduced `$predict_newdata_fast()` method is much faster than `$predict_newdata()`.
+For models with a prediction time of 10 ms, the overhead is around 10%.
+For models with a prediction time of 1 ms, the overhead is around 50%.
+
+The overhead of `resample()` and `benchmark()` is also very low for models with a training time of 1000 and 100 ms.
+However, for models with a training time of 10 ms, the overhead approximately doubles the runtime.
+In cases where the training time is only 1 ms, the overhead results in the runtime being ten times larger than the actual model training time.
+Running an empty R session consumes 131 MB of memory.
+Resampling with 10 iterations consumes approximately 164 MB, increasing to around 225 MB when performing 1,000 resampling iterations.
+Memory usage for benchmarking is comparable to that of resampling.
+
+mlr3 utilizes the `future` package to enable parallelization over resampling iterations.
+However, running `resample()` and `benchmark()` in parallel introduces overhead due to the initiation of worker processes.
+Therefore, we compare the runtime of parallel execution with that of sequential execution.
+For models with a 1-second training time, using `resample()` and `benchmark()` in parallel reduces runtime.
+For models with a 100 ms training time, parallel execution is only advantageous when performing 100 or 1,000 resampling iterations.
+For models with 10 ms and 1 ms training times, sequential execution only becomes slower than parallel execution when running 1,000 resampling iterations.
+Memory usage increases significantly with the number of cores since each core initiates a separate R session.
+Utilizing 10 cores results in a total memory usage of around 1.2 GB.
+
+Encapsulation ensures that signaled conditions (e.g., messages, warnings and errors) are intercepted and that all conditions raised during the training or prediction step are logged into the learner without interrupting the program flow.
+The encapsulation of the `$train()` method introduces a runtime overhead of ~1 seconds per model training when using the `callr` package.
+In contrast, the encapsulation of the `evaluate` package adds negligible overhead to the runtime.
+
+When saving and loading mlr3 objects, their size can become significantly larger than expected.
+This issue is inherent to R6 objects due to data duplication during serialization and deserialization.
+The latest versions of mlr3 have implemented various strategies to mitigate this problem, substantially reducing the previously observed large increases in object size. -->
+
+# Initialize {#initialize}
+
+```{r}
+#| include: false
+plot_runtime = function(data) {
+  data = copy(data)
+  ggplot(data, aes(x = paradox, y = median_runtime)) +
+    geom_col(group = 1, fill = "#008080") +
+    geom_errorbar(aes(ymin = pmax(median_runtime - mad_runtime, 0), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
+    facet_wrap(~type +  size, scales = "free_y", labeller = labeller(type = function(value) sprintf("%s", value), size = function(value) sprintf("%s", value))) +
+    labs(x = "paradox Version", y = "Runtime [ms]") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+# create_table = function(data) {
+#   data = data[, -c("mad_runtime")]
+#   data[, task := as.integer(gsub("data_", "", task))]
+#   setcolorder(data, c("mlr3", "paradox", "model_time", "task", "median_runtime", "k"))
+
+#   data %>%
+#     gt() %>%
+#     cols_label(
+#       mlr3 = "mlr3 Version",
+#       paradox = "paradox Version",
+#       model_time = "Model Time [ms]",
+#       task = "Task Size",
+#       median_runtime = "Median Runtime [ms]",
+#       k = "K") %>%
+#     fmt_number(columns = c("median_runtime"), decimals = 0, sep_mark = "") %>%
+#     fmt_number(columns = c("k"), n_sigfig = 2, sep_mark = "") %>%
+#     tab_style(
+#       style = list(
+#         cell_fill(color = "crimson"),
+#         cell_text(weight = "bold")
+#       ),
+#       locations = cells_body(
+#         columns = "k",
+#         rows = k > 3
+#       )
+#     ) %>%
+#     tab_row_group(
+#       label = "10000 Observations",
+#       rows = task == 10000
+#     ) %>%
+#     tab_row_group(
+#       label = "1000 Observations",
+#       rows = task == 1000
+#     ) %>%
+#     tab_row_group(
+#       label = "100 Observations",
+#       rows = task == 100
+#     ) %>%
+#     tab_row_group(
+#       label = "10 Observations",
+#       rows = task == 10
+#     ) %>%
+#     tab_row_group(
+#       label = "1 Observation",
+#       rows = task == 1
+#     )
+#   }
+```
+
+The runtime and memory usage of the `initialize()` method is measured for different paradox versions.
+<!-- The train step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 observations. -->
+
+```{r}
+#| eval: false
+param_set = ps(
+  a = p_dbl(lower = 0, upper = 1),
+  b = p_dbl(lower = 0, upper = 1),
+  c = p_dbl(lower = 0, upper = 1),
+  d = p_dbl(lower = 0, upper = 1),
+  e = p_dbl(lower = 0, upper = 1)
+)
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$initialize)
+```
+
+# Ids {#ids}
+
+The runtime usage of the `param_set$ids()` method is measured for different paradox versions.
+<!-- The train step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 observations. -->
+
+```{r}
+#| eval: false
+param_set$ids()
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$ids)
+```
+
+```{r}
+#| eval: false
+param_set$ids(class = "numeric")
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$ids_class)
+```
+
+```{r}
+#| eval: false
+param_set$ids(tags = "a")
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$ids_tags)
+```
+
+```{r}
+#| eval: false
+param_set$ids(tags = "a", class = "numeric")
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$ids_class_tags)
+```
+
+# Get Values {#get_values}
+
+```{r}
+#| eval: false
+param_set$get_values()
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$get_values)
+```
+
+```{r}
+#| eval: false
+param_set$get_values(class = "numeric")
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$get_values_class)
+```
+
+```{r}
+#| eval: false
+param_set$get_values(tags = "a")
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$get_values_tags)
+```
+
+```{r}
+#| eval: false
+param_set$get_values(tags = "a", class = "numeric")
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$get_values_class_tags)
+```
+
+# Set Values {#set_values}
+
+```{r}
+#| eval: false
+param_set$set_values(a = 1)
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$set_values)
+```
+
+# Lower and Upper {#lower_upper}
+
+```{r}
+#| eval: false
+param_set$lower
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$lower)
+```
+
+```{r}
+#| eval: false
+param_set$upper
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$upper)
+```
+
+# Levels {#levels}
+
+```{r}
+#| eval: false
+param_set$levels
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$levels)
+```
+
+# Class {#class}
+
+```{r}
+#| eval: false
+param_set$class
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$class)
+```
+
+# Subspaces {#subspaces}
+
+```{r}
+#| eval: false
+param_set$subspaces()
+```
+
+```{r}
+#| echo: false
+plot_runtime(results$subspaces)
+```
+
+
+<!-- # Version Histroy
+
+This section provides an overview of the changes in the paradox package regarding runtime.
+
+## paradox
+
+**paradox 1.0.1**
+
+* Performance improvements.
+
+**paradox 1.0.0**
+
+* Removed Param objects. ParamSet now uses a data.table internally; individual parameters are more like Domain objects now. -->
