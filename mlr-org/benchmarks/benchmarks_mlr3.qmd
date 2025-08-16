@@ -69,6 +69,52 @@ results_runtime = set_names(pmap(jobs_runtime, function(function_name, args, ...
   data_runtime[data_memory, on = c(names(args), "mlr3", "paradox")]
 }), jobs_runtime$function_name)
 
+jobs_runtime_parallel = setDT(dbReadTable(con, "mlr3_runtime_parallel_jobs"))
+jobs_runtime_parallel[, args := map(args, function(args) unserialize(args))]
+
+results_runtime_parallel = set_names(pmap(jobs_runtime_parallel, function(function_name, args, ...) {
+  arg_names = names(args)
+  data_runtime = setDT(dbReadTable(con, sprintf("mlr3_runtime_%s", function_name)))[, c(arg_names, "renv_project", "median_runtime", "mad_runtime"), with = FALSE]
+  data_runtime = data_runtime[snapshot, on = "renv_project", nomatch = 0]
+  setorderv(data_runtime, c(arg_names, "mlr3"), order = c(rep(1, length(arg_names)), -1))
+  data_runtime[, -c("renv_project")]
+}), jobs_runtime_parallel$function_name)
+
+
+results_runtime_parallel = set_names(pmap(list(c("resample", "benchmark"), c("resample_parallel", "benchmark_parallel")), function(function_name, function_name_parallel) {
+
+  data = copy(results_runtime[[function_name]])
+
+  data[, total_runtime_1 := median_runtime + evals * 1]
+  data[, total_runtime_10 := median_runtime + evals * 10]
+  data[, total_runtime_100 := median_runtime + evals * 100]
+  data[, total_runtime_1000 := median_runtime + evals * 1000]
+
+  data_parallel = copy(results_runtime_parallel[[function_name_parallel]])
+
+  data_parallel[, total_runtime_parallel_1 := median_runtime + evals * 1 / 10]
+  data_parallel[, total_runtime_parallel_10 := median_runtime + evals * 10 / 10]
+  data_parallel[, total_runtime_parallel_100 := median_runtime + evals * 100 / 10]
+  data_parallel[, total_runtime_parallel_1000 := median_runtime + evals * 1000 / 100]
+
+  tmp = cbind(data[, list(total_runtime_1, total_runtime_10, total_runtime_100, total_runtime_1000)],
+            data_parallel[, list(total_runtime_parallel_1, total_runtime_parallel_10, total_runtime_parallel_100, total_runtime_parallel_1000)])
+
+  tmp[, pk_1 := total_runtime_1 / total_runtime_parallel_1]
+  tmp[, pk_10 := total_runtime_10 / total_runtime_parallel_10]
+  tmp[, pk_100 := total_runtime_100 / total_runtime_parallel_100]
+  tmp[, pk_1000 := total_runtime_1000 / total_runtime_parallel_1000]
+
+  tmp[pk_1 < 1, pk_1 := NA]
+  tmp[pk_10 < 1, pk_10 := NA]
+  tmp[pk_100 < 1, pk_100 := NA]
+  tmp[pk_1000 < 1, pk_1000 := NA]
+
+  cbind(results_runtime[[function_name]], tmp[, list(pk_1, pk_10, pk_100, pk_1000)])
+}), c("resample", "benchmark"))
+
+results_runtime[["resample"]] = results_runtime_parallel[["resample"]]
+results_runtime[["benchmark"]] = results_runtime_parallel[["benchmark"]]
 
 jobs_object_size = setDT(dbReadTable(con, "mlr3_object_size_jobs"))
 jobs_object_size[, args := map(args, function(args) unserialize(args))]
@@ -140,7 +186,7 @@ create_table_task_evals = function(data, task = "data_1000") {
   .task = task
   data = data[list(.task), , on = "task"]
   data = data[, -c("mad_runtime", "mad_memory", "task")]
-  setcolorder(data, c("mlr3", "paradox", "evals", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory"))
+  setcolorder(data, c("mlr3", "paradox", "evals", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory", "pk_1000", "pk_100", "pk_10", "pk_1"))
 
   data %>%
     gt() %>%
@@ -153,13 +199,28 @@ create_table_task_evals = function(data, task = "data_1000") {
       k_10 = "k10",
       k_100 = "k100",
       k_1000 = "k1000",
+      pk_1 = "pk1",
+      pk_10 = "pk10",
+      pk_100 = "pk100",
+      pk_1000 = "pk1000",
       median_memory = "Memory [MB]") %>%
-    fmt_number(columns = c("median_runtime", "k_1", "k_10", "k_100", "k_1000", "median_memory"), decimals = 0, sep_mark = "") %>%
+    fmt_number(columns = c("median_runtime", "median_memory"), decimals = 0, sep_mark = "") %>%
+    fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000", "pk_1", "pk_10", "pk_100", "pk_1000"), n_sigfig = 2) %>%
     data_color(
       columns = c("k_1", "k_10", "k_100", "k_1000"),
       fn = scales::col_numeric(
         palette = c("#2ecc71", "white"),
         domain = c(1, 3),
+        na.color = "white"
+      ),
+      apply_to = "fill",
+      autocolor_text = TRUE
+    ) %>%
+     data_color(
+      columns = c("pk_1", "pk_10", "pk_100", "pk_1000"),
+      fn = scales::col_numeric(
+        palette = c("white", "#2ecc71"),
+        domain = c(1, max(data$pk_1000, na.rm = TRUE)),
         na.color = "white"
       ),
       apply_to = "fill",
@@ -199,7 +260,8 @@ create_table_task_methods = function(data, task = "data_1000") {
       k_100 = "k100",
       k_1000 = "k1000",
       median_memory = "Memory [MB]") %>%
-    fmt_number(columns = c("median_runtime", "k_1", "k_10", "k_100", "k_1000", "median_memory"), decimals = 0, sep_mark = "") %>%
+    fmt_number(columns = c("median_runtime", "median_memory"), decimals = 0, sep_mark = "") %>%
+    fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000"), n_sigfig = 2) %>%
     data_color(
       columns = c("k_1", "k_10", "k_100", "k_1000"),
       fn = scales::col_numeric(
@@ -461,6 +523,8 @@ create_table_task(results_runtime$predict_newdata_fast)
 The runtime and memory usage of the `resample()` function is measured for different mlr3 versions.
 The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 observations.
 The resampling iterations (`evals`) are set to 1000, 100, and 10.
+The runtime of the `resample()` function with `future::multisession` parallelization is also measured for different mlr3 versions.
+The parallelization is conducted on 10 cores.
 
 ```{r}
 #| eval: false
@@ -481,6 +545,8 @@ resample(task, learner, resampling)
 #|   The k factors indicate how many times longer the total runtime is compared to the model training time.
 #|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
 #|   A green background highlights cases where the total runtime is less than three times the model training time.
+#|   The pk factors indicate how many times faster the parallel runtime is compared to the sequential runtime.
+#|   The numbers are NA if the parallel runtime is slower than the sequential runtime.
 create_table_task_evals(results_runtime$resample, task = "data_1000")
 ```
 
@@ -490,6 +556,8 @@ create_table_task_evals(results_runtime$resample, task = "data_1000")
 The runtime and memory usage of the `benchmark()` function is measured for different mlr3 versions.
 The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 observations.
 The resampling iterations (`evals`) are set to 1000, 100, and 10.
+The runtime of the `benchmark()` function with `future::multisession` parallelization is also measured for different mlr3 versions.
+The parallelization is conducted on 10 cores.
 
 ```{r}
 #| eval: false
@@ -511,6 +579,8 @@ benchmark(design)
 #|   The k factors indicate how many times longer the total runtime is compared to the model training time.
 #|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
 #|   A green background highlights cases where the total runtime is less than three times the model training time.
+#|   The pk factors indicate how many times faster the parallel runtime is compared to the sequential runtime.
+#|   The numbers are NA if the parallel runtime is slower than the sequential runtime.
 create_table_task_evals(results_runtime$benchmark, task = "data_1000")
 ```
 

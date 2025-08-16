@@ -19,71 +19,179 @@ library(ggplot2)
 library(gt)
 library(DBI)
 
-con = dbConnect(RSQLite::SQLite(), here::here("mlr-org/benchmarks/results.db"))
+con = dbConnect(RSQLite::SQLite(), here::here("mlr-org/benchmarks/results_lrz.db"))
 snapshot = setDT(dbReadTable(con, "mlr3fselect_snapshots"))
 snapshot[, mlr3 := factor(mlr3)]
 snapshot[, paradox := factor(paradox)]
-snapshot[, mlr3fselect := factor(mlr3fselect)]
-snapshot[, bbotk := factor(bbotk)]
 
-plot_runtime = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_runtime)) +
-  geom_col(group = 1, fill = "#008080") +
-  geom_errorbar(aes(ymin = pmax(median_runtime - mad_runtime, 0), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
-  geom_hline(aes(yintercept = total_model_time), linetype = "dashed") +
-  labs(x = "mlr3Version", y = "Runtime [s]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
+jobs_runtime = setDT(dbReadTable(con, "mlr3fselect_runtime_jobs"))
+jobs_runtime[, args := map(args, function(args) unserialize(args))]
 
-plot_memory = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_memory)) +
-  geom_col(group = 1, fill = "#ff6347") +
-  geom_errorbar(aes(ymin = median_memory - mad_memory, ymax = median_memory + mad_memory), width = 0.5, position = position_dodge(0.9)) +
-  geom_hline(aes(yintercept = 131), linetype = "dashed") +
-  #facet_wrap(~scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
-  labs(x = "mlr3 Version", y = "Memory [MB]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
+results_runtime = set_names(pmap(jobs_runtime, function(function_name, args, ...) {
+  arg_names = names(args)
+  data_runtime = setDT(dbReadTable(con, sprintf("mlr3fselect_runtime_%s", function_name)))[, c(arg_names, "renv_project", "median_runtime", "mad_runtime"), with = FALSE]
+  data_runtime = data_runtime[snapshot, on = "renv_project", nomatch = 0]
+  setorderv(data_runtime, c(arg_names, "mlr3"), order = c(rep(1, length(arg_names)), -1))
+  data_runtime[, -c("renv_project")]
+}), jobs_runtime$function_name)
 
-create_table = function(data) {
-  data = data[, -c("mad_memory", "mad_runtime")]
 
-  data_1000 = data[task == "data_1000", -"task"]
-  data_10000 = data[task == "data_10000", -c("task", "k", "total_model_time")]
-  data = merge(data_1000, data_10000, by = c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time"), suffixes = c("", "_10000"))
+walk(c("fselect", "fselect_nested"), function(function_name) {
+  evals = 1000L
+  data = results_runtime[[function_name]]
+  data[, k_1 := (median_runtime + 1 * evals) / (1 * evals)]
+  data[, k_10 := (median_runtime + 10 * evals) / (10 * evals)]
+  data[, k_100 := (median_runtime + 100 * evals) / (100 * evals)]
+  data[, k_1000 := (median_runtime + 1000 * evals) / (1000 * evals)]
+})
 
-  setcolorder(data, c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time", "total_model_time", "median_runtime", "median_runtime_10000", "k", "median_memory", "median_memory_10000"))
+# jobs_memory = setDT(dbReadTable(con, "mlr3tuning_memory_jobs"))
+# jobs_memory[, args := map(args, function(args) unserialize(args))]
 
-  data %>%
+# results_memory = set_names(pmap(jobs_memory, function(function_name, args, ...) {
+#   arg_names = names(args)
+#   data_memory = setDT(dbReadTable(con, sprintf("mlr3tuning_memory_%s", function_name)))[, c(arg_names, "renv_project", "median_memory", "mad_memory"), with = FALSE]
+#   data_memory = data_memory[snapshot, on = "renv_project", nomatch = 0]
+#   setorderv(data_memory, c(arg_names, "mlr3"), order = c(rep(1, length(arg_names)), -1))
+#   data_memory[, -c("renv_project")]
+# }), jobs_memory$function_name)
+
+# # merge memory and runtime data
+# results_runtime = set_names(pmap(jobs_runtime, function(function_name, args, ...) {
+#   data_runtime = results_runtime[[function_name]]
+#   data_memory = results_memory[[function_name]]
+#   data_runtime[data_memory, on = c(names(args), "mlr3", "paradox")]
+# }), jobs_runtime$function_name)
+
+
+# jobs_object_size = setDT(dbReadTable(con, "mlr3_object_size_jobs"))
+# jobs_object_size[, args := map(args, function(args) unserialize(args))]
+
+# results_object_size = set_names(pmap(jobs_object_size, function(function_name, args, ...) {
+#   arg_names = names(args)
+#   data_object_size = setDT(dbReadTable(con, sprintf("mlr3_object_size_%s", function_name)))[, c(arg_names, "renv_project", "median_size", "median_unserialized_size"), with = FALSE]
+#   data_object_size = data_object_size[snapshot, on = "renv_project", nomatch = 0]
+#   setorderv(data_object_size, c(arg_names, "mlr3"), order = c(rep(1, length(arg_names)), -1))
+#   data_object_size = data_object_size[, -c("renv_project")]
+#   data_object_size[, median_size := median_size / 1e6]
+#   data_object_size[, median_unserialized_size := median_unserialized_size / 1e6]
+# }), jobs_object_size$function_name)
+
+# creates a gt table for experiments that depend on the task size and the number of resampling iterations
+create_table_task = function(data) {
+  data[, task := as.integer(gsub("data_", "", task))]
+  data[, median_memory := 100L] # remove!
+  data = data[, -c("mad_runtime", "mad_memory")]
+  setcolorder(data, c("mlr3fselect", "bbotk", "mlr3", "paradox", "task", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory"))
+
+ data %>%
     gt() %>%
     cols_label(
       mlr3fselect = "mlr3fselect Version",
       bbotk = "bbotk Version",
       mlr3 = "mlr3 Version",
       paradox = "paradox Version",
-      model_time = "Model Time [ms]",
-      total_model_time = "Total Model Time [s]",
-      median_runtime = "Median Runtime [s]",
-      median_runtime_10000 = "Median Runtime 10,000 [s]",
-      k = "K",
-      median_memory = "Median Memory [MB]",
-      median_memory_10000 = "Median Memory 10,000 [s]") %>%
-    fmt_number(columns = c("k", "median_runtime", "median_runtime_10000"), n_sigfig = 2) %>%
-    fmt_number(columns = c("median_memory", "median_memory_10000"), decimals = 0) %>%
-    tab_style(
-      style = list(
-        cell_fill(color = "crimson"),
-        cell_text(weight = "bold")
+      task = "Task Size",
+      median_runtime = "Runtime [ms]",
+      k_1 = "k1",
+      k_10 = "k10",
+      k_100 = "k100",
+      k_1000 = "k1000",
+      median_memory = "Memory [MB]") %>%
+    fmt_number(columns = c("median_runtime", "median_memory"), decimals = 0, sep_mark = "") %>%
+    fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000"), n_sigfig = 2) %>%
+    data_color(
+      columns = c("k_1", "k_10", "k_100", "k_1000"),
+      fn = scales::col_numeric(
+        palette = c("#2ecc71", "white"),
+        domain = c(1, 3),
+        na.color = "white"
       ),
-      locations = cells_body(
-        columns = "k",
-        rows = k > 3
-      )
+      apply_to = "fill",
+      autocolor_text = TRUE
+    ) %>%
+    tab_row_group(
+      label = "10000 Observations",
+      rows = task == 10000
+    ) %>%
+    tab_row_group(
+      label = "1000 Observations",
+      rows = task == 1000
     )
-  }
+}
+
+
+# library(data.table)
+# library(ggplot2)
+# library(gt)
+# library(DBI)
+
+# con = dbConnect(RSQLite::SQLite(), here::here("mlr-org/benchmarks/results.db"))
+# snapshot = setDT(dbReadTable(con, "mlr3tuning_snapshots"))
+# snapshot[, mlr3 := factor(mlr3)]
+# snapshot[, paradox := factor(paradox)]
+# snapshot[, mlr3tuning := factor(mlr3tuning)]
+# snapshot[, bbotk := factor(bbotk)]
+
+# plot_runtime = function(data) {
+#   ggplot(data, aes(x = mlr3tuning, y = median_runtime)) +
+#   geom_col(group = 1, fill = "#008080") +
+#   geom_errorbar(aes(ymin = pmax(median_runtime - mad_runtime, 0), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
+#   geom_hline(aes(yintercept = total_model_time), linetype = "dashed") +
+#   labs(x = "mlr3Version", y = "Runtime [s]") +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# }
+
+# plot_memory = function(data) {
+#   ggplot(data, aes(x = mlr3tuning, y = median_memory)) +
+#   geom_col(group = 1, fill = "#ff6347") +
+#   geom_errorbar(aes(ymin = median_memory - mad_memory, ymax = median_memory + mad_memory), width = 0.5, position = position_dodge(0.9)) +
+#   geom_hline(aes(yintercept = 131), linetype = "dashed") +
+#   #facet_wrap(~scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
+#   labs(x = "mlr3 Version", y = "Memory [MB]") +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# }
+
+# create_table = function(data) {
+#   data = data[, -c("mad_memory", "mad_runtime")]
+
+#   data_1000 = data[task == "data_1000", -"task"]
+#   data_10000 = data[task == "data_10000", -c("task", "k", "total_model_time")]
+#   data = merge(data_1000, data_10000, by = c("mlr3tuning", "bbotk", "mlr3", "paradox", "model_time"), suffixes = c("", "_10000"))
+
+#   setcolorder(data, c("mlr3tuning", "bbotk", "mlr3", "paradox", "model_time", "total_model_time", "median_runtime", "median_runtime_10000", "k", "median_memory", "median_memory_10000"))
+
+#   data %>%
+#     gt() %>%
+#     cols_label(
+#       mlr3tuning = "mlr3tuning Version",
+#       bbotk = "bbotk Version",
+#       mlr3 = "mlr3 Version",
+#       paradox = "paradox Version",
+#       model_time = "Model Time [ms]",
+#       total_model_time = "Total Model Time [s]",
+#       median_runtime = "Median Runtime [s]",
+#       median_runtime_10000 = "Median Runtime 10,000 [s]",
+#       k = "K",
+#       median_memory = "Median Memory [MB]",
+#       median_memory_10000 = "Median Memory 10,000 [s]") %>%
+#     fmt_number(columns = c("k", "median_runtime", "median_runtime_10000"), n_sigfig = 2) %>%
+#     fmt_number(columns = c("median_memory", "median_memory_10000"), decimals = 0) %>%
+#     tab_style(
+#       style = list(
+#         cell_fill(color = "crimson"),
+#         cell_text(weight = "bold")
+#       ),
+#       locations = cells_body(
+#         columns = "k",
+#         rows = k > 3
+#       )
+#     )
+#   }
 ```
+
 
 # Scope
 
@@ -124,26 +232,6 @@ The memory usage is around 3.3 GB.
 
 # Feature Selection {#fselect}
 
-```{r}
-#| include: false
-data_memory = setDT(dbReadTable(con, "mlr3fselect_fselect_memory"))[, list(task, renv_project, median_memory, mad_memory)]
-data_memory[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_memory = data_memory [snapshot, on = "renv_project"]
-setorderv(data_memory, c("task", "mlr3fselect"), order = c(1, -1))
-data_memory = data_memory[, -c("renv_project")]
-
-data_runtime = setDT(dbReadTable(con, "mlr3fselect_fselect_runtime"))[, list(model_time, task, renv_project, median_runtime, mad_runtime, k)]
-data_runtime[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_runtime = data_runtime[snapshot, on = "renv_project"]
-setorderv(data_runtime, c("task", "model_time", "mlr3fselect"), order = c(1, 1, -1))
-data_runtime = data_runtime[, -c("renv_project")]
-data_runtime[, median_runtime := median_runtime / 1000]
-data_runtime[, mad_runtime := mad_runtime / 1000]
-data_runtime[, total_model_time := model_time]
-
-data_runtime = merge(data_runtime, data_memory, by = c("task", "mlr3fselect", "bbotk", "mlr3", "paradox"), sort = FALSE)
-```
-
 The runtime and memory usage of the `fselect()` function is measured for different mlr3fselect versions.
 A random search is used with a batch size of 1000.
 The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
@@ -152,9 +240,7 @@ The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1
 #| eval: false
 task = tsk("spam")
 
-learner = lrn("classif.sleep",
-  sleep_train = model_time / 2,
-  sleep_predict = model_time / 2)
+learner = lrn("classif.rpart")
 
 fselect(
   fselector = fs("random_search", batch_size = 1000),
@@ -169,294 +255,19 @@ fselect(
 ```
 
 ```{r}
-#| include: false
-.model_time = 1000
-```
-
-{{< include _benchmarks_mlr3fselect_section_1.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 100
-```
-
-{{< include _benchmarks_mlr3fselect_section_1.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 10
-```
-
-{{< include _benchmarks_mlr3fselect_section_1.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 1
-```
-
-{{< include _benchmarks_mlr3fselect_section_1.qmd >}}
-
-## Memory
-
-```{r}
 #| echo: false
+#| warning: false
 #| column: body-outset
-#| fig-cap: |
-#|  Memory usage of `fselect()` depending on the mlr3fselect version.
-#|  Error bars represent the median absolute deviation of the memory usage.
-#|  The dashed line indicates the memory usage of an empty R session which is 131 MB.
-plot_memory(data_memory[task == "data_1000"])
-```
-
-# Feature Selection in Parallel {#fselect-parallel}
-
-```{r}
-#| include: false
-create_table = function(data) {
-  data = data[, -c("mad_memory", "mad_runtime")]
-
-  data_1000 = data[task == "data_1000", -"task"]
-  data_10000 = data[task == "data_10000", -c("task", "k", "total_model_time", "median_runtime_sequential")]
-  data = merge(data_1000, data_10000, by = c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time"), suffixes = c("", "_10000"))
-
-  setcolorder(data, c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time", "total_model_time", "median_runtime", "median_runtime_sequential", "median_runtime_10000", "k", "median_memory", "median_memory_10000"))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      mlr3fselect = "mlr3fselect Version",
-      bbotk = "bbotk Version",
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
-      model_time = "Model Time [ms]",
-      total_model_time = "Total Model Time [s]",
-      median_runtime = "Median Runtime [s]",
-      median_runtime_sequential = "Median Runtime Sequential [s]",
-      median_runtime_10000 = "Median Runtime 10,000 [s]",
-      k = "K",
-      median_memory = "Median Memory [MB]",
-      median_memory_10000 = "Median Memory 10,000 [s]") %>%
-    fmt_number(columns = c("k", "median_runtime", "median_runtime_10000", "median_runtime_sequential"), n_sigfig = 2) %>%
-    fmt_number(columns = c("median_memory", "median_memory_10000"), decimals = 0) %>%
-    tab_style(
-      style = list(
-        cell_fill(color = "crimson"),
-        cell_text(weight = "bold")
-      ),
-      locations = cells_body(
-        columns = "k",
-        rows = k > 3
-      )
-    )  %>%
-    tab_style(
-      style = list(
-        cell_fill(color = "crimson"),
-        cell_text(weight = "bold")
-      ),
-      locations = cells_body(
-        columns = "median_runtime",
-        rows = median_runtime_sequential < median_runtime
-      )
-    )
-}
-
-plot_runtime = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_runtime)) +
-  geom_col(group = 1, fill = "#008080") +
-  geom_errorbar(aes(ymin = pmax(0, median_runtime - mad_runtime), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
-  geom_hline(aes(yintercept = total_model_time / 10), linetype = "dashed") +
-  labs(x = "mlr3Version", y = "Runtime [s]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-plot_memory = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_memory)) +
-  geom_col(group = 1, fill = "#ff6347") +
-  geom_errorbar(aes(ymin = median_memory - mad_memory, ymax = median_memory + mad_memory), width = 0.5, position = position_dodge(0.9)) +
-  labs(x = "mlr3 Version", y = "Memory [MB]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-#| include: false
-data_memory = setDT(dbReadTable(con, "mlr3fselect_fselect_parallel_memory"))[, list(task, renv_project, median_memory, mad_memory)]
-data_memory[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_memory = data_memory [snapshot, on = "renv_project"]
-setorderv(data_memory, c("task", "mlr3fselect"), order = c(1, -1))
-data_memory = data_memory[, -c("renv_project")]
-
-data_runtime = setDT(dbReadTable(con, "mlr3fselect_fselect_parallel_runtime"))[, list(model_time, task, renv_project, median_runtime, mad_runtime, k)]
-data_runtime[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_runtime = data_runtime[snapshot, on = "renv_project"]
-setorderv(data_runtime, c("task", "model_time", "mlr3fselect"), order = c(1, 1, -1))
-data_runtime = data_runtime[, -c("renv_project")]
-data_runtime[, median_runtime := median_runtime / 1000]
-data_runtime[, mad_runtime := mad_runtime / 1000]
-data_runtime[, total_model_time := model_time]
-
-data_runtime = merge(data_runtime, data_memory, by = c("task", "mlr3fselect", "bbotk", "mlr3", "paradox"), sort = FALSE)
-
-# add runtime from sequential benchmark
-data_runtime_2 = setDT(dbReadTable(con, "mlr3fselect_fselect_runtime"))[, list(model_time, task, renv_project, median_runtime, mad_runtime, k)]
-data_runtime_2[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_runtime_2 = data_runtime_2[snapshot, on = "renv_project"]
-setorderv(data_runtime_2, c("task", "model_time", "mlr3fselect"), order = c(1, 1, -1))
-data_runtime_2 = data_runtime_2[, -c("renv_project")]
-data_runtime_2[, median_runtime := median_runtime / 1000]
-data_runtime_2[, mad_runtime := mad_runtime / 1000]
-data_runtime_2[, total_model_time := model_time]
-data_runtime_2 = data_runtime_2[, c("task",  "mlr3fselect", "bbotk", "mlr3", "paradox", "model_time", "median_runtime")]
-setnames(data_runtime_2, "median_runtime", "median_runtime_sequential")
-data_runtime = merge(data_runtime, data_runtime_2, by = c("task",  "mlr3fselect", "bbotk", "mlr3", "paradox", "model_time"), sort = FALSE)
-```
-
-The runtime and memory usage of the `fselect()` function is measured for different mlr3fselect versions.
-A random search is used with a batch size of 1000.
-The feature selection is conducted in parallel on 10 cores with `future::multisession`.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
-
-```{r}
-#| eval: false
-task = tsk("spam")
-
-learner = lrn("classif.sleep",
-  sleep_train = model_time / 2,
-  sleep_predict = model_time / 2)
-
-future::plan("multisession", workers = 10)
-
-fselect(
-  fselector = fs("random_search", batch_size = 1000),
-  task = task,
-  learner = learner,
-  resampling = rsmp("holdout"),
-  measure = msr("classif.ce"),
-  terminator = trm("evals", n_evals = 1000),
-  store_benchmark_result = FALSE,
-  store_models = FALSE
-)
-```
-
-```{r}
-#| include: false
-.model_time = 1000
-```
-
-{{< include _benchmarks_mlr3fselect_section_2.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 100
-```
-
-{{< include _benchmarks_mlr3fselect_section_2.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 10
-```
-
-{{< include _benchmarks_mlr3fselect_section_2.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 1
-```
-
-{{< include _benchmarks_mlr3fselect_section_2.qmd >}}
-
-## Memory
-
-```{r}
-#| echo: false
-#| column: body-outset
-#| fig-cap: |
-#|  Memory usage of `fselect()` depending on the mlr3fselect version and the number of resampling iterations.
-#|  Error bars represent the median absolute deviation of the memory usage.
-plot_memory(data_memory[task == "data_1000"])
+#| tbl-cap: |
+#|   Runtime and memory usage of `fselect()` by mlr3fselect version and dataset size.
+#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
+#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
+#|   A green background highlights cases where the total runtime is less than three times the model training time.
+create_table_task(results_runtime$fselect)
 ```
 
 # Nested Feature Selection {#fselect-nested}
 
-```{r}
-#| include: false
-data_memory = setDT(dbReadTable(con, "mlr3fselect_fselect_nested_memory"))[, list(task, renv_project, median_memory, mad_memory)]
-data_memory[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_memory = data_memory [snapshot, on = "renv_project"]
-setorderv(data_memory, c("task", "mlr3fselect"), order = c(1, -1))
-data_memory = data_memory[, -c("renv_project")]
-
-data_runtime = setDT(dbReadTable(con, "mlr3fselect_fselect_nested_runtime"))[, list(model_time, task, renv_project, median_runtime, mad_runtime, k)]
-data_runtime[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_runtime = data_runtime[snapshot, on = "renv_project"]
-setorderv(data_runtime, c("task", "model_time", "mlr3fselect"), order = c(1, 1, -1))
-data_runtime = data_runtime[, -c("renv_project")]
-data_runtime[, median_runtime := median_runtime / 1000]
-data_runtime[, mad_runtime := mad_runtime / 1000]
-data_runtime[, total_model_time := model_time * 10]
-
-data_runtime = merge(data_runtime, data_memory, by = c("task", "mlr3fselect", "bbotk", "mlr3", "paradox"), sort = FALSE)
-
-plot_runtime = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_runtime)) +
-  geom_col(group = 1, fill = "#008080") +
-  geom_errorbar(aes(ymin = pmax(median_runtime - mad_runtime, 0), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
-  geom_hline(aes(yintercept = total_model_time), linetype = "dashed") +
-  labs(x = "mlr3Version", y = "Runtime [s]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-plot_memory = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_memory)) +
-  geom_col(group = 1, fill = "#ff6347") +
-  geom_errorbar(aes(ymin = median_memory - mad_memory, ymax = median_memory + mad_memory), width = 0.5, position = position_dodge(0.9)) +
-  geom_hline(aes(yintercept = 131), linetype = "dashed") +
-  #facet_wrap(~scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
-  labs(x = "mlr3 Version", y = "Memory [MB]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-create_table = function(data) {
-  data = data[, -c("mad_memory", "mad_runtime")]
-
-  data_1000 = data[task == "data_1000", -"task"]
-  data_10000 = data[task == "data_10000", -c("task", "k", "total_model_time")]
-  data = merge(data_1000, data_10000, by = c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time"), suffixes = c("", "_10000"))
-
-  setcolorder(data, c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time", "total_model_time", "median_runtime", "median_runtime_10000", "k", "median_memory", "median_memory_10000"))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      mlr3fselect = "mlr3fselect Version",
-      bbotk = "bbotk Version",
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
-      model_time = "Model Time [ms]",
-      total_model_time = "Total Model Time [s]",
-      median_runtime = "Median Runtime [s]",
-      median_runtime_10000 = "Median Runtime 10,000 [s]",
-      k = "K",
-      median_memory = "Median Memory [MB]",
-      median_memory_10000 = "Median Memory 10,000 [s]") %>%
-    fmt_number(columns = c("k", "median_runtime", "median_runtime_10000"), n_sigfig = 2) %>%
-    fmt_number(columns = c("median_memory", "median_memory_10000"), decimals = 0) %>%
-    tab_style(
-      style = list(
-        cell_fill(color = "crimson"),
-        cell_text(weight = "bold")
-      ),
-      locations = cells_body(
-        columns = "k",
-        rows = k > 3
-      )
-    )
-  }
-```
-
 The runtime and memory usage of the `fselect_nested()` function is measured for different mlr3fselect versions.
 The outer resampling has 10 iterations and the inner random search evaluates 1000 feature subsets in total.
 The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
@@ -465,9 +276,7 @@ The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1
 #| eval: false
 task = tsk("spam")
 
-learner = lrn("classif.sleep",
-  sleep_train = model_time / 2,
-  sleep_predict = model_time / 2)
+learner = lrn("classif.rpart")
 
 fselect_nested(
   fselector = fs("random_search", batch_size = 1000),
@@ -484,211 +293,15 @@ fselect_nested(
 ```
 
 ```{r}
-#| include: false
-.model_time = 1000
-```
-
-{{< include _benchmarks_mlr3fselect_section_3.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 100
-```
-
-{{< include _benchmarks_mlr3fselect_section_3.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 10
-```
-
-{{< include _benchmarks_mlr3fselect_section_3.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 1
-```
-
-{{< include _benchmarks_mlr3fselect_section_3.qmd >}}
-
-## Memory
-
-```{r}
 #| echo: false
+#| warning: false
 #| column: body-outset
-#| fig-cap: |
-#|  Memory usage of `fselect()` depending on the mlr3fselect version and the number of resampling iterations.
-#|  Error bars represent the median absolute deviation of the memory usage.
-#|  The dashed line indicates the memory usage of an empty R session which is 131 MB.
-plot_memory(data_memory[task == "data_1000"])
+#| tbl-cap: |
+#|   Runtime and memory usage of `fselect_nested()` by mlr3fselect version and dataset size.
+#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
+#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
+#|   A green background highlights cases where the total runtime is less than three times the model training time.
+create_table_task(results_runtime$fselect_nested)
 ```
 
-# Nested Feature Selection in Parallel {#fselect-nested-parallel}
 
-```{r}
-#| include: false
-data_memory = setDT(dbReadTable(con, "mlr3fselect_fselect_nested_parallel_memory"))[, list(task, renv_project, median_memory, mad_memory)]
-data_memory[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_memory = data_memory [snapshot, on = "renv_project"]
-setorderv(data_memory, c("task", "mlr3fselect"), order = c(1, -1))
-data_memory = data_memory[, -c("renv_project")]
-
-data_runtime = setDT(dbReadTable(con, "mlr3fselect_fselect_nested_parallel_runtime"))[, list(model_time, task, renv_project, median_runtime, mad_runtime, k)]
-data_runtime[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_runtime = data_runtime[snapshot, on = "renv_project"]
-setorderv(data_runtime, c("task", "model_time", "mlr3fselect"), order = c(1, 1, -1))
-data_runtime = data_runtime[, -c("renv_project")]
-data_runtime[, median_runtime := median_runtime / 1000]
-data_runtime[, mad_runtime := mad_runtime / 1000]
-data_runtime[, total_model_time := model_time * 10]
-
-data_runtime = merge(data_runtime, data_memory, by = c("task", "mlr3fselect", "bbotk", "mlr3", "paradox"), sort = FALSE)
-
-# add runtime from sequential benchmark
-data_runtime_2 = setDT(dbReadTable(con, "mlr3fselect_fselect_nested_runtime"))[, list(model_time, task, renv_project, median_runtime, mad_runtime, k)]
-data_runtime_2[, renv_project := gsub("mlr3fselect/default/snapshots/", "", renv_project)]
-data_runtime_2 = data_runtime_2[snapshot, on = "renv_project"]
-setorderv(data_runtime_2, c("task", "model_time", "mlr3fselect"), order = c(1, 1, -1))
-data_runtime_2 = data_runtime_2[, -c("renv_project")]
-data_runtime_2[, median_runtime := median_runtime / 1000]
-data_runtime_2[, mad_runtime := mad_runtime / 1000]
-data_runtime_2[, total_model_time := model_time]
-data_runtime_2 = data_runtime_2[, c("task",  "mlr3fselect", "bbotk", "mlr3", "paradox", "model_time", "median_runtime")]
-setnames(data_runtime_2, "median_runtime", "median_runtime_sequential")
-data_runtime = merge(data_runtime, data_runtime_2, by = c("task",  "mlr3fselect", "bbotk", "mlr3", "paradox", "model_time"), sort = FALSE)
-
-create_table = function(data) {
-  data = data[, -c("mad_memory", "mad_runtime")]
-
-  data_1000 = data[task == "data_1000", -"task"]
-  data_10000 = data[task == "data_10000", -c("task", "k", "total_model_time", "median_runtime_sequential")]
-  data = merge(data_1000, data_10000, by = c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time"), suffixes = c("", "_10000"))
-
-  setcolorder(data, c("mlr3fselect", "bbotk", "mlr3", "paradox", "model_time", "total_model_time", "median_runtime", "median_runtime_sequential", "median_runtime_10000", "k", "median_memory", "median_memory_10000"))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      mlr3fselect = "mlr3fselect Version",
-      bbotk = "bbotk Version",
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
-      model_time = "Model Time [ms]",
-      total_model_time = "Total Model Time [s]",
-      median_runtime = "Median Runtime [s]",
-      median_runtime_sequential = "Median Runtime Sequential [s]",
-      median_runtime_10000 = "Median Runtime 10,000 [s]",
-      k = "K",
-      median_memory = "Median Memory [MB]",
-      median_memory_10000 = "Median Memory 10,000 [s]") %>%
-    fmt_number(columns = c("k", "median_runtime", "median_runtime_10000", "median_runtime_sequential"), n_sigfig = 2) %>%
-    fmt_number(columns = c("median_memory", "median_memory_10000"), decimals = 0) %>%
-    tab_style(
-      style = list(
-        cell_fill(color = "crimson"),
-        cell_text(weight = "bold")
-      ),
-      locations = cells_body(
-        columns = "k",
-        rows = k > 3
-      )
-    )  %>%
-    tab_style(
-      style = list(
-        cell_fill(color = "crimson"),
-        cell_text(weight = "bold")
-      ),
-      locations = cells_body(
-        columns = "median_runtime",
-        rows = median_runtime_sequential < median_runtime
-      )
-    )
-}
-
-plot_runtime = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_runtime)) +
-  geom_col(group = 1, fill = "#008080") +
-  geom_errorbar(aes(ymin = pmax(0, median_runtime - mad_runtime), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
-  geom_hline(aes(yintercept = total_model_time / 10), linetype = "dashed") +
-  labs(x = "mlr3Version", y = "Runtime [s]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-plot_memory = function(data) {
-  ggplot(data, aes(x = mlr3fselect, y = median_memory)) +
-  geom_col(group = 1, fill = "#ff6347") +
-  geom_errorbar(aes(ymin = median_memory - mad_memory, ymax = median_memory + mad_memory), width = 0.5, position = position_dodge(0.9)) +
-  labs(x = "mlr3 Version", y = "Memory [MB]") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-```
-
-The runtime and memory usage of the `fselect_nested()` function is measured for different mlr3fselect versions.
-The outer resampling has 10 iterations and the inner random search evaluates 1000 feature subsets in total.
-The outer resampling is run in parallel on 10 cores with `future::multisession`.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
-
-```{r}
-#| eval: false
-task = tsk("spam")
-
-learner = lrn("classif.sleep",
-  sleep_train = model_time / 2,
-  sleep_predict = model_time / 2)
-
-future::plan("multisession", workers = 10)
-
-fselect_nested(
-  fselector = fs("random_search", batch_size = 1000),
-  task = task,
-  learner = learner,
-  inner_resampling = rsmp("holdout"),
-  outer_resampling = rsmp("subsampling", repeats = 10),
-  measure = msr("classif.ce"),
-  terminator = trm("evals", n_evals = 1000),
-  store_fselect_instance = FALSE,
-  store_benchmark_result = FALSE,
-  store_models = FALSE
-)
-```
-
-```{r}
-#| include: false
-.model_time = 1000
-```
-
-{{< include _benchmarks_mlr3fselect_section_4.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 100
-```
-
-{{< include _benchmarks_mlr3fselect_section_4.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 10
-```
-
-{{< include _benchmarks_mlr3fselect_section_4.qmd >}}
-
-```{r}
-#| include: false
-.model_time = 1
-```
-
-{{< include _benchmarks_mlr3fselect_section_4.qmd >}}
-
-## Memory
-
-```{r}
-#| echo: false
-#| column: body-outset
-#| fig-cap: |
-#|  Memory usage of `fselect()` depending on the mlr3fselect version and the number of resampling iterations.
-#|  Error bars represent the median absolute deviation of the memory usage.
-plot_memory(data_memory[task == "data_1000"])
-```
