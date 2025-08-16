@@ -793,31 +793,17 @@ create_table_object_size_task_evals(results_object_size$benchmark_result_store_m
 
 # Version History
 
-This section provides an overview of the changes in the mlr3 and paradox packages regarding memory usage and runtime.
+This section provides an overview of the latest changes in the mlr3 and paradox packages regarding memory usage and runtime.
 
 ## mlr3
 
-**mlr3 0.21.0**
+**mlr3 1.1.0**
 
-* Optimize the runtime of fixing factor levels.
-* Optimize the runtime of setting row roles.
-* Optimize the runtime of marshalling.
-* Optimize the runtime of `Task$col_info`.
+* feat: Add `$predict_newdata_fast()` method to `Learner` to speed up prediction.
 
-**mlr3 0.18.0**
+**mlr3 1.0.1**
 
-* Skip unnecessary clone of learner's state in `resample()`.
-
-**mlr3 0.17.1**
-
-* Remove `data_prototype` when resampling from `learner$state` to reduce memory consumption.
-* Optimize runtime of `resample()` and `benchmark()` by reducing the number of hashing operations.
-* Reduce number of threads used by data.table and BLAS to 1 when running `resample()` or `benchmark()` in parallel.
-
-**mlr3 0.17.0**
-
-* Speed up resampling by removing unnecessary calls to `packageVersion()`.
-* The `design` of `benchmark()` can now include parameter settings.
+* perf: Use `data.table::setattr()` for less copying.
 
 ## paradox
 

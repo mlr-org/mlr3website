@@ -21,8 +21,7 @@ library(DBI)
 
 con = dbConnect(RSQLite::SQLite(), here::here("mlr-org/benchmarks/results_lrz.db"))
 snapshot = setDT(dbReadTable(con, "mlr3tuning_snapshots"))
-snapshot[, mlr3 := factor(mlr3)]
-snapshot[, paradox := factor(paradox)]
+snapshot[, mlr3tuning := factor(mlr3tuning)]
 
 jobs_runtime = setDT(dbReadTable(con, "mlr3tuning_runtime_jobs"))
 jobs_runtime[, args := map(args, function(args) unserialize(args))]
@@ -31,7 +30,7 @@ results_runtime = set_names(pmap(jobs_runtime, function(function_name, args, ...
   arg_names = names(args)
   data_runtime = setDT(dbReadTable(con, sprintf("mlr3tuning_runtime_%s", function_name)))[, c(arg_names, "renv_project", "median_runtime", "mad_runtime"), with = FALSE]
   data_runtime = data_runtime[snapshot, on = "renv_project", nomatch = 0]
-  setorderv(data_runtime, c(arg_names, "mlr3"), order = c(rep(1, length(arg_names)), -1))
+  setorderv(data_runtime, c(arg_names, "mlr3tuning"), order = c(rep(1, length(arg_names)), -1))
   data_runtime[, -c("renv_project")]
 }), jobs_runtime$function_name)
 
