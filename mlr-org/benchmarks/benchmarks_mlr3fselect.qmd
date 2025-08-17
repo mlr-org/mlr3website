@@ -44,66 +44,120 @@ walk(c("fselect", "fselect_nested"), function(function_name) {
   data[, k_1000 := (median_runtime + 1000 * evals) / (1000 * evals)]
 })
 
-# jobs_memory = setDT(dbReadTable(con, "mlr3tuning_memory_jobs"))
-# jobs_memory[, args := map(args, function(args) unserialize(args))]
+jobs_memory = setDT(dbReadTable(con, "mlr3fselect_runtime_jobs"))
+jobs_memory[, args := map(args, function(args) unserialize(args))]
 
-# results_memory = set_names(pmap(jobs_memory, function(function_name, args, ...) {
-#   arg_names = names(args)
-#   data_memory = setDT(dbReadTable(con, sprintf("mlr3tuning_memory_%s", function_name)))[, c(arg_names, "renv_project", "median_memory", "mad_memory"), with = FALSE]
-#   data_memory = data_memory[snapshot, on = "renv_project", nomatch = 0]
-#   setorderv(data_memory, c(arg_names, "mlr3"), order = c(rep(1, length(arg_names)), -1))
-#   data_memory[, -c("renv_project")]
-# }), jobs_memory$function_name)
+results_memory = set_names(pmap(jobs_memory, function(function_name, args, ...) {
+  arg_names = names(args)
+  data_memory = setDT(dbReadTable(con, sprintf("mlr3fselect_memory_%s", function_name)))[, c(arg_names, "renv_project", "median_memory", "mad_memory"), with = FALSE]
+  data_memory = data_memory[snapshot, on = "renv_project", nomatch = 0]
+  setorderv(data_memory, c(arg_names, "mlr3fselect"), order = c(rep(1, length(arg_names)), -1))
+  data_memory[, -c("renv_project")]
+}), jobs_memory$function_name)
 
-# # merge memory and runtime data
-# results_runtime = set_names(pmap(jobs_runtime, function(function_name, args, ...) {
-#   data_runtime = results_runtime[[function_name]]
-#   data_memory = results_memory[[function_name]]
-#   data_runtime[data_memory, on = c(names(args), "mlr3", "paradox")]
-# }), jobs_runtime$function_name)
+# merge memory and runtime data
+results_runtime = set_names(pmap(jobs_runtime, function(function_name, args, ...) {
+  data_runtime = results_runtime[[function_name]]
+  data_memory = results_memory[[function_name]]
+  data_runtime[data_memory, on = c(names(args), "mlr3fselect", "bbotk", "mlr3", "paradox")]
+}), jobs_runtime$function_name)
+
+# parallel runtime
+jobs_runtime_parallel = setDT(dbReadTable(con, "mlr3fselect_runtime_parallel_jobs"))
+jobs_runtime_parallel[, args := map(args, function(args) unserialize(args))]
+
+results_runtime_parallel = set_names(pmap(jobs_runtime_parallel, function(function_name, args, ...) {
+  arg_names = names(args)
+  data_runtime = setDT(dbReadTable(con, sprintf("mlr3fselect_runtime_%s", function_name)))[, c(arg_names, "renv_project", "median_runtime", "mad_runtime"), with = FALSE]
+  data_runtime = data_runtime[snapshot, on = "renv_project", nomatch = 0]
+  setorderv(data_runtime, c(arg_names, "mlr3fselect"), order = c(rep(1, length(arg_names)), -1))
+  data_runtime[, -c("renv_project")]
+}), jobs_runtime_parallel$function_name)
 
 
-# jobs_object_size = setDT(dbReadTable(con, "mlr3_object_size_jobs"))
-# jobs_object_size[, args := map(args, function(args) unserialize(args))]
+results_runtime_parallel = set_names(pmap(list(c("fselect", "fselect_nested"), c("fselect_parallel", "fselect_nested_parallel")), function(function_name, function_name_parallel) {
 
-# results_object_size = set_names(pmap(jobs_object_size, function(function_name, args, ...) {
-#   arg_names = names(args)
-#   data_object_size = setDT(dbReadTable(con, sprintf("mlr3_object_size_%s", function_name)))[, c(arg_names, "renv_project", "median_size", "median_unserialized_size"), with = FALSE]
-#   data_object_size = data_object_size[snapshot, on = "renv_project", nomatch = 0]
-#   setorderv(data_object_size, c(arg_names, "mlr3"), order = c(rep(1, length(arg_names)), -1))
-#   data_object_size = data_object_size[, -c("renv_project")]
-#   data_object_size[, median_size := median_size / 1e6]
-#   data_object_size[, median_unserialized_size := median_unserialized_size / 1e6]
-# }), jobs_object_size$function_name)
+  data = copy(results_runtime[[function_name]])
+  evals = 1000L
+
+  data[, total_runtime_1 := median_runtime + evals * 1]
+  data[, total_runtime_10 := median_runtime + evals * 10]
+  data[, total_runtime_100 := median_runtime + evals * 100]
+  data[, total_runtime_1000 := median_runtime + evals * 1000]
+
+  data_parallel = copy(results_runtime_parallel[[function_name_parallel]])
+
+  data_parallel[, total_runtime_parallel_1 := median_runtime + evals * 1 / 10]
+  data_parallel[, total_runtime_parallel_10 := median_runtime + evals * 10 / 10]
+  data_parallel[, total_runtime_parallel_100 := median_runtime + evals * 100 / 10]
+  data_parallel[, total_runtime_parallel_1000 := median_runtime + evals * 1000 / 100]
+
+  tmp = cbind(data[, list(total_runtime_1, total_runtime_10, total_runtime_100, total_runtime_1000)],
+            data_parallel[, list(total_runtime_parallel_1, total_runtime_parallel_10, total_runtime_parallel_100, total_runtime_parallel_1000)])
+
+  tmp[, pk_1 := total_runtime_1 / total_runtime_parallel_1]
+  tmp[, pk_10 := total_runtime_10 / total_runtime_parallel_10]
+  tmp[, pk_100 := total_runtime_100 / total_runtime_parallel_100]
+  tmp[, pk_1000 := total_runtime_1000 / total_runtime_parallel_1000]
+
+  tmp[pk_1 < 1, pk_1 := NA]
+  tmp[pk_10 < 1, pk_10 := NA]
+  tmp[pk_100 < 1, pk_100 := NA]
+  tmp[pk_1000 < 1, pk_1000 := NA]
+
+  cbind(results_runtime[[function_name]], tmp[, list(pk_1, pk_10, pk_100, pk_1000)])
+}), c("fselect", "fselect_nested"))
+
+results_runtime[["fselect"]] = results_runtime_parallel[["fselect"]]
+results_runtime[["fselect_nested"]] = results_runtime_parallel[["fselect_nested"]]
 
 # creates a gt table for experiments that depend on the task size and the number of resampling iterations
 create_table_task = function(data) {
+  data = copy(data)
   data[, task := as.integer(gsub("data_", "", task))]
-  data[, median_memory := 100L] # remove!
   data = data[, -c("mad_runtime", "mad_memory")]
   setcolorder(data, c("mlr3fselect", "bbotk", "mlr3", "paradox", "task", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory"))
+  data[, median_runtime := median_runtime / 1000]
+  set(data, j = "bbotk", value = NULL)
+  set(data, j = "mlr3", value = NULL)
+  set(data, j = "paradox", value = NULL)
 
  data %>%
     gt() %>%
     cols_label(
       mlr3fselect = "mlr3fselect Version",
-      bbotk = "bbotk Version",
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
       task = "Task Size",
-      median_runtime = "Runtime [ms]",
-      k_1 = "k1",
-      k_10 = "k10",
-      k_100 = "k100",
-      k_1000 = "k1000",
-      median_memory = "Memory [MB]") %>%
+      median_runtime = "Overhead",
+      k_1 = html('k<sub>1</sub>'),
+      k_10 = html('k<sub>10</sub>'),
+      k_100 = html('k<sub>100</sub>'),
+      k_1000 = html('k<sub>1000</sub>'),
+      pk_1 = html('pk<sub>1</sub>'),
+      pk_10 = html('pk<sub>10</sub>'),
+      pk_100 = html('pk<sub>100</sub>'),
+      pk_1000 = html('pk<sub>1000</sub>'),
+      median_memory = "Memory") %>%
+     cols_units(
+      median_runtime = "s",
+      median_memory = "mb"
+    ) %>%
     fmt_number(columns = c("median_runtime", "median_memory"), decimals = 0, sep_mark = "") %>%
-    fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000"), n_sigfig = 2) %>%
+    fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000", "pk_1", "pk_10", "pk_100", "pk_1000"), n_sigfig = 2) %>%
     data_color(
       columns = c("k_1", "k_10", "k_100", "k_1000"),
       fn = scales::col_numeric(
         palette = c("#2ecc71", "white"),
         domain = c(1, 3),
+        na.color = "white"
+      ),
+      apply_to = "fill",
+      autocolor_text = TRUE
+    ) %>%
+     data_color(
+      columns = c("pk_1", "pk_10", "pk_100", "pk_1000"),
+      fn = scales::col_numeric(
+        palette = c("white", "#2ecc71"),
+        domain = c(1, max(data$pk_1000, na.rm = TRUE)),
         na.color = "white"
       ),
       apply_to = "fill",
@@ -118,77 +172,6 @@ create_table_task = function(data) {
       rows = task == 1000
     )
 }
-
-
-# library(data.table)
-# library(ggplot2)
-# library(gt)
-# library(DBI)
-
-# con = dbConnect(RSQLite::SQLite(), here::here("mlr-org/benchmarks/results.db"))
-# snapshot = setDT(dbReadTable(con, "mlr3tuning_snapshots"))
-# snapshot[, mlr3 := factor(mlr3)]
-# snapshot[, paradox := factor(paradox)]
-# snapshot[, mlr3tuning := factor(mlr3tuning)]
-# snapshot[, bbotk := factor(bbotk)]
-
-# plot_runtime = function(data) {
-#   ggplot(data, aes(x = mlr3tuning, y = median_runtime)) +
-#   geom_col(group = 1, fill = "#008080") +
-#   geom_errorbar(aes(ymin = pmax(median_runtime - mad_runtime, 0), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
-#   geom_hline(aes(yintercept = total_model_time), linetype = "dashed") +
-#   labs(x = "mlr3Version", y = "Runtime [s]") +
-#   theme_minimal() +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-# }
-
-# plot_memory = function(data) {
-#   ggplot(data, aes(x = mlr3tuning, y = median_memory)) +
-#   geom_col(group = 1, fill = "#ff6347") +
-#   geom_errorbar(aes(ymin = median_memory - mad_memory, ymax = median_memory + mad_memory), width = 0.5, position = position_dodge(0.9)) +
-#   geom_hline(aes(yintercept = 131), linetype = "dashed") +
-#   #facet_wrap(~scales = "free_y", labeller = labeller(evals = function(value) sprintf("%s Resampling Iterations", value))) +
-#   labs(x = "mlr3 Version", y = "Memory [MB]") +
-#   theme_minimal() +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-# }
-
-# create_table = function(data) {
-#   data = data[, -c("mad_memory", "mad_runtime")]
-
-#   data_1000 = data[task == "data_1000", -"task"]
-#   data_10000 = data[task == "data_10000", -c("task", "k", "total_model_time")]
-#   data = merge(data_1000, data_10000, by = c("mlr3tuning", "bbotk", "mlr3", "paradox", "model_time"), suffixes = c("", "_10000"))
-
-#   setcolorder(data, c("mlr3tuning", "bbotk", "mlr3", "paradox", "model_time", "total_model_time", "median_runtime", "median_runtime_10000", "k", "median_memory", "median_memory_10000"))
-
-#   data %>%
-#     gt() %>%
-#     cols_label(
-#       mlr3tuning = "mlr3tuning Version",
-#       bbotk = "bbotk Version",
-#       mlr3 = "mlr3 Version",
-#       paradox = "paradox Version",
-#       model_time = "Model Time [ms]",
-#       total_model_time = "Total Model Time [s]",
-#       median_runtime = "Median Runtime [s]",
-#       median_runtime_10000 = "Median Runtime 10,000 [s]",
-#       k = "K",
-#       median_memory = "Median Memory [MB]",
-#       median_memory_10000 = "Median Memory 10,000 [s]") %>%
-#     fmt_number(columns = c("k", "median_runtime", "median_runtime_10000"), n_sigfig = 2) %>%
-#     fmt_number(columns = c("median_memory", "median_memory_10000"), decimals = 0) %>%
-#     tab_style(
-#       style = list(
-#         cell_fill(color = "crimson"),
-#         cell_text(weight = "bold")
-#       ),
-#       locations = cells_body(
-#         columns = "k",
-#         rows = k > 3
-#       )
-#     )
-#   }
 ```
 
 
