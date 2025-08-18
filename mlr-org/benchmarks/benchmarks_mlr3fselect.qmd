@@ -112,7 +112,7 @@ results_runtime[["fselect"]] = results_runtime_parallel[["fselect"]]
 results_runtime[["fselect_nested"]] = results_runtime_parallel[["fselect_nested"]]
 
 # creates a gt table for experiments that depend on the task size and the number of resampling iterations
-create_table_task = function(data) {
+table_task = function(data) {
   data = copy(data)
   data[, task := as.integer(gsub("data_", "", task))]
   data = data[, -c("mad_runtime", "mad_memory")]
@@ -125,7 +125,7 @@ create_table_task = function(data) {
  data %>%
     gt() %>%
     cols_label(
-      mlr3fselect = "mlr3fselect Version",
+      mlr3fselect = "mlr3fselect",
       task = "Task Size",
       median_runtime = "Overhead",
       k_1 = html('k<sub>1</sub>'),
@@ -137,9 +137,14 @@ create_table_task = function(data) {
       pk_100 = html('pk<sub>100</sub>'),
       pk_1000 = html('pk<sub>1000</sub>'),
       median_memory = "Memory") %>%
-     cols_units(
+    cols_units(
       median_runtime = "s",
       median_memory = "mb"
+    ) %>%
+    sub_missing(
+      columns = everything(),
+      rows = everything(),
+      missing_text = "---"
     ) %>%
     fmt_number(columns = c("median_runtime", "median_memory"), decimals = 0, sep_mark = "") %>%
     fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000", "pk_1", "pk_10", "pk_100", "pk_1000"), n_sigfig = 2) %>%
@@ -156,7 +161,7 @@ create_table_task = function(data) {
      data_color(
       columns = c("pk_1", "pk_10", "pk_100", "pk_1000"),
       fn = scales::col_numeric(
-        palette = c("white", "#2ecc71"),
+        palette = c("white", "#A689E1"),
         domain = c(1, max(data$pk_1000, na.rm = TRUE)),
         na.color = "white"
       ),
@@ -177,46 +182,40 @@ create_table_task = function(data) {
 
 # Scope
 
-This report analyzes the runtime and memory usage of the `mlr3fselect` package across different versions.
-The benchmarks include the `fselect()` and `fselect_nested()` functions both in sequential and parallel mode.
-The benchmarks vary the training time of the models and the size of the dataset.
-
-Given the extensive package ecosystem of mlr3, performance bottlenecks can occur at multiple stages.
-This report aims to help users determine whether the runtime of their workflows falls within expected ranges.
-If significant runtime or memory anomalies are observed, users are encouraged to report them by opening a GitHub issue.
-
-Benchmarks are conducted on a high-performance cluster optimized for multi-core performance rather than single-core speed.
-Consequently, runtimes may be faster on a local machine.
+This report analyzes runtime and memory usage of `mlr3fselect` across recent versions.
+It evaluates `fselect()` and `fselect_nested()` in sequential and parallel execution.
+Given the size of the `mlr3` ecosystem, performance bottlenecks can arise at multiple stages.
+This report enables users to assess whether observed runtimes and memory footprints are within expected ranges.
+Substantial anomalies should be reported via a GitHub issue.
+Benchmarks are executed on a high‑performance cluster optimized for multi‑core throughput rather than single‑core speed.
+Runtimes on modern local machines may therefore differ.
 
 # Summary of Latest mlr3fselect Version
 
-The benchmarks are comprehensive; therefore, we present a summary of the results for the latest `mlr3fselect` version.
-We measure the runtime and memory usage of a random search with 1000 resampling iterations on the spam dataset with 1000 and 10,000 instances.
-The nested resampling is conducted with 10 outer resampling iterations and uses the same random search for the inner resampling loop.
-The overhead introduced by `fselect()` and `fselect_nested()` should always be considered relative to the training time of the models.
-For models with longer training times, such as 1 second, the overhead is minimal.
-For models with a training time of 100 ms, the overhead is approximately 20%.
-For models with a training time of 10 ms, the overhead approximately doubles or triples the runtime.
-In cases where the training time is only 1 ms, the overhead results in the runtime being 16 to 20 times larger than the actual model training time.
-The memory usage of `fselect()` and `fselect_nested()` is between 450 MB and 550 MB.
-Running an empty R session consumes 131 MB of memory.
-
-`mlr3fselect` utilizes the `future` package to enable parallelization over resampling iterations.
-However, running `fselect()` and `fselect_nested()` in parallel introduces overhead due to the initiation of worker processes.
-Therefore, we compare the runtime of parallel execution with that of sequential execution.
-For models with a 1-second, 100 ms, and 10 ms training time, using `fselect()`  in parallel reduces runtime.
-For models 1 ms training times, sequential execution becomes slower than parallel execution.
-Memory usage increases significantly with the number of cores since each core initiates a separate R session.
-Utilizing 10 cores results in a total memory usage of around 1.8 GB.
-The `fselect_nested()` functions parallelize over the outer resampling loop.
-For all training times, the parallel version is faster than the sequential version.
-The memory usage is around 3.3 GB.
+The benchmarks are comprehensive, so we summarize results for the latest `mlr3fselect` version.
+We measure runtime and memory for random search with 1,000 resampling iterations on the spam dataset with 1,000 and 10,000 instances.
+Nested resampling uses 10 outer iterations and the same random search in the inner loop with a holdout resampling.
+Overhead introduced by `fselect()` and `fselect_nested()` must be interpreted relative to the model training time.
+For 1 s training time, overhead is minimal.
+For 100 ms training time, overhead is approximately 20%.
+For 10 ms training time, overhead approximately doubles to triples total runtime.
+For 1 ms training time, total runtime is about 16 to 20 times the bare model training time.
+Memory usage for `fselect()` and `fselect_nested()` ranges between 450 MB and 550 MB.
+An empty R session consumes 131 MB.
+`mlr3fselect` parallelizes over resampling iterations using the `future` package.
+Parallel execution adds overhead from worker initialization, so we compare parallel and sequential runtimes.
+Parallel `fselect()` reduces total runtime for all training times.
+Memory increases with core count because each worker is a separate R session.
+Using 10 cores requires around 1.8 GB.
+`fselect_nested()` parallelizes over the outer resampling loop.
+Across all training times, the parallel version is faster than the sequential version.
+Total memory usage is approximately 3.3 GB.
 
 # Feature Selection {#fselect}
 
-The runtime and memory usage of the `fselect()` function is measured for different mlr3fselect versions.
-A random search is used with a batch size of 1000.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
+We measure runtime and memory usage of `fselect()` across `mlr3fselect` versions.
+Random search is used with `batch_size = 1000`.
+Models are trained on the spam dataset with 1,000 and 10,000 instances.
 
 ```{r}
 #| eval: false
@@ -241,18 +240,20 @@ fselect(
 #| warning: false
 #| column: body-outset
 #| tbl-cap: |
-#|   Runtime and memory usage of `fselect()` by mlr3fselect version and dataset size.
-#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
-#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
-#|   A green background highlights cases where the total runtime is less than three times the model training time.
-create_table_task(results_runtime$fselect)
+#|   Runtime and memory usage of `fselect()` by `mlr3fselect` version and task size.
+#|   The k factors indicate how many times longer total runtime is than the model training time.
+#|   The subscripts denote reference training times in milliseconds; for example, k100 corresponds to 100 ms.
+#|   A green background marks cases where total runtime is less than three times the model training time.
+#|   The pk factors report the speedup of parallel relative to sequential execution.
+#|   The pk factor is omitted when parallel execution is slower than sequential execution.
+table_task(results_runtime$fselect)
 ```
 
 # Nested Feature Selection {#fselect-nested}
 
-The runtime and memory usage of the `fselect_nested()` function is measured for different mlr3fselect versions.
-The outer resampling has 10 iterations and the inner random search evaluates 1000 feature subsets in total.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 instances.
+We measure runtime and memory usage of `fselect_nested()` across `mlr3fselect` versions.
+The outer resampling performs 10 iterations, and the inner random search evaluates 1,000 feature subsets.
+Models are trained on the spam dataset with 1,000 and 10,000 instances.
 
 ```{r}
 #| eval: false
@@ -279,11 +280,13 @@ fselect_nested(
 #| warning: false
 #| column: body-outset
 #| tbl-cap: |
-#|   Runtime and memory usage of `fselect_nested()` by mlr3fselect version and dataset size.
-#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
-#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
-#|   A green background highlights cases where the total runtime is less than three times the model training time.
-create_table_task(results_runtime$fselect_nested)
+#|   Runtime and memory usage of `fselect_nested()` by `mlr3fselect` version and task size.
+#|   The k factors indicate how many times longer total runtime is than the model training time.
+#|   The subscripts denote reference training times in milliseconds; for example, k100 corresponds to 100 ms.
+#|   A green background marks cases where total runtime is less than three times the model training time.
+#|   The pk factors report the speedup of parallel relative to sequential execution.
+#|   The pk factor is omitted when parallel execution is slower than sequential execution.
+table_task(results_runtime$fselect_nested)
 ```
 
 

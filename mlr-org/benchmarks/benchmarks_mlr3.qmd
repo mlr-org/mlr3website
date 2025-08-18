@@ -115,38 +115,92 @@ results_runtime_parallel = set_names(pmap(list(c("resample", "benchmark"), c("re
 
 results_runtime[["resample"]] = results_runtime_parallel[["resample"]]
 results_runtime[["benchmark"]] = results_runtime_parallel[["benchmark"]]
+```
 
-jobs_object_size = setDT(dbReadTable(con, "mlr3_object_size_jobs"))
-jobs_object_size[, args := map(args, function(args) unserialize(args))]
 
-results_object_size = set_names(pmap(jobs_object_size, function(function_name, args, ...) {
-  arg_names = names(args)
-  data_object_size = setDT(dbReadTable(con, sprintf("mlr3_object_size_%s", function_name)))[, c(arg_names, "renv_project", "median_size", "median_unserialized_size"), with = FALSE]
-  data_object_size = data_object_size[snapshot, on = "renv_project", nomatch = 0]
-  setorderv(data_object_size, c(arg_names, "mlr3"), order = c(rep(1, length(arg_names)), -1))
-  data_object_size = data_object_size[, -c("renv_project")]
-  data_object_size[, median_size := median_size / 1e6]
-  data_object_size[, median_unserialized_size := median_unserialized_size / 1e6]
-}), jobs_object_size$function_name)
+# Scope
 
-# creates a gt table for experiments that depend on the task size
-create_table_task = function(data) {
-  data = data[, -c("mad_runtime", "mad_memory")]
+This report analyzes the runtime and memory usage of `mlr3` across the four most recent package versions.
+It focuses on the learner methods `$train()` and `$predict()` and on the evaluation functions `resample()` and `benchmark()`.
+The benchmarks quantify the runtime overhead introduced by `mlr3` and the memory usage.
+Overhead is reported relative to the training time of the underlying models.
+The study varies dataset size and the number of resampling iterations.
+All experiments also assess the effect of parallelization on runtime and memory.
+The impact of encapsulation is examined by comparing alternative encapsulation methods.
+
+Given the size of the `mlr3` ecosystem, performance bottlenecks can arise at multiple stages.
+This report helps users assess whether observed runtimes fall within expected ranges.
+Substantial anomalies in runtime or memory should be reported by opening a GitHub issue.
+Benchmarks are executed on a high‑performance cluster optimized for multi‑core throughput rather than single‑core speed.
+Consequently, single‑core runtimes may be faster on a modern local machine.
+
+# Summary of Latest mlr3 Version
+
+The benchmarks are comprehensive, so we summarize the results for the latest `mlr3` version.
+The runtime overhead of `mlr3` must be interpreted relative to model training and prediction times.
+For instance, if `ranger::ranger()` takes 100 ms to train and `lrn("classif.ranger")$train()` takes 110 ms, the overhead is 10%.
+If the same model requires 1 s to train, the overhead is 1%.
+The overhead is shown relative to the training time of the models with the factors `k_1`, `k_10`, `k_100`, and `k_1000`.
+The subscript denotes the model’s training time in milliseconds.
+The factors `pk_1`, `pk_10`, `pk_100`, and `pk_1000` report the speedup of parallel over sequential execution.
+
+We first consider `$train()`.
+For models with training times of 1000 ms and 100 ms, the overhead is minimal.
+When training takes 10 ms, runtime approximately doubles.
+For 1 ms models, overhead is roughly ten times the bare model training time.
+
+The overhead of `$predict()` is comparable to `$train()`, and dataset size has only a minor effect.
+`$predict_newdata()` converts `newdata` to a task and then predicts, which roughly doubles the overhead relative to `$predict()`.
+The recently introduced `$predict_newdata_fast()` is substantially faster than `$predict_newdata()`.
+For models with 10 ms prediction time, the overhead is about 10%.
+For models with 1 ms prediction time, the overhead is about 50%.
+
+The overhead of `resample()` and `benchmark()` is small for 1000 ms and 100 ms models.
+For 10 ms models, the total runtime is approximately twice the bare training time.
+For 1 ms models, the total runtime is approximately ten times the bare training time.
+An empty R session consumes 131 MB of memory.
+Resampling with 10 iterations uses approximately 164 MB, increasing to about 225 MB for 1000 iterations.
+Memory usage for `benchmark()` is comparable to `resample()`.
+
+`mlr3` parallelizes over resampling iterations via the `future` package.
+Parallel execution adds overhead due to worker initialization.
+We therefore compare parallel and sequential runtimes.
+For 1 s models, parallel `resample()` and `benchmark()` reduce total runtime.
+For 100 ms models, parallelization is advantageous primarily for 100 or 1000 iterations.
+For 10 ms and 1 ms models, parallel execution overtakes sequential execution mainly at 1000 iterations.
+Memory grows with the number of cores because each core launches a separate R session.
+Using 10 cores results in a total memory footprint of approximately 1.2 GB.
+
+Encapsulation captures and logs conditions such as messages, warnings, and errors without interrupting control flow.
+Encapsulation via `callr` introduces approximately 1 s of additional runtime per model training.
+Encapsulation via `evaluate` adds negligible runtime overhead.
+
+# Train {#train}
+
+```{r}
+#| include: false
+
+# gt table for experiments that depend on the task size
+table_task = function(data) {
+  data = data[, -c("mad_runtime", "mad_memory", "paradox")]
   data[, task := as.integer(gsub("data_", "", task))]
-  setcolorder(data, c("mlr3", "paradox", "task", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory"))
+  setcolorder(data, c("mlr3", "task", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory"))
 
   data %>%
     gt() %>%
     cols_label(
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
+      mlr3 = "mlr3",
       task = "Task Size",
-      median_runtime = "Runtime [ms]",
-      k_1 = "k1",
-      k_10 = "k10",
-      k_100 = "k100",
-      k_1000 = "k1000",
-      median_memory = "Memory [MB]") %>%
+      median_runtime = "Runtime",
+      k_1 = html('k<sub>1</sub>'),
+      k_10 = html('k<sub>10</sub>'),
+      k_100 = html('k<sub>100</sub>'),
+      k_1000 = html('k<sub>1000</sub>'),
+      median_memory = "Memory") %>%
+    cols_units(
+      median_runtime = "ms",
+      median_memory = "mb"
+    ) %>%
     fmt_number(columns = c("median_runtime", "median_memory"), decimals = 0, sep_mark = "") %>%
     fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000"), n_sigfig = 2) %>%
     data_color(
@@ -180,30 +234,148 @@ create_table_task = function(data) {
       rows = task == 1
     )
   }
+```
+
+The runtime and memory usage of `$train()` are measured for different mlr3 versions.
+
+```{r}
+#| eval: false
+task = tsk("spam")
+learner = lrn("classif.featureless")
+
+learner$train(task)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| column: body-outset
+#| tbl-cap: |
+#|   Runtime and memory usage of `$train()` by mlr3 version and dataset size.
+#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
+#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
+#|   A green background highlights cases where the total runtime is less than three times the model training time.
+#|   The table includes runtime and memory usage for tasks of size 10, 100, 1,000 and 10,000.
+table_task(results_runtime$train)
+```
+
+# Predict {#predict}
+
+The runtime of `$predict()` is measured across `mlr3` versions.
+
+```{r}
+#| eval: false
+task = tsk("spam")
+learner = lrn("classif.featureless")
+
+learner$train(task)
+
+learner$predict(task)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| column: body-outset
+#| tbl-cap: |
+#|   Runtime and memory usage of `$predict()` by mlr3 version and dataset size.
+#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
+#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
+#|   A green background highlights cases where the total runtime is less than three times the model training time.
+#|   The table includes runtime and memory usage for tasks of size 10, 100, 1,000 and 10,000.
+table_task(results_runtime$predict)
+```
+
+# Predict Newdata {#predict-newdata}
+
+The runtime of `$predict_newdata()` is measured across `mlr3` versions.
+
+```{r}
+#| eval: false
+task = tsk("spam")
+learner = lrn("classif.featureless")
+
+learner$train(task)
+
+learner$predict_newdata(newdata)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| column: body-outset
+#| tbl-cap: |
+#|   Runtime and memory usage of `$predict_newdata()` by mlr3 version and dataset size.
+#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
+#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
+#|   A green background highlights cases where the total runtime is less than three times the model training time.
+#|   The table includes runtime and memory usage for tasks of size 1, 10, 100, 1,000 and 10,000.
+table_task(results_runtime$predict_newdata)
+```
+
+# Predict Newdata Fast {#predict-newdata-fast}
+
+The runtime of `$predict_newdata_fast()` is measured across `mlr3` versions.
+
+```{r}
+#| eval: false
+task = tsk("spam")
+learner = lrn("classif.featureless")
+
+learner$train(task)
+
+learner$predict_newdata_fast(task)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| column: body-outset
+#| tbl-cap: |
+#|   Runtime and memory usage of `$predict_newdata_fast()` by mlr3 version and dataset size.
+#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
+#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
+#|   A green background highlights cases where the total runtime is less than three times the model training time.
+#|   The table includes runtime and memory usage for tasks of size 1, 10, 100, 1,000 and 10,000.
+table_task(results_runtime$predict_newdata_fast)
+```
+
+# Resampling {#resampling}
+
+```{r}
+#| include: false
 
 # creates a gt table for experiments that depend on the task size and the number of resampling iterations
-create_table_task_evals = function(data, task = "data_1000") {
+table_evals = function(data, task = "data_1000") {
   .task = task
   data = data[list(.task), , on = "task"]
-  data = data[, -c("mad_runtime", "mad_memory", "task")]
-  setcolorder(data, c("mlr3", "paradox", "evals", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory", "pk_1000", "pk_100", "pk_10", "pk_1"))
+  data = data[, -c("mad_runtime", "mad_memory", "task", "paradox")]
+  setcolorder(data, c("mlr3", "evals", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory", "pk_1000", "pk_100", "pk_10", "pk_1"))
 
   data %>%
     gt() %>%
     cols_label(
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
+      mlr3 = "mlr3",
       evals = "Resampling Iterations",
-      median_runtime = "Runtime [ms]",
-      k_1 = "k1",
-      k_10 = "k10",
-      k_100 = "k100",
-      k_1000 = "k1000",
-      pk_1 = "pk1",
-      pk_10 = "pk10",
-      pk_100 = "pk100",
-      pk_1000 = "pk1000",
-      median_memory = "Memory [MB]") %>%
+      median_runtime = "Runtime",
+      k_1 = html('k<sub>1</sub>'),
+      k_10 = html('k<sub>10</sub>'),
+      k_100 = html('k<sub>100</sub>'),
+      k_1000 = html('k<sub>1000</sub>'),
+      pk_1 = html('pk<sub>1</sub>'),
+      pk_10 = html('pk<sub>10</sub>'),
+      pk_100 = html('pk<sub>100</sub>'),
+      pk_1000 = html('pk<sub>1000</sub>'),
+      median_memory = "Memory") %>%
+     cols_units(
+      median_runtime = "s",
+      median_memory = "mb"
+    ) %>%
+    sub_missing(
+      columns = everything(),
+      rows = everything(),
+      missing_text = "---"
+    ) %>%
     fmt_number(columns = c("median_runtime", "median_memory"), decimals = 0, sep_mark = "") %>%
     fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000", "pk_1", "pk_10", "pk_100", "pk_1000"), n_sigfig = 2) %>%
     data_color(
@@ -219,7 +391,7 @@ create_table_task_evals = function(data, task = "data_1000") {
      data_color(
       columns = c("pk_1", "pk_10", "pk_100", "pk_1000"),
       fn = scales::col_numeric(
-        palette = c("white", "#2ecc71"),
+        palette = c("white", "#A689E1"),
         domain = c(1, max(data$pk_1000, na.rm = TRUE)),
         na.color = "white"
       ),
@@ -239,292 +411,11 @@ create_table_task_evals = function(data, task = "data_1000") {
       rows = evals == 10
     )
   }
-
-# creates a gt table for experiments that depend on the task size and the number of resampling iterations
-create_table_task_methods = function(data, task = "data_1000") {
-  .task = task
-  data = data[list(.task), , on = "task"]
-  data = data[, -c("mad_runtime", "mad_memory", "task")]
-  setcolorder(data, c("mlr3", "paradox", "method", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory"))
-  #setorderv(data, c("method", "mlr3", "paradox"), order = c(1, 1, 1))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
-      method = "Method",
-      median_runtime = "Runtime [ms]",
-      k_1 = "k1",
-      k_10 = "k10",
-      k_100 = "k100",
-      k_1000 = "k1000",
-      median_memory = "Memory [MB]") %>%
-    fmt_number(columns = c("median_runtime", "median_memory"), decimals = 0, sep_mark = "") %>%
-    fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000"), n_sigfig = 2) %>%
-    data_color(
-      columns = c("k_1", "k_10", "k_100", "k_1000"),
-      fn = scales::col_numeric(
-        palette = c("#2ecc71", "white"),
-        domain = c(1, 3),
-        na.color = "white"
-      ),
-      apply_to = "fill",
-      autocolor_text = TRUE
-    ) %>%
-    tab_row_group(
-      label = "No Encapsulation",
-      rows = method == "none"
-    ) %>%
-    tab_row_group(
-      label = "Evaluate",
-      rows = method == "evaluate"
-    ) %>%
-    tab_row_group(
-      label = "Callr",
-      rows = method == "callr"
-    )
-  }
-
-create_table_object_size_task = function(data) {
-  data[, task := as.integer(gsub("data_", "", task))]
-  setcolorder(data, c("mlr3", "paradox", "task", "median_size", "median_unserialized_size"))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
-      task = "Task Size",
-      median_size = "In Memory [MB]",
-      median_unserialized_size = "Serialized [MB]") %>%
-    fmt_number(columns = c("median_size", "median_unserialized_size"), n_sigfig = 2) %>%
-    tab_row_group(
-      label = "10000 Observations",
-      rows = task == 10000
-    ) %>%
-    tab_row_group(
-      label = "1000 Observations",
-      rows = task == 1000
-    )
-}
-
-create_table_object_size = function(data) {
-  setcolorder(data, c("mlr3", "paradox", "median_size", "median_unserialized_size"))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
-      median_size = "In Memory [MB]",
-      median_unserialized_size = "Serialized [MB]") %>%
-    fmt_number(columns = c("median_size", "median_unserialized_size"), n_sigfig = 2)
-}
-
-create_table_object_size_task_evals = function(data, task = "data_1000") {
-  .task = task
-  data = data[list(.task), , on = "task"]
-  data = data[, -c("task"), with = FALSE]
-  setcolorder(data, c("mlr3", "paradox", "evals", "median_size", "median_unserialized_size"))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      mlr3 = "mlr3 Version",
-      paradox = "paradox Version",
-      evals = "Resampling Iterations",
-      median_size = "In Memory [MB]",
-      median_unserialized_size = "Serialized [MB]") %>%
-    fmt_number(columns = c("median_size", "median_unserialized_size"), n_sigfig = 2) %>%
-    tab_row_group(
-      label = "1000 Resampling Iterations",
-      rows = evals == 1000
-    ) %>%
-    tab_row_group(
-      label = "100 Resampling Iterations",
-      rows = evals == 100
-    ) %>%
-    tab_row_group(
-      label = "10 Resampling Iterations",
-      rows = evals == 10
-    )
-}
 ```
 
-# Scope
-
-This report analyzes the runtime and memory usage of the mlr3 package across different versions.
-It focuses on the `$train()` and `$predict()` methods of the learner and the `resample()` and `benchmark()` functions used for model evaluation.
-The benchmarks vary the training time of the models, the number of resampling iterations, and the size of the dataset.
-Additionally, the experiments are conducted in parallel to assess the impact of parallelization on both runtime and memory usage.
-The overhead introduced by encapsulation is examined by comparing different encapsulation methods.
-Furthermore, the report evaluates the object sizes of various mlr3 objects.
-
-Given the extensive package ecosystem of mlr3, performance bottlenecks can occur at multiple stages.
-This report aims to help users determine whether the runtime of their workflows falls within expected ranges.
-If significant runtime or memory anomalies are observed, users are encouraged to report them by opening a GitHub issue.
-
-Benchmarks are conducted on a high-performance cluster optimized for multi-core performance rather than single-core speed.
-Consequently, runtimes may be faster on a local machine.
-The benchmarks for `$train()` and `$predict()` were conducted on a different, slower cluster.
-
-# Summary of Latest mlr3 Version
-
-The benchmarks are comprehensive; therefore, we present a summary of the results for the latest mlr3 version.
-The runtime of mlr3 should always be considered relative to the training and prediction time of the underlying models.
-For example, if the training step of a random forest model `ranger::ranger()` takes 100 ms and the `$train()` method of `lrn("classif.ranger")` takes 110 ms, the overhead is 10%.
-When the same model takes 1 second to train, the overhead introduced by mlr3 is only 1%.
-Instead of using real models, we simulate the training and prediction time for models by sleeping for 1, 10, 100, and 1000 ms.
-
-We start by measuring the runtime of the `$train()` method of the learner.
-For models with a training time of 1000 and 100 ms, the overhead introduced by mlr3 is minimal.
-Models with a training time of 10 ms take 2 times longer to train in mlr3.
-For models with a training time of 1 ms, the overhead is approximately 10 times larger than the actual model training time.
-The overhead of `$predict()` is similar to `$train()` and the size of the dataset being predicted plays only a minor role.
-The `$predict_newdata()` method converts the data to a task and then predicts on it which doubles the overhead of the `$predict()` method.
-The recently introduced `$predict_newdata_fast()` method is much faster than `$predict_newdata()`.
-For models with a prediction time of 10 ms, the overhead is around 10%.
-For models with a prediction time of 1 ms, the overhead is around 50%.
-
-The overhead of `resample()` and `benchmark()` is also very low for models with a training time of 1000 and 100 ms.
-However, for models with a training time of 10 ms, the overhead approximately doubles the runtime.
-In cases where the training time is only 1 ms, the overhead results in the runtime being ten times larger than the actual model training time.
-Running an empty R session consumes 131 MB of memory.
-Resampling with 10 iterations consumes approximately 164 MB, increasing to around 225 MB when performing 1,000 resampling iterations.
-Memory usage for benchmarking is comparable to that of resampling.
-
-mlr3 utilizes the `future` package to enable parallelization over resampling iterations.
-However, running `resample()` and `benchmark()` in parallel introduces overhead due to the initiation of worker processes.
-Therefore, we compare the runtime of parallel execution with that of sequential execution.
-For models with a 1-second training time, using `resample()` and `benchmark()` in parallel reduces runtime.
-For models with a 100 ms training time, parallel execution is only advantageous when performing 100 or 1,000 resampling iterations.
-For models with 10 ms and 1 ms training times, sequential execution only becomes slower than parallel execution when running 1,000 resampling iterations.
-Memory usage increases significantly with the number of cores since each core initiates a separate R session.
-Utilizing 10 cores results in a total memory usage of around 1.2 GB.
-
-Encapsulation ensures that signaled conditions (e.g., messages, warnings and errors) are intercepted and that all conditions raised during the training or prediction step are logged into the learner without interrupting the program flow.
-The encapsulation of the `$train()` method introduces a runtime overhead of ~1 seconds per model training when using the `callr` package.
-In contrast, the encapsulation of the `evaluate` package adds negligible overhead to the runtime.
-
-When saving and loading mlr3 objects, their size can become significantly larger than expected.
-This issue is inherent to R6 objects due to data duplication during serialization and deserialization.
-The latest versions of mlr3 have implemented various strategies to mitigate this problem, substantially reducing the previously observed large increases in object size.
-
-# Train {#train}
-
-The runtime and memory usage of the `$train()` method is measured for different mlr3 versions.
-The train step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 observations.
-
-```{r}
-#| eval: false
-task = tsk("spam")
-learner = lrn("classif.featureless")
-
-learner$train(task)
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#| column: body-outset
-#| tbl-cap: |
-#|   Runtime and memory usage of $train() by mlr3 version and dataset size.
-#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
-#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
-#|   A green background highlights cases where the total runtime is less than three times the model training time.
-create_table_task(results_runtime$train)
-```
-
-# Predict {#predict}
-
-The runtime of the `$predict()` method is measured for different mlr3 versions.
-The predict step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with different amounts of observations (10, 100, 1000, and 10000).
-
-```{r}
-#| eval: false
-task = tsk("spam")
-learner = lrn("classif.featureless")
-
-learner$train(task)
-
-learner$predict(task)
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#| column: body-outset
-#| tbl-cap: |
-#|   Runtime and memory usage of $predict() by mlr3 version and dataset size.
-#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
-#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
-#|   A green background highlights cases where the total runtime is less than three times the model training time.
-#|   The table includes runtime and memory usage for tasks of size 1000 and 10,000.
-create_table_task(results_runtime$predict)
-```
-
-# Predict Newdata {#predict-newdata}
-
-The runtime of the `$predict_newdata()` method is measured for different mlr3 versions.
-The predict step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with different amounts of observations (1, 10, 100, 1000, and 10000).
-
-```{r}
-#| eval: false
-task = tsk("spam")
-learner = lrn("classif.featureless")
-
-learner$train(task)
-
-learner$predict_newdata(newdata)
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#| column: body-outset
-#| tbl-cap: |
-#|   Runtime and memory usage of $predict_newdata() by mlr3 version and dataset size.
-#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
-#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
-#|   A green background highlights cases where the total runtime is less than three times the model training time.
-create_table_task(results_runtime$predict_newdata)
-```
-
-# Predict Newdata Fast {#predict-newdata-fast}
-
-The runtime of the `$predict_newdata_fast()` method is measured for different mlr3 versions.
-The predict step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with different amounts of observations (1, 10, 100, 1000, and 10000).
-
-```{r}
-#| eval: false
-task = tsk("spam")
-learner = lrn("classif.featureless")
-
-learner$train(task)
-
-learner$predict_newdata_fast(task)
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#| column: body-outset
-#| tbl-cap: |
-#|   Runtime and memory usage of $predict_newdata_fast() by mlr3 version and dataset size.
-#|   The k factors indicate how many times longer the total runtime is compared to the model training time.
-#|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
-#|   A green background highlights cases where the total runtime is less than three times the model training time.
-create_table_task(results_runtime$predict_newdata_fast)
-```
-
-# Resampling {#resampling}
-
-The runtime and memory usage of the `resample()` function is measured for different mlr3 versions.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 observations.
-The resampling iterations (`evals`) are set to 1000, 100, and 10.
-The runtime of the `resample()` function with `future::multisession` parallelization is also measured for different mlr3 versions.
-The parallelization is conducted on 10 cores.
+The runtime and memory usage of `resample()` are measured across `mlr3` versions.
+The number of resampling iterations (`evals`) is set to 1000, 100, and 10.
+We also measure the runtime of `resample()` with `future::multisession` parallelization on 10 cores.
 
 ```{r}
 #| eval: false
@@ -541,23 +432,20 @@ resample(task, learner, resampling)
 #| warning: false
 #| column: body-outset
 #| tbl-cap: |
-#|   Runtime and memory usage of resample() by mlr3 version and resampling iterations.
+#|   Runtime and memory usage of `resample()` by mlr3 version and resampling iterations on the spam dataset with 1,000 observations.
 #|   The k factors indicate how many times longer the total runtime is compared to the model training time.
 #|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
 #|   A green background highlights cases where the total runtime is less than three times the model training time.
 #|   The pk factors indicate how many times faster the parallel runtime is compared to the sequential runtime.
-#|   The numbers are NA if the parallel runtime is slower than the sequential runtime.
-create_table_task_evals(results_runtime$resample, task = "data_1000")
+#|   No pk factor is shown when the parallel runtime is slower than the sequential runtime.
+table_evals(results_runtime$resample, task = "data_1000")
 ```
-
 
 # Benchmark {#benchmark}
 
-The runtime and memory usage of the `benchmark()` function is measured for different mlr3 versions.
-The models are trained for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 and 10,000 observations.
-The resampling iterations (`evals`) are set to 1000, 100, and 10.
-The runtime of the `benchmark()` function with `future::multisession` parallelization is also measured for different mlr3 versions.
-The parallelization is conducted on 10 cores.
+The runtime and memory usage of `benchmark()` are measured across `mlr3` versions.
+The number of resampling iterations (`evals`) is set to 1000, 100, and 10.
+We also measure the runtime of `benchmark()` with `future::multisession` parallelization on 10 cores.
 
 ```{r}
 #| eval: false
@@ -575,18 +463,18 @@ benchmark(design)
 #| warning: false
 #| column: body-outset
 #| tbl-cap: |
-#|   Runtime and memory usage of benchmark() by mlr3 version and dataset size.
+#|   Runtime and memory usage of `benchmark()` by mlr3 version and resampling iterations on the spam dataset with 1,000 observations.
 #|   The k factors indicate how many times longer the total runtime is compared to the model training time.
 #|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
 #|   A green background highlights cases where the total runtime is less than three times the model training time.
 #|   The pk factors indicate how many times faster the parallel runtime is compared to the sequential runtime.
-#|   The numbers are NA if the parallel runtime is slower than the sequential runtime.
-create_table_task_evals(results_runtime$benchmark, task = "data_1000")
+#|   No pk factor is shown when the parallel runtime is slower than the sequential runtime.
+table_evals(results_runtime$benchmark, task = "data_1000")
 ```
 
 # Encapsulation {#encapsulation}
 
-The runtime and memory usage of the `$train()` method is measured for different encapsulation methods and mlr3 versions.
+The runtime and memory usage of `$train()` are measured for different encapsulation methods and `mlr3` versions.
 
 ```{r}
 #| eval: false
@@ -602,215 +490,43 @@ learner$train(task)
 #| warning: false
 #| column: body-outset
 #| tbl-cap: |
-#|   Runtime and memory usage of $train() by mlr3 version and encapsulation method.
+#|   Runtime and memory usage of `$train()` by mlr3 version and encapsulation method.
 #|   The k factors indicate how many times longer the total runtime is compared to the model training time.
 #|   The numbers represent the model training time itself e.g. k100 are models trained for 100 ms.
-#|   A green background highlights cases where the total runtime is less than three times the model training time.
-create_table_task_methods(results_runtime$encapsulate)
+data = copy(results_runtime$encapsulate)
+data = data[list("data_1000"), , on = "task"]
+data = data[, -c("mad_runtime", "mad_memory", "task", "paradox")]
+setcolorder(data, c("mlr3", "method", "median_runtime", "k_1000", "k_100", "k_10", "k_1", "median_memory"))
+setorderv(data, c("method", "mlr3"), order = c(1, 1))
+
+data %>%
+  gt() %>%
+  cols_label(
+    mlr3 = "mlr3",
+    method = "Method",
+    median_runtime = "Runtime",
+    k_1 = html('k<sub>1</sub>'),
+    k_10 = html('k<sub>10</sub>'),
+    k_100 = html('k<sub>100</sub>'),
+    k_1000 = html('k<sub>1000</sub>'),
+    median_memory = "Memory") %>%
+     cols_units(
+      median_runtime = "s",
+      median_memory = "mb"
+    ) %>%
+  fmt_number(columns = c("median_runtime", "median_memory"), decimals = 0, sep_mark = "") %>%
+  fmt_number(columns = c("k_1", "k_10", "k_100", "k_1000"), n_sigfig = 2) %>%
+  tab_row_group(
+    label = "No Encapsulation",
+    rows = method == "none"
+  ) %>%
+  tab_row_group(
+    label = "Evaluate",
+    rows = method == "evaluate"
+  ) %>%
+  tab_row_group(
+    label = "Callr",
+    rows = method == "callr"
+  )
 ```
 
-# Object Size {#object-size}
-
-The size of different mlr3 objects is compared for different mlr3 versions.
-The size is measured in memory and after calling `serialize()` and `unserialize()`.
-
-## Task
-
-```{r}
-#| eval: false
-task = tsk("spam_1000")
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `Task` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task(results_object_size$task)
-```
-
-## Learner
-
-```{r}
-#| eval: false
-learner = lrn("classif.rpart")
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `lrn("classif.rpart")`object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size(results_object_size$learner_initialize)
-```
-
-```{r}
-#| eval: false
-learner$param_set
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `lrn("classif.rpart")$param_set`object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size(results_object_size$learner_param_set)
-```
-
-```{r}
-#| eval: false
-learner$train(task)
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a trained `lrn("classif.rpart")`object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task(results_object_size$learner_train)
-```
-
-```{r}
-#| eval: false
-learner$model
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a model in a `lrn("classif.rpart")`object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task(results_object_size$learner_model)
-```
-
-## Prediction
-
-```{r}
-#| eval: false
-pred = learner$predict(task)
-```
-
-`lobstr::obj_size()` seems to misreport the size of `pred$data$response`.
-Thus the objects size appears smaller after unserializing.
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `Prediction` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task(results_object_size$prediction)
-```
-
-## Resampling
-
-```{r}
-#| eval: false
-resampling = rsmp("subsampling", repeats = evals)
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `Resampling` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task_evals(results_object_size$resampling, task = "data_1000")
-```
-
-```{r}
-#| eval: false
-resampling$instantiate(task)
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a instantiated `Resampling` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task_evals(results_object_size$resampling_instantiate, task = "data_1000")
-```
-
-## Resample Result
-
-```{r}
-#| eval: false
-rr = resample(task, learner, resampling)
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `ResampleResult` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task_evals(results_object_size$resample_result, task = "data_1000")
-```
-
-
-```{r}
-#| eval: false
-rr = resample(task, learner, resampling, store_models = TRUE)
-```
-
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `ResamplingResult` object with models depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task_evals(results_object_size$resample_result_store_models, task = "data_1000")
-```
-
-# Benchmark Results
-
-```{r}
-#| eval: false
-design = benchmark_grid(task, learner, resampling)
-
-bmr = benchmark(design)
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `BenchmarkResult` object depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task_evals(results_object_size$benchmark_result, task = "data_1000")
-```
-
-```{r}
-#| eval: false
-design = benchmark_grid(task, learner, resampling)
-
-bmr = benchmark(design, store_models = TRUE)
-```
-
-```{r}
-#| echo: false
-#| tbl-cap: |
-#|  Memory usage of a `BenchmarkResult` object with models depending on the mlr3 version.
-#|  The size is measured in memory and after calling `serialize()` and `unserialize()`.
-create_table_object_size_task_evals(results_object_size$benchmark_result_store_models, task = "data_1000")
-```
-
-# Version History
-
-This section provides an overview of the latest changes in the mlr3 and paradox packages regarding memory usage and runtime.
-
-## mlr3
-
-**mlr3 1.1.0**
-
-* feat: Add `$predict_newdata_fast()` method to `Learner` to speed up prediction.
-
-**mlr3 1.0.1**
-
-* perf: Use `data.table::setattr()` for less copying.
-
-## paradox
-
-**paradox 1.0.1**
-
-* Performance improvements.
-
-**paradox 1.0.0**
-
-* Removed Param objects. ParamSet now uses a data.table internally; individual parameters are more like Domain objects now.
