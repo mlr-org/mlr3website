@@ -90,7 +90,7 @@ results_runtime_parallel = set_names(pmap(list(c("fselect", "fselect_nested"), c
   data_parallel[, total_runtime_parallel_1 := median_runtime + evals * 1 / 10]
   data_parallel[, total_runtime_parallel_10 := median_runtime + evals * 10 / 10]
   data_parallel[, total_runtime_parallel_100 := median_runtime + evals * 100 / 10]
-  data_parallel[, total_runtime_parallel_1000 := median_runtime + evals * 1000 / 100]
+  data_parallel[, total_runtime_parallel_1000 := median_runtime + evals * 1000 / 10]
 
   tmp = cbind(data[, list(total_runtime_1, total_runtime_10, total_runtime_100, total_runtime_1000)],
             data_parallel[, list(total_runtime_parallel_1, total_runtime_parallel_10, total_runtime_parallel_100, total_runtime_parallel_1000)])
