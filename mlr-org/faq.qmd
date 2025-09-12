@@ -108,7 +108,7 @@ mylearner$encapsulate(method = "evaluate", fallback = lrn("classif.featureless")
 mylearner$train(mytask)
 ```
 
-## A learner trained with an old mlr3 version does not work anymore {#old-model-broken}
+## An object saved with an old mlr3 version does not work anymore {#old-model-broken}
 
 It is possible that a saved `Learner` that was trained with an old `mlr3` version does not work with a different version of `mlr3`.
 In general, we recommend saving the computational environment using a tool like [renv](https://github.com/rstudio/renv) so this can later be restored and avoiding such situations alltogether.
@@ -136,6 +136,11 @@ Note that this is **risky** and **not** guaranteed to work because of various re
 * The internals (such as the structure of the internal `$state`) might have changed between the versions.
 
 Therefore, be careful when attempting this solution and double-check that the learner behaves sensibly.
+
+Since mlr3 1.0.0 we test if old objects are compatible with the current version of mlr3.
+We found the following incompatibility issues:
+
+* `Task` objects stored with mlr3 <= 1.1.0 cannot be loaded with mlr3 >= 1.2.0 because the `$data()` method of the `DataBackend` class lost the `data_format` argument.
 
 ## Caching of knitr/rmarkdown chunks does not work with mlr3 {#caching-knitr}
 
