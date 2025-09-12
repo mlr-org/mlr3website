@@ -141,6 +141,7 @@ Since mlr3 1.0.0 we test if old objects are compatible with the current version 
 We found the following incompatibility issues:
 
 * `Task` objects stored with mlr3 <= 1.1.0 cannot be loaded with mlr3 >= 1.2.0 because the `$data()` method of the `DataBackend` class lost the `data_format` argument.
+This also makes the `Task` objects stored in `ResampleResult` and `BenchmarkResult` objects incompatible.
 
 ## Caching of knitr/rmarkdown chunks does not work with mlr3 {#caching-knitr}
 
