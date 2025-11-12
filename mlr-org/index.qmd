@@ -68,30 +68,3 @@ In addition to the book, there are many other resources to learn more about mlr3
 The [gallery](gallery.html) contains a collection of case studies that demonstrate the functionality of mlr3.
 The [cheatsheets](resources.html#cheat-sheets) provide a quick overview of the most important functions.
 The [resources](resources.html) section contains links to talks, courses, and other material.
-
-## Examples
-
-```{r}
-#| echo: false
-
-content = rowwise_table(
-  ~name,                    ~icon,      ~url,                                                                     ~text,
-  "Basic Machine Learning", "pen",      "gallery/basic/2020-03-18-iris-mlr3-basics/",                                   "Get to know the basic building blocks of machine learning in mlr3. Train your first learner and estimate its performance with resampling. Compare the performance of learners with benchmarking.",
-  "Optimization",           "sliders",  "gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins/", "Optimize the hyperparameters of a classification tree on the Palmer Penguins data set. Become familiar with search spaces and transformations. Fit a final model with optimized hyperparameters for predicting new data.",
-  "Pipelines",              "share",    "gallery/series/2020-03-11-mlr3pipelines-tutorial-german-credit/",               "Build a preprocessing pipeline for missing data in the German Credit data set. Optimize the parameters of the pipeline and stack multiple learners into an ensemble model. Learn about techniques to tackle challenging data sets.",
-  "Feature Selection",      "funnel",   "gallery/optimization/2020-09-14-mlr3fselect-basic/",                                  "Start a feature selection on the Titanic data set. Learn about different optimization algorithms and fit a final model. Estimate the performance of the optimized feature set with nested resampling."
-)
-
-div(class = "grid grid-two",
-  pmap(content, function(name, icon, url, text, objective) {
-      div(class = "grid__item",
-        h3(class = "grid__title",
-          tags$i(class = sprintf("bi-%s grid__title-icon", icon)),
-          span(class = "grid__title-name", name)
-        ),
-        p(class = "grid__text", text),
-        a(href = url, span(class = "grid__link-box"))
-      )
-  })
-)
-```
