@@ -142,7 +142,7 @@ We found the following incompatibility issues:
 
 * `Task` objects stored with mlr3 <= 1.1.0 cannot be loaded with mlr3 >= 1.2.0 because the `$data()` method of the `DataBackend` class lost the `data_format` argument.
 This also makes the `Task` objects stored in `ResampleResult` and `BenchmarkResult` objects incompatible.
-* `ResampleResult` and `BenchmarkResult` objects stored with mlr3 <= 1.2.0 cannot be loaded with mlr3 >= 1.3.0 because `presence` and `allow_token` were added to the `$check()` method of the `ParamSet` class. Other objects with `ParamSet` objects could also be affected.
+* `ResampleResult` and `BenchmarkResult` objects stored with paradox <= 1.0.1 cannot be loaded with paradox >= 1.1.0 because `presence` and `allow_token` were added to the `$check()` method of the `ParamSet` class. Other objects with `ParamSet` objects could also be affected.
 
 ## Caching of knitr/rmarkdown chunks does not work with mlr3 {#caching-knitr}
 
