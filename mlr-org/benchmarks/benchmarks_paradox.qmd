@@ -44,7 +44,7 @@ jobs = rowwise_table(
 
 results = set_names(pmap(jobs, function(function_name, args, ...) {
   arg_names = names(args)
-  data_runtime = setDT(dbReadTable(con, sprintf("paradox_%s", function_name)))[, c(arg_names, "renv_project", "median_runtime", "mad_runtime"), with = FALSE]
+  data_runtime = setDT(dbReadTable(con, sprintf("paradox_runtime_%s", function_name)))[, c(arg_names, "renv_project", "median_runtime", "mad_runtime"), with = FALSE]
   data_runtime = data_runtime[snapshot, on = "renv_project", nomatch = 0]
   setorderv(data_runtime, c(arg_names, "paradox"), order = c(rep(1, length(arg_names)), -1))
   data_runtime[, -c("renv_project")]
