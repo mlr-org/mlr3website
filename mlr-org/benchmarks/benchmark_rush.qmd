@@ -44,46 +44,13 @@ Substantial anomalies in runtime should be reported by opening a GitHub issue.
 Benchmarks are executed on a high‑performance cluster optimized for multi‑core throughput rather than single‑core speed.
 Consequently, single‑core runtimes may be faster on a modern local machine.
 
-# Summary of Latest mlr3 Version
+# Summary of Latest rush Version
 
-The benchmarks are comprehensive, so we summarize the results for the latest `mlr3` version.
-The runtime overhead of `mlr3` must be interpreted relative to model training and prediction times.
-For instance, if `ranger::ranger()` takes 100 ms to train and `lrn("classif.ranger")$train()` takes 110 milliseconds, the overhead is 10%.
-If the same model requires 1 second to train, the overhead is 1%.
-The overhead is shown relative to the training time of the models with the factors `k_1`, `k_10`, `k_100`, and `k_1000`.
-The subscript denotes the model’s training time in milliseconds.
-The factors `pk_1`, `pk_10`, `pk_100`, and `pk_1000` report the speedup of parallel over sequential execution.
-
-We first consider `$train()`.
-For models with training times of 1000 ms and 100 ms, the overhead is minimal.
-When training takes 10 ms, runtime approximately doubles.
-For 1 ms models, overhead is roughly ten times the bare model training time.
-
-The overhead of `$predict()` is comparable to `$train()`, and dataset size has only a minor effect.
-`$predict_newdata()` converts `newdata` to a task and then predicts, which roughly doubles the overhead relative to `$predict()`.
-The recently introduced `$predict_newdata_fast()` is substantially faster than `$predict_newdata()`.
-For models with 10 ms prediction time, the overhead is about 10%.
-For models with 1 ms prediction time, the overhead is about 50%.
-
-The overhead of `resample()` and `benchmark()` is small for 1000 ms and 100 ms models.
-For 10 ms models, the total runtime is approximately twice the bare training time.
-For 1 ms models, the total runtime is approximately ten times the bare training time.
-An empty R session consumes 131 MB of memory.
-Resampling with 10 iterations uses approximately 164 MB, increasing to about 225 MB for 1000 iterations.
-Memory usage for `benchmark()` is comparable to `resample()`.
-
-`mlr3` parallelizes over resampling iterations via the `future` package.
-Parallel execution adds overhead due to worker initialization.
-We therefore compare parallel and sequential runtimes.
-For 1 s models, parallel `resample()` and `benchmark()` reduce total runtime.
-For 100 ms models, parallelization is advantageous primarily for 100 or 1000 iterations.
-For 10 ms and 1 ms models, parallel execution overtakes sequential execution mainly at 1000 iterations.
-Memory grows with the number of cores because each core launches a separate R session.
-Using 10 cores results in a total memory footprint of approximately 1.2 GB.
-
-Encapsulation captures and logs conditions such as messages, warnings, and errors without interrupting control flow.
-Encapsulation via `callr` introduces approximately 1 s of additional runtime per model training.
-Encapsulation via `evaluate` adds negligible runtime overhead.
+We summarize the results for the latest `rush` version.
+The overhead of `$push_running_tasks()` and `$push_results()` is below a half millisecond.
+The runtime of `$fetch_finished_tasks()` depends on the number of tasks and the cache size.
+When no tasks are cached, the runtime for 1 to 1000 tasks is around 1 ms
+When one new task is fetched and the rest is cached, the runtime ranges between 12 and 37 ms depending of the cache size.
 
 # Push Running Tasks {#push-running-tasks}
 
