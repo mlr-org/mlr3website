@@ -60,19 +60,30 @@ When one new task is fetched and the rest is cached, the runtime ranges between 
 # gt table for experiments that depend on the task size
 table_task = function(data) {
   data = data[, -c("mad_runtime")]
-  setcolorder(data, c("rush", "n_tasks", "median_runtime"))
+  setcolorder(data, c("rush", "n_parameters", "n_tasks", "median_runtime"))
+  setorderv(data, c("n_parameters", "n_tasks"), order = c(-1, 1))
 
-  data %>%
+  data[, list(rush, n_parameters, n_tasks, median_runtime)] %>%
     gt() %>%
     cols_label(
       rush = "rush",
+      n_parameters = "Number of Parameters",
       n_tasks = "Number of Tasks",
-      median_runtime = "Runtime",
+      median_runtime = "Runtime"
     ) %>%
     cols_units(
       median_runtime = "ms"
     ) %>%
-    fmt_number(columns = c("median_runtime"), decimals = 2, sep_mark = "")
+    fmt_number(columns = c("median_runtime"), n_sigfig = 2, sep_mark = "") %>%
+    fmt_number(columns = c("n_tasks"), decimals = 0, sep_mark = ",") %>%
+    tab_row_group(
+      label = "1 Parameter",
+      rows = n_parameters == 1
+    ) %>%
+    tab_row_group(
+      label = "10 Parameters",
+      rows = n_parameters == 10
+    )
   }
 ```
 
@@ -132,26 +143,6 @@ table_task(results_runtime$fetch_finished_tasks)
 
 # Fetch Finished Tasks with Cache {#fetch-finished-tasks-with-cache}
 
-```{r}
-#| include: false
-table_fetch = function(data) {
-  data = data[, -c("mad_runtime", "n_tasks")]
-  setcolorder(data, c("rush", "cache_size", "median_runtime"))
-
-  data %>%
-    gt() %>%
-    cols_label(
-      rush = "rush",
-      cache_size = "Cache Size",
-      median_runtime = "Runtime",
-    ) %>%
-    cols_units(
-      median_runtime = "ms"
-    ) %>%
-    fmt_number(columns = c("median_runtime"), decimals = 2, sep_mark = "")
-  }
-```
-
 The runtime of `$fetch_finished_tasks()` when one new task is fetched and the other tasks are cached.
 
 ```{r}
@@ -165,5 +156,37 @@ rush$fetch_finished_tasks()
 #| column: body-outset
 #| tbl-cap: |
 #|   Runtime of `$fetch_finished_tasks()` with cache by cache size and rush version.
-table_fetch(results_runtime$fetch_cached_tasks)
+table_task(results_runtime$fetch_cached_tasks)
+```
+
+```{r}
+#| echo: false
+#| fig-cap: |
+#|   "Runtime of fetching finished tasks with (red lines) and without (blue lines) caching."
+#|   "The x-axis shows the number of tasks fetched from the database."
+#|   "The fetching with caching gets one new task from the database and the rest from the cache."
+#|   "The fetching without caching gets all tasks from the database."
+#| label: fig-fetch-finished-tasks
+library(data.table)
+library(ggplot2)
+
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
+
+data = rbindlist(list(
+  results_runtime$fetch_finished_tasks[n_parameters == 1, list(n_tasks = n_tasks, runtime = median_runtime, benchmark = "fetch_tasks")],
+  results_runtime$fetch_cached_tasks[n_parameters == 1, list(n_tasks = n_tasks, runtime = median_runtime, benchmark = "fetch_cached_tasks")]
+))
+
+ggplot(data, aes(x = n_tasks, y = runtime, color = benchmark)) +
+  scale_x_continuous(trans='log10') +
+  #scale_y_continuous(trans='log10') +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = gg_color_hue(2), labels = c("with cache", "without cache")) +
+  labs(x = "Number of Tasks", y = "Runtime (ms)", color = "Fetching") +
+  theme_minimal()
 ```
