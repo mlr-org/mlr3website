@@ -343,6 +343,8 @@ plot_runtime(results$levels)
 
 # Class {#class}
 
+The runtime of getting the classes of the parameter space is measured for different paradox versions.
+
 ```{r}
 #| eval: false
 param_set$class
@@ -366,16 +368,3 @@ plot_runtime(results$subspaces)
 ```
 
 
-<!-- # Version Histroy
-
-This section provides an overview of the changes in the paradox package regarding runtime.
-
-## paradox
-
-**paradox 1.0.1**
-
-* Performance improvements.
-
-**paradox 1.0.0**
-
-* Removed Param objects. ParamSet now uses a data.table internally; individual parameters are more like Domain objects now. -->
