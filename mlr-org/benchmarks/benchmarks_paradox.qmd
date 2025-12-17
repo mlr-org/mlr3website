@@ -23,32 +23,16 @@ con = dbConnect(RSQLite::SQLite(), here::here("mlr-org/benchmarks/results_lrz.db
 snapshot = setDT(dbReadTable(con, "paradox_snapshots"))
 snapshot[, paradox := factor(paradox)]
 
-jobs = rowwise_table(
-  ~function_name,           ~package,  ~minimum_version,   ~args,
-  "initialize",             "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "ids",                    "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "ids_class",              "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "ids_tags",               "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "ids_class_tags",         "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "get_values",             "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "get_values_class",       "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "get_values_tags",        "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "get_values_class_tags",  "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "set_values",             "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "lower",                  "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "upper",                  "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "levels",                 "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "class",                  "paradox", "0.11.1",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed"))),
-  "subspaces",              "paradox", "1.0.0",           list(list(size = c(5, 50, 500), type = c("numeric", "categorical", "mixed")))
-)
+jobs_runtime = setDT(dbReadTable(con, "paradox_runtime_jobs"))
+jobs_runtime[, args := map(args, function(args) unserialize(args))]
 
-results = set_names(pmap(jobs, function(function_name, args, ...) {
+results_runtime = set_names(pmap(jobs_runtime, function(function_name, args, ...) {
   arg_names = names(args)
   data_runtime = setDT(dbReadTable(con, sprintf("paradox_runtime_%s", function_name)))[, c(arg_names, "renv_project", "median_runtime", "mad_runtime"), with = FALSE]
   data_runtime = data_runtime[snapshot, on = "renv_project", nomatch = 0]
   setorderv(data_runtime, c(arg_names, "paradox"), order = c(rep(1, length(arg_names)), -1))
   data_runtime[, -c("renv_project")]
-}), jobs$function_name)
+}), jobs_runtime$function_name)
 ```
 
 # Scope
@@ -72,6 +56,40 @@ Getting values with the `$get_values()` method takes around 100 µs.
 The `$set_values()` method takes a half millisecond for 5 values and 14 ms for 500 values.
 
 # Initialize {#initialize}
+
+```{r}
+#| include: false
+table_paradox = function(data) {
+  data = data[, -c("mad_runtime")]
+  setcolorder(data, c("paradox", "type", "size", "median_runtime"))
+  setorderv(data, c("type", "size"), order = c(1, 1))
+
+  data %>%
+    gt() %>%
+    cols_label(
+      paradox = "paradox",
+      type = "Type",
+      size = "Size",
+      median_runtime = "Runtime"
+    ) %>%
+    cols_units(
+      median_runtime = "ms"
+    ) %>%
+    fmt_number(columns = c("median_runtime"), n_sigfig = 2, sep_mark = "") %>%
+    tab_row_group(
+      label = "500 Parameters",
+      rows = size == 500
+    ) %>%
+    tab_row_group(
+      label = "50 Parameters",
+      rows = size == 50
+    ) %>%
+    tab_row_group(
+      label = "5 Parameters",
+      rows = size == 5
+    )
+  }
+```
 
 ```{r}
 #| include: false
@@ -150,7 +168,7 @@ param_set = ps(
 
 ```{r}
 #| echo: false
-plot_runtime(results$initialize)
+table_paradox(results_runtime$initialize)
 ```
 
 # Ids {#ids}
@@ -164,7 +182,7 @@ param_set$ids()
 
 ```{r}
 #| echo: false
-plot_runtime(results$ids)
+table_paradox(results_runtime$ids)
 ```
 
 Subset the parameter space by class.
@@ -176,7 +194,7 @@ param_set$ids(class = "numeric")
 
 ```{r}
 #| echo: false
-plot_runtime(results$ids_class)
+table_paradox(results_runtime$ids_class)
 ```
 
 Subset the parameter space by tags.
@@ -188,7 +206,7 @@ param_set$ids(tags = "a")
 
 ```{r}
 #| echo: false
-plot_runtime(results$ids_tags)
+table_paradox(results_runtime$ids_tags)
 ```
 
 Subset the parameter space by tags and class.
@@ -200,7 +218,7 @@ param_set$ids(tags = "a", class = "numeric")
 
 ```{r}
 #| echo: false
-plot_runtime(results$ids_class_tags)
+table_paradox(results_runtime$ids_class_tags)
 ```
 
 # Get Values {#get_values}
@@ -214,7 +232,7 @@ param_set$get_values()
 
 ```{r}
 #| echo: false
-plot_runtime(results$get_values)
+table_paradox(results_runtime$get_values)
 ```
 
 Subset the parameter space by class.
@@ -226,7 +244,7 @@ param_set$get_values(class = "numeric")
 
 ```{r}
 #| echo: false
-plot_runtime(results$get_values_class)
+table_paradox(results_runtime$get_values_class)
 ```
 
 Subset the parameter space by tags.
@@ -238,7 +256,7 @@ param_set$get_values(tags = "a")
 
 ```{r}
 #| echo: false
-plot_runtime(results$get_values_tags)
+table_paradox(results_runtime$get_values_tags)
 ```
 
 Subset the parameter space by tags and class.
@@ -250,7 +268,7 @@ param_set$get_values(tags = "a", class = "numeric")
 
 ```{r}
 #| echo: false
-plot_runtime(results$get_values_class_tags)
+table_paradox(results_runtime$get_values_class_tags)
 ```
 
 # Set Values {#set_values}
@@ -264,7 +282,7 @@ param_set$set_values(a = 1)
 
 ```{r}
 #| echo: false
-plot_runtime(results$set_values)
+table_paradox(results_runtime$set_values)
 ```
 
 # Lower and Upper {#lower_upper}
@@ -278,7 +296,7 @@ param_set$lower
 
 ```{r}
 #| echo: false
-plot_runtime(results$lower)
+table_paradox(results_runtime$lower)
 ```
 
 Runtime of `$upper()`.
@@ -290,7 +308,7 @@ param_set$upper
 
 ```{r}
 #| echo: false
-plot_runtime(results$upper)
+table_paradox(results_runtime$upper)
 ```
 
 # Levels {#levels}
@@ -304,7 +322,7 @@ param_set$levels
 
 ```{r}
 #| echo: false
-plot_runtime(results$levels)
+table_paradox(results_runtime$levels)
 ```
 
 # Class {#class}
@@ -318,7 +336,7 @@ param_set$class
 
 ```{r}
 #| echo: false
-plot_runtime(results$class)
+table_paradox(results_runtime$class)
 ```
 
 # Subspaces {#subspaces}
@@ -330,7 +348,7 @@ param_set$subspaces()
 
 ```{r}
 #| echo: false
-plot_runtime(results$subspaces)
+table_paradox(results_runtime$subspaces)
 ```
 
 
