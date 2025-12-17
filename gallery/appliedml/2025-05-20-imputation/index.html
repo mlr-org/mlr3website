@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Fiona Ewald">
+<meta name="author" content="Essential Data Science Training GmbH">
+<meta name="description" content="Learn the basics of imputation (i.e.&nbsp;filling in missing data) with mlr3pipelines.">
+
+<title>Imputation – mlr-org</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-1fa5e93acb50773330e542bbd58c1e25.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 5,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">mlr-org</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-overview" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Overview</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-overview">    
+        <li>
+    <a class="dropdown-item" href="../../../ecosystem.html">
+ <span class="dropdown-text">Ecosystem</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../dependencies.html">
+ <span class="dropdown-text">Dependencies</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tasks.html">
+ <span class="dropdown-text">Tasks</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../learners.html">
+ <span class="dropdown-text">Learners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../resamplings.html">
+ <span class="dropdown-text">Resamplings</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../measures.html">
+ <span class="dropdown-text">Measures</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../pipeops.html">
+ <span class="dropdown-text">Pipeline Operators</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../graphs.html">
+ <span class="dropdown-text">Graphs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../torch_pipeops.html">
+ <span class="dropdown-text">Torch Pipeline Operators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tuners.html">
+ <span class="dropdown-text">Tuners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../tuning_spaces.html">
+ <span class="dropdown-text">Tuning Spaces</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../terminators.html">
+ <span class="dropdown-text">Terminators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../filters.html">
+ <span class="dropdown-text">Feature Selection Filter</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../fselectors.html">
+ <span class="dropdown-text">Feature Selection Wrapper</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../resources.html"> 
+<span class="menu-text">Resources</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../book.html"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-benchmarks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Benchmarks</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-benchmarks">    
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3.html">
+ <span class="dropdown-text">mlr3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3fselect.html">
+ <span class="dropdown-text">mlr3fselect</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3tuning.html">
+ <span class="dropdown-text">mlr3tuning</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_async.html">
+ <span class="dropdown-text">mlr3tuning async</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmark_rush.html">
+ <span class="dropdown-text">rush</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_paradox.html">
+ <span class="dropdown-text">paradox</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../team.html"> 
+<span class="menu-text">Team</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-more" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">More</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-more">    
+        <li>
+    <a class="dropdown-item" href="../../../support.html">
+ <span class="dropdown-text">Support</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../contributing.html">
+ <span class="dropdown-text">Contributing</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../faq.html">
+ <span class="dropdown-text">Frequently Asked Questions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../blogroll.html">
+ <span class="dropdown-text">Blogroll</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-rss" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-rss">    
+        <li>
+    <a class="dropdown-item" href="../../../gallery-all.xml">
+ <span class="dropdown-text">Gallery RSS</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite"> <i class="bi bi-chat-dots" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://stackoverflow.com/questions/tagged/mlr3"> <i class="bi bi-stack-overflow" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/mlr-org"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Imputation</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+  <div id="quarto-announcement" data-announcement-id="2a29a73f7e8b4063ece399653c838ff3" class="alert alert-primary hidden"><i class="bi bi-info-circle quarto-announcement-icon"></i><div class="quarto-announcement-content">
+<p>The website features runtime <a href="benchmarks/benchmarks_paradox.qmd">benchmarks</a> of the paradox package now.</p>
+</div><i class="bi bi-x-lg quarto-announcement-action"></i></div>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Imputation</h1>
+                  <div>
+        <div class="description">
+          <p>Learn the basics of imputation (i.e.&nbsp;filling in missing data) with <code>mlr3pipelines</code>.</p>
+        </div>
+      </div>
+                </div>
+  </div>
+
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-contents">
+               <p>Fiona Ewald </p>
+               <p><a href="https://www.essentialds.de">Essential Data Science Training GmbH</a> </p>
+            </div>
+    </div>
+      
+    
+      
+    </div>
+    
+
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goal" id="toc-goal" class="nav-link active" data-scroll-target="#goal">Goal</a></li>
+  <li><a href="#required-packages" id="toc-required-packages" class="nav-link" data-scroll-target="#required-packages">Required packages</a></li>
+  <li><a href="#data-miami-house-prices" id="toc-data-miami-house-prices" class="nav-link" data-scroll-target="#data-miami-house-prices">Data: Miami house prices</a></li>
+  <li><a href="#create-simple-imputation-pipeops" id="toc-create-simple-imputation-pipeops" class="nav-link" data-scroll-target="#create-simple-imputation-pipeops">1 Create simple imputation PipeOps</a></li>
+  <li><a href="#create-and-plot-a-graph" id="toc-create-and-plot-a-graph" class="nav-link" data-scroll-target="#create-and-plot-a-graph">2 Create and plot a graph</a>
+  <ul class="collapse">
+  <li><a href="#simple-imputation" id="toc-simple-imputation" class="nav-link" data-scroll-target="#simple-imputation">Simple Imputation</a></li>
+  <li><a href="#assessing-performance" id="toc-assessing-performance" class="nav-link" data-scroll-target="#assessing-performance">Assessing Performance</a></li>
+  </ul></li>
+  <li><a href="#model-based-imputation" id="toc-model-based-imputation" class="nav-link" data-scroll-target="#model-based-imputation">3 Model-based imputation</a>
+  <ul class="collapse">
+  <li><a href="#assessing-performance-1" id="toc-assessing-performance-1" class="nav-link" data-scroll-target="#assessing-performance-1">Assessing Performance</a></li>
+  </ul></li>
+  <li><a href="#branches-in-pipelines" id="toc-branches-in-pipelines" class="nav-link" data-scroll-target="#branches-in-pipelines">3 Branches in pipelines</a>
+  <ul class="collapse">
+  <li><a href="#define-a-search-space" id="toc-define-a-search-space" class="nav-link" data-scroll-target="#define-a-search-space">Define a search space</a></li>
+  <li><a href="#tuning-the-pipeline" id="toc-tuning-the-pipeline" class="nav-link" data-scroll-target="#tuning-the-pipeline">Tuning the pipeline</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<script>
+const correctHash = "45a4fb07856c888a4aa78ec25e14b39a3924b97ee4153345cc1c7fb3911eb7a2";   // value injected by knitr
+
+/* ---------- reusable helper ---------- */
+function b64DecodeUtf8(b64) {
+  // 1) atob  -> binary-string   (bytes 0…255)
+  // 2) map   -> Uint8Array      (array of bytes)
+  // 3) TextDecoder('utf-8')     -> real JS string
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+async function sha256(txt) {
+  const buf = await crypto.subtle.digest('SHA-256',
+                 new TextEncoder().encode(txt));
+  return Array.from(new Uint8Array(buf))
+              .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function unlockOne(btn) {
+  const pass = prompt("Password:");
+  if (!pass) return;
+  if (await sha256(pass) !== correctHash) {
+    alert("Wrong password"); return;
+  }
+
+  /* --- decode only the solution that belongs to THIS button --- */
+  const wrapper = btn.parentElement;             // .b64-wrapper
+  wrapper.querySelectorAll('.hidden-solution').forEach(div => {
+    div.innerHTML = b64DecodeUtf8(div.dataset.encoded);
+    div.classList.remove('hidden-solution');
+    div.style.display = 'block';
+  });
+
+  /* Remove the button so the user can’t click it again */
+  btn.remove();
+}
+</script>
+
+<noscript>
+<div style="border: 1px solid #ccc; padding: 1em; margin-top: 1em; background: #f9f9f9;">
+    <strong>JavaScript is required to unlock solutions.</strong><br>
+    Please enable JavaScript and reload the page,<br>
+    or download the source files from
+    <a href="https://github.com/mlr-org/mlr3website/" target="_blank" rel="noopener noreferrer">GitHub</a>
+    and run the code locally.
+  </div>
+</noscript>
+<section id="goal" class="level1">
+<h1>Goal</h1>
+<p>Our goal for this exercise sheet is to learn the basics of imputation within the <code>mlr3</code> universe, specifically, <code>mlr3pipelines</code>. Imputation is the process of filling in missing data in a data set using statistical methods like mean, median, mode, or predictive models.</p>
+</section>
+<section id="required-packages" class="level1">
+<h1>Required packages</h1>
+<p>We will use <code>mlr3</code> for machine learning and <code>mlr3oml</code> for data access from OpenML:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3tuning)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3oml)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12345</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="data-miami-house-prices" class="level1">
+<h1>Data: Miami house prices</h1>
+<p>We will use house price data on 13,932 single-family homes sold in Miami in 2016. The target variable is <code>"SALE_PRC"</code>.</p>
+<p>Let’s load the data and remove an unwanted column:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>miami <span class="ot">=</span> <span class="fu">as.data.frame</span>(<span class="fu">odt</span>(<span class="at">id =</span> <span class="dv">43093</span>)<span class="sc">$</span>data[,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">3</span>)])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>INFO  [15:53:06.868] Retrieving JSON {url: `https://www.openml.org/api/v1/json/data/43093`, authenticated: `FALSE`}
+INFO  [15:53:07.310] Retrieving ARFF {url: `https://api.openml.org/data/v1/download/22047757/MiamiHousing2016.arff`, authenticated: `FALSE`}
+INFO  [15:53:07.793] Retrieving JSON {url: `https://www.openml.org/api/v1/json/data/features/43093`, authenticated: `FALSE`}</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>miami[<span class="dv">1</span><span class="sc">:</span><span class="dv">16</span>] <span class="ot">=</span> <span class="fu">lapply</span>(miami[<span class="dv">1</span><span class="sc">:</span><span class="dv">16</span>], as.numeric)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>miami[,<span class="fu">c</span>(<span class="dv">14</span>,<span class="dv">16</span>)] <span class="ot">=</span> <span class="fu">lapply</span>(miami[,<span class="fu">c</span>(<span class="dv">14</span>,<span class="dv">16</span>)], as.factor)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Further, we artificially generate missing data entries for three features:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>indices <span class="ot">=</span> <span class="fu">which</span>(miami<span class="sc">$</span>age <span class="sc">&gt;</span> <span class="dv">50</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"OCEAN_DIST"</span>, <span class="st">"TOT_LVG_AREA"</span>, <span class="st">"structure_quality"</span>)) {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  sample_indices <span class="ot">&lt;-</span> <span class="fu">sample</span>(indices, <span class="dv">2000</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  miami[sample_indices, i] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="create-simple-imputation-pipeops" class="level1">
+<h1>1 Create simple imputation PipeOps</h1>
+<p>Imputation can be executed via standard pipeline workflows using <code>PipeOp</code> objects. You can get an overview of the relevant options with <code>?PipeOpImpute</code>, which is the abstract base class for feature imputation. Create a <code>PipeOp</code> that imputes numerical features based on randomly sampling feature values from the non-missing values and another <code>PipeOp</code> that imputes factor/categorical (including ordinal) features by out of range imputation. The latter introduces a new level “.MISSING” for missings.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>You can set up a <code>PipeOp</code> with the <code>po()</code> function and use the <code>affect_columns</code> argument to address the columns to which the preprocessing should be applied (see also <code>?PipeOpImpute</code> for how to use the <code>affect_columns</code> argument). There exists a shortcut for setting up the imputation based on randomly sampling feature values from the non-missing values which is <code>imputesample</code> (see also <code>?PipeOpImputeSample</code>) and for out of range imputation which is <code>imputeoor</code> (see also <code>?PipeOpImputeOOR</code>).</p>
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>impute_numeric <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"..."</span>, <span class="at">affect_columns =</span> <span class="fu">selector_type</span>(<span class="st">"..."</span>))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>impute_factor <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"..."</span>, <span class="at">affect_columns =</span> <span class="fu">...</span>(<span class="fu">c</span>(<span class="st">"factor"</span>, <span class="st">"ordered"</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+aW1wdXRlX251bWVyaWMgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnBvPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2ltcHV0ZXNhbXBsZSZxdW90Ozwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJhdCI+YWZmZWN0X2NvbHVtbnMgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5zZWxlY3Rvcl90eXBlPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O251bWVyaWMmcXVvdDs8L3NwYW4+KSk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+aW1wdXRlX2ZhY3RvciA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+cG88L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7aW1wdXRlb29yJnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5hZmZlY3RfY29sdW1ucyA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnNlbGVjdG9yX3R5cGU8L3NwYW4+KDxzcGFuIGNsYXNzPSJmdSI+Yzwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtmYWN0b3ImcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O29yZGVyZWQmcXVvdDs8L3NwYW4+KSkpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPC9kaXY+"></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-and-plot-a-graph" class="level1">
+<h1>2 Create and plot a graph</h1>
+<p>Combine both imputation <code>PipeOps</code> with a random forest learning algorithm into a <code>Graph</code>. Then, plot the graph.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>Create a random forest learner using <code>lrn()</code>. You can concatenate different pre-processing steps and a learner using the <code>%&gt;&gt;%</code> operator.</p>
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<p>You can plot a graph using the corresponding R6 method of the graph object.</p>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Z3JhcGggPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiBpbXB1dGVfbnVtZXJpYyA8c3BhbiBjbGFzcz0ic2MiPiUmZ3Q7Jmd0OyU8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTIiPjxhIGhyZWY9IiNjYjEtMiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgaW1wdXRlX2ZhY3RvciA8c3BhbiBjbGFzcz0ic2MiPiUmZ3Q7Jmd0OyU8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTMiPjxhIGhyZWY9IiNjYjEtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImZ1Ij5scm48L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7cmVnci5yYW5nZXImcXVvdDs8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS00Ij48YSBocmVmPSIjY2IxLTQiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48L3NwYW4+CjxzcGFuIGlkPSJjYjEtNSI+PGEgaHJlZj0iI2NiMS01IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Z3JhcGg8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij5wbG90PC9zcGFuPigpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQtZGlzcGxheSI+CjxwPjxpbWcgc3JjPSJpbmRleF9maWxlcy9maWd1cmUtaHRtbC91bm5hbWVkLWNodW5rLTktMS5wbmciCmRhdGEtZmlnLWFsaWduPSJjZW50ZXIiIHdpZHRoPSI2NzIiIC8+PC9wPgo8L2Rpdj4KPC9kaXY+"></div></div>
+</div>
+</div>
+</div>
+</div>
+<section id="simple-imputation" class="level2">
+<h2 class="anchored" data-anchor-id="simple-imputation">Simple Imputation</h2>
+<p>Alternative to a pipeline that includes a learner, we can even set up a simpler pipeline that only creates imputations for missing data and apply it to a data set. For this, define first a simpler pipeline with only the imputation steps from above, create a task for the <code>miami</code> data, use the <code>$train()</code> method to impute the missing rows. Then, inspect the imputed data set with <code>...[[1]]$head()</code>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Z3JhcGhfaW0gPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiBpbXB1dGVfbnVtZXJpYyA8c3BhbiBjbGFzcz0ic2MiPiUmZ3Q7Jmd0OyU8L3NwYW4+IGltcHV0ZV9mYWN0b3I8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTMiPjxhIGhyZWY9IiNjYjEtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPnRhc2sgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiBUYXNrUmVncjxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj48c3BhbiBjbGFzcz0iZnUiPm5ldzwvc3Bhbj4oPHNwYW4gY2xhc3M9ImF0Ij5pZCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O21pYW1pJnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5iYWNrZW5kID08L3NwYW4+IG1pYW1pLCA8c3BhbiBjbGFzcz0iYXQiPnRhcmdldCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O1NBTEVfUFJDJnF1b3Q7PC9zcGFuPik8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNCI+PGEgaHJlZj0iI2NiMS00IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTUiPjxhIGhyZWY9IiNjYjEtNSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmFicyA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IGdyYXBoX2ltPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+dHJhaW48L3NwYW4+KHRhc2spW1s8c3BhbiBjbGFzcz0iZHYiPjE8L3NwYW4+XV08c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij5oZWFkPC9zcGFuPigpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPC9kaXY+"></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="assessing-performance" class="level2">
+<h2 class="anchored" data-anchor-id="assessing-performance">Assessing Performance</h2>
+<p>Use 3-fold cross-validation to estimate the error of the first pipeline (the one that contains a random forest learner) stored in the graph.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>Specifically, you need three things:</p>
+<ol type="1">
+<li>A <code>Resampling</code> object using <code>rsmp()</code> and instantiate the train-test splits on the task.</li>
+<li>Use this object together with the task and the graph learner specified above as an input to the <code>resample()</code> method.</li>
+<li>Measure the performance with <code>$aggregate()</code>.</li>
+</ol>
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>resampling <span class="ot">=</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, ...)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>resampling<span class="sc">$</span><span class="fu">instantiate</span>(...)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>rr <span class="ot">=</span> <span class="fu">resample</span>(<span class="at">task =</span> ..., <span class="at">learner =</span> ..., <span class="at">resampling =</span> ...)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>rr<span class="sc">$</span><span class="fu">...</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1tZXNzYWdlcz0iZmFsc2UiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPnJlc2FtcGxpbmcgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnJzbXA8L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y3YmcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPmZvbGRzID08L3NwYW4+IDxzcGFuIGNsYXNzPSJkdiI+Mzwvc3Bhbj48c3BhbiBjbGFzcz0iZHQiPkw8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0yIj48YSBocmVmPSIjY2IxLTIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5yZXNhbXBsaW5nPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+aW5zdGFudGlhdGU8L3NwYW4+KHRhc2spPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTMiPjxhIGhyZWY9IiNjYjEtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPnJyIDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5yZXNhbXBsZTwvc3Bhbj4oPHNwYW4gY2xhc3M9ImF0Ij50YXNrID08L3NwYW4+IHRhc2ssIDxzcGFuIGNsYXNzPSJhdCI+bGVhcm5lciA9PC9zcGFuPiBncmFwaCwgPHNwYW4gY2xhc3M9ImF0Ij5yZXNhbXBsaW5nID08L3NwYW4+IHJlc2FtcGxpbmcpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQgY2VsbC1vdXRwdXQtc3Rkb3V0Ij4KPHByZT48Y29kZT5JTkZPICBbMTU6NTM6MDguMjc1XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2ltcHV0ZXNhbXBsZS5pbXB1dGVvb3IucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAxLzMpCklORk8gIFsxNTo1MzowOC40MjJdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7aW1wdXRlc2FtcGxlLmltcHV0ZW9vci5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDIvMykKSU5GTyAgWzE1OjUzOjA4LjU3Ml0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtpbXB1dGVzYW1wbGUuaW1wdXRlb29yLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMy8zKTwvY29kZT48L3ByZT4KPC9kaXY+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjMiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjMtMSI+PGEgaHJlZj0iI2NiMy0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+cnI8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij5hZ2dyZWdhdGU8L3NwYW4+KCk8L3NwYW4+PC9jb2RlPjwvcHJlPjwvZGl2Pgo8ZGl2IGNsYXNzPSJjZWxsLW91dHB1dCBjZWxsLW91dHB1dC1zdGRvdXQiPgo8cHJlPjxjb2RlPiAgIHJlZ3IubXNlIAoxMDY1NTc5MzQ1MiA8L2NvZGU+PC9wcmU+CjwvZGl2Pgo8L2Rpdj4="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="model-based-imputation" class="level1">
+<h1>3 Model-based imputation</h1>
+<p>We can use a learner to impute missing values, which works by learning a model that treats the feature to-be-imputed as target and the other features as covariates. This has to be done separately for each feature that we impute. Obviously, the performance of learner-based imputation can depend on the type of learner used. Set up two distinct pipelines, modifying the pipeline from the previous exercise. Now, for numeric features, use learner-based imputation, using a linear model for the first and a decision tree for the second pipeline.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>You can learn about the mechanics of using learners for imputation in <code>?mlr_pipeops_imputelearner</code>.</p>
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<p>As the documentation states, if a learner used for imputation is itself supposed to train on features containing missing data, it needs to be able handle missing data natively. Otherwise, it needs its own imputation, requiring a more complicated pipeline. In this case, use histogram-based imputation within the learner-based imputation. Similarly, if categorical features are to be imputed, they need to be imputed before the numeric features in this case.</p>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+aW1wdXRlX3JwYXJ0IDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5wbzwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtpbXB1dGVsZWFybmVyJnF1b3Q7PC9zcGFuPiw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3M9ImF0Ij5sZWFybmVyID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+bHJuPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3JlZ3IucnBhcnQmcXVvdDs8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMyI+PGEgaHJlZj0iI2NiMS0zIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3M9ImF0Ij5hZmZlY3RfY29sdW1ucyA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnNlbGVjdG9yX3R5cGU8L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7bnVtZXJpYyZxdW90Ozwvc3Bhbj4pKTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS00Ij48YSBocmVmPSIjY2IxLTQiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48L3NwYW4+CjxzcGFuIGlkPSJjYjEtNSI+PGEgaHJlZj0iI2NiMS01IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+aW1wdXRlX2xtIDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5wbzwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtpbXB1dGVsZWFybmVyJnF1b3Q7PC9zcGFuPiw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNiI+PGEgaHJlZj0iI2NiMS02IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3M9ImF0Ij5sZWFybmVyID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+cG88L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7aW1wdXRlaGlzdCZxdW90Ozwvc3Bhbj4pIDxzcGFuIGNsYXNzPSJzYyI+JSZndDsmZ3Q7JTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5scm48L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7cmVnci5sbSZxdW90Ozwvc3Bhbj4pLDwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS03Ij48YSBocmVmPSIjY2IxLTciIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzcz0iYXQiPmFmZmVjdF9jb2x1bW5zID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+c2VsZWN0b3JfdHlwZTwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtudW1lcmljJnF1b3Q7PC9zcGFuPikpPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTgiPjxhIGhyZWY9IiNjYjEtOCIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS05Ij48YSBocmVmPSIjY2IxLTkiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5ncmFwaF9ycGFydCA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IGltcHV0ZV9mYWN0b3IgPHNwYW4gY2xhc3M9InNjIj4lJmd0OyZndDslPC9zcGFuPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0xMCI+PGEgaHJlZj0iI2NiMS0xMCIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgaW1wdXRlX3JwYXJ0IDxzcGFuIGNsYXNzPSJzYyI+JSZndDsmZ3Q7JTwvc3Bhbj48L3NwYW4+CjxzcGFuIGlkPSJjYjEtMTEiPjxhIGhyZWY9IiNjYjEtMTEiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJmdSI+bHJuPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3JlZ3IucmFuZ2VyJnF1b3Q7PC9zcGFuPik8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMTIiPjxhIGhyZWY9IiNjYjEtMTIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48L3NwYW4+CjxzcGFuIGlkPSJjYjEtMTMiPjxhIGhyZWY9IiNjYjEtMTMiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5ncmFwaF9sbSA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IGltcHV0ZV9mYWN0b3IgPHNwYW4gY2xhc3M9InNjIj4lJmd0OyZndDslPC9zcGFuPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0xNCI+PGEgaHJlZj0iI2NiMS0xNCIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgaW1wdXRlX2xtIDxzcGFuIGNsYXNzPSJzYyI+JSZndDsmZ3Q7JTwvc3Bhbj48L3NwYW4+CjxzcGFuIGlkPSJjYjEtMTUiPjxhIGhyZWY9IiNjYjEtMTUiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJmdSI+bHJuPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3JlZ3IucmFuZ2VyJnF1b3Q7PC9zcGFuPik8L3NwYW4+PC9jb2RlPjwvcHJlPjwvZGl2Pgo8L2Rpdj4="></div></div>
+</div>
+</div>
+</div>
+</div>
+<section id="assessing-performance-1" class="level2">
+<h2 class="anchored" data-anchor-id="assessing-performance-1">Assessing Performance</h2>
+<p>As before, use 3-fold cross-validation to compare the error of the two pipelines to identify which learner seems to work best for imputation for this data set.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1tZXNzYWdlcz0iZmFsc2UiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPnJyX3JwYXJ0IDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5yZXNhbXBsZTwvc3Bhbj4oPHNwYW4gY2xhc3M9ImF0Ij50YXNrID08L3NwYW4+IHRhc2ssIDxzcGFuIGNsYXNzPSJhdCI+bGVhcm5lciA9PC9zcGFuPiBncmFwaF9ycGFydCwgPHNwYW4gY2xhc3M9ImF0Ij5yZXNhbXBsaW5nID08L3NwYW4+IHJlc2FtcGxpbmcpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQgY2VsbC1vdXRwdXQtc3Rkb3V0Ij4KPHByZT48Y29kZT5JTkZPICBbMTU6NTM6MTUuNTc3XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2ltcHV0ZW9vci5pbXB1dGVsZWFybmVyLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTM6MTUuNjEzXSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2ltcHV0ZW9vci5pbXB1dGVsZWFybmVyLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMi8zKQpJTkZPICBbMTU6NTM6MTUuNjQ3XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2ltcHV0ZW9vci5pbXB1dGVsZWFybmVyLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMy8zKTwvY29kZT48L3ByZT4KPC9kaXY+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjMiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjMtMSI+PGEgaHJlZj0iI2NiMy0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+cnJfbG0gPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnJlc2FtcGxlPC9zcGFuPig8c3BhbiBjbGFzcz0iYXQiPnRhc2sgPTwvc3Bhbj4gdGFzaywgPHNwYW4gY2xhc3M9ImF0Ij5sZWFybmVyID08L3NwYW4+IGdyYXBoX2xtLCA8c3BhbiBjbGFzcz0iYXQiPnJlc2FtcGxpbmcgPTwvc3Bhbj4gcmVzYW1wbGluZyk8L3NwYW4+PC9jb2RlPjwvcHJlPjwvZGl2Pgo8ZGl2IGNsYXNzPSJjZWxsLW91dHB1dCBjZWxsLW91dHB1dC1zdGRvdXQiPgo8cHJlPjxjb2RlPklORk8gIFsxNTo1MzoyMS40MTZdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7aW1wdXRlb29yLmltcHV0ZWxlYXJuZXIucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAxLzMpCklORk8gIFsxNTo1MzoyMS40NDZdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7aW1wdXRlb29yLmltcHV0ZWxlYXJuZXIucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1MzoyMS40ODRdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7aW1wdXRlb29yLmltcHV0ZWxlYXJuZXIucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAzLzMpPC9jb2RlPjwvcHJlPgo8L2Rpdj4KPGRpdiBjbGFzcz0ic291cmNlQ29kZSIgaWQ9ImNiNSI+PHByZQpjbGFzcz0ic291cmNlQ29kZSByIGNlbGwtY29kZSI+PGNvZGUgY2xhc3M9InNvdXJjZUNvZGUgciI+PHNwYW4gaWQ9ImNiNS0xIj48YSBocmVmPSIjY2I1LTEiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5ycl9ycGFydDxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj48c3BhbiBjbGFzcz0iZnUiPmFnZ3JlZ2F0ZTwvc3Bhbj4oKTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0IGNlbGwtb3V0cHV0LXN0ZG91dCI+CjxwcmU+PGNvZGU+ICByZWdyLm1zZSAKOTcxMDkyMzIzOCA8L2NvZGU+PC9wcmU+CjwvZGl2Pgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2I3Ij48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2I3LTEiPjxhIGhyZWY9IiNjYjctMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPnJyX2xtPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+YWdncmVnYXRlPC9zcGFuPigpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQgY2VsbC1vdXRwdXQtc3Rkb3V0Ij4KPHByZT48Y29kZT4gIHJlZ3IubXNlIAo5NDc4ODUwMTU1IDwvY29kZT48L3ByZT4KPC9kaXY+CjwvZGl2Pgo8cD5JbiB0aGlzIGNhc2UsIHVzaW5nIGEgbGluZWFyIG1vZGVsIGZvciBtb2RlbC1iYXNlZCBpbXB1dGF0aW9uIHNlZW1zCnRvIG91dHBlcmZvcm0gYSBkZWNpc2lvbiB0cmVlIHdpdGggZGVmYXVsdCBoeXBlcnBhcmFtZXRlciBzZXR0aW5ncy48L3A+"></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="branches-in-pipelines" class="level1">
+<h1>3 Branches in pipelines</h1>
+<p>Pipelines can become very complex. Within a pipeline, we could be interested which imputation method works best. An elegant way to find out is to treat the imputation method as just another hyperparameter that we tune alongside other hyperparameters when we tune the pipeline. A way to do this is by using path branching. Set up a graph that contains the following elements: 1. A branch with two different imputation methods, a) histogram-based and b) learner-based using a decision tree 2. A random forest fit on the (fully imputed) data.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>You can read more about branching in <code>??mlr_pipeops_branch</code>.</p>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1tZXNzYWdlcz0iZmFsc2UiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmltcHV0ZSA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+bGlzdDwvc3Bhbj4oPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTIiPjxhIGhyZWY9IiNjYjEtMiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtpbXB1dGVoaXN0JnF1b3Q7PC9zcGFuPiA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+cG88L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7aW1wdXRlaGlzdCZxdW90Ozwvc3Bhbj4pLDwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0zIj48YSBocmVmPSIjY2IxLTMiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7aW1wdXRlcnBhcnQmcXVvdDs8L3NwYW4+IDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5wbzwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtpbXB1dGVsZWFybmVyJnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5sZWFybmVyID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+bHJuPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3JlZ3IucnBhcnQmcXVvdDs8L3NwYW4+KSk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNCI+PGEgaHJlZj0iI2NiMS00IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS01Ij48YSBocmVmPSIjY2IxLTUiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5mb3Jlc3QgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPmxybjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtyZWdyLnJhbmdlciZxdW90Ozwvc3Bhbj4pPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTYiPjxhIGhyZWY9IiNjYjEtNiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmdyYXBoX2JyYW5jaCA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+cHBsPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2JyYW5jaCZxdW90Ozwvc3Bhbj4sIGltcHV0ZSkgPHNwYW4gY2xhc3M9InNjIj4lJmd0OyZndDslPC9zcGFuPiBmb3Jlc3Q8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNyI+PGEgaHJlZj0iI2NiMS03IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PHNwYW4gY2xhc3M9ImZ1Ij5wbG90PC9zcGFuPihncmFwaF9icmFuY2gpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQtZGlzcGxheSI+CjxwPjxpbWcgc3JjPSJpbmRleF9maWxlcy9maWd1cmUtaHRtbC91bm5hbWVkLWNodW5rLTE1LTEucG5nIgpkYXRhLWZpZy1hbGlnbj0iY2VudGVyIiB3aWR0aD0iNjcyIiAvPjwvcD4KPC9kaXY+CjwvZGl2Pg=="></div></div>
+</div>
+</div>
+</div>
+</div>
+<section id="define-a-search-space" class="level2">
+<h2 class="anchored" data-anchor-id="define-a-search-space">Define a search space</h2>
+<p>We want to tune a number of hyperparameters in the pipeline: 1) The <code>mtry</code> parameter in the random forest between 2 and 8, 2) The imputation method, as represented by our graph, and 3) the <code>maxdepth</code> parameter of the decision tree-based imputation between 1 and 30.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>Remember that a graph can be treated as any other learner, and therefore, its parameter set can be accessed correspondingly. This means you can find the relevant parameter names in the correct field of the graph object.</p>
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<p>A parameter space can be defined using the <code>ps()</code> sugar function.</p>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1tZXNzYWdlcz0iZmFsc2UiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPnR1bmVfcHMgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnBzPC9zcGFuPig8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iYXQiPnJlZ3IucmFuZ2VyLm10cnkgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5wX2ludDwvc3Bhbj4oPHNwYW4gY2xhc3M9ImR2Ij4yPC9zcGFuPjxzcGFuIGNsYXNzPSJkdCI+TDwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJkdiI+ODwvc3Bhbj48c3BhbiBjbGFzcz0iZHQiPkw8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMyI+PGEgaHJlZj0iI2NiMS0zIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iYXQiPmJyYW5jaC5zZWxlY3Rpb24gPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5wX2ZjdDwvc3Bhbj4oPHNwYW4gY2xhc3M9ImZ1Ij5jPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2ltcHV0ZWhpc3QmcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2ltcHV0ZXJwYXJ0JnF1b3Q7PC9zcGFuPikpLDwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS00Ij48YSBocmVmPSIjY2IxLTQiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJhdCI+aW1wdXRlbGVhcm5lci5tYXhkZXB0aCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnBfaW50PC9zcGFuPig8c3BhbiBjbGFzcz0iZHYiPjE8L3NwYW4+PHNwYW4gY2xhc3M9ImR0Ij5MPC9zcGFuPiwgPHNwYW4gY2xhc3M9ImR2Ij4zMDwvc3Bhbj48c3BhbiBjbGFzcz0iZHQiPkw8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS01Ij48YSBocmVmPSIjY2IxLTUiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4pPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPC9kaXY+"></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tuning-the-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="tuning-the-pipeline">Tuning the pipeline</h2>
+<p>Now, tune the pipeline using an AutoTuner with 3-fold CV and random search. You can terminate after 10 evaluations to reduce run time. Then, display the optimal hyperparameter set as chosen by the tuner based on the mean squared error.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># AutoTuner</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>glrn_tuned <span class="ot">=</span> AutoTuner<span class="sc">$</span><span class="fu">new</span>(...)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Train</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimal HP set</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1tZXNzYWdlcz0iZmFsc2UiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJjbyI+IyBBdXRvVHVuZXI8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTIiPjxhIGhyZWY9IiNjYjEtMiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmdscm5fdHVuZWQgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiBBdXRvVHVuZXI8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij5uZXc8L3NwYW4+KGdyYXBoX2JyYW5jaCw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMyI+PGEgaHJlZj0iI2NiMS0zIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iYXQiPnJlc2FtcGxpbmcgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5yc21wPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2N2JnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5mb2xkcyA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjM8L3NwYW4+PHNwYW4gY2xhc3M9ImR0Ij5MPC9zcGFuPiksPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTQiPjxhIGhyZWY9IiNjYjEtNCIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImF0Ij5zZWFyY2hfc3BhY2UgPTwvc3Bhbj4gdHVuZV9wcyw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNSI+PGEgaHJlZj0iI2NiMS01IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iYXQiPm1lYXN1cmUgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5tc3I8L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7cmVnci5tc2UmcXVvdDs8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNiI+PGEgaHJlZj0iI2NiMS02IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iYXQiPnRlcm1pbmF0b3IgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij50cm08L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7ZXZhbHMmcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPm5fZXZhbHMgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImR2Ij4xMDwvc3Bhbj4pLDwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS03Ij48YSBocmVmPSIjY2IxLTciIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJhdCI+dHVuZXIgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij50bnI8L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7cmFuZG9tX3NlYXJjaCZxdW90Ozwvc3Bhbj4pKTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS04Ij48YSBocmVmPSIjY2IxLTgiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48L3NwYW4+CjxzcGFuIGlkPSJjYjEtOSI+PGEgaHJlZj0iI2NiMS05IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PHNwYW4gY2xhc3M9ImNvIj4jIFRyYWluPC9zcGFuPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0xMCI+PGEgaHJlZj0iI2NiMS0xMCIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmdscm5fdHVuZWQ8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij50cmFpbjwvc3Bhbj4odGFzayk8L3NwYW4+PC9jb2RlPjwvcHJlPjwvZGl2Pgo8ZGl2IGNsYXNzPSJjZWxsLW91dHB1dCBjZWxsLW91dHB1dC1zdGRvdXQiPgo8cHJlPjxjb2RlPklORk8gIFsxNTo1MzoyNy43ODddIFtiYm90a10gU3RhcnRpbmcgdG8gb3B0aW1pemUgMyBwYXJhbWV0ZXIocykgd2l0aCAmIzM5OyZsdDtPcHRpbWl6ZXJCYXRjaFJhbmRvbVNlYXJjaCZndDsmIzM5OyBhbmQgJiMzOTsmbHQ7VGVybWluYXRvckV2YWxzJmd0OyBbbl9ldmFscz0xMCwgaz0wXSYjMzk7CklORk8gIFsxNTo1MzoyNy44MDNdIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjUzOjI3LjgwNl0gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjUzOjI3Ljg0MV0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTM6MjcuODc1XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1MzoyNy45MDhdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjUzOjQwLjA0Nl0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTM6NDAuMDYxXSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCAxOgpJTkZPICBbMTU6NTM6NDAuMDYzXSBbYmJvdGtdICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCAgICByZWdyLm1zZSB3YXJuaW5ncyBlcnJvcnMgcnVudGltZV9sZWFybmVycwpJTkZPICBbMTU6NTM6NDAuMDYzXSBbYmJvdGtdICAgICAgICAgICAgICAgICA3ICAgICAgaW1wdXRlcnBhcnQgICAgICAgICAgICAgICAgICAgICAyNyAxMDQ5MzkwMTU0NSAgICAgICAgMCAgICAgIDAgICAgICAgICAgIDM2LjI4OQpJTkZPICBbMTU6NTM6NDAuMDYzXSBbYmJvdGtdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWhhc2gKSU5GTyAgWzE1OjUzOjQwLjA2M10gW2Jib3RrXSAgZWEyYjRiNzItMDMyNy00ZDYyLWI1NDItZmQwYTliZjllNzgwCklORk8gIFsxNTo1Mzo0MC4wNjZdIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjUzOjQwLjA2OV0gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjUzOjQwLjEwMl0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTM6NDAuMTM0XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1Mzo0MC4xNjhdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjUzOjQ4Ljc3MF0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTM6NDguNzg1XSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCAyOgpJTkZPICBbMTU6NTM6NDguNzg2XSBbYmJvdGtdICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCAgICByZWdyLm1zZSB3YXJuaW5ncyBlcnJvcnMgcnVudGltZV9sZWFybmVycwpJTkZPICBbMTU6NTM6NDguNzg2XSBbYmJvdGtdICAgICAgICAgICAgICAgICA1ICAgICAgaW1wdXRlcnBhcnQgICAgICAgICAgICAgICAgICAgICAyNyAxMDMzMjMwMTc3NyAgICAgICAgMCAgICAgIDAgICAgICAgICAgIDI1LjgxNQpJTkZPICBbMTU6NTM6NDguNzg2XSBbYmJvdGtdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWhhc2gKSU5GTyAgWzE1OjUzOjQ4Ljc4Nl0gW2Jib3RrXSAgODY3MWUxZDUtNWJhNC00OGU5LWE4OTAtNzMxZDc3YjhiOGUzCklORk8gIFsxNTo1Mzo0OC43ODldIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjUzOjQ4Ljc5MV0gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjUzOjQ4LjgyNV0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTM6NDguODU4XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1Mzo0OC44OTNdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjUzOjU4Ljc4Ml0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTM6NTguNzk2XSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCAzOgpJTkZPICBbMTU6NTM6NTguNzk3XSBbYmJvdGtdICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCAgICByZWdyLm1zZSB3YXJuaW5ncyBlcnJvcnMgcnVudGltZV9sZWFybmVycwpJTkZPICBbMTU6NTM6NTguNzk3XSBbYmJvdGtdICAgICAgICAgICAgICAgICA2ICAgICAgaW1wdXRlcnBhcnQgICAgICAgICAgICAgICAgICAgICAgMiAxMDYwMzU2ODg2MyAgICAgICAgMCAgICAgIDAgICAgICAgICAgIDI5LjYxNgpJTkZPICBbMTU6NTM6NTguNzk3XSBbYmJvdGtdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWhhc2gKSU5GTyAgWzE1OjUzOjU4Ljc5N10gW2Jib3RrXSAgZTY2YzQ1N2ItNWE2YS00OWU0LWExYWQtYzE2YTMwZjU5OTI5CklORk8gIFsxNTo1Mzo1OC44MDBdIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjUzOjU4LjgwMl0gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjUzOjU4LjgzN10gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTM6NTguODcwXSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1Mzo1OC45MDRdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjU0OjA3LjU0N10gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTQ6MDcuNTYxXSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCA0OgpJTkZPICBbMTU6NTQ6MDcuNTYyXSBbYmJvdGtdICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCAgICByZWdyLm1zZSB3YXJuaW5ncyBlcnJvcnMgcnVudGltZV9sZWFybmVycwpJTkZPICBbMTU6NTQ6MDcuNTYyXSBbYmJvdGtdICAgICAgICAgICAgICAgICA1ICAgICAgaW1wdXRlcnBhcnQgICAgICAgICAgICAgICAgICAgICAxNiAxMDI4NjIxNjc1MiAgICAgICAgMCAgICAgIDAgICAgICAgICAgICAyNS44OApJTkZPICBbMTU6NTQ6MDcuNTYyXSBbYmJvdGtdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWhhc2gKSU5GTyAgWzE1OjU0OjA3LjU2Ml0gW2Jib3RrXSAgMzIzNjQ0MjEtNTZjZS00NTlkLWIzNGEtNDg3NTI1NGNhMGY5CklORk8gIFsxNTo1NDowNy41NjZdIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjU0OjA3LjU2OF0gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjU0OjA3LjYwM10gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTQ6MDcuNjM2XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1NDowNy42NzBdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjU0OjEzLjM3NF0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTQ6MTMuMzg4XSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCA1OgpJTkZPICBbMTU6NTQ6MTMuMzg5XSBbYmJvdGtdICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCAgICByZWdyLm1zZSB3YXJuaW5ncyBlcnJvcnMgcnVudGltZV9sZWFybmVycwpJTkZPICBbMTU6NTQ6MTMuMzg5XSBbYmJvdGtdICAgICAgICAgICAgICAgICAzICAgICAgIGltcHV0ZWhpc3QgICAgICAgICAgICAgICAgICAgICAgNCAxMTMyNzkzNDcyMyAgICAgICAgMCAgICAgIDAgICAgICAgICAgIDE3LjA2NgpJTkZPICBbMTU6NTQ6MTMuMzg5XSBbYmJvdGtdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWhhc2gKSU5GTyAgWzE1OjU0OjEzLjM4OV0gW2Jib3RrXSAgYjQ4YTM4YjQtMmNlMy00NWQxLTg1MDctYmEyZDgwY2VjNmEzCklORk8gIFsxNTo1NDoxMy4zOTNdIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjU0OjEzLjM5NV0gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjU0OjEzLjQzMF0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTQ6MTMuNDY0XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1NDoxMy40OTldIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjU0OjE4LjAwOV0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTQ6MTguMDIxXSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCA2OgpJTkZPICBbMTU6NTQ6MTguMDIxXSBbYmJvdGtdICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCAgICByZWdyLm1zZSB3YXJuaW5ncyBlcnJvcnMgcnVudGltZV9sZWFybmVycwpJTkZPICBbMTU6NTQ6MTguMDIxXSBbYmJvdGtdICAgICAgICAgICAgICAgICAyICAgICAgaW1wdXRlcnBhcnQgICAgICAgICAgICAgICAgICAgICAgNCAxMDc1MjgyMzU1NSAgICAgICAgMCAgICAgIDAgICAgICAgICAgIDEzLjQ1NgpJTkZPICBbMTU6NTQ6MTguMDIxXSBbYmJvdGtdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWhhc2gKSU5GTyAgWzE1OjU0OjE4LjAyMV0gW2Jib3RrXSAgOTFmNTRkNjUtMzc0MC00MDlhLWI2ODctYzAwM2M1NmNkMzZjCklORk8gIFsxNTo1NDoxOC4wMjVdIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjU0OjE4LjAyN10gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjU0OjE4LjA2Ml0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTQ6MTguMDk1XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1NDoxOC4xMjhdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjU0OjI5LjE5MV0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTQ6MjkuMjAzXSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCA3OgpJTkZPICBbMTU6NTQ6MjkuMjA0XSBbYmJvdGtdICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCAgICByZWdyLm1zZSB3YXJuaW5ncyBlcnJvcnMgcnVudGltZV9sZWFybmVycwpJTkZPICBbMTU6NTQ6MjkuMjA0XSBbYmJvdGtdICAgICAgICAgICAgICAgICA3ICAgICAgIGltcHV0ZWhpc3QgICAgICAgICAgICAgICAgICAgICAyMCAxMTE3Nzk3OTQzNyAgICAgICAgMCAgICAgIDAgICAgICAgICAgIDMzLjE2NQpJTkZPICBbMTU6NTQ6MjkuMjA0XSBbYmJvdGtdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWhhc2gKSU5GTyAgWzE1OjU0OjI5LjIwNF0gW2Jib3RrXSAgMTE0OTA4MTAtMWJhZS00YjIyLWJiOGItZjkzNzQyOTJkYzg5CklORk8gIFsxNTo1NDoyOS4yMDddIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjU0OjI5LjIxMF0gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjU0OjI5LjI0NV0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTQ6MjkuMjc5XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1NDoyOS4zMTZdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjU0OjM3Ljc5MV0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTQ6MzcuODAzXSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCA4OgpJTkZPICBbMTU6NTQ6MzcuODA0XSBbYmJvdGtdICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCAgICByZWdyLm1zZSB3YXJuaW5ncyBlcnJvcnMgcnVudGltZV9sZWFybmVycwpJTkZPICBbMTU6NTQ6MzcuODA0XSBbYmJvdGtdICAgICAgICAgICAgICAgICA1ICAgICAgaW1wdXRlcnBhcnQgICAgICAgICAgICAgICAgICAgICAxNSAxMDM0Mzg0NzM1MyAgICAgICAgMCAgICAgIDAgICAgICAgICAgIDI1LjM2NgpJTkZPICBbMTU6NTQ6MzcuODA0XSBbYmJvdGtdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWhhc2gKSU5GTyAgWzE1OjU0OjM3LjgwNF0gW2Jib3RrXSAgM2QzODdjYjctYjk1My00OTBmLWJjZGItM2QyZjU5NTRkYjdlCklORk8gIFsxNTo1NDozNy44MDddIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjU0OjM3LjgwOV0gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjU0OjM3Ljg0NF0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTQ6MzcuODc3XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1NDozNy45MTBdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjU0OjQzLjUxOF0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTQ6NDMuNTMwXSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCA5OgpJTkZPICBbMTU6NTQ6NDMuNTMxXSBbYmJvdGtdICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCAgICByZWdyLm1zZSB3YXJuaW5ncyBlcnJvcnMgcnVudGltZV9sZWFybmVycwpJTkZPICBbMTU6NTQ6NDMuNTMxXSBbYmJvdGtdICAgICAgICAgICAgICAgICAzICAgICAgIGltcHV0ZWhpc3QgICAgICAgICAgICAgICAgICAgICAyMiAxMTIzMjYzMjMwMCAgICAgICAgMCAgICAgIDAgICAgICAgICAgIDE2Ljc2MQpJTkZPICBbMTU6NTQ6NDMuNTMxXSBbYmJvdGtdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWhhc2gKSU5GTyAgWzE1OjU0OjQzLjUzMV0gW2Jib3RrXSAgNjgwNjhhMmEtYWY4Yi00YjVmLTliMDUtZjE2YjY1ZWVlZjQwCklORk8gIFsxNTo1NDo0My41MzVdIFtiYm90a10gRXZhbHVhdGluZyAxIGNvbmZpZ3VyYXRpb24ocykKSU5GTyAgWzE1OjU0OjQzLjUzN10gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMyByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE1OjU0OjQzLjU3NV0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTticmFuY2guaW1wdXRlaGlzdC5pbXB1dGVsZWFybmVyLnVuYnJhbmNoLnJlZ3IucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O21pYW1pJiMzOTsgKGl0ZXIgMS8zKQpJTkZPICBbMTU6NTQ6NDMuNjA4XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2JyYW5jaC5pbXB1dGVoaXN0LmltcHV0ZWxlYXJuZXIudW5icmFuY2gucmVnci5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7bWlhbWkmIzM5OyAoaXRlciAyLzMpCklORk8gIFsxNTo1NDo0My42NDFdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7YnJhbmNoLmltcHV0ZWhpc3QuaW1wdXRlbGVhcm5lci51bmJyYW5jaC5yZWdyLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTttaWFtaSYjMzk7IChpdGVyIDMvMykKSU5GTyAgWzE1OjU0OjQ5LjI2NF0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyawpJTkZPICBbMTU6NTQ6NDkuMjc1XSBbYmJvdGtdIFJlc3VsdCBvZiBiYXRjaCAxMDoKSU5GTyAgWzE1OjU0OjQ5LjI3Nl0gW2Jib3RrXSAgcmVnci5yYW5nZXIubXRyeSBicmFuY2guc2VsZWN0aW9uIGltcHV0ZWxlYXJuZXIubWF4ZGVwdGggICAgcmVnci5tc2Ugd2FybmluZ3MgZXJyb3JzIHJ1bnRpbWVfbGVhcm5lcnMKSU5GTyAgWzE1OjU0OjQ5LjI3Nl0gW2Jib3RrXSAgICAgICAgICAgICAgICAgMyAgICAgICBpbXB1dGVoaXN0ICAgICAgICAgICAgICAgICAgICAgIDYgMTEyNjYzMjM4MzEgICAgICAgIDAgICAgICAwICAgICAgICAgICAxNi44NTEKSU5GTyAgWzE1OjU0OjQ5LjI3Nl0gW2Jib3RrXSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVoYXNoCklORk8gIFsxNTo1NDo0OS4yNzZdIFtiYm90a10gIDc3MDA2NDljLTc1OGYtNDNhYi1iNGVhLWUxN2ZhMjU5OTE5ZQpJTkZPICBbMTU6NTQ6NDkuMjgzXSBbYmJvdGtdIEZpbmlzaGVkIG9wdGltaXppbmcgYWZ0ZXIgMTAgZXZhbHVhdGlvbihzKQpJTkZPICBbMTU6NTQ6NDkuMjg0XSBbYmJvdGtdIFJlc3VsdDoKSU5GTyAgWzE1OjU0OjQ5LjI4NF0gW2Jib3RrXSAgcmVnci5yYW5nZXIubXRyeSBicmFuY2guc2VsZWN0aW9uIGltcHV0ZWxlYXJuZXIubWF4ZGVwdGggbGVhcm5lcl9wYXJhbV92YWxzICB4X2RvbWFpbiAgICByZWdyLm1zZQpJTkZPICBbMTU6NTQ6NDkuMjg0XSBbYmJvdGtdICAgICAgICAgICAgICZsdDtpbnQmZ3Q7ICAgICAgICAgICAmbHQ7Y2hhciZndDsgICAgICAgICAgICAgICAgICAmbHQ7aW50Jmd0OyAgICAgICAgICAgICAmbHQ7bGlzdCZndDsgICAgJmx0O2xpc3QmZ3Q7ICAgICAgICZsdDtudW0mZ3Q7CklORk8gIFsxNTo1NDo0OS4yODRdIFtiYm90a10gICAgICAgICAgICAgICAgIDUgICAgICBpbXB1dGVycGFydCAgICAgICAgICAgICAgICAgICAgIDE2ICAgICAgICAgICZsdDtsaXN0WzVdJmd0OyAmbHQ7bGlzdFszXSZndDsgMTAyODYyMTY3NTI8L2NvZGU+PC9wcmU+CjwvZGl2Pgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IzIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IzLTEiPjxhIGhyZWY9IiNjYjMtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJjbyI+IyBPcHRpbWFsIEhQIHNldDwvc3Bhbj48L3NwYW4+CjxzcGFuIGlkPSJjYjMtMiI+PGEgaHJlZj0iI2NiMy0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Z2xybl90dW5lZDxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj50dW5pbmdfcmVzdWx0PC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQgY2VsbC1vdXRwdXQtc3Rkb3V0Ij4KPHByZT48Y29kZT4gICByZWdyLnJhbmdlci5tdHJ5IGJyYW5jaC5zZWxlY3Rpb24gaW1wdXRlbGVhcm5lci5tYXhkZXB0aCBsZWFybmVyX3BhcmFtX3ZhbHMgIHhfZG9tYWluICAgIHJlZ3IubXNlCiAgICAgICAgICAgICAgJmx0O2ludCZndDsgICAgICAgICAgICZsdDtjaGFyJmd0OyAgICAgICAgICAgICAgICAgICZsdDtpbnQmZ3Q7ICAgICAgICAgICAgICZsdDtsaXN0Jmd0OyAgICAmbHQ7bGlzdCZndDsgICAgICAgJmx0O251bSZndDsKMTogICAgICAgICAgICAgICAgNSAgICAgIGltcHV0ZXJwYXJ0ICAgICAgICAgICAgICAgICAgICAgMTYgICAgICAgICAgJmx0O2xpc3RbNV0mZ3Q7ICZsdDtsaXN0WzNdJmd0OyAxMDI4NjIxNjc1MjwvY29kZT48L3ByZT4KPC9kaXY+CjwvZGl2Pg=="></div></div>
+</div>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mlr-org\.com\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Created with <i class="bi bi-heart-fill"></i> for #rstats.</p>
+</div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+<p>Website powered by <a href="https://quarto.org/">quarto</a> and <a href="https://www.netlify.com/">Netlify</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

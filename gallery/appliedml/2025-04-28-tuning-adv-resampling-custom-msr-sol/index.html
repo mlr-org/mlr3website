@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Giuseppe Casalicchio">
+<meta name="author" content="Essential Data Science Training GmbH">
+<meta name="description" content="Use stratified resampling to evaluate the german credit set and blocking for BreastCancer set. Define custom measures in mlr3 and use them to evaluate a model on the mtcars task.">
+
+<title>Advanced Resampling with Custom Measure Solution – mlr-org</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-1fa5e93acb50773330e542bbd58c1e25.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 5,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">mlr-org</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-overview" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Overview</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-overview">    
+        <li>
+    <a class="dropdown-item" href="../../../ecosystem.html">
+ <span class="dropdown-text">Ecosystem</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../dependencies.html">
+ <span class="dropdown-text">Dependencies</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tasks.html">
+ <span class="dropdown-text">Tasks</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../learners.html">
+ <span class="dropdown-text">Learners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../resamplings.html">
+ <span class="dropdown-text">Resamplings</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../measures.html">
+ <span class="dropdown-text">Measures</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../pipeops.html">
+ <span class="dropdown-text">Pipeline Operators</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../graphs.html">
+ <span class="dropdown-text">Graphs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../torch_pipeops.html">
+ <span class="dropdown-text">Torch Pipeline Operators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tuners.html">
+ <span class="dropdown-text">Tuners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../tuning_spaces.html">
+ <span class="dropdown-text">Tuning Spaces</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../terminators.html">
+ <span class="dropdown-text">Terminators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../filters.html">
+ <span class="dropdown-text">Feature Selection Filter</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../fselectors.html">
+ <span class="dropdown-text">Feature Selection Wrapper</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../resources.html"> 
+<span class="menu-text">Resources</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../book.html"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-benchmarks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Benchmarks</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-benchmarks">    
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3.html">
+ <span class="dropdown-text">mlr3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3fselect.html">
+ <span class="dropdown-text">mlr3fselect</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3tuning.html">
+ <span class="dropdown-text">mlr3tuning</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_async.html">
+ <span class="dropdown-text">mlr3tuning async</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmark_rush.html">
+ <span class="dropdown-text">rush</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_paradox.html">
+ <span class="dropdown-text">paradox</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../team.html"> 
+<span class="menu-text">Team</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-more" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">More</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-more">    
+        <li>
+    <a class="dropdown-item" href="../../../support.html">
+ <span class="dropdown-text">Support</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../contributing.html">
+ <span class="dropdown-text">Contributing</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../faq.html">
+ <span class="dropdown-text">Frequently Asked Questions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../blogroll.html">
+ <span class="dropdown-text">Blogroll</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-rss" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-rss">    
+        <li>
+    <a class="dropdown-item" href="../../../gallery-all.xml">
+ <span class="dropdown-text">Gallery RSS</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite"> <i class="bi bi-chat-dots" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://stackoverflow.com/questions/tagged/mlr3"> <i class="bi bi-stack-overflow" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/mlr-org"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Advanced Resampling with Custom Measure Solution</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+  <div id="quarto-announcement" data-announcement-id="2a29a73f7e8b4063ece399653c838ff3" class="alert alert-primary hidden"><i class="bi bi-info-circle quarto-announcement-icon"></i><div class="quarto-announcement-content">
+<p>The website features runtime <a href="benchmarks/benchmarks_paradox.qmd">benchmarks</a> of the paradox package now.</p>
+</div><i class="bi bi-x-lg quarto-announcement-action"></i></div>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Advanced Resampling with Custom Measure Solution</h1>
+                  <div>
+        <div class="description">
+          <p>Use stratified resampling to evaluate the german credit set and blocking for BreastCancer set. Define custom measures in mlr3 and use them to evaluate a model on the mtcars task.</p>
+        </div>
+      </div>
+                </div>
+  </div>
+
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-contents">
+               <p>Giuseppe Casalicchio </p>
+               <p><a href="https://www.essentialds.de">Essential Data Science Training GmbH</a> </p>
+            </div>
+    </div>
+      
+    
+      
+    </div>
+    
+
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goal" id="toc-goal" class="nav-link active" data-scroll-target="#goal">Goal</a></li>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
+  <li><a href="#stratified-resampling" id="toc-stratified-resampling" class="nav-link" data-scroll-target="#stratified-resampling">1 Stratified Resampling</a>
+  <ul class="collapse">
+  <li><a href="#set-stratification-variable" id="toc-set-stratification-variable" class="nav-link" data-scroll-target="#set-stratification-variable">1.1 Set stratification variable</a></li>
+  <li><a href="#create-resampling-procedure" id="toc-create-resampling-procedure" class="nav-link" data-scroll-target="#create-resampling-procedure">1.2 Create resampling procedure</a></li>
+  <li><a href="#sanity-check" id="toc-sanity-check" class="nav-link" data-scroll-target="#sanity-check">1.3 Sanity check</a></li>
+  </ul></li>
+  <li><a href="#block-resampling" id="toc-block-resampling" class="nav-link" data-scroll-target="#block-resampling">2 Block Resampling</a>
+  <ul class="collapse">
+  <li><a href="#count-groups" id="toc-count-groups" class="nav-link" data-scroll-target="#count-groups">2.1 Count groups</a></li>
+  <li><a href="#set-up-block-resampling" id="toc-set-up-block-resampling" class="nav-link" data-scroll-target="#set-up-block-resampling">2.2 Set up block resampling</a></li>
+  <li><a href="#instantiate-resampling" id="toc-instantiate-resampling" class="nav-link" data-scroll-target="#instantiate-resampling">2.3 Instantiate resampling</a></li>
+  <li><a href="#sanity-check-1" id="toc-sanity-check-1" class="nav-link" data-scroll-target="#sanity-check-1">2.4 Sanity check</a></li>
+  </ul></li>
+  <li><a href="#custom-performance-measures" id="toc-custom-performance-measures" class="nav-link" data-scroll-target="#custom-performance-measures">3 Custom Performance Measures</a>
+  <ul class="collapse">
+  <li><a href="#mse-mae" id="toc-mse-mae" class="nav-link" data-scroll-target="#mse-mae">3.1 MSE-MAE</a></li>
+  <li><a href="#evaluate-a-custom-measure" id="toc-evaluate-a-custom-measure" class="nav-link" data-scroll-target="#evaluate-a-custom-measure">3.2 Evaluate a custom measure</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<script>
+const correctHash = "442d03f74a06c5dd5941642aaac91b31d024c3223824f3193c3dde9d5d62ee47";   // value injected by knitr
+
+/* ---------- reusable helper ---------- */
+function b64DecodeUtf8(b64) {
+  // 1) atob  -> binary-string   (bytes 0…255)
+  // 2) map   -> Uint8Array      (array of bytes)
+  // 3) TextDecoder('utf-8')     -> real JS string
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+async function sha256(txt) {
+  const buf = await crypto.subtle.digest('SHA-256',
+                 new TextEncoder().encode(txt));
+  return Array.from(new Uint8Array(buf))
+              .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function unlockOne(btn) {
+  const pass = prompt("Password:");
+  if (!pass) return;
+  if (await sha256(pass) !== correctHash) {
+    alert("Wrong password"); return;
+  }
+
+  /* --- decode only the solution that belongs to THIS button --- */
+  const wrapper = btn.parentElement;             // .b64-wrapper
+  wrapper.querySelectorAll('.hidden-solution').forEach(div => {
+    div.innerHTML = b64DecodeUtf8(div.dataset.encoded);
+    div.classList.remove('hidden-solution');
+    div.style.display = 'block';
+  });
+
+  /* Remove the button so the user can’t click it again */
+  btn.remove();
+}
+</script>
+
+<noscript>
+<div style="border: 1px solid #ccc; padding: 1em; margin-top: 1em; background: #f9f9f9;">
+    <strong>JavaScript is required to unlock solutions.</strong><br>
+    Please enable JavaScript and reload the page,<br>
+    or download the source files from
+    <a href="https://github.com/mlr-org/mlr3website/" target="_blank" rel="noopener noreferrer">GitHub</a>
+    and run the code locally.
+  </div>
+</noscript>
+<section id="goal" class="level1">
+<h1>Goal</h1>
+<p>After this exercise, you should be able to control the resampling process when using <code>mlr3</code> in order to account for data specificities, such as class imbalances in classification settings or grouping phenomena. Further, you will have learned how to construct and utilize custom measures for performance evaluation within <code>mlr3</code>.</p>
+</section>
+<section id="prerequisites" class="level1">
+<h1>Prerequisites</h1>
+<p>We load the most important packages and use a fixed seed for reproducibility.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlbench)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7832</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="stratified-resampling" class="level1">
+<h1>1 Stratified Resampling</h1>
+<p>In classification tasks, the ratio of the target class distribution should be similar in each train/test split, which is achieved by stratification. This is particularly useful in the case of imbalanced classes and small data sets.</p>
+<p>Stratification can also be performed with respect to explanatory categorical variables to ensure that all subgroups are represented in all training and test sets.</p>
+<p>In <code>mlr3</code>, each <code>task</code> has a slot <code>$col_roles</code>. This slot shows general roles certain features will have throughout different stages of the machine learning process. At least, the <code>$col_roles</code> slot shows which variables will be used as <code>feature</code> and as <code>target</code>. However, the <code>$col_roles</code> slot can be more diverse and some variables might even serve multiple roles. For example, <code>task$col_roles$stratum</code> specify the variable used for stratification. In this exercise, we will illustrate this using the <code>german_credit</code> data:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>task_gc <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"german_credit"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>task_gc<span class="sc">$</span>col_roles</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$feature
+ [1] "age"                     "amount"                  "credit_history"          "duration"               
+ [5] "employment_duration"     "foreign_worker"          "housing"                 "installment_rate"       
+ [9] "job"                     "number_credits"          "other_debtors"           "other_installment_plans"
+[13] "people_liable"           "personal_status_sex"     "present_residence"       "property"               
+[17] "purpose"                 "savings"                 "status"                  "telephone"              
+
+$target
+[1] "credit_risk"
+
+$name
+character(0)
+
+$order
+character(0)
+
+$stratum
+character(0)
+
+$group
+character(0)
+
+$weight
+character(0)
+
+$offset
+character(0)
+
+$always_included
+character(0)</code></pre>
+</div>
+</div>
+<section id="set-stratification-variable" class="level2">
+<h2 class="anchored" data-anchor-id="set-stratification-variable">1.1 Set stratification variable</h2>
+<p>Modify the <code>task_gc</code> object such that the target variable <code>credit_risk</code> is used to for stratification.</p>
+<details>
+<summary>
+<strong>Hint 1</strong>
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>task_gc<span class="sc">$</span>col_roles<span class="sc">$</span>... <span class="ot">=</span> <span class="st">"credit_risk"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+dGFza19nYzxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj5jb2xfcm9sZXM8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+c3RyYXR1bSA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y3JlZGl0X3Jpc2smcXVvdDs8L3NwYW4+PC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPC9kaXY+CjxwPkFmdGVyIHRoZSBzcGVjaWZpY2F0aW9uIG9mIDxjb2RlPnRhc2skY29sX3JvbGVzJHN0cmF0dW08L2NvZGU+LCB0aGUKYWN0aXZlIGJpbmRpbmcgPGNvZGU+dGFzayRzdHJhdGE8L2NvZGU+IHdpbGwgc2hvdyB0aGUgbnVtYmVyIG9mCm9ic2VydmF0aW9ucyBpbiBlYWNoIGdyb3VwIGFuZCB0aGUgY29ycmVzcG9uZGluZyByb3cgaWRzOjwvcD4KPGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjIiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjItMSI+PGEgaHJlZj0iI2NiMi0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+dGFza19nYzxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj5zdHJhdGE8L3NwYW4+PC9jb2RlPjwvcHJlPjwvZGl2Pgo8ZGl2IGNsYXNzPSJjZWxsLW91dHB1dCBjZWxsLW91dHB1dC1zdGRvdXQiPgo8cHJlPjxjb2RlPiAgICAgICBOICAgICAgICAgICAgICAgIHJvd19pZAogICAmbHQ7aW50Jmd0OyAgICAgICAgICAgICAgICAmbHQ7bGlzdCZndDsKMTogICA3MDAgICAgICAgMSwzLDQsNiw3LDgsLi4uCjI6ICAgMzAwICAyLCA1LDEwLDExLDEyLDE0LC4uLjwvY29kZT48L3ByZT4KPC9kaXY+CjwvZGl2Pg=="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-resampling-procedure" class="level2">
+<h2 class="anchored" data-anchor-id="create-resampling-procedure">1.2 Create resampling procedure</h2>
+<p>Next, specify a 3-fold cross validation and instantiate the resampling on the task.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Y3YzIDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5yc21wPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2N2JnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5mb2xkcyA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjM8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0yIj48YSBocmVmPSIjY2IxLTIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5jdjM8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij5pbnN0YW50aWF0ZTwvc3Bhbj4odGFza19nYyk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMyI+PGEgaHJlZj0iI2NiMS0zIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Y3YzPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPmluc3RhbmNlPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQgY2VsbC1vdXRwdXQtc3Rkb3V0Ij4KPHByZT48Y29kZT4gICAgICByb3dfaWQgIGZvbGQKICAgICAgICZsdDtpbnQmZ3Q7ICZsdDtpbnQmZ3Q7CiAgIDE6ICAgICAgNyAgICAgMQogICAyOiAgICAgIDggICAgIDEKICAgMzogICAgICA5ICAgICAxCiAgIDQ6ICAgICAxNyAgICAgMQogICA1OiAgICAgMjIgICAgIDEKICAtLS0gICAgICAgICAgICAgCiA5OTY6ICAgIDk1OSAgICAgMwogOTk3OiAgICA5NjcgICAgIDMKIDk5ODogICAgOTgwICAgICAzCiA5OTk6ICAgIDk4NCAgICAgMwoxMDAwOiAgICA5OTkgICAgIDM8L2NvZGU+PC9wcmU+CjwvZGl2Pgo8L2Rpdj4="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="sanity-check" class="level2">
+<h2 class="anchored" data-anchor-id="sanity-check">1.3 Sanity check</h2>
+<p>As a sanity check, the target class distribution should be similar within each CV fold. Compute and check the target class distribution in form of a ratio within each fold.</p>
+<details>
+<summary>
+<strong>Hint 1</strong>
+</summary>
+First, merge the data with the corresponding cv fold. Second, aggregate for each fold.
+</details>
+<details>
+<summary>
+<strong>Hint 2</strong>
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">merge</span>(cv3<span class="sc">$</span>..., <span class="fu">transform</span>(..., <span class="at">row_id =</span> <span class="fu">seq_len</span>(...)), <span class="at">by =</span> ...)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">aggregate</span>(..., <span class="at">data =</span> ..., <span class="at">FUN =</span> <span class="cf">function</span>(x) ...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PHA+V2l0aCA8Y29kZT5iYXNlIFI8L2NvZGU+OjwvcD4KPGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ZHQgPHNwYW4gY2xhc3M9Im90Ij4mbHQ7LTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5tZXJnZTwvc3Bhbj4oY3YzPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPmluc3RhbmNlLCA8c3BhbiBjbGFzcz0iZnUiPnRyYW5zZm9ybTwvc3Bhbj4odGFza19nYzxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj48c3BhbiBjbGFzcz0iZnUiPmRhdGE8L3NwYW4+KCksIDxzcGFuIGNsYXNzPSJhdCI+cm93X2lkID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+c2VxX2xlbjwvc3Bhbj4oPHNwYW4gY2xhc3M9ImZ1Ij5ucm93PC9zcGFuPih0YXNrX2djPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+ZGF0YTwvc3Bhbj4oKSkpKSwgPHNwYW4gY2xhc3M9ImF0Ij5ieSA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3Jvd19pZCZxdW90Ozwvc3Bhbj4pPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTIiPjxhIGhyZWY9IiNjYjEtMiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJmdSI+YWdncmVnYXRlPC9zcGFuPihjcmVkaXRfcmlzayA8c3BhbiBjbGFzcz0ic2MiPn48L3NwYW4+IGZvbGQsIDxzcGFuIGNsYXNzPSJhdCI+ZGF0YSA9PC9zcGFuPiBkdCwgPHNwYW4gY2xhc3M9ImF0Ij5GVU4gPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImNmIj5mdW5jdGlvbjwvc3Bhbj4oeCkgPHNwYW4gY2xhc3M9ImZ1Ij5zdW08L3NwYW4+KHggPHNwYW4gY2xhc3M9InNjIj49PTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtiYWQmcXVvdDs8L3NwYW4+KSA8c3BhbiBjbGFzcz0ic2MiPi88L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+c3VtPC9zcGFuPih4IDxzcGFuIGNsYXNzPSJzYyI+PT08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Z29vZCZxdW90Ozwvc3Bhbj4pKTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0IGNlbGwtb3V0cHV0LXN0ZG91dCI+CjxwcmU+PGNvZGU+ICBmb2xkIGNyZWRpdF9yaXNrCjEgICAgMSAgIDAuNDI3MzUwNAoyICAgIDIgICAwLjQyOTE4NDUKMyAgICAzICAgMC40MjkxODQ1PC9jb2RlPjwvcHJlPgo8L2Rpdj4KPGRpdiBjbGFzcz0ic291cmNlQ29kZSIgaWQ9ImNiMyI+PHByZQpjbGFzcz0ic291cmNlQ29kZSByIGNlbGwtY29kZSI+PGNvZGUgY2xhc3M9InNvdXJjZUNvZGUgciI+PHNwYW4gaWQ9ImNiMy0xIj48YSBocmVmPSIjY2IzLTEiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48c3BhbiBjbGFzcz0iZnUiPndpdGg8L3NwYW4+KGR0LCA8c3BhbiBjbGFzcz0iZnUiPnN1bTwvc3Bhbj4oY3JlZGl0X3Jpc2sgPHNwYW4gY2xhc3M9InNjIj49PTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtiYWQmcXVvdDs8L3NwYW4+KSA8c3BhbiBjbGFzcz0ic2MiPi88L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+c3VtPC9zcGFuPihjcmVkaXRfcmlzayA8c3BhbiBjbGFzcz0ic2MiPj09PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2dvb2QmcXVvdDs8L3NwYW4+KSk8L3NwYW4+PC9jb2RlPjwvcHJlPjwvZGl2Pgo8ZGl2IGNsYXNzPSJjZWxsLW91dHB1dCBjZWxsLW91dHB1dC1zdGRvdXQiPgo8cHJlPjxjb2RlPlsxXSAwLjQyODU3MTQ8L2NvZGU+PC9wcmU+CjwvZGl2Pgo8L2Rpdj4KPHA+V2l0aCA8Y29kZT5kYXRhLnRhYmxlPC9jb2RlPjo8L3A+CjxkaXYgY2xhc3M9ImNlbGwiIGRhdGEtbGF5b3V0LWFsaWduPSJjZW50ZXIiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2I1Ij48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2I1LTEiPjxhIGhyZWY9IiNjYjUtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmR0IDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5tZXJnZTwvc3Bhbj4oY3YzPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPmluc3RhbmNlLCB0YXNrX2djPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+ZGF0YTwvc3Bhbj4oKVssIDxzcGFuIGNsYXNzPSJhdCI+cm93X2lkIDo9PC9zcGFuPiAuSV0sIDxzcGFuIGNsYXNzPSJhdCI+YnkgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtyb3dfaWQmcXVvdDs8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiNS0yIj48YSBocmVmPSIjY2I1LTIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5kdFssIC4oPHNwYW4gY2xhc3M9ImF0Ij5jbGFzc19yYXRpbyA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnN1bTwvc3Bhbj4oY3JlZGl0X3Jpc2sgPHNwYW4gY2xhc3M9InNjIj49PTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtiYWQmcXVvdDs8L3NwYW4+KSA8c3BhbiBjbGFzcz0ic2MiPi88L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2I1LTMiPjxhIGhyZWY9IiNjYjUtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImZ1Ij5zdW08L3NwYW4+KGNyZWRpdF9yaXNrIDxzcGFuIGNsYXNzPSJzYyI+PT08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Z29vZCZxdW90Ozwvc3Bhbj4pKSwgYnkgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiBmb2xkXTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0IGNlbGwtb3V0cHV0LXN0ZG91dCI+CjxwcmU+PGNvZGU+ICAgIGZvbGQgY2xhc3NfcmF0aW8KICAgJmx0O2ludCZndDsgICAgICAgJmx0O251bSZndDsKMTogICAgIDIgICAwLjQyOTE4NDUKMjogICAgIDMgICAwLjQyOTE4NDUKMzogICAgIDEgICAwLjQyNzM1MDQ8L2NvZGU+PC9wcmU+CjwvZGl2Pgo8L2Rpdj4KPHA+SW5kZWVkLCB3ZSBjYW4gc2VlIHRoYXQgdGhlIHRhcmdldCBjbGFzcyBpcyBkaXN0cmlidXRlZCBzaW1pbGFybHkKd2l0aGluIGVhY2ggQ1YgZm9sZCwgbWF0Y2hpbmcgdGhlIG92ZXJhbGwgY2xhc3MgZGlzdHJpYnV0aW9uOjwvcD4KPGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjciPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjctMSI+PGEgaHJlZj0iI2NiNy0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ZHRbLCAuKDxzcGFuIGNsYXNzPSJhdCI+Y2xhc3NfcmF0aW8gPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5zdW08L3NwYW4+KGNyZWRpdF9yaXNrIDxzcGFuIGNsYXNzPSJzYyI+PT08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7YmFkJnF1b3Q7PC9zcGFuPikgPHNwYW4gY2xhc3M9InNjIj4vPC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnN1bTwvc3Bhbj4oY3JlZGl0X3Jpc2sgPHNwYW4gY2xhc3M9InNjIj49PTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtnb29kJnF1b3Q7PC9zcGFuPikpXTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0IGNlbGwtb3V0cHV0LXN0ZG91dCI+CjxwcmU+PGNvZGU+ICAgY2xhc3NfcmF0aW8KICAgICAgICAgJmx0O251bSZndDsKMTogICAwLjQyODU3MTQ8L2NvZGU+PC9wcmU+CjwvZGl2Pgo8L2Rpdj4="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="block-resampling" class="level1">
+<h1>2 Block Resampling</h1>
+<p>An additional concern when specifying resampling is respecting the natural grouping of the data. Blocking refers to the situation where subsets of observations belong together and must not be separated during resampling. Hence, for one train/test set pair the entire block is either in the training set or in the test set.</p>
+<p>In the following example, wel will consider the <code>BreastCancer</code> data set from the <code>mlbench</code> package:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(BreastCancer, <span class="at">package =</span> <span class="st">"mlbench"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>task_bc <span class="ot">=</span> <span class="fu">as_task_classif</span>(BreastCancer, <span class="at">target =</span> <span class="st">"Class"</span>, <span class="at">positive =</span> <span class="st">"malignant"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>In this data set, several observations have the same <code>Id</code> (sample code number), which implies these are samples taken from the same patient at different times.</p>
+<section id="count-groups" class="level2">
+<h2 class="anchored" data-anchor-id="count-groups">2.1 Count groups</h2>
+<p>Let’s count how many observation actually have the same <code>Id</code> more than once.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PHNwYW4gY2xhc3M9ImZ1Ij5zdW08L3NwYW4+KDxzcGFuIGNsYXNzPSJmdSI+dGFibGU8L3NwYW4+KEJyZWFzdENhbmNlcjxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj5JZCkgPHNwYW4gY2xhc3M9InNjIj4mZ3Q7PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjE8L3NwYW4+KTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0IGNlbGwtb3V0cHV0LXN0ZG91dCI+CjxwcmU+PGNvZGU+WzFdIDQ2PC9jb2RlPjwvcHJlPgo8L2Rpdj4KPC9kaXY+CjxwPlRoZXJlIGFyZSA0NiA8Y29kZT5JZDwvY29kZT5zIHdpdGggbW9yZSB0aGFuIG9uZSBvYnNlcnZhdGlvbgoocm93KS48L3A+"></div></div>
+</div>
+</div>
+</div>
+</div>
+<p>The model trained on this data set will be used to predict cancer status of new patients. Hence, we have to make sure that each Id occurs exactly in one fold, so that all observations with the same Id should be either used for training or for evaluating the model. This way, we get less biased performance estimates via k-fold cross validation. This can be achieved by block cross validation.</p>
+</section>
+<section id="set-up-block-resampling" class="level2">
+<h2 class="anchored" data-anchor-id="set-up-block-resampling">2.2 Set up block resampling</h2>
+<p>Similarly to stratified resampling, block resampling uses <code>task$col_roles$group</code> to specify the name of a grouping variable included in the feature set. Now, set the column <code>Id</code> as grouping variable in the <code>task</code> object.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+dGFza19iYzxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj5jb2xfcm9sZXM8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+Z3JvdXAgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O0lkJnF1b3Q7PC9zcGFuPjwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjwvZGl2Pg=="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="instantiate-resampling" class="level2">
+<h2 class="anchored" data-anchor-id="instantiate-resampling">2.3 Instantiate resampling</h2>
+<p>Next, set up a 5-fold CV and instantiate it on the task.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Y3Y1IDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5yc21wPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2N2JnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5mb2xkcyA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjU8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0yIj48YSBocmVmPSIjY2IxLTIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5jdjU8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij5pbnN0YW50aWF0ZTwvc3Bhbj4odGFza19iYyk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMyI+PGEgaHJlZj0iI2NiMS0zIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Y3Y1PHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPmluc3RhbmNlPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQgY2VsbC1vdXRwdXQtc3Rkb3V0Ij4KPHByZT48Y29kZT5LZXk6ICZsdDtmb2xkJmd0OwogICAgICByb3dfaWQgIGZvbGQKICAgICAgJmx0O2NoYXImZ3Q7ICZsdDtpbnQmZ3Q7CiAgMTogMTAxNTQyNSAgICAgMQogIDI6IDEwNDE4MDEgICAgIDEKICAzOiAxMDQ5ODE1ICAgICAxCiAgNDogMTA1OTU1MiAgICAgMQogIDU6IDEwODQ1ODQgICAgIDEKIC0tLSAgICAgICAgICAgICAgCjY0MTogMTM3MTkyMCAgICAgNQo2NDI6ICA1MzY3MDggICAgIDUKNjQzOiAgNTY2MzQ2ICAgICA1CjY0NDogIDYwMzE0OCAgICAgNQo2NDU6ICA4ODg4MjAgICAgIDU8L2NvZGU+PC9wcmU+CjwvZGl2Pgo8L2Rpdj4="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="sanity-check-1" class="level2">
+<h2 class="anchored" data-anchor-id="sanity-check-1">2.4 Sanity check</h2>
+<p>If the specified blocking groups are respected, each <code>Id</code> appears only in exactly one fold. To inspect if blocking was successful when generating the folds, count how often each <code>Id</code> appears in a specific fold and print the <code>Id</code>s that appear in more than one fold.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PHA+V2l0aCA8Y29kZT5iYXNlIFI8L2NvZGU+OjwvcD4KPGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ZHQgPHNwYW4gY2xhc3M9Im90Ij4mbHQ7LTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5hZ2dyZWdhdGU8L3NwYW4+KGZvbGQgPHNwYW4gY2xhc3M9InNjIj5+PC9zcGFuPiBJZCw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzcz0iYXQiPmRhdGEgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5tZXJnZTwvc3Bhbj4odGFza19iYzxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj48c3BhbiBjbGFzcz0iZnUiPmRhdGE8L3NwYW4+KCksPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTMiPjxhIGhyZWY9IiNjYjEtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGN2NTxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj5pbnN0YW5jZSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNCI+PGEgaHJlZj0iI2NiMS00IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3M9ImF0Ij5ieS54ID08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7SWQmcXVvdDs8L3NwYW4+LDwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS01Ij48YSBocmVmPSIjY2IxLTUiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzcz0iYXQiPmJ5LnkgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtyb3dfaWQmcXVvdDs8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNiI+PGEgaHJlZj0iI2NiMS02IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzcz0iYXQiPkZVTiA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iY2YiPmZ1bmN0aW9uPC9zcGFuPih4KSA8c3BhbiBjbGFzcz0iZnUiPmxlbmd0aDwvc3Bhbj4oPHNwYW4gY2xhc3M9ImZ1Ij51bmlxdWU8L3NwYW4+KHgpKSk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNyI+PGEgaHJlZj0iI2NiMS03IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ZHRbZHQ8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+Zm9sZCA8c3BhbiBjbGFzcz0ic2MiPiZndDs8L3NwYW4+IDxzcGFuIGNsYXNzPSJkdiI+MTwvc3Bhbj4sXTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0IGNlbGwtb3V0cHV0LXN0ZG91dCI+CjxwcmU+PGNvZGU+WzFdIElkICAgZm9sZAombHQ7MCByb3dzJmd0OyAob3IgMC1sZW5ndGggcm93Lm5hbWVzKTwvY29kZT48L3ByZT4KPC9kaXY+CjwvZGl2Pgo8cD5XaXRoIDxjb2RlPmRhdGEudGFibGU8L2NvZGU+OjwvcD4KPGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjMiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjMtMSI+PGEgaHJlZj0iI2NiMy0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ZHQgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPm1lcmdlPC9zcGFuPih0YXNrX2JjPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+ZGF0YTwvc3Bhbj4oKSwgY3Y1PHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPmluc3RhbmNlLCA8c3BhbiBjbGFzcz0iYXQiPmJ5LnggPTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtJZCZxdW90Ozwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJhdCI+YnkueSA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3Jvd19pZCZxdW90Ozwvc3Bhbj4pPC9zcGFuPgo8c3BhbiBpZD0iY2IzLTIiPjxhIGhyZWY9IiNjYjMtMiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmR0IDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gZHRbLCAuKDxzcGFuIGNsYXNzPSJhdCI+dW5pcXVlX2ZvbGRzID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+bGVuZ3RoPC9zcGFuPig8c3BhbiBjbGFzcz0iZnUiPnVuaXF1ZTwvc3Bhbj4oZm9sZCkpKSwgYnkgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiBJZF08L3NwYW4+CjxzcGFuIGlkPSJjYjMtMyI+PGEgaHJlZj0iI2NiMy0zIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ZHRbdW5pcXVlX2ZvbGRzIDxzcGFuIGNsYXNzPSJzYyI+Jmd0Ozwvc3Bhbj4gPHNwYW4gY2xhc3M9ImR2Ij4xPC9zcGFuPiwgXTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0IGNlbGwtb3V0cHV0LXN0ZG91dCI+CjxwcmU+PGNvZGU+S2V5OiAmbHQ7SWQmZ3Q7CkVtcHR5IGRhdGEudGFibGUgKDAgcm93cyBhbmQgMiBjb2xzKTogSWQsdW5pcXVlX2ZvbGRzPC9jb2RlPjwvcHJlPgo8L2Rpdj4KPC9kaXY+"></div></div>
+</div>
+</div>
+</div>
+</div>
+<p>As expected, the table is empty as there are no Id’s present in more than one fold.</p>
+</section>
+</section>
+<section id="custom-performance-measures" class="level1">
+<h1>3 Custom Performance Measures</h1>
+<p>Many domain applications require custom measures for performance evaluations not supported in <code>mlr3</code>. You can inspect all available measures by calling <code>as.data.table(mlr_measures)</code>. Luckily, you can design your own measures for evaluating model performance. To do so, we simply create a new <code>R6</code> class that inherits either from <code>MeasureRegr</code> (for a regression measure) or <code>MeasureClassif</code> (for a classification measure). Let’s see how this works in practice. Let us consider a regression measure that scores a prediction as 1 if the difference between the true and predicted values is less than one standard deviation of the truth, or scores the prediction as 0 otherwise. In maths this would be defined as <span class="math inline">\(f(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(|y_i - \hat{y}_i| &lt; \sigma_y)\)</span>, where <span class="math inline">\(\sigma_y\)</span> is the standard deviation of the truth and <span class="math inline">\(\mathbb{I}\)</span> is the indicator function. In this case, we need the following code to construct a corresponding measure class:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>MeasureRegrThresholdAcc <span class="ot">=</span> R6<span class="sc">::</span><span class="fu">R6Class</span>(<span class="st">"MeasureRegrThresholdAcc"</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">inherit =</span> mlr3<span class="sc">::</span>MeasureRegr, <span class="co"># regression measure</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">public =</span> <span class="fu">list</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">initialize =</span> <span class="cf">function</span>() { <span class="co"># initialize class</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      super<span class="sc">$</span><span class="fu">initialize</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">id =</span> <span class="st">"thresh_acc"</span>, <span class="co"># unique ID</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">packages =</span> <span class="fu">character</span>(), <span class="co"># no package dependencies</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">properties =</span> <span class="fu">character</span>(), <span class="co"># no special properties</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">predict_type =</span> <span class="st">"response"</span>, <span class="co"># measures response prediction</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">range =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="co"># results in values between (0, 1)</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">minimize =</span> <span class="cn">FALSE</span> <span class="co"># larger values are better</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">private =</span> <span class="fu">list</span>(</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># define score as private method</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">.score =</span> <span class="cf">function</span>(prediction, ...) {</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>      <span class="co"># define loss</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>      threshold_acc <span class="ot">=</span> <span class="cf">function</span>(truth, response) {</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mean</span>(<span class="fu">ifelse</span>(<span class="fu">abs</span>(truth <span class="sc">-</span> response) <span class="sc">&lt;</span> <span class="fu">sd</span>(truth), <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>      <span class="co"># call loss function</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">threshold_acc</span>(prediction<span class="sc">$</span>truth, prediction<span class="sc">$</span>response)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol type="1">
+<li>In the first two lines we name the class, here <code>MeasureRegrThresholdAcc</code>, and then state this is a regression measure that inherits from <code>MeasureRegr</code>.</li>
+<li>We initialize the class by stating its unique ID is <code>"thresh_acc"</code>, that it does not require any external packages (<code>packages = character()</code>) and that it has no special properties (<code>properties = character()</code>).</li>
+<li>We then pass specific details of the loss function which are: it measures the quality of a <code>"response"</code> type prediction, its values range between <code>(0, 1)</code>, and that the loss is optimized as its maximum (<code>minimize = FALSE</code>).</li>
+<li>Finally, we define the score itself as a private method called <code>.score</code> where we pass the predictions to the function we defined just above. The private method is a function assigned to the R6 class <code>MeasureRegrThresholdAcc</code>, such that one can (internally) call <code>object$.score(prediction,...)</code> for an object of class <code>MeasureRegrThresholdAcc</code>. The method is “private” as it is not intended to be visible for the end user.</li>
+</ol>
+<p>Once you have defined your custom measure, you can add it to the <code>mlr3measures</code> dictionary like this:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mlr3<span class="sc">::</span>mlr_measures<span class="sc">$</span><span class="fu">add</span>(<span class="st">"regr.thresh_acc"</span>, MeasureRegrThresholdAcc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="mse-mae" class="level2">
+<h2 class="anchored" data-anchor-id="mse-mae">3.1 MSE-MAE</h2>
+<p>Define you own risk measure for regression, the maximum of MSE and MAE: <span class="math inline">\(f(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^n \max((y_i - \hat{y}_i)^2,|y_i - \hat{y}_i|)\)</span>, using the code skeleton supplied above.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>You need to change the code chunk containing the <code>MeasureRegrThresholdAcc</code> class definition in at least 7 lines.</p>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+TWVhc3VyZVJlZ3JNYXhNc2VNYWUgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiBSNjxzcGFuIGNsYXNzPSJzYyI+Ojo8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij5SNkNsYXNzPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O01lYXN1cmVSZWdyTWF4TXNlTWFlJnF1b3Q7PC9zcGFuPiw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iYXQiPmluaGVyaXQgPTwvc3Bhbj4gbWxyMzxzcGFuIGNsYXNzPSJzYyI+Ojo8L3NwYW4+TWVhc3VyZVJlZ3IsIDxzcGFuIGNsYXNzPSJjbyI+IyByZWdyZXNzaW9uIG1lYXN1cmU8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTMiPjxhIGhyZWY9IiNjYjEtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImF0Ij5wdWJsaWMgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5saXN0PC9zcGFuPig8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNCI+PGEgaHJlZj0iI2NiMS00IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgIDxzcGFuIGNsYXNzPSJhdCI+aW5pdGlhbGl6ZSA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iY2YiPmZ1bmN0aW9uPC9zcGFuPigpIHsgPHNwYW4gY2xhc3M9ImNvIj4jIGluaXRpYWxpemUgY2xhc3M8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTUiPjxhIGhyZWY9IiNjYjEtNSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgICAgIHN1cGVyPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+aW5pdGlhbGl6ZTwvc3Bhbj4oPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTYiPjxhIGhyZWY9IiNjYjEtNiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgICAgICAgPHNwYW4gY2xhc3M9ImF0Ij5pZCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O21heF9tc2VfbWFlJnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImNvIj4jIHVuaXF1ZSBJRDwvc3Bhbj48L3NwYW4+CjxzcGFuIGlkPSJjYjEtNyI+PGEgaHJlZj0iI2NiMS03IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgICA8c3BhbiBjbGFzcz0iYXQiPnBhY2thZ2VzID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+Y2hhcmFjdGVyPC9zcGFuPigpLCA8c3BhbiBjbGFzcz0iY28iPiMgbm8gcGFja2FnZSBkZXBlbmRlbmNpZXM8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTgiPjxhIGhyZWY9IiNjYjEtOCIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgICAgICAgPHNwYW4gY2xhc3M9ImF0Ij5wcm9wZXJ0aWVzID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+Y2hhcmFjdGVyPC9zcGFuPigpLCA8c3BhbiBjbGFzcz0iY28iPiMgbm8gc3BlY2lhbCBwcm9wZXJ0aWVzPC9zcGFuPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS05Ij48YSBocmVmPSIjY2IxLTkiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gICAgICAgIDxzcGFuIGNsYXNzPSJhdCI+cHJlZGljdF90eXBlID08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7cmVzcG9uc2UmcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iY28iPiMgbWVhc3VyZXMgcmVzcG9uc2UgcHJlZGljdGlvbjwvc3Bhbj48L3NwYW4+CjxzcGFuIGlkPSJjYjEtMTAiPjxhIGhyZWY9IiNjYjEtMTAiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gICAgICAgIDxzcGFuIGNsYXNzPSJhdCI+cmFuZ2UgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5jPC9zcGFuPig8c3BhbiBjbGFzcz0iZHYiPjA8L3NwYW4+LCA8c3BhbiBjbGFzcz0iY24iPkluZjwvc3Bhbj4pLCA8c3BhbiBjbGFzcz0iY28iPiMgcmVzdWx0cyBpbiB2YWx1ZXMgYmV0d2VlbiAoMCwgMSk8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTExIj48YSBocmVmPSIjY2IxLTExIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgICA8c3BhbiBjbGFzcz0iYXQiPm1pbmltaXplID08L3NwYW4+IDxzcGFuIGNsYXNzPSJjbiI+VFJVRTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImNvIj4jIHNtYWxsZXIgdmFsdWVzIGFyZSBiZXR0ZXI8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTEyIj48YSBocmVmPSIjY2IxLTEyIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgKTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0xMyI+PGEgaHJlZj0iI2NiMS0xMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgICB9PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTE0Ij48YSBocmVmPSIjY2IxLTE0IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICApLDwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0xNSI+PGEgaHJlZj0iI2NiMS0xNSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0xNiI+PGEgaHJlZj0iI2NiMS0xNiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImF0Ij5wcml2YXRlID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+bGlzdDwvc3Bhbj4oPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTE3Ij48YSBocmVmPSIjY2IxLTE3IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgIDxzcGFuIGNsYXNzPSJjbyI+IyBkZWZpbmUgc2NvcmUgYXMgcHJpdmF0ZSBtZXRob2Q8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTE4Ij48YSBocmVmPSIjY2IxLTE4IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgIDxzcGFuIGNsYXNzPSJhdCI+LnNjb3JlID08L3NwYW4+IDxzcGFuIGNsYXNzPSJjZiI+ZnVuY3Rpb248L3NwYW4+KHByZWRpY3Rpb24sIC4uLikgezwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0xOSI+PGEgaHJlZj0iI2NiMS0xOSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgICAgIDxzcGFuIGNsYXNzPSJjbyI+IyBkZWZpbmUgbG9zczwvc3Bhbj48L3NwYW4+CjxzcGFuIGlkPSJjYjEtMjAiPjxhIGhyZWY9IiNjYjEtMjAiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gICAgICBtYXhfbXNlX21hZSA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IDxzcGFuIGNsYXNzPSJjZiI+ZnVuY3Rpb248L3NwYW4+KHRydXRoLCByZXNwb25zZSkgezwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0yMSI+PGEgaHJlZj0iI2NiMS0yMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgICAgICAgPHNwYW4gY2xhc3M9ImZ1Ij5tZWFuPC9zcGFuPig8c3BhbiBjbGFzcz0iZnUiPm1heDwvc3Bhbj4oKHRydXRoIDxzcGFuIGNsYXNzPSJzYyI+LTwvc3Bhbj4gcmVzcG9uc2UpPHNwYW4gY2xhc3M9InNjIj5ePC9zcGFuPjxzcGFuIGNsYXNzPSJkdiI+Mjwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJmdSI+YWJzPC9zcGFuPih0cnV0aCA8c3BhbiBjbGFzcz0ic2MiPi08L3NwYW4+IHJlc3BvbnNlKSkpPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTIyIj48YSBocmVmPSIjY2IxLTIyIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgfTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0yMyI+PGEgaHJlZj0iI2NiMS0yMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgICAgIDxzcGFuIGNsYXNzPSJjbyI+IyBjYWxsIGxvc3MgZnVuY3Rpb248L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTI0Ij48YSBocmVmPSIjY2IxLTI0IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICAgICAgPHNwYW4gY2xhc3M9ImZ1Ij5tYXhfbXNlX21hZTwvc3Bhbj4ocHJlZGljdGlvbjxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj50cnV0aCwgcHJlZGljdGlvbjxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj5yZXNwb25zZSk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMjUiPjxhIGhyZWY9IiNjYjEtMjUiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gICAgfTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0yNiI+PGEgaHJlZj0iI2NiMS0yNiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgKTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0yNyI+PGEgaHJlZj0iI2NiMS0yNyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPik8L3NwYW4+PC9jb2RlPjwvcHJlPjwvZGl2Pgo8L2Rpdj4="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="evaluate-a-custom-measure" class="level2">
+<h2 class="anchored" data-anchor-id="evaluate-a-custom-measure">3.2 Evaluate a custom measure</h2>
+<p>Add your custom measure to the <code>mlr3measures</code> dictionary and use it to evaluate the following model prediction:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tsk_mtcars <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"mtcars"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>split <span class="ot">=</span> <span class="fu">partition</span>(tsk_mtcars)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>lrn_ranger <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.ranger"</span>)<span class="sc">$</span><span class="fu">train</span>(tsk_mtcars, split<span class="sc">$</span>train)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>prediction <span class="ot">=</span> lrn_ranger<span class="sc">$</span><span class="fu">predict</span>(tsk_mtcars, split<span class="sc">$</span>test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+bWxyMzxzcGFuIGNsYXNzPSJzYyI+Ojo8L3NwYW4+bWxyX21lYXN1cmVzPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+YWRkPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3JlZ3IubWF4X21zZV9tYWUmcXVvdDs8L3NwYW4+LCBNZWFzdXJlUmVnck1heE1zZU1hZSk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+cHJlZGljdGlvbjxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj48c3BhbiBjbGFzcz0iZnUiPnNjb3JlPC9zcGFuPig8c3BhbiBjbGFzcz0iZnUiPm1zcjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtyZWdyLm1heF9tc2VfbWFlJnF1b3Q7PC9zcGFuPikpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQgY2VsbC1vdXRwdXQtc3Rkb3V0Ij4KPHByZT48Y29kZT5tYXhfbXNlX21hZSAKICAgIDI2LjI1OTMgPC9jb2RlPjwvcHJlPgo8L2Rpdj4KPC9kaXY+"></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level1">
+<h1>Summary</h1>
+<ul>
+<li>Stratified resampling helps with balancing classes and features within CV folds, to ensure each fold represents the data well enough.</li>
+<li>Block resampling reduces bias in generalization error estimates by ensuring that observations from the same group end up in the same fold.</li>
+<li>Custom domain applications require custom performance measures. In <code>mlr3</code>, you can define custom measures by creating a new <code>R6</code> class.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mlr-org\.com\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Created with <i class="bi bi-heart-fill"></i> for #rstats.</p>
+</div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+<p>Website powered by <a href="https://quarto.org/">quarto</a> and <a href="https://www.netlify.com/">Netlify</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

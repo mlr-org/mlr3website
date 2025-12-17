@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Marc Becker">
+<meta name="dcterms.date" content="2023-02-07">
+<meta name="description" content="Utilize the built-in feature importance of models.">
+
+<title>Recursive Feature Elimination on the Sonar Data Set – mlr-org</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-1fa5e93acb50773330e542bbd58c1e25.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 5,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">mlr-org</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-overview" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Overview</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-overview">    
+        <li>
+    <a class="dropdown-item" href="../../../ecosystem.html">
+ <span class="dropdown-text">Ecosystem</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../dependencies.html">
+ <span class="dropdown-text">Dependencies</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tasks.html">
+ <span class="dropdown-text">Tasks</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../learners.html">
+ <span class="dropdown-text">Learners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../resamplings.html">
+ <span class="dropdown-text">Resamplings</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../measures.html">
+ <span class="dropdown-text">Measures</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../pipeops.html">
+ <span class="dropdown-text">Pipeline Operators</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../graphs.html">
+ <span class="dropdown-text">Graphs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../torch_pipeops.html">
+ <span class="dropdown-text">Torch Pipeline Operators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tuners.html">
+ <span class="dropdown-text">Tuners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../tuning_spaces.html">
+ <span class="dropdown-text">Tuning Spaces</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../terminators.html">
+ <span class="dropdown-text">Terminators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../filters.html">
+ <span class="dropdown-text">Feature Selection Filter</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../fselectors.html">
+ <span class="dropdown-text">Feature Selection Wrapper</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../resources.html"> 
+<span class="menu-text">Resources</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../book.html"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-benchmarks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Benchmarks</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-benchmarks">    
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3.html">
+ <span class="dropdown-text">mlr3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3fselect.html">
+ <span class="dropdown-text">mlr3fselect</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3tuning.html">
+ <span class="dropdown-text">mlr3tuning</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_async.html">
+ <span class="dropdown-text">mlr3tuning async</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmark_rush.html">
+ <span class="dropdown-text">rush</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_paradox.html">
+ <span class="dropdown-text">paradox</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../team.html"> 
+<span class="menu-text">Team</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-more" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">More</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-more">    
+        <li>
+    <a class="dropdown-item" href="../../../support.html">
+ <span class="dropdown-text">Support</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../contributing.html">
+ <span class="dropdown-text">Contributing</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../faq.html">
+ <span class="dropdown-text">Frequently Asked Questions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../blogroll.html">
+ <span class="dropdown-text">Blogroll</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-rss" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-rss">    
+        <li>
+    <a class="dropdown-item" href="../../../gallery-all.xml">
+ <span class="dropdown-text">Gallery RSS</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite"> <i class="bi bi-chat-dots" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://stackoverflow.com/questions/tagged/mlr3"> <i class="bi bi-stack-overflow" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/mlr-org"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Recursive Feature Elimination on the Sonar Data Set</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+  <div id="quarto-announcement" data-announcement-id="2a29a73f7e8b4063ece399653c838ff3" class="alert alert-primary hidden"><i class="bi bi-info-circle quarto-announcement-icon"></i><div class="quarto-announcement-content">
+<p>The website features runtime <a href="benchmarks/benchmarks_paradox.qmd">benchmarks</a> of the paradox package now.</p>
+</div><i class="bi bi-x-lg quarto-announcement-action"></i></div>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Recursive Feature Elimination on the Sonar Data Set</h1>
+                  <div>
+        <div class="description">
+          <p>Utilize the built-in feature importance of models.</p>
+        </div>
+      </div>
+                  <div class="banner">
+        <img src="cover.jpg" class="banner__image">
+                  </div>
+  </div>
+
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p><a href="https://github.com/be-marc">Marc Becker</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">February 7, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+
+  </div></header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope">Scope</a></li>
+  <li><a href="#recursive-feature-elimination" id="toc-recursive-feature-elimination" class="nav-link" data-scroll-target="#recursive-feature-elimination">Recursive Feature Elimination</a></li>
+  <li><a href="#task" id="toc-task" class="nav-link" data-scroll-target="#task">Task</a></li>
+  <li><a href="#gradient-boosting-machine" id="toc-gradient-boosting-machine" class="nav-link" data-scroll-target="#gradient-boosting-machine">Gradient Boosting Machine</a></li>
+  <li><a href="#support-vector-machine" id="toc-support-vector-machine" class="nav-link" data-scroll-target="#support-vector-machine">Support Vector Machine</a></li>
+  <li><a href="#recursive-feature-elimination-with-cross-validation" id="toc-recursive-feature-elimination-with-cross-validation" class="nav-link" data-scroll-target="#recursive-feature-elimination-with-cross-validation">Recursive Feature Elimination with Cross Validation</a></li>
+  <li><a href="#final-model" id="toc-final-model" class="nav-link" data-scroll-target="#final-model">Final Model</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#session-information" id="toc-session-information" class="nav-link" data-scroll-target="#session-information">Session Information</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content">
+
+
+
+
+<section id="scope" class="level1">
+<h1>Scope</h1>
+<p>Feature selection is the process of finding an optimal subset of features in order to improve the performance, interpretability and robustness of machine learning algorithms. In this article, we introduce the wrapper feature selection method <em>Recursive Feature Elimination</em>. <a href="https://mlr3book.mlr-org.com/feature-selection.html#fs-wrapper">Wrapper methods</a> iteratively select features that optimize a performance measure. As an example, we will search for the optimal set of features for a <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.gbm.html"><code>gradient boosting machine</code></a> and <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.svm.html"><code>support vector machine</code></a> on the <a href="https://mlr3.mlr-org.com/reference/mlr_tasks_pima.html"><code>Sonar</code></a> data set. We assume that you are already familiar with the basic building blocks of the <a href="https://mlr-org.com/ecosystem.html">mlr3 ecosystem</a>. If you are new to feature selection, we recommend reading the <a href="https://mlr3book.mlr-org.com/feature-selection.html">feature selection chapter</a> of the mlr3book first.</p>
+</section>
+<section id="recursive-feature-elimination" class="level1">
+<h1>Recursive Feature Elimination</h1>
+<p>Recursive Feature Elimination (RFE) is a widely used feature selection method for high-dimensional data sets. The idea is to iteratively remove the least predictive feature from a model until the desired number of features is reached. This feature is determined by the built-in feature importance method of the model. Currently, RFE works with support vector machines (SVM), decision tree algorithms and gradient boosting machines (GBM). Supported learners are tagged with the <code>"importance"</code> property. For a full list of supported learners, see the learner page on the <a href="https://mlr-org.com/learners.html">mlr-org website</a> and search for <code>"importance"</code>.</p>
+<p><span class="citation" data-cites="guyon_gene_2002">Guyon et al. (<a href="#ref-guyon_gene_2002" role="doc-biblioref">2002</a>)</span> developed the RFE algorithm for SVMs (SVM-RFE) to select informative genes in cancer classification. The importance of the features is given by the weight vector of a linear support vector machine. This method was later extended to other machine learning algorithms. The only requirement is that the models can internally measure the feature importance. The random forest algorithm offers multiple options for measuring feature importance. The commonly used methods are the mean decrease in accuracy (MDA) and the mean decrease in impurity (MDI). The MDA measures the decrease in accuracy for a feature if it was randomly permuted in the out-of-bag sample. The MDI is the total reduction in node impurity when the feature is used for splitting. Gradient boosting algorithms like <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.xgboost.html"><code>XGBoost</code></a>, <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.lightgbm.html"><code>LightGBM</code></a> and <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.gbm.html"><code>GBM</code></a> use similar methods to measure the importance of the features.</p>
+<p>Resampling strategies can be combined with the algorithm in different ways. The frameworks scikit-learn <span class="citation" data-cites="pedregosa_scikit-learn_2011">(<a href="#ref-pedregosa_scikit-learn_2011" role="doc-biblioref">Pedregosa et al. 2011</a>)</span> and caret <span class="citation" data-cites="kuhn_building_2008">(<a href="#ref-kuhn_building_2008" role="doc-biblioref">Kuhn 2008</a>)</span> implement a variant called recursive feature elimination with cross-validation (RFE-CV) that estimates the optimal number of features with cross-validation first. Then one more RFE is carried out on the complete dataset with the optimal number of features as the final feature set size. The RFE implementation in mlr3 can rank and aggregate importance scores across resampling iterations. We will explore both variants in more detail below.</p>
+<p><a href="https://mlr3fselect.mlr-org.com">mlr3fselect</a> is the feature selection package of the <a href="https://mlr-org.com/ecosystem.html">mlr3 ecosystem</a>. It implements the <a href="https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_rfe.html"><code>RFE</code></a> and <a href="https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_rfecv.html"><code>RFE-CV</code></a> algorithm. We load all packages of the ecosystem with the <a href="https://mlr3verse.mlr-org.com/reference/mlr3verse-package.html"><code>mlr3verse</code></a> package.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We retrieve the <a href="https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_rfe.html"><code>RFE</code></a> optimizer with the <a href="https://mlr3fselect.mlr-org.com/reference/fs.html"><code>fs()</code></a> function.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>optimizer <span class="ot">=</span> <span class="fu">fs</span>(<span class="st">"rfe"</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_features =</span> <span class="dv">1</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">feature_number =</span> <span class="dv">1</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">aggregation =</span> <span class="st">"rank"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The algorithm has multiple control parameters. The optimizer stops when the number of features equals <code>n_features</code>. The parameters <code>feature_number</code>, <code>feature_fraction</code> and <code>subset_size</code> determine the number of features that are removed in each iteration. The <code>feature_number</code> option removes a fixed number of features in each iteration, whereas <code>feature_fraction</code> removes a fraction of the features. The <code>subset_size</code> argument is a vector that specifies exactly how many features are removed in each iteration. The parameters are mutually exclusive and the default is <code>feature_fraction = 0.5</code>. Usually, RFE fits a new model in each resampling iteration and calculates the feature importance again. We can deactivate this behavior by setting <code>recursive = FALSE</code>. The selection of feature subsets in all iterations is then based solely on the importance scores of the first model trained with all features. When running an RFE with a resampling strategy like cross-validation, multiple models and importance scores are generated. The <code>aggregation</code> parameter determines how the importance scores are aggregated. The option <code>"rank"</code> ranks the importance scores in each iteration and then averages the ranks of the features. The feature with the lowest average rank is removed. The option <code>"mean"</code> averages the importance scores of the features across the iterations. The <code>"mean"</code> should only be used if the learner’s importance scores can be reasonably averaged.</p>
+</section>
+<section id="task" class="level1 page-columns page-full">
+<h1>Task</h1>
+<p>The objective of the <a href="https://mlr3.mlr-org.com/reference/mlr_tasks_sonar.html"><code>Sonar</code></a> data set is to predict whether a sonar signal bounced off a metal cylinder or a rock. The data set includes 60 numerical features (see <a href="#fig-features" class="quarto-xref">Figure&nbsp;1</a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>task <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"sonar"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell page-columns page-full" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">melt</span>(<span class="fu">as.data.table</span>(task), <span class="at">id.vars =</span> task<span class="sc">$</span>target_names, <span class="at">measure.vars =</span> task<span class="sc">$</span>feature_names)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[<span class="fu">c</span>(<span class="st">"V1"</span>, <span class="st">"V10"</span>, <span class="st">"V11"</span>, <span class="st">"V12"</span>, <span class="st">"V13"</span>, <span class="st">"V14"</span>), , on <span class="ot">=</span> <span class="st">"variable"</span>]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">fill =</span> Class)) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> variable, <span class="at">ncol =</span> <span class="dv">6</span>, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">end =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.x =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display page-columns page-full">
+<div id="fig-features" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure page-columns page-full">
+<div aria-describedby="fig-features-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
+<img src="index_files/figure-html/fig-features-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img column-page" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-features-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Distribution of the first 5 features in the Sonar dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="gradient-boosting-machine" class="level1 page-columns page-full">
+<h1>Gradient Boosting Machine</h1>
+<p>We start with the <a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.gbm.html"><code>GBM learner</code></a> and set the predict type to <code>"prob"</code> to obtain class probabilities.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.gbm"</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">distribution =</span> <span class="st">"bernoulli"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Now we define the feature selection problem by using the <a href="https://mlr3fselect.mlr-org.com/reference/fsi.html"><code>fsi()</code></a> function that constructs an <a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceBatchSingleCrit.html"><code>FSelectInstanceBatchSingleCrit</code></a>. In addition to the task and learner, we have to select a <a href="https://mlr3.mlr-org.com/reference/Resampling.html"><code>resampling strategy</code></a> and <a href="https://mlr3.mlr-org.com/reference/Measure.html"><code>performance measure</code></a> to determine how the performance of a feature subset is evaluated. We pass the <code>"none"</code> terminator because the <code>n_features</code> parameter of the optimizer determines when the feature selection stops.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>instance <span class="ot">=</span> <span class="fu">fsi</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> task,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> learner,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">6</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures =</span> <span class="fu">msr</span>(<span class="st">"classif.auc"</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"none"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We are now ready to start the RFE. To do this, we simply pass the instance to the <code>$optimize()</code> method of the optimizer.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>optimizer<span class="sc">$</span><span class="fu">optimize</span>(instance)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The optimizer saves the best feature set and the corresponding estimated performance in <code>instance$result</code>.</p>
+<p><a href="#fig-gbm" class="quarto-xref">Figure&nbsp;2</a> shows the optimization path of the feature selection. We observe that the performance increases first as the number of features decreases. As soon as informative features are removed, the performance drops.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridisLite)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3misc)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.table</span>(instance<span class="sc">$</span>archive)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>data[, n<span class="sc">:</span><span class="er">=</span> <span class="fu">map_int</span>(importance, length)]</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> classif.auc)) <span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="fu">viridis</span>(<span class="dv">1</span>, <span class="at">begin =</span> <span class="fl">0.5</span>),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">viridis</span>(<span class="dv">1</span>, <span class="at">begin =</span> <span class="fl">0.5</span>),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">21</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="fl">0.5</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Number of Features"</span>) <span class="sc">+</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-gbm" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gbm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-gbm-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gbm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Performance of the gradient-boosting models depending on the number of features.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The importance scores of the feature sets are recorded in the archive.</p>
+<div class="cell column-body-outset" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.table</span>(instance<span class="sc">$</span>archive)[, <span class="fu">list</span>(features, classif.auc, importance)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      features classif.auc                                                importance
+                        &lt;list&gt;       &lt;num&gt;                                                    &lt;list&gt;
+ 1: V1,V10,V11,V12,V13,V14,...   0.8929304 58.83333,58.83333,54.50000,54.00000,53.33333,52.50000,...
+ 2: V1,V10,V11,V12,V13,V15,...   0.9177811 57.33333,56.00000,54.00000,53.66667,50.50000,50.00000,...
+ 3: V1,V10,V11,V12,V13,V15,...   0.9045253 54.83333,54.66667,54.66667,53.00000,51.83333,51.33333,...
+ 4: V1,V10,V11,V12,V13,V15,...   0.8927833 56.00000,55.83333,53.00000,52.00000,50.16667,50.00000,...
+ 5: V1,V10,V11,V12,V13,V15,...   0.9016274 55.50000,53.50000,51.33333,50.00000,49.00000,48.50000,...
+---                                                                                                 
+56:         V11,V12,V16,V48,V9   0.8311625              4.166667,3.333333,2.833333,2.500000,2.166667
+57:             V11,V12,V16,V9   0.8216772                       3.833333,2.666667,2.000000,1.500000
+58:                V11,V12,V16   0.8065807                                2.833333,1.833333,1.333333
+59:                    V11,V12   0.8023780                                         1.833333,1.166667
+60:                        V11   0.7515904                                                         1</code></pre>
+</div>
+</div>
+</section>
+<section id="support-vector-machine" class="level1">
+<h1>Support Vector Machine</h1>
+<p>Now we will select the optimal feature set for an SVM with a linear kernel. The importance scores are the weights of the model.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.svm"</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"C-classification"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">kernel =</span> <span class="st">"linear"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_classif.svm.html"><code>SVM learner</code></a> does not support the calculation of importance scores at first. The reason is that importance scores cannot be determined with all kernels. This can be seen by the missing <code>"importance"</code> property.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>learner<span class="sc">$</span>properties</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "multiclass" "twoclass"  </code></pre>
+</div>
+</div>
+<p>Using the <code>"mlr3fselect.svm_rfe"</code> callback however makes it possible to use a linear SVM with the <a href="https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_rfe.html"><code>RFE</code></a> optimizer. The callback adds the <code>$importance()</code> method internally to the learner. We load the callback with the <a href="https://mlr3misc.mlr-org.com/reference/clbk.html"><code>clbk()</code></a> function and pass it as the <code>"callback"</code> argument to <a href="https://mlr3fselect.mlr-org.com/reference/fsi.html"><code>fsi()</code></a>.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>instance <span class="ot">=</span> <span class="fu">fsi</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> task,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> learner,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">6</span>),</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures =</span> <span class="fu">msr</span>(<span class="st">"classif.auc"</span>),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"none"</span>),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">callback =</span> <span class="fu">clbk</span>(<span class="st">"mlr3fselect.svm_rfe"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We start the feature selection.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>optimizer<span class="sc">$</span><span class="fu">optimize</span>(instance)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><a href="#fig-svm" class="quarto-xref">Figure&nbsp;3</a> shows the average performance of the SVMs depending on the number of features. We can see that the performance increases significantly with a reduced feature set.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridisLite)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3misc)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.table</span>(instance<span class="sc">$</span>archive)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>data[, n<span class="sc">:</span><span class="er">=</span> <span class="fu">map_int</span>(importance, length)]</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> classif.auc)) <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="fu">viridis</span>(<span class="dv">1</span>, <span class="at">begin =</span> <span class="fl">0.5</span>),</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">viridis</span>(<span class="dv">1</span>, <span class="at">begin =</span> <span class="fl">0.5</span>),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">21</span>,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="fl">0.5</span>,</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Number of Features"</span>) <span class="sc">+</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-svm" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-svm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-svm-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-svm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Performance of the support vector machines depending on the number of features.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>For datasets with a lot of features, it is more efficient to remove several features per iteration. We show an example where 25% of the features are removed in each iteration.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>optimizer <span class="ot">=</span> <span class="fu">fs</span>(<span class="st">"rfe"</span>, <span class="at">n_features =</span> <span class="dv">1</span>, <span class="at">feature_fraction =</span> <span class="fl">0.75</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>instance <span class="ot">=</span> <span class="fu">fsi</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> task,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> learner,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">6</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures =</span> <span class="fu">msr</span>(<span class="st">"classif.auc"</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"none"</span>),</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">callback =</span> <span class="fu">clbk</span>(<span class="st">"mlr3fselect.svm_rfe"</span>))</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>optimizer<span class="sc">$</span><span class="fu">optimize</span>(instance)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><a href="#fig-svm-2" class="quarto-xref">Figure&nbsp;4</a> shows a similar optimization curve as <a href="#fig-svm" class="quarto-xref">Figure&nbsp;3</a> but with fewer evaluated feature sets.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridisLite)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3misc)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.table</span>(instance<span class="sc">$</span>archive)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>data[, n<span class="sc">:</span><span class="er">=</span> <span class="fu">map_int</span>(importance, length)]</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> classif.auc)) <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="fu">viridis</span>(<span class="dv">1</span>, <span class="at">begin =</span> <span class="fl">0.5</span>),</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">viridis</span>(<span class="dv">1</span>, <span class="at">begin =</span> <span class="fl">0.5</span>),</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">21</span>,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="fl">0.5</span>,</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Number of Features"</span>) <span class="sc">+</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-svm-2" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-svm-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-svm-2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-svm-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Optimization path of the feature selection.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="recursive-feature-elimination-with-cross-validation" class="level1 page-columns page-full">
+<h1>Recursive Feature Elimination with Cross Validation</h1>
+<p>RFE-CV estimates the optimal number of features before selecting a feature set. For this, an RFE is run in each resampling iteration and the number of features with the best mean performance is selected (see <a href="#fig-flowchart" class="quarto-xref">Figure&nbsp;5</a>). Then one more RFE is carried out on the complete dataset with the optimal number of features as the final feature set size.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-flowchart" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-flowchart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-flowchart">%%{ init: { 'flowchart': { 'curve': 'bump' } } }%%
+flowchart TB
+    cross-validation[3-Fold Cross-Validation]
+    cross-validation--&gt;rfe-1
+    cross-validation--&gt;rfe-2
+    cross-validation--&gt;rfe-3
+    subgraph rfe-1[RFE 1]
+    direction TB
+    f14[4 Features]
+    f13[3 Features]
+    f12[2 Features]
+    f11[1 Features]
+    f14--&gt;f13--&gt;f12--&gt;f11
+    style f13 fill:#ccea84
+    end
+    subgraph rfe-2[RFE 2]
+    direction TB
+    f24[4 Features]
+    f23[3 Features]
+    f22[2 Features]
+    f21[1 Features]
+    f24--&gt;f23--&gt;f22--&gt;f21
+    style f23 fill:#ccea84
+    end
+    subgraph rfe-3[RFE 3]
+    direction TB
+    f34[4 Features]
+    f33[3 Features]
+    f32[2 Features]
+    f31[1 Features]
+    f34--&gt;f33--&gt;f32--&gt;f31
+    style f33 fill:#ccea84
+    end
+    all_obs[All Observations]
+    rfe-1--&gt;all_obs
+    rfe-2--&gt;all_obs
+    rfe-3--&gt;all_obs
+    all_obs --&gt; rfe
+    subgraph rfe[RFE]
+    direction TB
+    f54[4 Features]
+    f53[3 Features]
+    f54--&gt;f53
+    style f53 fill:#8e6698
+    end
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-flowchart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Example of an RFE-CV. The optimal number of features is estimated with a 3-fold cross-validation. One RFE is executed with each train-test split (RFE 1 to RFE 3). The number of features with the best mean performance (green rectangles) is used as the size of the final feature set. A final RFE is performed on all observations. The algorithm stops when the optimal feature set size is reached (purple rectangle) and the optimized feature set is returned.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We retrieve the <a href="https://mlr3fselect.mlr-org.com/reference/mlr_fselectors_rfecv.html"><code>RFE-CV</code></a> optimizer. RFE-CV has almost the same control parameters as the RFE optimizer. The only difference is that no aggregation is needed.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>optimizer <span class="ot">=</span> <span class="fu">fs</span>(<span class="st">"rfecv"</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_features =</span> <span class="dv">1</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">feature_number =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The chosen resampling strategy is used to estimate the optimal number of features. The 6-fold cross-validation results in 6 RFE runs. You can choose any other resampling strategy with multiple iterations. Let’s start the feature selection.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.svm"</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"C-classification"</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">kernel =</span> <span class="st">"linear"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>instance <span class="ot">=</span> <span class="fu">fsi</span>(</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> task,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> learner,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">6</span>),</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures =</span> <span class="fu">msr</span>(<span class="st">"classif.auc"</span>),</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"none"</span>),</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">callback =</span> <span class="fu">clbk</span>(<span class="st">"mlr3fselect.svm_rfe"</span>))</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>optimizer<span class="sc">$</span><span class="fu">optimize</span>(instance)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The performance of the optimal feature set is calculated on the complete data set and should not be reported as the performance of the final model. Estimate the performance of the final model with <a href="https://mlr3book.mlr-org.com/optimization.html#sec-nested-resampling">nested resampling</a>.</p>
+</div>
+</div>
+<p>We visualize the selection of the optimal number of features. Each point is the mean performance of the number of features. We achieved the best performance with 19 features.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridisLite)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3misc)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.table</span>(instance<span class="sc">$</span>archive)[<span class="sc">!</span><span class="fu">is.na</span>(iteration), ]</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>aggr <span class="ot">=</span> data[, <span class="fu">list</span>(<span class="st">"y"</span> <span class="ot">=</span> <span class="fu">mean</span>(<span class="fu">unlist</span>(.SD))), by <span class="ot">=</span> <span class="st">"batch_nr"</span>, .SDcols <span class="ot">=</span> <span class="st">"classif.auc"</span>]</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>aggr[, batch_nr <span class="sc">:</span><span class="er">=</span> <span class="dv">61</span> <span class="sc">-</span> batch_nr]</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>data[, n<span class="sc">:</span><span class="er">=</span> <span class="fu">map_int</span>(importance, length)]</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(aggr, <span class="fu">aes</span>(<span class="at">x =</span> batch_nr, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="fu">viridis</span>(<span class="dv">1</span>, <span class="at">begin =</span> <span class="fl">0.5</span>),</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">viridis</span>(<span class="dv">1</span>, <span class="at">begin =</span> <span class="fl">0.5</span>),</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">21</span>,</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="fl">0.5</span>,</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">xintercept =</span> aggr[y <span class="sc">==</span> <span class="fu">max</span>(y)]<span class="sc">$</span>batch_nr,</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="fu">viridis</span>(<span class="dv">1</span>, <span class="at">begin =</span> <span class="fl">0.33</span>),</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="dv">3</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Number of Features"</span>) <span class="sc">+</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Mean AUC"</span>) <span class="sc">+</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-rfecv" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rfecv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-rfecv-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rfecv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Estimation of the optimal number of features. The best mean performance is achieved with 19 features (blue line).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The archive contains the extra column <code>"iteration"</code> that indicates in which resampling iteration the feature set was evaluated. The feature subsets of the final RFE run have no value in the <code>"iteration"</code> column because they were evaluated on the complete data set.</p>
+<div class="cell column-body-outset" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.table</span>(instance<span class="sc">$</span>archive)[, <span class="fu">list</span>(features, classif.auc, iteration, importance)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       features classif.auc iteration                                                      importance
+                         &lt;list&gt;       &lt;num&gt;     &lt;int&gt;                                                          &lt;list&gt;
+  1: V1,V10,V11,V12,V13,V14,...   0.8782895         1       2.864018,1.532774,1.408485,1.399930,1.326165,1.167745,...
+  2: V1,V10,V11,V12,V13,V14,...   0.7026144         2       2.056442,1.706077,1.258703,1.191762,1.190752,1.178514,...
+  3: V1,V10,V11,V12,V13,V14,...   0.8790850         3       1.950412,1.887710,1.820891,1.616219,1.231928,1.138675,...
+  4: V1,V10,V11,V12,V13,V14,...   0.8125000         4 2.6958580,1.5623759,1.4990138,1.3902109,0.9385757,0.9232132,...
+  5: V1,V10,V11,V12,V13,V14,...   0.8807018         5       2.487483,1.470778,1.356517,1.033764,0.635383,0.575074,...
+ ---                                                                                                                 
+398:  V1,V11,V12,V16,V23,V3,...   0.9605275        NA 2.0089739,1.1047492,1.0011253,0.6602411,0.6015470,0.5431803,...
+399:  V1,V12,V16,V23,V3,V30,...   0.9595988        NA 1.8337471,1.1937962,0.9853467,0.7751384,0.7296726,0.6222569,...
+400:  V1,V12,V16,V23,V3,V30,...   0.9589486        NA 1.8824952,1.2468164,1.0106654,0.8090618,0.6983925,0.6568389,...
+401:  V1,V12,V16,V23,V3,V30,...   0.9559766        NA 2.3872902,0.9094028,0.8809098,0.8277941,0.7841591,0.7792772,...
+402:  V1,V12,V16,V23,V3,V30,...   0.9521687        NA 1.9485133,1.1482257,1.1098823,0.9591012,0.8234140,0.8118616,...</code></pre>
+</div>
+</div>
+</section>
+<section id="final-model" class="level1">
+<h1>Final Model</h1>
+<p>The learner we use to make predictions on new data is called the final model. The final model is trained with the optimal feature set on the full data set. The optimal set consists of 19 features and is stored in <code>instance$result_feature_set</code>. We subset the task to the optimal feature set and train the learner.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>task<span class="sc">$</span><span class="fu">select</span>(instance<span class="sc">$</span>result_feature_set)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>learner<span class="sc">$</span><span class="fu">train</span>(task)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The trained model can now be used to predict new, external data.</p>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>The RFE algorithm is a valuable feature selection method, especially for high-dimensional datasets with only a few observations. The numerous settings of the algorithm in mlr3 make it possible to apply it to many datasets and learners. If you want to know more about feature selection in general, we recommend having a look at our <a href="https://mlr3book.mlr-org.com/feature-selection.html">book</a>.</p>
+</section>
+<section id="session-information" class="level1">
+<h1>Session Information</h1>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>(<span class="at">info =</span> <span class="st">"packages"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>═ Session info ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
+ ! package           * version    date (UTC) lib source
+   backports           1.5.0      2024-05-23 [1] CRAN (R 4.4.1)
+   bbotk               1.1.1      2024-10-15 [1] CRAN (R 4.4.1)
+   checkmate           2.3.2      2024-07-29 [1] CRAN (R 4.4.1)
+ P class               7.3-22     2023-05-03 [?] CRAN (R 4.4.0)
+   cli                 3.6.3      2024-06-21 [1] CRAN (R 4.4.1)
+   clue                0.3-65     2023-09-23 [1] CRAN (R 4.4.1)
+ P cluster             2.1.6      2023-12-01 [?] CRAN (R 4.4.0)
+ P codetools           0.2-20     2024-03-31 [?] CRAN (R 4.4.0)
+   colorspace          2.1-1      2024-07-26 [1] CRAN (R 4.4.1)
+   crayon              1.5.3      2024-06-20 [1] CRAN (R 4.4.1)
+   data.table        * 1.16.2     2024-10-10 [1] CRAN (R 4.4.1)
+   DEoptimR            1.1-3      2023-10-07 [1] CRAN (R 4.4.1)
+   digest              0.6.37     2024-08-19 [1] CRAN (R 4.4.1)
+   diptest             0.77-1     2024-04-10 [1] CRAN (R 4.4.1)
+   dplyr               1.1.4      2023-11-17 [1] CRAN (R 4.4.1)
+   e1071               1.7-16     2024-09-16 [1] CRAN (R 4.4.1)
+   evaluate            1.0.1      2024-10-10 [1] CRAN (R 4.4.1)
+   fansi               1.0.6      2023-12-08 [1] CRAN (R 4.4.1)
+   farver              2.1.2      2024-05-13 [1] CRAN (R 4.4.1)
+   fastmap             1.2.0      2024-05-15 [1] CRAN (R 4.4.1)
+   flexmix             2.3-19     2023-03-16 [1] CRAN (R 4.4.1)
+   fpc                 2.2-13     2024-09-24 [1] CRAN (R 4.4.1)
+   future              1.34.0     2024-07-29 [1] CRAN (R 4.4.1)
+   future.apply        1.11.2     2024-03-28 [1] CRAN (R 4.4.1)
+   gbm                 2.2.2      2024-06-28 [1] CRAN (R 4.4.1)
+   generics            0.1.3      2022-07-05 [1] CRAN (R 4.4.1)
+   ggplot2           * 3.5.1      2024-04-23 [1] CRAN (R 4.4.1)
+   globals             0.16.3     2024-03-08 [1] CRAN (R 4.4.1)
+   glue                1.8.0      2024-09-30 [1] CRAN (R 4.4.1)
+   gtable              0.3.5      2024-04-22 [1] CRAN (R 4.4.1)
+   htmltools           0.5.8.1    2024-04-04 [1] CRAN (R 4.4.1)
+   htmlwidgets         1.6.4      2023-12-06 [1] CRAN (R 4.4.1)
+   jsonlite            1.8.9      2024-09-20 [1] CRAN (R 4.4.1)
+   kernlab             0.9-33     2024-08-13 [1] CRAN (R 4.4.1)
+   knitr               1.48       2024-07-07 [1] CRAN (R 4.4.1)
+   labeling            0.4.3      2023-08-29 [1] CRAN (R 4.4.1)
+ P lattice             0.22-5     2023-10-24 [?] CRAN (R 4.3.3)
+   lgr                 0.4.4      2022-09-05 [1] CRAN (R 4.4.1)
+   lifecycle           1.0.4      2023-11-07 [1] CRAN (R 4.4.1)
+   listenv             0.9.1      2024-01-29 [1] CRAN (R 4.4.1)
+   magrittr            2.0.3      2022-03-30 [1] CRAN (R 4.4.1)
+ P MASS                7.3-61     2024-06-13 [?] CRAN (R 4.4.1)
+ P Matrix              1.7-0      2024-04-26 [?] CRAN (R 4.4.0)
+   mclust              6.1.1      2024-04-29 [1] CRAN (R 4.4.1)
+   mlr3              * 0.21.1     2024-10-18 [1] CRAN (R 4.4.1)
+   mlr3cluster         0.1.10     2024-10-03 [1] CRAN (R 4.4.1)
+   mlr3data            0.7.0      2023-06-29 [1] CRAN (R 4.4.1)
+   mlr3extralearners   0.9.0-9000 2024-10-18 [1] Github (mlr-org/mlr3extralearners@a622524)
+   mlr3filters         0.8.0      2024-04-10 [1] CRAN (R 4.4.1)
+   mlr3fselect       * 1.1.1.9000 2024-10-18 [1] Github (mlr-org/mlr3fselect@e917a02)
+   mlr3hyperband       0.6.0      2024-06-29 [1] CRAN (R 4.4.1)
+   mlr3learners        0.7.0      2024-06-28 [1] CRAN (R 4.4.1)
+   mlr3mbo             0.2.6      2024-10-16 [1] CRAN (R 4.4.1)
+   mlr3measures        1.0.0      2024-09-11 [1] CRAN (R 4.4.1)
+   mlr3misc          * 0.15.1     2024-06-24 [1] CRAN (R 4.4.1)
+   mlr3pipelines       0.7.0      2024-09-24 [1] CRAN (R 4.4.1)
+   mlr3tuning          1.0.2      2024-10-14 [1] CRAN (R 4.4.1)
+   mlr3tuningspaces    0.5.1      2024-06-21 [1] CRAN (R 4.4.1)
+   mlr3verse         * 0.3.0      2024-06-30 [1] CRAN (R 4.4.1)
+   mlr3viz             0.9.0      2024-07-01 [1] CRAN (R 4.4.1)
+   mlr3website       * 0.0.0.9000 2024-10-18 [1] Github (mlr-org/mlr3website@20d1ddf)
+   modeltools          0.2-23     2020-03-05 [1] CRAN (R 4.4.1)
+   munsell             0.5.1      2024-04-01 [1] CRAN (R 4.4.1)
+ P nnet                7.3-19     2023-05-03 [?] CRAN (R 4.3.3)
+   palmerpenguins      0.1.1      2022-08-15 [1] CRAN (R 4.4.1)
+   paradox             1.0.1      2024-07-09 [1] CRAN (R 4.4.1)
+   parallelly          1.38.0     2024-07-27 [1] CRAN (R 4.4.1)
+   pillar              1.9.0      2023-03-22 [1] CRAN (R 4.4.1)
+   pkgconfig           2.0.3      2019-09-22 [1] CRAN (R 4.4.1)
+   prabclus            2.3-4      2024-09-24 [1] CRAN (R 4.4.1)
+   proxy               0.4-27     2022-06-09 [1] CRAN (R 4.4.1)
+   R6                  2.5.1      2021-08-19 [1] CRAN (R 4.4.1)
+   Rcpp                1.0.13     2024-07-17 [1] CRAN (R 4.4.1)
+   renv                1.0.11     2024-10-12 [1] CRAN (R 4.4.1)
+   rlang               1.1.4      2024-06-04 [1] CRAN (R 4.4.1)
+   rmarkdown           2.28       2024-08-17 [1] CRAN (R 4.4.1)
+   robustbase          0.99-4-1   2024-09-27 [1] CRAN (R 4.4.1)
+   scales              1.3.0      2023-11-28 [1] CRAN (R 4.4.1)
+   sessioninfo         1.2.2      2021-12-06 [1] CRAN (R 4.4.1)
+   spacefillr          0.3.3      2024-05-22 [1] CRAN (R 4.4.1)
+   stringi             1.8.4      2024-05-06 [1] CRAN (R 4.4.1)
+ P survival            3.7-0      2024-06-05 [?] CRAN (R 4.4.0)
+   tibble              3.2.1      2023-03-20 [1] CRAN (R 4.4.1)
+   tidyselect          1.2.1      2024-03-11 [1] CRAN (R 4.4.1)
+   utf8                1.2.4      2023-10-22 [1] CRAN (R 4.4.1)
+   uuid                1.2-1      2024-07-29 [1] CRAN (R 4.4.1)
+   vctrs               0.6.5      2023-12-01 [1] CRAN (R 4.4.1)
+   viridisLite       * 0.4.2      2023-05-02 [1] CRAN (R 4.4.1)
+   withr               3.0.1      2024-07-31 [1] CRAN (R 4.4.1)
+   xfun                0.48       2024-10-03 [1] CRAN (R 4.4.1)
+   yaml                2.3.10     2024-07-26 [1] CRAN (R 4.4.1)
+
+ [1] /home/marc/repositories/mlr3website/mlr-org/renv/library/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu
+ [2] /home/marc/.cache/R/renv/sandbox/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu/9a444a72
+
+ P ── Loaded and on-disk path mismatch.
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</code></pre>
+</div>
+</div>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-guyon_gene_2002" class="csl-entry" role="listitem">
+Guyon, Isabelle, Jason Weston, Stephen Barnhill, and Vladimir Vapnik. 2002. <span>“Gene Selection for Cancer Classification Using Support Vector Machines.”</span> <em>Machine Learning</em> 46 (1): 389–422. <a href="https://doi.org/10.1023/A:1012487302797">https://doi.org/10.1023/A:1012487302797</a>.
+</div>
+<div id="ref-kuhn_building_2008" class="csl-entry" role="listitem">
+Kuhn, Max. 2008. <span>“Building Predictive Models in r Using the Caret Package.”</span> <em>Journal of Statistical Software</em> 28 (November): 1–26. <a href="https://doi.org/10.18637/jss.v028.i05">https://doi.org/10.18637/jss.v028.i05</a>.
+</div>
+<div id="ref-pedregosa_scikit-learn_2011" class="csl-entry" role="listitem">
+Pedregosa, Fabian, Gaël Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, Olivier Grisel, Mathieu Blondel, et al. 2011. <span>“Scikit-Learn: Machine Learning in Python.”</span> <em>Journal of Machine Learning Research</em> 12 (85): 2825–30. <a href="http://jmlr.org/papers/v12/pedregosa11a.html">http://jmlr.org/papers/v12/pedregosa11a.html</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mlr-org\.com\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Created with <i class="bi bi-heart-fill"></i> for #rstats.</p>
+</div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+<p>Website powered by <a href="https://quarto.org/">quarto</a> and <a href="https://www.netlify.com/">Netlify</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

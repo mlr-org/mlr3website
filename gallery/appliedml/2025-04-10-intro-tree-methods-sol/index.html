@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Giuseppe Casalicchio">
+<meta name="author" content="Essential Data Science Training GmbH">
+<meta name="dcterms.date" content="2025-04-30">
+<meta name="description" content="Use, plot and benchmark classification tree and random forest on german credit set.">
+
+<title>Tree Methods Solution – mlr-org</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-1fa5e93acb50773330e542bbd58c1e25.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 5,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">mlr-org</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-overview" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Overview</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-overview">    
+        <li>
+    <a class="dropdown-item" href="../../../ecosystem.html">
+ <span class="dropdown-text">Ecosystem</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../dependencies.html">
+ <span class="dropdown-text">Dependencies</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tasks.html">
+ <span class="dropdown-text">Tasks</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../learners.html">
+ <span class="dropdown-text">Learners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../resamplings.html">
+ <span class="dropdown-text">Resamplings</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../measures.html">
+ <span class="dropdown-text">Measures</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../pipeops.html">
+ <span class="dropdown-text">Pipeline Operators</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../graphs.html">
+ <span class="dropdown-text">Graphs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../torch_pipeops.html">
+ <span class="dropdown-text">Torch Pipeline Operators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tuners.html">
+ <span class="dropdown-text">Tuners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../tuning_spaces.html">
+ <span class="dropdown-text">Tuning Spaces</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../terminators.html">
+ <span class="dropdown-text">Terminators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../filters.html">
+ <span class="dropdown-text">Feature Selection Filter</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../fselectors.html">
+ <span class="dropdown-text">Feature Selection Wrapper</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../resources.html"> 
+<span class="menu-text">Resources</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../book.html"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-benchmarks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Benchmarks</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-benchmarks">    
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3.html">
+ <span class="dropdown-text">mlr3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3fselect.html">
+ <span class="dropdown-text">mlr3fselect</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3tuning.html">
+ <span class="dropdown-text">mlr3tuning</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_async.html">
+ <span class="dropdown-text">mlr3tuning async</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmark_rush.html">
+ <span class="dropdown-text">rush</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_paradox.html">
+ <span class="dropdown-text">paradox</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../team.html"> 
+<span class="menu-text">Team</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-more" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">More</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-more">    
+        <li>
+    <a class="dropdown-item" href="../../../support.html">
+ <span class="dropdown-text">Support</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../contributing.html">
+ <span class="dropdown-text">Contributing</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../faq.html">
+ <span class="dropdown-text">Frequently Asked Questions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../blogroll.html">
+ <span class="dropdown-text">Blogroll</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-rss" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-rss">    
+        <li>
+    <a class="dropdown-item" href="../../../gallery-all.xml">
+ <span class="dropdown-text">Gallery RSS</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite"> <i class="bi bi-chat-dots" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://stackoverflow.com/questions/tagged/mlr3"> <i class="bi bi-stack-overflow" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/mlr-org"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Tree Methods Solution</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+  <div id="quarto-announcement" data-announcement-id="2a29a73f7e8b4063ece399653c838ff3" class="alert alert-primary hidden"><i class="bi bi-info-circle quarto-announcement-icon"></i><div class="quarto-announcement-content">
+<p>The website features runtime <a href="benchmarks/benchmarks_paradox.qmd">benchmarks</a> of the paradox package now.</p>
+</div><i class="bi bi-x-lg quarto-announcement-action"></i></div>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Tree Methods Solution</h1>
+                  <div>
+        <div class="description">
+          <p>Use, plot and benchmark classification tree and random forest on german credit set.</p>
+        </div>
+      </div>
+                </div>
+  </div>
+
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-contents">
+               <p>Giuseppe Casalicchio </p>
+               <p><a href="https://www.essentialds.de">Essential Data Science Training GmbH</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 30, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goal" id="toc-goal" class="nav-link active" data-scroll-target="#goal">Goal</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a>
+  <ul class="collapse">
+  <li><a href="#fit-a-decision-tree" id="toc-fit-a-decision-tree" class="nav-link" data-scroll-target="#fit-a-decision-tree">Fit a decision tree</a></li>
+  <li><a href="#visualize-the-tree-structure" id="toc-visualize-the-tree-structure" class="nav-link" data-scroll-target="#visualize-the-tree-structure">Visualize the tree structure</a></li>
+  <li><a href="#fit-a-random-forest" id="toc-fit-a-random-forest" class="nav-link" data-scroll-target="#fit-a-random-forest">Fit a random forest</a></li>
+  <li><a href="#roc-analysis" id="toc-roc-analysis" class="nav-link" data-scroll-target="#roc-analysis">ROC Analysis</a></li>
+  <li><a href="#understand-hyperparameters" id="toc-understand-hyperparameters" class="nav-link" data-scroll-target="#understand-hyperparameters">Understand hyperparameters</a></li>
+  <li><a href="#comparison-of-trees-and-random-forests" id="toc-comparison-of-trees-and-random-forests" class="nav-link" data-scroll-target="#comparison-of-trees-and-random-forests">Comparison of trees and random forests</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#further-information" id="toc-further-information" class="nav-link" data-scroll-target="#further-information">Further information</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<script>
+const correctHash = "f65f2edd3e2de3e47bfcc13f58e4b64bafcf81239e64db0c2f836090fe6ec52c";   // value injected by knitr
+
+/* ---------- reusable helper ---------- */
+function b64DecodeUtf8(b64) {
+  // 1) atob  -> binary-string   (bytes 0…255)
+  // 2) map   -> Uint8Array      (array of bytes)
+  // 3) TextDecoder('utf-8')     -> real JS string
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+async function sha256(txt) {
+  const buf = await crypto.subtle.digest('SHA-256',
+                 new TextEncoder().encode(txt));
+  return Array.from(new Uint8Array(buf))
+              .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function unlockOne(btn) {
+  const pass = prompt("Password:");
+  if (!pass) return;
+  if (await sha256(pass) !== correctHash) {
+    alert("Wrong password"); return;
+  }
+
+  /* --- decode only the solution that belongs to THIS button --- */
+  const wrapper = btn.parentElement;             // .b64-wrapper
+  wrapper.querySelectorAll('.hidden-solution').forEach(div => {
+    div.innerHTML = b64DecodeUtf8(div.dataset.encoded);
+    div.classList.remove('hidden-solution');
+    div.style.display = 'block';
+  });
+
+  /* Remove the button so the user can’t click it again */
+  btn.remove();
+}
+</script>
+
+<noscript>
+<div style="border: 1px solid #ccc; padding: 1em; margin-top: 1em; background: #f9f9f9;">
+    <strong>JavaScript is required to unlock solutions.</strong><br>
+    Please enable JavaScript and reload the page,<br>
+    or download the source files from
+    <a href="https://github.com/mlr-org/mlr3website/" target="_blank" rel="noopener noreferrer">GitHub</a>
+    and run the code locally.
+  </div>
+</noscript>
+<section id="goal" class="level1">
+<h1>Goal</h1>
+<p>The goal for this exercise is to familiarize yourself with two very important machine learning methods, the decision tree and random forest. After this exercise, you should be able to train these models and extract important information to understand the model internals.</p>
+</section>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
+<section id="fit-a-decision-tree" class="level2">
+<h2 class="anchored" data-anchor-id="fit-a-decision-tree">Fit a decision tree</h2>
+<p>Use <code>task = tsk("german_credit")</code> to create the classification task for the <code>german_credit</code> data and create a decision tree learner (e.g., a CART learner). Train the decision tree on the <code>german_credit</code> classification task. Look at the output of the trained decision tree (you have to access the raw model object).</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+The learner we are focusing on here is a decision tree implemented in <a href="https://cran.r-project.org/web/packages/rpart/"><code>rpart</code></a>. The corresponding <code>mlr3</code> learner key is <code>"classif.rpart"</code>. For this exercise, we use the learner with the default hyperparameters. The raw model object can be accessed from the <code>$model</code> slot of the trained learner.
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>task <span class="ot">=</span> <span class="fu">tsk</span>(...)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>lrn_rpart <span class="ot">=</span> <span class="fu">lrn</span>(...) <span class="co"># create the learner</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>lrn_rpart<span class="sc">$</span><span class="fu">train</span>(...) <span class="co"># train the learner on the task</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>lrn_rpart<span class="sc">$</span>... <span class="co"># access the raw model object that was fitted</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1iYXNlNjRlbmNvZGU9InRydWUiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJmdSI+bGlicmFyeTwvc3Bhbj4obWxyMyk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+dGFzayA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+dHNrPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2dlcm1hbl9jcmVkaXQmcXVvdDs8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0zIj48YSBocmVmPSIjY2IxLTMiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5scm5fcnBhcnQgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPmxybjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtjbGFzc2lmLnJwYXJ0JnF1b3Q7PC9zcGFuPik8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNCI+PGEgaHJlZj0iI2NiMS00IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+bHJuX3JwYXJ0PHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+dHJhaW48L3NwYW4+KHRhc2spPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTUiPjxhIGhyZWY9IiNjYjEtNSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmxybl9ycGFydDxzcGFuIGNsYXNzPSJzYyI+JDwvc3Bhbj5tb2RlbDwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0IGNlbGwtb3V0cHV0LXN0ZG91dCI+CjxwcmU+PGNvZGU+bj0gMTAwMCAKCm5vZGUpLCBzcGxpdCwgbiwgbG9zcywgeXZhbCwgKHlwcm9iKQogICAgICAqIGRlbm90ZXMgdGVybWluYWwgbm9kZQoKICAxKSByb290IDEwMDAgMzAwIGdvb2QgKDAuNzAwMDAwMCAwLjMwMDAwMDApICAKICAgIDIpIHN0YXR1cz0wJmx0Oz0gLi4uICZsdDsgMjAwIERNLC4uLiAmZ3Q7PSAyMDAgRE0gLyBzYWxhcnkgZm9yIGF0IGxlYXN0IDEgeWVhciA0NTcgIDYwIGdvb2QgKDAuODY4NzA5MCAwLjEzMTI5MTApICoKICAgIDMpIHN0YXR1cz1ubyBjaGVja2luZyBhY2NvdW50LC4uLiAmbHQ7IDAgRE0gNTQzIDI0MCBnb29kICgwLjU1ODAxMTAgMC40NDE5ODkwKSAgCiAgICAgIDYpIGR1cmF0aW9uJmx0OyAyMi41IDMwNiAxMDYgZ29vZCAoMC42NTM1OTQ4IDAuMzQ2NDA1MikgIAogICAgICAgMTIpIGNyZWRpdF9oaXN0b3J5PW5vIGNyZWRpdHMgdGFrZW4vYWxsIGNyZWRpdHMgcGFpZCBiYWNrIGR1bHksZXhpc3RpbmcgY3JlZGl0cyBwYWlkIGJhY2sgZHVseSB0aWxsIG5vdyxhbGwgY3JlZGl0cyBhdCB0aGlzIGJhbmsgcGFpZCBiYWNrIGR1bHkgMjc4ICA4NSBnb29kICgwLjY5NDI0NDYgMC4zMDU3NTU0KSAgCiAgICAgICAgIDI0KSBhbW91bnQmbHQ7IDc0OTEuNSAyNzEgIDc5IGdvb2QgKDAuNzA4NDg3MSAwLjI5MTUxMjkpICAKICAgICAgICAgICA0OCkgcHVycG9zZT1vdGhlcnMsY2FyIChuZXcpLGNhciAodXNlZCksZnVybml0dXJlL2VxdWlwbWVudCxkb21lc3RpYyBhcHBsaWFuY2VzLHZhY2F0aW9uLHJldHJhaW5pbmcsYnVzaW5lc3MgMjU2ICA2OSBnb29kICgwLjczMDQ2ODggMC4yNjk1MzEyKSAgCiAgICAgICAgICAgICA5NikgZHVyYXRpb24mbHQ7IDExLjUgNzMgICA5IGdvb2QgKDAuODc2NzEyMyAwLjEyMzI4NzcpICoKICAgICAgICAgICAgIDk3KSBkdXJhdGlvbiZndDs9MTEuNSAxODMgIDYwIGdvb2QgKDAuNjcyMTMxMSAwLjMyNzg2ODkpICAKICAgICAgICAgICAgICAxOTQpIGFtb3VudCZndDs9MTM4Ny41IDExOCAgMjkgZ29vZCAoMC43NTQyMzczIDAuMjQ1NzYyNykgKgogICAgICAgICAgICAgIDE5NSkgYW1vdW50Jmx0OyAxMzg3LjUgNjUgIDMxIGdvb2QgKDAuNTIzMDc2OSAwLjQ3NjkyMzEpICAKICAgICAgICAgICAgICAgIDM5MCkgcHJvcGVydHk9dW5rbm93biAvIG5vIHByb3BlcnR5LGNhciBvciBvdGhlciA0NSAgMTQgZ29vZCAoMC42ODg4ODg5IDAuMzExMTExMSkgKgogICAgICAgICAgICAgICAgMzkxKSBwcm9wZXJ0eT1idWlsZGluZyBzb2MuIHNhdmluZ3MgYWdyLiAvIGxpZmUgaW5zdXJhbmNlLHJlYWwgZXN0YXRlIDIwICAgMyBiYWQgKDAuMTUwMDAwMCAwLjg1MDAwMDApICoKICAgICAgICAgICA0OSkgcHVycG9zZT1yYWRpby90ZWxldmlzaW9uLHJlcGFpcnMgMTUgICA1IGJhZCAoMC4zMzMzMzMzIDAuNjY2NjY2NykgKgogICAgICAgICAyNSkgYW1vdW50Jmd0Oz03NDkxLjUgNyAgIDEgYmFkICgwLjE0Mjg1NzEgMC44NTcxNDI5KSAqCiAgICAgICAxMykgY3JlZGl0X2hpc3Rvcnk9ZGVsYXkgaW4gcGF5aW5nIG9mZiBpbiB0aGUgcGFzdCxjcml0aWNhbCBhY2NvdW50L290aGVyIGNyZWRpdHMgZWxzZXdoZXJlIDI4ICAgNyBiYWQgKDAuMjUwMDAwMCAwLjc1MDAwMDApICoKICAgICAgNykgZHVyYXRpb24mZ3Q7PTIyLjUgMjM3IDEwMyBiYWQgKDAuNDM0NTk5MiAwLjU2NTQwMDgpICAKICAgICAgIDE0KSBzYXZpbmdzPTUwMCAmbHQ7PSAuLi4gJmx0OyAxMDAwIERNLC4uLiAmZ3Q7PSAxMDAwIERNIDQxICAxMiBnb29kICgwLjcwNzMxNzEgMC4yOTI2ODI5KSAqCiAgICAgICAxNSkgc2F2aW5ncz11bmtub3duL25vIHNhdmluZ3MgYWNjb3VudCwuLi4gJmx0OyAxMDAgRE0sMTAwICZsdDs9IC4uLiAmbHQ7IDUwMCBETSAxOTYgIDc0IGJhZCAoMC4zNzc1NTEwIDAuNjIyNDQ5MCkgIAogICAgICAgICAzMCkgZHVyYXRpb24mbHQ7IDQ3LjUgMTYwICA2OSBiYWQgKDAuNDMxMjUwMCAwLjU2ODc1MDApICAKICAgICAgICAgICA2MCkgcHVycG9zZT1jYXIgKG5ldykgMjMgICA2IGdvb2QgKDAuNzM5MTMwNCAwLjI2MDg2OTYpICoKICAgICAgICAgICA2MSkgcHVycG9zZT1vdGhlcnMsY2FyICh1c2VkKSxmdXJuaXR1cmUvZXF1aXBtZW50LGRvbWVzdGljIGFwcGxpYW5jZXMscmVwYWlycyxyZXRyYWluaW5nLGJ1c2luZXNzIDEzNyAgNTIgYmFkICgwLjM3OTU2MjAgMC42MjA0MzgwKSAqCiAgICAgICAgIDMxKSBkdXJhdGlvbiZndDs9NDcuNSAzNiAgIDUgYmFkICgwLjEzODg4ODkgMC44NjExMTExKSAqPC9jb2RlPjwvcHJlPgo8L2Rpdj4KPC9kaXY+"></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="visualize-the-tree-structure" class="level2">
+<h2 class="anchored" data-anchor-id="visualize-the-tree-structure">Visualize the tree structure</h2>
+<p>To interpret the model and to gain more information about the decision making of predictions, we decide to take a closer look at the decision tree structure by visualizing it.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>See code example in the help page <code>?rpart::plot.rpart</code> which shows how to use the <code>plot</code> and <code>text</code> function to the <code>rpart</code> model object. Note that different packages exist to plot the decision tree structure in a visually more appealing way:</p>
+<ul>
+<li>The <code>rpart.plot</code> function from the equally named package <code>rpart.plot</code> which is applied on the raw <code>rpart</code> model object.</li>
+<li>The <code>plot.party</code> function from the package <code>partykit</code> which is applied to a <code>rpart</code> model object after converting it into a <code>party</code> model object using the <code>as.party</code> function.</li>
+<li>The <code>ggparty</code> function from the equally named package <code>ggparty</code> which is applied after converting the <code>rpart</code> model object into a <code>party</code> model object using the <code>as.party</code> function.</li>
+</ul>
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"rpart"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">...</span>(lrn_rpart<span class="sc">$</span>...)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(lrn_rpart<span class="sc">$</span>...)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative using e.g. the rpart.plot package</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"rpart.plot"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">...</span>(lrn_rpart<span class="sc">$</span>...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PHA+VGhlIHBvc3NpYmlsaXR5IG9mIHZpc3VhbGl6aW5nIGEgdHJlZSBtYWtlcyBpdCBpbnRlcnByZXRhYmxlIGFuZApoZWxwcyB0byB1bmRlcnN0YW5kIGhvdyBuZXcgcHJlZGljdGlvbnMgYXJlIGNhbGN1bGF0ZWQuPC9wPgo8ZGl2IGNsYXNzPSJjZWxsIiBkYXRhLWxheW91dC1hbGlnbj0iY2VudGVyIiBkYXRhLWJhc2U2NGVuY29kZT0idHJ1ZSI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjEiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjEtMSI+PGEgaHJlZj0iI2NiMS0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PHNwYW4gY2xhc3M9ImZ1Ij5saWJyYXJ5PC9zcGFuPihycGFydC5wbG90KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0yIj48YSBocmVmPSIjY2IxLTIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48L3NwYW4+CjxzcGFuIGlkPSJjYjEtMyI+PGEgaHJlZj0iI2NiMS0zIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PHNwYW4gY2xhc3M9ImZ1Ij5ycGFydC5wbG90PC9zcGFuPihscm5fcnBhcnQ8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+bW9kZWwpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQtZGlzcGxheSI+CjxwPjxpbWcgc3JjPSJpbmRleF9maWxlcy9maWd1cmUtaHRtbC91bm5hbWVkLWNodW5rLTctMS5wbmciCmRhdGEtZmlnLWFsaWduPSJjZW50ZXIiIHdpZHRoPSI2NzIiIC8+PC9wPgo8L2Rpdj4KPC9kaXY+CjxwPjxzdHJvbmc+Tm90ZTo8L3N0cm9uZz4gT3RoZXIgZnVuY3Rpb25zIHRvIHZpc3VhbGl6ZSBhbgo8Y29kZT5ycGFydDwvY29kZT4gdHJlZSBhcmU6PC9wPgo8dWw+CjxsaT5UaGUgKHZlcnkpIGJhc2ljIDxjb2RlPnJwYXJ0PC9jb2RlPiBwbG90IG1ldGhvZDo8L2xpPgo8L3VsPgo8ZGl2IGNsYXNzPSJjZWxsIiBkYXRhLWxheW91dC1hbGlnbj0iY2VudGVyIiBkYXRhLWJhc2U2NGVuY29kZT0idHJ1ZSI+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjIiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjItMSI+PGEgaHJlZj0iI2NiMi0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PHNwYW4gY2xhc3M9ImZ1Ij5wbG90PC9zcGFuPihscm5fcnBhcnQ8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+bW9kZWwpPC9zcGFuPgo8c3BhbiBpZD0iY2IyLTIiPjxhIGhyZWY9IiNjYjItMiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJmdSI+dGV4dDwvc3Bhbj4obHJuX3JwYXJ0PHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPm1vZGVsLCA8c3BhbiBjbGFzcz0iYXQiPnVzZS5uID08L3NwYW4+IDxzcGFuIGNsYXNzPSJjbiI+VFJVRTwvc3Bhbj4pPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQtZGlzcGxheSI+CjxwPjxpbWcgc3JjPSJpbmRleF9maWxlcy9maWd1cmUtaHRtbC91bm5hbWVkLWNodW5rLTgtMS5wbmciCnN0eWxlPSJ3aWR0aDoxMDAuMCUiIGRhdGEtZmlnLWFsaWduPSJjZW50ZXIiIC8+PC9wPgo8L2Rpdj4KPC9kaXY+Cjx1bD4KPGxpPkNvbnZlcnQgdGhlIDxjb2RlPnJwYXJ0PC9jb2RlPiBvYmplY3QgdG8gYSA8Y29kZT5wYXJ0eTwvY29kZT4gb2JqZWN0CnRvIGF1dG9tYXRpY2FsbHkgdXNlIHRoZSByZXNwZWN0aXZlIDxjb2RlPnBsb3QoKTwvY29kZT4gbWV0aG9kOjwvbGk+CjwvdWw+CjxkaXYgY2xhc3M9ImNlbGwiIGRhdGEtbGF5b3V0LWFsaWduPSJjZW50ZXIiIGRhdGEtYmFzZTY0ZW5jb2RlPSJ0cnVlIj4KPGRpdiBjbGFzcz0ic291cmNlQ29kZSIgaWQ9ImNiMyI+PHByZQpjbGFzcz0ic291cmNlQ29kZSByIGNlbGwtY29kZSI+PGNvZGUgY2xhc3M9InNvdXJjZUNvZGUgciI+PHNwYW4gaWQ9ImNiMy0xIj48YSBocmVmPSIjY2IzLTEiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48c3BhbiBjbGFzcz0iZnUiPmxpYnJhcnk8L3NwYW4+KHBhcnR5a2l0KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMy0yIj48YSBocmVmPSIjY2IzLTIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5wYXJ0eXRyZWUgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPmFzLnBhcnR5PC9zcGFuPihscm5fcnBhcnQ8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+bW9kZWwpPC9zcGFuPgo8c3BhbiBpZD0iY2IzLTMiPjxhIGhyZWY9IiNjYjMtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJmdSI+cGxvdDwvc3Bhbj4ocGFydHl0cmVlKTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0LWRpc3BsYXkiPgo8cD48aW1nIHNyYz0iaW5kZXhfZmlsZXMvZmlndXJlLWh0bWwvdW5uYW1lZC1jaHVuay05LTEucG5nIgpzdHlsZT0id2lkdGg6MTAwLjAlIiBkYXRhLWZpZy1hbGlnbj0iY2VudGVyIiAvPjwvcD4KPC9kaXY+CjwvZGl2Pgo8dWw+CjxsaT5Vc2UgPGEKaHJlZj0iaHR0cHM6Ly9jcmFuLnItcHJvamVjdC5vcmcvd2ViL3BhY2thZ2VzL2dncGFydHkvdmlnbmV0dGVzL2dncGFydHktZ3JhcGhpYy1wYXJ0eWluZy5odG1sIj48Y29kZT5nZ3BhcnR5PC9jb2RlPjwvYT4KdG8gY3JlYXRlIGhpZ2hseSBjdXN0b21pemFibGUgcGxvdHM6PC9saT4KPC91bD4KPGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1iYXNlNjRlbmNvZGU9InRydWUiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2I0Ij48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2I0LTEiPjxhIGhyZWY9IiNjYjQtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJmdSI+bGlicmFyeTwvc3Bhbj4oZ2dwYXJ0eSk8L3NwYW4+CjxzcGFuIGlkPSJjYjQtMiI+PGEgaHJlZj0iI2NiNC0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PC9zcGFuPgo8c3BhbiBpZD0iY2I0LTMiPjxhIGhyZWY9IiNjYjQtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJmdSI+Z2dwYXJ0eTwvc3Bhbj4ocGFydHl0cmVlKSA8c3BhbiBjbGFzcz0ic2MiPis8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2I0LTQiPjxhIGhyZWY9IiNjYjQtNCIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImZ1Ij5nZW9tX2VkZ2U8L3NwYW4+KCkgPHNwYW4gY2xhc3M9InNjIj4rPC9zcGFuPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiNC01Ij48YSBocmVmPSIjY2I0LTUiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJmdSI+Z2VvbV9lZGdlX2xhYmVsPC9zcGFuPigpIDxzcGFuIGNsYXNzPSJzYyI+Kzwvc3Bhbj48L3NwYW4+CjxzcGFuIGlkPSJjYjQtNiI+PGEgaHJlZj0iI2NiNC02IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iZnUiPmdlb21fbm9kZV9zcGxpdHZhcjwvc3Bhbj4oKSA8c3BhbiBjbGFzcz0ic2MiPis8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2I0LTciPjxhIGhyZWY9IiNjYjQtNyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImNvIj4jIHBhc3MgbGlzdCB0byBnZ2xpc3QgY29udGFpbmluZyBhbGwgZ2dwbG90IGNvbXBvbmVudHMgd2Ugd2FudCB0byBwbG90IGZvciBlYWNoPC9zcGFuPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiNC04Ij48YSBocmVmPSIjY2I0LTgiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJjbyI+IyAoZGVmYXVsdDogdGVybWluYWwpIG5vZGU8L3NwYW4+PC9zcGFuPgo8c3BhbiBpZD0iY2I0LTkiPjxhIGhyZWY9IiNjYjQtOSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImZ1Ij5nZW9tX25vZGVfcGxvdDwvc3Bhbj4oPHNwYW4gY2xhc3M9ImF0Ij5nZ2xpc3QgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5saXN0PC9zcGFuPig8c3BhbiBjbGFzcz0iZnUiPmdlb21fYmFyPC9zcGFuPig8c3BhbiBjbGFzcz0iZnUiPmFlc19zdHJpbmc8L3NwYW4+KDxzcGFuIGNsYXNzPSJhdCI+eCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iY24iPk5BPC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5maWxsID08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y3JlZGl0X3Jpc2smcXVvdDs8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjQtMTAiPjxhIGhyZWY9IiNjYjQtMTAiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gICAgPHNwYW4gY2xhc3M9ImF0Ij5wb3NpdGlvbiA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnBvc2l0aW9uX2ZpbGw8L3NwYW4+KCkpLCA8c3BhbiBjbGFzcz0iZnUiPnhsYWI8L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Q3JlZGl0IFJpc2smcXVvdDs8L3NwYW4+KSkpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQtZGlzcGxheSI+CjxwPjxpbWcgc3JjPSJpbmRleF9maWxlcy9maWd1cmUtaHRtbC91bm5hbWVkLWNodW5rLTEwLTEucG5nIgpzdHlsZT0id2lkdGg6MTAwLjAlIiBkYXRhLWZpZy1hbGlnbj0iY2VudGVyIiAvPjwvcD4KPC9kaXY+CjwvZGl2Pg=="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="fit-a-random-forest" class="level2">
+<h2 class="anchored" data-anchor-id="fit-a-random-forest">Fit a random forest</h2>
+<p>To get a more powerful learner we decide to also fit a random forest. Therefore, fit a random forest with default hyperparameters to the <code>german_credit</code> task.</p>
+<details>
+<summary>
+Reminder
+</summary>
+<p>One of the drawbacks of using trees is the instability of the predictor. Small changes in the data may lead to a very different model and therefore a high variance of the predictions. The random forest takes advantages of that and reduces the variance by applying bagging to decision trees.</p>
+</details>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>Use the <code>mlr3</code> learner <code>classif.ranger</code> which uses the <a href="https://cran.r-project.org/web/packages/ranger/index.html"><code>ranger</code></a> implementation to train a random forest.</p>
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3learners)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>lrn_ranger <span class="ot">=</span> <span class="fu">lrn</span>(...) <span class="co"># create the learner</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>lrn_ranger<span class="sc">$</span><span class="fu">...</span>(...) <span class="co"># train the learner on the task</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1iYXNlNjRlbmNvZGU9InRydWUiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJmdSI+bGlicmFyeTwvc3Bhbj4obWxyMyk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PHNwYW4gY2xhc3M9ImZ1Ij5saWJyYXJ5PC9zcGFuPihtbHIzbGVhcm5lcnMpPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTMiPjxhIGhyZWY9IiNjYjEtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS00Ij48YSBocmVmPSIjY2IxLTQiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5scm5fcmFuZ2VyIDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5scm48L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y2xhc3NpZi5yYW5nZXImcXVvdDs8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS01Ij48YSBocmVmPSIjY2IxLTUiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5scm5fcmFuZ2VyPHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+dHJhaW48L3NwYW4+KHRhc2spPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPC9kaXY+"></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="roc-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="roc-analysis">ROC Analysis</h2>
+<p>The bank wants to use a tree-based model to predict the credit risk. Conduct a simple benchmark to assess if a decision tree or a random forest works better for these purposes. Specifically, the bank wants that among credit applications the system predicts to be “good”, it can expect at most 10% to be “bad”. Simultaneously, the bank aims at correctly classifying 90% or more of all applications that are “good”. Visualize the benchmark results in a way that helps answer this question. Can the bank expect the model to fulfil their requirements? Which model performs better?</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+A benchmark requires three arguments: a task, a list of learners, and a resampling object.
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1iYXNlNjRlbmNvZGU9InRydWUiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPnRyZWUgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPmxybjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtjbGFzc2lmLnJwYXJ0JnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5wcmVkaWN0X3R5cGUgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtwcm9iJnF1b3Q7PC9zcGFuPik8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Zm9yZXN0IDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5scm48L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y2xhc3NpZi5yYW5nZXImcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPnByZWRpY3RfdHlwZSA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3Byb2ImcXVvdDs8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0zIj48YSBocmVmPSIjY2IxLTMiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48L3NwYW4+CjxzcGFuIGlkPSJjYjEtNCI+PGEgaHJlZj0iI2NiMS00IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+bHJucyA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+bGlzdDwvc3Bhbj4odHJlZSwgZm9yZXN0KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS01Ij48YSBocmVmPSIjY2IxLTUiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48L3NwYW4+CjxzcGFuIGlkPSJjYjEtNiI+PGEgaHJlZj0iI2NiMS02IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Y3Y1IDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5yc21wPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2N2JnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5mb2xkcyA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjU8L3NwYW4+KTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS03Ij48YSBocmVmPSIjY2IxLTciIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5jdjU8c3BhbiBjbGFzcz0ic2MiPiQ8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij5pbnN0YW50aWF0ZTwvc3Bhbj4odGFzayk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtOCI+PGEgaHJlZj0iI2NiMS04IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTkiPjxhIGhyZWY9IiNjYjEtOSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmJtciA8c3BhbiBjbGFzcz0ib3QiPj08L3NwYW4+IDxzcGFuIGNsYXNzPSJmdSI+YmVuY2htYXJrPC9zcGFuPig8c3BhbiBjbGFzcz0iZnUiPmJlbmNobWFya19ncmlkPC9zcGFuPih0YXNrLCBscm5zLCBjdjUpKTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0IGNlbGwtb3V0cHV0LXN0ZG91dCI+CjxwcmU+PGNvZGU+SU5GTyAgWzE2OjE1OjUyLjM3MF0gW21scjNdIFJ1bm5pbmcgYmVuY2htYXJrIHdpdGggMTAgcmVzYW1wbGluZyBpdGVyYXRpb25zCklORk8gIFsxNjoxNTo1Mi41NzNdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7Y2xhc3NpZi5ycGFydCYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgMS81KQpJTkZPICBbMTY6MTU6NTIuNzQ3XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2NsYXNzaWYucnBhcnQmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDIvNSkKSU5GTyAgWzE2OjE1OjUyLjkyM10gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtjbGFzc2lmLnJwYXJ0JiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciAzLzUpCklORk8gIFsxNjoxNTo1My4xMDBdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7Y2xhc3NpZi5ycGFydCYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgNC81KQpJTkZPICBbMTY6MTU6NTMuMjcyXSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2NsYXNzaWYucnBhcnQmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDUvNSkKSU5GTyAgWzE2OjE1OjUzLjQ0M10gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtjbGFzc2lmLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgMS81KQpJTkZPICBbMTY6MTU6NTMuNjMxXSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2NsYXNzaWYucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciAyLzUpCklORk8gIFsxNjoxNTo1My44MzFdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7Y2xhc3NpZi5yYW5nZXImIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDMvNSkKSU5GTyAgWzE2OjE1OjU0LjAzN10gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtjbGFzc2lmLnJhbmdlciYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgNC81KQpJTkZPICBbMTY6MTU6NTQuMjM5XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O2NsYXNzaWYucmFuZ2VyJiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciA1LzUpCklORk8gIFsxNjoxNTo1NC42NTFdIFttbHIzXSBGaW5pc2hlZCBiZW5jaG1hcms8L2NvZGU+PC9wcmU+CjwvZGl2Pgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IzIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IzLTEiPjxhIGhyZWY9IiNjYjMtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPm1scjN2aXo8c3BhbiBjbGFzcz0ic2MiPjo6PC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+YXV0b3Bsb3Q8L3NwYW4+KGJtciwgPHNwYW4gY2xhc3M9ImF0Ij50eXBlID08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7cHJjJnF1b3Q7PC9zcGFuPik8L3NwYW4+PC9jb2RlPjwvcHJlPjwvZGl2Pgo8ZGl2IGNsYXNzPSJjZWxsLW91dHB1dC1kaXNwbGF5Ij4KPHA+PGltZyBzcmM9ImluZGV4X2ZpbGVzL2ZpZ3VyZS1odG1sL3VubmFtZWQtY2h1bmstMTMtMS5wbmciCmRhdGEtZmlnLWFsaWduPSJjZW50ZXIiIHdpZHRoPSI2NzIiIC8+PC9wPgo8L2Rpdj4KPC9kaXY+CjxwPldoaWxlIHRoZSByYW5kb20gZm9yZXN0IGRvbWluYXRlcyB0aGUgZGVjaXNpb24gdHJlZSwgbmVpdGhlciBtb2RlbApjYW4gZnVsZmlsIHRoZSBiYW5r4oCZcyByZXF1aXJlbWVudCBvZiBhIHByZWNpc2lvbiBhbmQgcmVjYWxsIG9mCiZndDs5MCUuPC9wPg=="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="understand-hyperparameters" class="level2">
+<h2 class="anchored" data-anchor-id="understand-hyperparameters">Understand hyperparameters</h2>
+<p>Use <code>task = tsk("german_credit")</code> to create the classification task for the <code>german_credit</code> data. In this exercise, we want to fit decision trees and random forests with different hyperparameters (which can have a significant impact on the performance). Each learner implemented in <code>R</code> (e.g.&nbsp;<code>ranger</code> or <code>rpart</code>) has a lot of control settings that directly influence the model fitting (the so-called hyperparameters). Here, we will consdider the hyperparameters <code>mtry</code> for the <code>ranger</code> learner and <code>maxdepth</code> for the <code>rpart</code> learner.</p>
+<p>Your task is to manually create a list containing multiple <code>rpart</code> and <code>ranger</code> learners with different hyperparameter values (e.g., try out increasing <code>maxdepth</code> values for <code>rpart</code>). In the next step, we will use this list to see how the model performance changes for different hyperparameter values.</p>
+<ul>
+<li><p>The help page of ranger (<code>?ranger</code>) gives a detailed explanation of the hyperparameters:</p>
+<blockquote class="blockquote">
+<p><strong><code>mtry</code>:</strong> Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.</p>
+</blockquote>
+<p>NOTE: In a <code>ranger</code> learner created with <code>mlr3</code>, you have the possibility to set <code>mtry.ratio</code> instead of <code>mtry</code> which allows you to set the fraction of variables to be used instead of having to set the number of variables.</p></li>
+<li><p>For <code>rpart</code>, we have to dig a bit deeper. Looking at <code>?rpart</code> contains no description about the hyperparameters. To get further information we have to open <code>?rpart.control</code>:</p>
+<blockquote class="blockquote">
+<p><strong><code>maxdepth</code>:</strong> Set the maximum depth of any node of the final tree, with the root node counted as depth 0. Values greater than 30 rpart will give nonsense results on 32-bit machines.</p>
+</blockquote></li>
+</ul>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+<p>The learners we are focusing on here is a decision tree implemented in <a href="https://cran.r-project.org/web/packages/rpart/"><code>rpart</code></a> and a random forest implemented in <a href="https://cran.r-project.org/web/packages/ranger/index.html"><code>ranger</code></a>. The corresponding <code>mlr3</code> learner key is <code>"classif.rpart"</code> and <code>"classif.ranger"</code>. In <code>mlr3</code>, we can get an overview about all hyperparameters in the <code>$param_set</code> slot. With a <code>mlr3</code> learner it is possible to get help about the underlying method by using the <code>$help()</code> method (e.g.&nbsp;<code>?lrn_ranger$help()</code>):</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>)<span class="sc">$</span><span class="fu">help</span>()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lrn</span>(<span class="st">"classif.ranger"</span>)<span class="sc">$</span><span class="fu">help</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+If you are looking for a short description of the meaning of a hyperparameter, you need to look at the help page of the corresponding package that implements the learner, e.g.&nbsp;<code>?rpart::rpart.control</code> and <code>?ranger::ranger</code>.
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<p>The possible choices for the hyperparameters can also be viewed with <code>$param_set</code>. Setting the hyperparameters can be done directly in the <code>lrn()</code> call:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a list of learners for the benchmark:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>lrns <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>, ...),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>, ...),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>, ...),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.ranger"</span>, ...),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.ranger"</span>, ...),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.ranger"</span>, ...))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1iYXNlNjRlbmNvZGU9InRydWUiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJmdSI+bGlicmFyeTwvc3Bhbj4obWxyM3ZlcnNlKTwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0yIj48YSBocmVmPSIjY2IxLTIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48c3BhbiBjbGFzcz0iZnUiPnNldC5zZWVkPC9zcGFuPig8c3BhbiBjbGFzcz0iZHYiPjMxNDE1PC9zcGFuPjxzcGFuIGNsYXNzPSJkdCI+TDwvc3Bhbj4pPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTMiPjxhIGhyZWY9IiNjYjEtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS00Ij48YSBocmVmPSIjY2IxLTQiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT50YXNrIDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gbWxyMzxzcGFuIGNsYXNzPSJzYyI+Ojo8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij50c2s8L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Z2VybWFuX2NyZWRpdCZxdW90Ozwvc3Bhbj4pPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTUiPjxhIGhyZWY9IiNjYjEtNSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS02Ij48YSBocmVmPSIjY2IxLTYiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5scm5zIDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5saXN0PC9zcGFuPig8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNyI+PGEgaHJlZj0iI2NiMS03IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iZnUiPmxybjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtjbGFzc2lmLnJwYXJ0JnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5tYXhkZXB0aCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjE8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtOCI+PGEgaHJlZj0iI2NiMS04IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iZnUiPmxybjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtjbGFzc2lmLnJwYXJ0JnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5tYXhkZXB0aCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjU8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtOSI+PGEgaHJlZj0iI2NiMS05IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iZnUiPmxybjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtjbGFzc2lmLnJwYXJ0JnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5tYXhkZXB0aCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjIwPC9zcGFuPiksPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTEwIj48YSBocmVmPSIjY2IxLTEwIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iZnUiPmxybjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtjbGFzc2lmLnJhbmdlciZxdW90Ozwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJhdCI+bXRyeS5yYXRpbyA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZmwiPjAuMjwvc3Bhbj4pLDwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS0xMSI+PGEgaHJlZj0iI2NiMS0xMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImZ1Ij5scm48L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y2xhc3NpZi5yYW5nZXImcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPm10cnkucmF0aW8gPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZsIj4wLjU8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMTIiPjxhIGhyZWY9IiNjYjEtMTIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJmdSI+bHJuPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2NsYXNzaWYucmFuZ2VyJnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5tdHJ5LnJhdGlvID08L3NwYW4+IDxzcGFuIGNsYXNzPSJmbCI+MC44PC9zcGFuPikpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPC9kaXY+"></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="comparison-of-trees-and-random-forests" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-of-trees-and-random-forests">Comparison of trees and random forests</h2>
+<p>Does it make a difference w.r.t. model performance if we use different hyperparameters? Use the learners from the previous exercise and compare them in a benchmark. Use 5-fold cross-validation as resampling technique and the classification error as performance measure. Visualize the results of the benchmark.</p>
+<details>
+<summary>
+<strong>Hint 1:</strong>
+</summary>
+The function to conduct the benchmark is <code>benchmark</code> and requires to define the resampling with <code>rsmp</code> and the benchmark grid with <code>benchmark_grid</code>.
+</details>
+<details>
+<summary>
+<strong>Hint 2:</strong>
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">31415</span>L)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>lrns <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>, <span class="at">maxdepth =</span> <span class="dv">1</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>, <span class="at">maxdepth =</span> <span class="dv">5</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>, <span class="at">maxdepth =</span> <span class="dv">20</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.ranger"</span>, <span class="at">mtry.ratio =</span> <span class="fl">0.2</span>),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.ranger"</span>, <span class="at">mtry.ratio =</span> <span class="fl">0.5</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lrn</span>(<span class="st">"classif.ranger"</span>, <span class="at">mtry.ratio =</span> <span class="fl">0.8</span>))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>cv5 <span class="ot">=</span> <span class="fu">rsmp</span>(..., <span class="at">folds =</span> ...)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>cv5<span class="sc">$</span><span class="fu">instantiate</span>(...)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>bmr <span class="ot">=</span> <span class="fu">...</span>(<span class="fu">...</span>(task, lrns, cv5))</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>mlr3viz<span class="sc">::</span><span class="fu">autoplot</span>(bmr, <span class="at">measure =</span> <span class="fu">msr</span>(<span class="st">"classif.ce"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div>
+<div class="b64-wrapper"><button class="unlock-btn" onclick="unlockOne(this)">Unlock solution</button><div class="hidden-solution" style="display:none" data-encoded="PGRpdiBjbGFzcz0iY2VsbCIgZGF0YS1sYXlvdXQtYWxpZ249ImNlbnRlciIgZGF0YS1iYXNlNjRlbmNvZGU9InRydWUiPgo8ZGl2IGNsYXNzPSJzb3VyY2VDb2RlIiBpZD0iY2IxIj48cHJlCmNsYXNzPSJzb3VyY2VDb2RlIHIgY2VsbC1jb2RlIj48Y29kZSBjbGFzcz0ic291cmNlQ29kZSByIj48c3BhbiBpZD0iY2IxLTEiPjxhIGhyZWY9IiNjYjEtMSIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPjxzcGFuIGNsYXNzPSJmdSI+c2V0LnNlZWQ8L3NwYW4+KDxzcGFuIGNsYXNzPSJkdiI+MzE0MTU8L3NwYW4+PHNwYW4gY2xhc3M9ImR0Ij5MPC9zcGFuPik8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMiI+PGEgaHJlZj0iI2NiMS0yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTMiPjxhIGhyZWY9IiNjYjEtMyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPmxybnMgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPmxpc3Q8L3NwYW4+KDwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS00Ij48YSBocmVmPSIjY2IxLTQiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJmdSI+bHJuPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2NsYXNzaWYucnBhcnQmcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPmlkID08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7cnBhcnRfbWQxJnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5tYXhkZXB0aCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjE8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPnByZWRpY3RfdHlwZSA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3Byb2ImcXVvdDs8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtNSI+PGEgaHJlZj0iI2NiMS01IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iZnUiPmxybjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtjbGFzc2lmLnJwYXJ0JnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5pZCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3JwYXJ0X21kNSZxdW90Ozwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJhdCI+bWF4ZGVwdGggPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImR2Ij41PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5wcmVkaWN0X3R5cGUgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtwcm9iJnF1b3Q7PC9zcGFuPiksPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTYiPjxhIGhyZWY9IiNjYjEtNiIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImZ1Ij5scm48L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y2xhc3NpZi5ycGFydCZxdW90Ozwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJhdCI+aWQgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtycGFydF9tZDIwJnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5tYXhkZXB0aCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZHYiPjIwPC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5wcmVkaWN0X3R5cGUgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtwcm9iJnF1b3Q7PC9zcGFuPiksPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTciPjxhIGhyZWY9IiNjYjEtNyIgYXJpYS1oaWRkZW49InRydWUiIHRhYmluZGV4PSItMSI+PC9hPiAgPHNwYW4gY2xhc3M9ImZ1Ij5scm48L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y2xhc3NpZi5yYW5nZXImcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPmlkID08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7cmZfbXRyeXIwLjImcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPm10cnkucmF0aW8gPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZsIj4wLjI8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPnByZWRpY3RfdHlwZSA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3Byb2ImcXVvdDs8L3NwYW4+KSw8L3NwYW4+CjxzcGFuIGlkPSJjYjEtOCI+PGEgaHJlZj0iI2NiMS04IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+ICA8c3BhbiBjbGFzcz0iZnUiPmxybjwvc3Bhbj4oPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtjbGFzc2lmLnJhbmdlciZxdW90Ozwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJhdCI+aWQgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9InN0Ij4mcXVvdDtyZl9tdHJ5cjAuNSZxdW90Ozwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJhdCI+bXRyeS5yYXRpbyA9PC9zcGFuPiA8c3BhbiBjbGFzcz0iZmwiPjAuNTwvc3Bhbj4sIDxzcGFuIGNsYXNzPSJhdCI+cHJlZGljdF90eXBlID08L3NwYW4+IDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7cHJvYiZxdW90Ozwvc3Bhbj4pLDwvc3Bhbj4KPHNwYW4gaWQ9ImNiMS05Ij48YSBocmVmPSIjY2IxLTkiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT4gIDxzcGFuIGNsYXNzPSJmdSI+bHJuPC9zcGFuPig8c3BhbiBjbGFzcz0ic3QiPiZxdW90O2NsYXNzaWYucmFuZ2VyJnF1b3Q7PC9zcGFuPiwgPHNwYW4gY2xhc3M9ImF0Ij5pZCA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3JmX210cnkwLjgmcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPm10cnkucmF0aW8gPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZsIj4wLjg8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPnByZWRpY3RfdHlwZSA9PC9zcGFuPiA8c3BhbiBjbGFzcz0ic3QiPiZxdW90O3Byb2ImcXVvdDs8L3NwYW4+KSk8L3NwYW4+CjxzcGFuIGlkPSJjYjEtMTAiPjxhIGhyZWY9IiNjYjEtMTAiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT48L3NwYW4+CjxzcGFuIGlkPSJjYjEtMTEiPjxhIGhyZWY9IiNjYjEtMTEiIGFyaWEtaGlkZGVuPSJ0cnVlIiB0YWJpbmRleD0iLTEiPjwvYT5jdjUgPHNwYW4gY2xhc3M9Im90Ij49PC9zcGFuPiA8c3BhbiBjbGFzcz0iZnUiPnJzbXA8L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y3YmcXVvdDs8L3NwYW4+LCA8c3BhbiBjbGFzcz0iYXQiPmZvbGRzID08L3NwYW4+IDxzcGFuIGNsYXNzPSJkdiI+NTwvc3Bhbj4pPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTEyIj48YSBocmVmPSIjY2IxLTEyIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Y3Y1PHNwYW4gY2xhc3M9InNjIj4kPC9zcGFuPjxzcGFuIGNsYXNzPSJmdSI+aW5zdGFudGlhdGU8L3NwYW4+KHRhc2spPC9zcGFuPgo8c3BhbiBpZD0iY2IxLTEzIj48YSBocmVmPSIjY2IxLTEzIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+PC9zcGFuPgo8c3BhbiBpZD0iY2IxLTE0Ij48YSBocmVmPSIjY2IxLTE0IiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+Ym1yIDxzcGFuIGNsYXNzPSJvdCI+PTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5iZW5jaG1hcms8L3NwYW4+KDxzcGFuIGNsYXNzPSJmdSI+YmVuY2htYXJrX2dyaWQ8L3NwYW4+KHRhc2ssIGxybnMsIGN2NSkpPC9zcGFuPjwvY29kZT48L3ByZT48L2Rpdj4KPGRpdiBjbGFzcz0iY2VsbC1vdXRwdXQgY2VsbC1vdXRwdXQtc3Rkb3V0Ij4KPHByZT48Y29kZT5JTkZPICBbMTY6MTU6NTUuNDEyXSBbbWxyM10gUnVubmluZyBiZW5jaG1hcmsgd2l0aCAzMCByZXNhbXBsaW5nIGl0ZXJhdGlvbnMKSU5GTyAgWzE2OjE1OjU1LjU1Nl0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDEmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDEvNSkKSU5GTyAgWzE2OjE1OjU1LjYyOF0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDEmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDIvNSkKSU5GTyAgWzE2OjE1OjU1LjcxNF0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDEmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDMvNSkKSU5GTyAgWzE2OjE1OjU1LjgwM10gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDEmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDQvNSkKSU5GTyAgWzE2OjE1OjU1Ljg5MV0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDEmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDUvNSkKSU5GTyAgWzE2OjE1OjU1Ljk4NV0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDUmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDEvNSkKSU5GTyAgWzE2OjE1OjU2LjA3M10gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDUmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDIvNSkKSU5GTyAgWzE2OjE1OjU2LjE2MF0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDUmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDMvNSkKSU5GTyAgWzE2OjE1OjU2LjI0OV0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDUmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDQvNSkKSU5GTyAgWzE2OjE1OjU2LjMzNl0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDUmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDUvNSkKSU5GTyAgWzE2OjE1OjU2LjM5Ml0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDIwJiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciAxLzUpCklORk8gIFsxNjoxNTo1Ni41MDZdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7cnBhcnRfbWQyMCYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgMi81KQpJTkZPICBbMTY6MTU6NTYuNjA3XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O3JwYXJ0X21kMjAmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDMvNSkKSU5GTyAgWzE2OjE1OjU2LjcwNl0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtycGFydF9tZDIwJiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciA0LzUpCklORk8gIFsxNjoxNTo1Ni44MDZdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7cnBhcnRfbWQyMCYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgNS81KQpJTkZPICBbMTY6MTU6NTYuOTA1XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O3JmX210cnlyMC4yJiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciAxLzUpCklORk8gIFsxNjoxNTo1Ny4wMTBdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7cmZfbXRyeXIwLjImIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDIvNSkKSU5GTyAgWzE2OjE1OjU3LjExN10gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtyZl9tdHJ5cjAuMiYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgMy81KQpJTkZPICBbMTY6MTU6NTcuMjI4XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O3JmX210cnlyMC4yJiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciA0LzUpCklORk8gIFsxNjoxNTo1Ny4zMzRdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7cmZfbXRyeXIwLjImIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDUvNSkKSU5GTyAgWzE2OjE1OjU3LjQ1NF0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtyZl9tdHJ5cjAuNSYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgMS81KQpJTkZPICBbMTY6MTU6NTcuNTU4XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O3JmX210cnlyMC41JiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciAyLzUpCklORk8gIFsxNjoxNTo1Ny42NjJdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7cmZfbXRyeXIwLjUmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDMvNSkKSU5GTyAgWzE2OjE1OjU3Ljc3NV0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtyZl9tdHJ5cjAuNSYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgNC81KQpJTkZPICBbMTY6MTU6NTcuOTAyXSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O3JmX210cnlyMC41JiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciA1LzUpCklORk8gIFsxNjoxNTo1OC4wMzRdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7cmZfbXRyeTAuOCYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgMS81KQpJTkZPICBbMTY6MTU6NTguMTYyXSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O3JmX210cnkwLjgmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDIvNSkKSU5GTyAgWzE2OjE1OjU4LjI4NF0gW21scjNdIEFwcGx5aW5nIGxlYXJuZXIgJiMzOTtyZl9tdHJ5MC44JiMzOTsgb24gdGFzayAmIzM5O2dlcm1hbl9jcmVkaXQmIzM5OyAoaXRlciAzLzUpCklORk8gIFsxNjoxNTo1OC4zOTJdIFttbHIzXSBBcHBseWluZyBsZWFybmVyICYjMzk7cmZfbXRyeTAuOCYjMzk7IG9uIHRhc2sgJiMzOTtnZXJtYW5fY3JlZGl0JiMzOTsgKGl0ZXIgNC81KQpJTkZPICBbMTY6MTU6NTguNDk1XSBbbWxyM10gQXBwbHlpbmcgbGVhcm5lciAmIzM5O3JmX210cnkwLjgmIzM5OyBvbiB0YXNrICYjMzk7Z2VybWFuX2NyZWRpdCYjMzk7IChpdGVyIDUvNSkKSU5GTyAgWzE2OjE1OjU4LjcyNV0gW21scjNdIEZpbmlzaGVkIGJlbmNobWFyazwvY29kZT48L3ByZT4KPC9kaXY+CjxkaXYgY2xhc3M9InNvdXJjZUNvZGUiIGlkPSJjYjMiPjxwcmUKY2xhc3M9InNvdXJjZUNvZGUgciBjZWxsLWNvZGUiPjxjb2RlIGNsYXNzPSJzb3VyY2VDb2RlIHIiPjxzcGFuIGlkPSJjYjMtMSI+PGEgaHJlZj0iI2NiMy0xIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdGFiaW5kZXg9Ii0xIj48L2E+bWxyM3ZpejxzcGFuIGNsYXNzPSJzYyI+Ojo8L3NwYW4+PHNwYW4gY2xhc3M9ImZ1Ij5hdXRvcGxvdDwvc3Bhbj4oYm1yLCA8c3BhbiBjbGFzcz0iYXQiPm1lYXN1cmUgPTwvc3Bhbj4gPHNwYW4gY2xhc3M9ImZ1Ij5tc3I8L3NwYW4+KDxzcGFuIGNsYXNzPSJzdCI+JnF1b3Q7Y2xhc3NpZi5jZSZxdW90Ozwvc3Bhbj4pKTwvc3Bhbj48L2NvZGU+PC9wcmU+PC9kaXY+CjxkaXYgY2xhc3M9ImNlbGwtb3V0cHV0LWRpc3BsYXkiPgo8cD48aW1nIHNyYz0iaW5kZXhfZmlsZXMvZmlndXJlLWh0bWwvdW5uYW1lZC1jaHVuay0xOC0xLnBuZyIKZGF0YS1maWctYWxpZ249ImNlbnRlciIgd2lkdGg9IjY3MiIgLz48L3A+CjwvZGl2Pgo8L2Rpdj4KPHA+TG9va2luZyBhdCB0aGUgYm94cGxvdHMgcmV2ZWFscyB0aGF0IHRoZSBwZXJmb3JtYW5jZSBvZiB0aGUgbGVhcm5lcnMKaGlnaGx5IGRlcGVuZHMgb24gdGhlIGNob2ljZSBvZiB0aGUgaHlwZXJwYXJhbWV0ZXJzLjwvcD4KPHA+PGJyPjwvcD4KPHA+PHN0cm9uZz5Gb2xsb3cgdXAgcXVlc3Rpb246PC9zdHJvbmc+IEhvdyB0byBwcm9wZXJseSBzZXQgdGhlCmh5cGVycGFyYW1ldGVycz8gQW5zd2VyOiBIeXBlcnBhcmFtZXRlciBvcHRpbWl6YXRpb24gKHNlZSBuZXh0IHVzZQpjYXNlKTwvcD4="></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level1">
+<h1>Summary</h1>
+<ul>
+<li>We learned how to use two of the most widely used learner for building a tree with <code>rpart</code> and a random forest with <code>ranger</code>.</li>
+<li>Finally, we looked at different hyperparameter and how they affect the performance in a benchmark.</li>
+<li>The next step would be to use an algorithm to automatically search for good hyperparameter configurations.</li>
+</ul>
+</section>
+<section id="further-information" class="level1">
+<h1>Further information</h1>
+<p><strong>Tree implementations:</strong> One of the longest paragraphs in the <a href="https://cran.r-project.org/web/views/MachineLearning.html">CRAN Task View about Machine Learning and Statistical Learning</a> gives an overview of existing tree implementations:</p>
+<blockquote class="blockquote">
+<p>“[…] Tree-structured models for regression, classification and survival analysis, following the ideas in the CART book, are implemented in rpart (shipped with base R) and tree. Package rpart is recommended for computing CART-like trees. A rich toolbox of partitioning algorithms is available in Weka, package RWeka provides an interface to this implementation, including the J4.8-variant of C4.5 and M5. The Cubist package fits rule-based models (similar to trees) with linear regression models in the terminal leaves, instance-based corrections and boosting. The C50 package can fit C5.0 classification trees, rule-based models, and boosted versions of these. pre can fit rule-based models for a wider range of response variable types. […]”</p>
+</blockquote>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mlr-org\.com\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Created with <i class="bi bi-heart-fill"></i> for #rstats.</p>
+</div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+<p>Website powered by <a href="https://quarto.org/">quarto</a> and <a href="https://www.netlify.com/">Netlify</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
