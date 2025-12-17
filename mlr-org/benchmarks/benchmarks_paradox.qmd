@@ -69,7 +69,7 @@ The benchmarks are comprehensive; therefore, we present a summary of the most im
 We start by measuring the runtime of the `ps()` function when initializing a parameter space in the size of 5, 50 and 500 parameters.
 The runtime increases from 2 to 10 to 100 ms but is independent of the type of the parameters.
 Getting values with the `$get_values()` method takes around 100 µs.
-The `$set_values()` takes a half millisecond for 5 values and 14 ms for 500 values.
+The `$set_values()` method takes a half millisecond for 5 values and 14 ms for 500 values.
 
 # Initialize {#initialize}
 
