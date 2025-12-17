@@ -91,68 +91,6 @@ table_paradox = function(data) {
   }
 ```
 
-```{r}
-#| include: false
-plot_runtime = function(data) {
-  data = copy(data)
-  ggplot(data, aes(x = paradox, y = median_runtime)) +
-    geom_col(group = 1, fill = "#008080") +
-    geom_errorbar(aes(ymin = pmax(median_runtime - mad_runtime, 0), ymax = median_runtime + mad_runtime), width = 0.5, position = position_dodge(0.9)) +
-    facet_wrap(~type +  size, scales = "free_y", labeller = labeller(type = function(value) sprintf("%s", value), size = function(value) sprintf("%s", value))) +
-    labs(x = "paradox Version", y = "Runtime [ms]") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-# create_table = function(data) {
-#   data = data[, -c("mad_runtime")]
-#   data[, task := as.integer(gsub("data_", "", task))]
-#   setcolorder(data, c("mlr3", "paradox", "model_time", "task", "median_runtime", "k"))
-
-#   data %>%
-#     gt() %>%
-#     cols_label(
-#       mlr3 = "mlr3 Version",
-#       paradox = "paradox Version",
-#       model_time = "Model Time [ms]",
-#       task = "Task Size",
-#       median_runtime = "Median Runtime [ms]",
-#       k = "K") %>%
-#     fmt_number(columns = c("median_runtime"), decimals = 0, sep_mark = "") %>%
-#     fmt_number(columns = c("k"), n_sigfig = 2, sep_mark = "") %>%
-#     tab_style(
-#       style = list(
-#         cell_fill(color = "crimson"),
-#         cell_text(weight = "bold")
-#       ),
-#       locations = cells_body(
-#         columns = "k",
-#         rows = k > 3
-#       )
-#     ) %>%
-#     tab_row_group(
-#       label = "10000 Observations",
-#       rows = task == 10000
-#     ) %>%
-#     tab_row_group(
-#       label = "1000 Observations",
-#       rows = task == 1000
-#     ) %>%
-#     tab_row_group(
-#       label = "100 Observations",
-#       rows = task == 100
-#     ) %>%
-#     tab_row_group(
-#       label = "10 Observations",
-#       rows = task == 10
-#     ) %>%
-#     tab_row_group(
-#       label = "1 Observation",
-#       rows = task == 1
-#     )
-#   }
-```
-
 The runtime of the `initialize()` method is measured for different paradox versions.
 
 ```{r}
@@ -168,6 +106,10 @@ param_set = ps(
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `ps()` function by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$initialize)
 ```
 
@@ -182,6 +124,10 @@ param_set$ids()
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$ids()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$ids)
 ```
 
@@ -194,6 +140,10 @@ param_set$ids(class = "numeric")
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$ids()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$ids_class)
 ```
 
@@ -206,6 +156,10 @@ param_set$ids(tags = "a")
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$ids()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$ids_tags)
 ```
 
@@ -218,6 +172,10 @@ param_set$ids(tags = "a", class = "numeric")
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$ids_class_tags)
 ```
 
@@ -232,6 +190,10 @@ param_set$get_values()
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$get_values)
 ```
 
@@ -244,6 +206,10 @@ param_set$get_values(class = "numeric")
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$get_values_class)
 ```
 
@@ -256,6 +222,10 @@ param_set$get_values(tags = "a")
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$get_values_tags)
 ```
 
@@ -268,6 +238,10 @@ param_set$get_values(tags = "a", class = "numeric")
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$get_values_class_tags)
 ```
 
@@ -282,6 +256,10 @@ param_set$set_values(a = 1)
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$set_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$set_values)
 ```
 
@@ -296,6 +274,10 @@ param_set$lower
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$lower` field by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$lower)
 ```
 
@@ -308,6 +290,10 @@ param_set$upper
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$upper` field by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$upper)
 ```
 
@@ -322,6 +308,10 @@ param_set$levels
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$levels` field by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$levels)
 ```
 
@@ -336,10 +326,16 @@ param_set$class
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$class` field by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$class)
 ```
 
 # Subspaces {#subspaces}
+
+The runtime of subsetting the parameter space into subspaces of size 1 is measured.
 
 ```{r}
 #| eval: false
@@ -348,6 +344,10 @@ param_set$subspaces()
 
 ```{r}
 #| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$subspaces()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$subspaces)
 ```
 
