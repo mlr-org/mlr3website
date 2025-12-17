@@ -54,11 +54,7 @@ results = set_names(pmap(jobs, function(function_name, args, ...) {
 # Scope
 
 This report analyzes the runtime and memory usage of the paradox package across different versions.
-<!-- It focuses on the `$train()` and `$predict()` methods of the learner and the `resample()` and `benchmark()` functions used for model evaluation.
-The benchmarks vary the training time of the models, the number of resampling iterations, and the size of the dataset.
-Additionally, the experiments are conducted in parallel to assess the impact of parallelization on both runtime and memory usage.
-The overhead introduced by encapsulation is examined by comparing different encapsulation methods.
-Furthermore, the report evaluates the object sizes of various mlr3 objects.
+The benchmarks vary the type and the size of the parameter space.
 
 Given the extensive package ecosystem of mlr3, performance bottlenecks can occur at multiple stages.
 This report aims to help users determine whether the runtime of their workflows falls within expected ranges.
@@ -66,7 +62,6 @@ If significant runtime or memory anomalies are observed, users are encouraged to
 
 Benchmarks are conducted on a high-performance cluster optimized for multi-core performance rather than single-core speed.
 Consequently, runtimes may be faster on a local machine.
-The benchmarks for `$train()` and `$predict()` were conducted on a different, slower cluster. -->
 
 # Summary of Latest paradox Version
 
@@ -174,8 +169,7 @@ plot_runtime = function(data) {
 #   }
 ```
 
-The runtime and memory usage of the `initialize()` method is measured for different paradox versions.
-<!-- The train step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 observations. -->
+The runtime of the `initialize()` method is measured for different paradox versions.
 
 ```{r}
 #| eval: false
@@ -196,7 +190,6 @@ plot_runtime(results$initialize)
 # Ids {#ids}
 
 The runtime usage of the `param_set$ids()` method is measured for different paradox versions.
-<!-- The train step is performed for different amounts of time (1 ms, 10 ms, 100 ms, and 1000 ms) on the spam dataset with 1000 observations. -->
 
 ```{r}
 #| eval: false
@@ -208,6 +201,8 @@ param_set$ids()
 plot_runtime(results$ids)
 ```
 
+Subset the parameter space by class.
+
 ```{r}
 #| eval: false
 param_set$ids(class = "numeric")
@@ -218,6 +213,8 @@ param_set$ids(class = "numeric")
 plot_runtime(results$ids_class)
 ```
 
+Subset the parameter space by tags.
+
 ```{r}
 #| eval: false
 param_set$ids(tags = "a")
@@ -227,6 +224,8 @@ param_set$ids(tags = "a")
 #| echo: false
 plot_runtime(results$ids_tags)
 ```
+
+Subset the parameter space by tags and class.
 
 ```{r}
 #| eval: false
@@ -240,6 +239,8 @@ plot_runtime(results$ids_class_tags)
 
 # Get Values {#get_values}
 
+The runtime of the `$get_values()` method is measured for different paradox versions.
+
 ```{r}
 #| eval: false
 param_set$get_values()
@@ -249,6 +250,8 @@ param_set$get_values()
 #| echo: false
 plot_runtime(results$get_values)
 ```
+
+Subset the parameter space by class.
 
 ```{r}
 #| eval: false
@@ -260,6 +263,8 @@ param_set$get_values(class = "numeric")
 plot_runtime(results$get_values_class)
 ```
 
+Subset the parameter space by tags.
+
 ```{r}
 #| eval: false
 param_set$get_values(tags = "a")
@@ -269,6 +274,8 @@ param_set$get_values(tags = "a")
 #| echo: false
 plot_runtime(results$get_values_tags)
 ```
+
+Subset the parameter space by tags and class.
 
 ```{r}
 #| eval: false
@@ -282,6 +289,8 @@ plot_runtime(results$get_values_class_tags)
 
 # Set Values {#set_values}
 
+The runtime of the `$set_values()` method is measured for different paradox versions.
+
 ```{r}
 #| eval: false
 param_set$set_values(a = 1)
@@ -294,6 +303,8 @@ plot_runtime(results$set_values)
 
 # Lower and Upper {#lower_upper}
 
+The runtime of getting the lower and upper bounds of the parameter space is measured for different paradox versions.
+
 ```{r}
 #| eval: false
 param_set$lower
@@ -303,6 +314,8 @@ param_set$lower
 #| echo: false
 plot_runtime(results$lower)
 ```
+
+Runtime of `$upper()`.
 
 ```{r}
 #| eval: false
@@ -315,6 +328,8 @@ plot_runtime(results$upper)
 ```
 
 # Levels {#levels}
+
+The runtime of getting the levels of the parameter space is measured for different paradox versions.
 
 ```{r}
 #| eval: false
