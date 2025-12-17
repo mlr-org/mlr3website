@@ -10,7 +10,7 @@ website:
   announcement:
     icon: info-circle
     dismissable: true
-    content: "The website features runtime and memory [benchmarks](benchmarks/benchmarks_mlr3tuning.qmd) of the mlr3tuning package now."
+    content: "The website features runtime [benchmarks](benchmarks/benchmarks_paradox.qmd) of the paradox package now."
     type: primary
     position: below-navbar
   page-footer:
@@ -67,6 +67,8 @@ website:
             href: benchmarks/benchmarks_async.qmd
           - text: "rush"
             href: benchmarks/benchmark_rush.qmd
+          - text: "paradox"
+            href: benchmarks/benchmarks_paradox.qmd
       - team.qmd
       - text: "More"
         menu:

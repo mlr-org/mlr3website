@@ -1,0 +1,354 @@
+---
+title: "paradox - Runtime Benchmarks"
+sidebar: false
+toc: true
+cache: false
+lazy-cache: false
+format:
+  html:
+    fig-width: 12
+    fig-height: 9
+---
+
+{{< include ../_setup.qmd >}}
+
+```{r}
+#| include: false
+library(data.table)
+library(ggplot2)
+library(gt)
+library(DBI)
+
+con = dbConnect(RSQLite::SQLite(), here::here("mlr-org/benchmarks/results_lrz.db"))
+snapshot = setDT(dbReadTable(con, "paradox_snapshots"))
+snapshot[, paradox := factor(paradox)]
+
+jobs_runtime = setDT(dbReadTable(con, "paradox_runtime_jobs"))
+jobs_runtime[, args := map(args, function(args) unserialize(args))]
+
+results_runtime = set_names(pmap(jobs_runtime, function(function_name, args, ...) {
+  arg_names = names(args)
+  data_runtime = setDT(dbReadTable(con, sprintf("paradox_runtime_%s", function_name)))[, c(arg_names, "renv_project", "median_runtime", "mad_runtime"), with = FALSE]
+  data_runtime = data_runtime[snapshot, on = "renv_project", nomatch = 0]
+  setorderv(data_runtime, c(arg_names, "paradox"), order = c(rep(1, length(arg_names)), -1))
+  data_runtime[, -c("renv_project")]
+}), jobs_runtime$function_name)
+```
+
+# Scope
+
+This report analyzes the runtime and memory usage of the paradox package across different versions.
+The benchmarks vary the type and the size of the parameter space.
+
+Given the extensive package ecosystem of mlr3, performance bottlenecks can occur at multiple stages.
+This report aims to help users determine whether the runtime of their workflows falls within expected ranges.
+If significant runtime or memory anomalies are observed, users are encouraged to report them by opening a GitHub issue.
+
+Benchmarks are conducted on a high-performance cluster optimized for multi-core performance rather than single-core speed.
+Consequently, runtimes may be faster on a local machine.
+
+# Summary of Latest paradox Version
+
+The benchmarks are comprehensive; therefore, we present a summary of the most important functions in the latest paradox version.
+We start by measuring the runtime of the `ps()` function when initializing a parameter space in the size of 5, 50 and 500 parameters.
+The runtime increases from 2 to 10 to 100 ms but is independent of the type of the parameters.
+Getting values with the `$get_values()` method takes around 100 µs.
+The `$set_values()` method takes a half millisecond for 5 values and 14 ms for 500 values.
+
+# Initialize {#initialize}
+
+```{r}
+#| include: false
+table_paradox = function(data) {
+  data = data[, -c("mad_runtime")]
+  setcolorder(data, c("paradox", "type", "size", "median_runtime"))
+  setorderv(data, c("type", "size"), order = c(1, 1))
+
+  data %>%
+    gt() %>%
+    cols_label(
+      paradox = "paradox",
+      type = "Type",
+      size = "Size",
+      median_runtime = "Runtime"
+    ) %>%
+    cols_units(
+      median_runtime = "ms"
+    ) %>%
+    fmt_number(columns = c("median_runtime"), n_sigfig = 2, sep_mark = "") %>%
+    tab_row_group(
+      label = "500 Parameters",
+      rows = size == 500
+    ) %>%
+    tab_row_group(
+      label = "50 Parameters",
+      rows = size == 50
+    ) %>%
+    tab_row_group(
+      label = "5 Parameters",
+      rows = size == 5
+    )
+  }
+```
+
+The runtime of the `initialize()` method is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set = ps(
+  a = p_dbl(lower = 0, upper = 1),
+  b = p_dbl(lower = 0, upper = 1),
+  c = p_dbl(lower = 0, upper = 1),
+  d = p_dbl(lower = 0, upper = 1),
+  e = p_dbl(lower = 0, upper = 1)
+)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `ps()` function by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$initialize)
+```
+
+# Ids {#ids}
+
+The runtime usage of the `param_set$ids()` method is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set$ids()
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$ids()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$ids)
+```
+
+Subset the parameter space by class.
+
+```{r}
+#| eval: false
+param_set$ids(class = "numeric")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$ids()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$ids_class)
+```
+
+Subset the parameter space by tags.
+
+```{r}
+#| eval: false
+param_set$ids(tags = "a")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$ids()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$ids_tags)
+```
+
+Subset the parameter space by tags and class.
+
+```{r}
+#| eval: false
+param_set$ids(tags = "a", class = "numeric")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$ids_class_tags)
+```
+
+# Get Values {#get_values}
+
+The runtime of the `$get_values()` method is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set$get_values()
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$get_values)
+```
+
+Subset the parameter space by class.
+
+```{r}
+#| eval: false
+param_set$get_values(class = "numeric")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$get_values_class)
+```
+
+Subset the parameter space by tags.
+
+```{r}
+#| eval: false
+param_set$get_values(tags = "a")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$get_values_tags)
+```
+
+Subset the parameter space by tags and class.
+
+```{r}
+#| eval: false
+param_set$get_values(tags = "a", class = "numeric")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$get_values_class_tags)
+```
+
+# Set Values {#set_values}
+
+The runtime of the `$set_values()` method is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set$set_values(a = 1)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$set_values()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$set_values)
+```
+
+# Lower and Upper {#lower_upper}
+
+The runtime of getting the lower and upper bounds of the parameter space is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set$lower
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$lower` field by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$lower)
+```
+
+Runtime of `$upper()`.
+
+```{r}
+#| eval: false
+param_set$upper
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$upper` field by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$upper)
+```
+
+# Levels {#levels}
+
+The runtime of getting the levels of the parameter space is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set$levels
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$levels` field by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$levels)
+```
+
+# Class {#class}
+
+The runtime of getting the classes of the parameter space is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set$class
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$class` field by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$class)
+```
+
+# Subspaces {#subspaces}
+
+The runtime of subsetting the parameter space into subspaces of size 1 is measured.
+
+```{r}
+#| eval: false
+param_set$subspaces()
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$subspaces()` method by paradox version, space size, parameter type and paradox version.
+#|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
+table_paradox(results_runtime$subspaces)
+```
+
+
