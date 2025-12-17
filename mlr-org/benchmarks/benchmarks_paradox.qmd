@@ -65,45 +65,11 @@ Consequently, runtimes may be faster on a local machine.
 
 # Summary of Latest paradox Version
 
-The benchmarks are comprehensive; therefore, we present a summary of the results for the latest paradox version.
-<!-- The runtime of mlr3 should always be considered relative to the training and prediction time of the underlying models.
-For example, if the training step of a random forest model `ranger::ranger()` takes 100 ms and the `$train()` method of `lrn("classif.ranger")` takes 110 ms, the overhead is 10%.
-When the same model takes 1 second to train, the overhead introduced by mlr3 is only 1%.
-Instead of using real models, we simulate the training and prediction time for models by sleeping for 1, 10, 100, and 1000 ms.
-
-We start by measuring the runtime of the `$train()` method of the learner.
-For models with a training time of 1000 and 100 ms, the overhead introduced by mlr3 is minimal.
-Models with a training time of 10 ms take 2 times longer to train in mlr3.
-For models with a training time of 1 ms, the overhead is approximately 10 times larger than the actual model training time.
-The overhead of `$predict()` is similar to `$train()` and the size of the dataset being predicted plays only a minor role.
-The `$predict_newdata()` method converts the data to a task and then predicts on it which doubles the overhead of the `$predict()` method.
-The recently introduced `$predict_newdata_fast()` method is much faster than `$predict_newdata()`.
-For models with a prediction time of 10 ms, the overhead is around 10%.
-For models with a prediction time of 1 ms, the overhead is around 50%.
-
-The overhead of `resample()` and `benchmark()` is also very low for models with a training time of 1000 and 100 ms.
-However, for models with a training time of 10 ms, the overhead approximately doubles the runtime.
-In cases where the training time is only 1 ms, the overhead results in the runtime being ten times larger than the actual model training time.
-Running an empty R session consumes 131 MB of memory.
-Resampling with 10 iterations consumes approximately 164 MB, increasing to around 225 MB when performing 1,000 resampling iterations.
-Memory usage for benchmarking is comparable to that of resampling.
-
-mlr3 utilizes the `future` package to enable parallelization over resampling iterations.
-However, running `resample()` and `benchmark()` in parallel introduces overhead due to the initiation of worker processes.
-Therefore, we compare the runtime of parallel execution with that of sequential execution.
-For models with a 1-second training time, using `resample()` and `benchmark()` in parallel reduces runtime.
-For models with a 100 ms training time, parallel execution is only advantageous when performing 100 or 1,000 resampling iterations.
-For models with 10 ms and 1 ms training times, sequential execution only becomes slower than parallel execution when running 1,000 resampling iterations.
-Memory usage increases significantly with the number of cores since each core initiates a separate R session.
-Utilizing 10 cores results in a total memory usage of around 1.2 GB.
-
-Encapsulation ensures that signaled conditions (e.g., messages, warnings and errors) are intercepted and that all conditions raised during the training or prediction step are logged into the learner without interrupting the program flow.
-The encapsulation of the `$train()` method introduces a runtime overhead of ~1 seconds per model training when using the `callr` package.
-In contrast, the encapsulation of the `evaluate` package adds negligible overhead to the runtime.
-
-When saving and loading mlr3 objects, their size can become significantly larger than expected.
-This issue is inherent to R6 objects due to data duplication during serialization and deserialization.
-The latest versions of mlr3 have implemented various strategies to mitigate this problem, substantially reducing the previously observed large increases in object size. -->
+The benchmarks are comprehensive; therefore, we present a summary of the most important functions in the latest paradox version.
+We start by measuring the runtime of the `ps()` function when initializing a parameter space in the size of 5, 50 and 500 parameters.
+The runtime increases from 2 to 10 to 100 ms but is independent of the type of the parameters.
+Getting values with the `$get_values()` method takes around 100 µs.
+The `$set_values()` takes a half millisecond for 5 values and 14 ms for 500 values.
 
 # Initialize {#initialize}
 
