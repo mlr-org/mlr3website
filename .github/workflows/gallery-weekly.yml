@@ -2,6 +2,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 13 * * 2"
+  push:
+    paths:
+      - "mlr-org/gallery/**"
   pull_request:
     paths:
       - "mlr-org/gallery/**"
