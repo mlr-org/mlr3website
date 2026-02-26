@@ -12,7 +12,7 @@ bibliography: ../../bibliography.bib
 
 {{< include ../../_setup.qmd >}}
 
-```{r efs-001}
+```{r index-001}
 #| include: false
 efs = readRDS(file = "efs.rds")
 ```
@@ -35,7 +35,7 @@ We also support *embedded-based* ensemble feature selection, see the function [`
 
 ## Libraries
 
-```{r efs-002}
+```{r index-002}
 #| output: false
 library(mlr3verse)
 library(fastVoteR) # for feature ranking
@@ -47,7 +47,7 @@ library(progressr)
 ## Dataset
 
 We will use the `sonar` dataset, which is a binary classification task:
-```{r efs-003}
+```{r index-003}
 task = tsk("sonar")
 task
 ```
@@ -57,7 +57,7 @@ task
 The **ensemble feature selection (EFS)** workflow is the following (in parentheses we provide the arguments for the [`mlr3fselect::ensemble_fselect()`](https://mlr3fselect.mlr-org.com/reference/ensemble_fselect.html) function that implements this process):
 
 1. Repeatedly split a dataset to **train/test sets** (`init_resampling`), e.g. by subsampling $B$ times.
-2. Choose $M$ **learners** (`learners`).  
+2. Choose $M$ **learners** (`learners`).
 3. Perform **wrapped-based feature selection** on each train set from (1) using each of the models from (2).
 This process results in a 'best' feature (sub)set and a final trained model using these best features, for each combination of train set and learner ($B \times M$ combinations in total).
 4. Score the final models on the respective test sets.
@@ -81,7 +81,7 @@ So it's better to make sure that each RFE optimization (done via [mlr3fselect::a
 
 Below we show the code that setups the configuration for the parallelization:
 
-```{r efs-004}
+```{r index-004}
 #| eval: false
 
 # Parallelization for EFS: use 10 cores
@@ -101,7 +101,7 @@ Practically, for the `sonar` dataset, we will have **15 RFE iterations**, with t
 The best feature set will be chosen as the one with the **lowest 5-fold CV error**. i.e. the best performance estimate in the inner resampling.
 
 In `mlr3` code, we specify the RFE `fselector` as:
-```{r efs-005}
+```{r index-005}
 rfe = fs("rfe", n_features = 2, feature_fraction = 0.8)
 ```
 
@@ -113,14 +113,14 @@ See [this gallery post](https://mlr-org.com/gallery/optimization/2023-02-07-recu
 
 ### Learners
 
-We define a `list()` with the following classification `learners` (parameters are set at default values): 
+We define a `list()` with the following classification `learners` (parameters are set at default values):
 
 1. XGBoost with early stopping
 2. A tree
 3. A random forest (RF)
 4. A Support Vector Machine (SVM)
 
-```{r efs-006}
+```{r index-006}
 max_nrounds = 500
 
 learners = list(
@@ -141,7 +141,7 @@ Models that need minimum to no tuning (e.g. like Random Forests) are therefore i
 ### Callbacks
 
 Since SVM doesn't support `importance` scores by itself, we convert the coefficients of the trained linear SVM model to importance scores via a callback:
-```{r efs-007}
+```{r index-007}
 svm_rfe = clbk("mlr3fselect.svm_rfe")
 svm_rfe
 ```
@@ -149,7 +149,7 @@ svm_rfe
 ---
 
 Also, since the XGBoost learner performs **internal tuning via early stopping**, where the test folds in the inner cross-validation resampling scheme act as validation sets, we need to define the following callback:
-```{r efs-008}
+```{r index-008}
 internal_ss = ps(
   nrounds = p_int(upper = max_nrounds, aggr = function(x) as.integer(mean(unlist(x))))
 )
@@ -166,7 +166,7 @@ For example, since we're performing a 5-fold inner CV, we would have 5 different
 For all learners we will prefer **sparser models during the RFE optimization process**.
 This means that across all RFE iterations, we will choose as 'best' feature subset the one that has the minimum number of features and its performance is **within one standard error** of the feature set with the best performance (e.g. the lowest classification error).
 This can be achieved with the following callback:
-```{r efs-009}
+```{r index-009}
 one_se_clbk = clbk("mlr3fselect.one_se_rule")
 one_se_clbk
 ```
@@ -180,7 +180,7 @@ Using the inner 5-fold CV resampling scheme, the average CV classification error
 Using only features from this best feature set, a final model will be trained using all the observations from each trained set.
 Lastly, the performance of this final model will be assessed on the corresponding test set using the classification accuracy metric.
 
-```{r efs-010}
+```{r index-010}
 #| eval: false
 
 set.seed(42)
@@ -208,17 +208,17 @@ The result is stored in an [`EnsembleFSResult`](https://mlr3fselect.mlr-org.com/
 
 # Analyze EFS Results
 
-## Result Object 
+## Result Object
 
 Printing the result object provides some initial information:
-```{r efs-011}
+```{r index-011}
 print(efs)
 ```
 
 As we can see, we have $M \times B = 4 \times 50 = 200$ (init resampling, learner) combinations.
 We can inspect the actual `data.table` result:
 
-```{r efs-012}
+```{r index-012}
 efs$result
 ```
 
@@ -231,14 +231,14 @@ For each learner (`"learner_id"`) and dataset subsample (`"resampling_iteration"
 - The performance scores on the test sets (`"classif.acc"`)
 
 Since there are two ways in this process to evaluate performance, we can always check which is the **active measure**:
-```{r efs-013}
+```{r index-013}
 efs$active_measure
 ```
 
 By default the active measure is the `"outer"`, i.e. the measure used to evaluate each learner's performance in the test sets.
 In our case that was the classification accuracy:
 
-```{r efs-014}
+```{r index-014}
 efs$measure
 ```
 
@@ -252,7 +252,7 @@ This affects all methods and plots that use performance scores.
 We can view the **performance scores of the different learners** used in the ensemble feature selection process.
 Each box represents the distribution of scores across different resampling iterations for a particular learner.
 
-```{r efs-015}
+```{r index-015}
 #| warning: false
 
 autoplot(efs, type = "performance", theme = theme_minimal(base_size = 14)) +
@@ -265,7 +265,7 @@ We observe that RF has better classification accuracy on the test sets of the $5
 
 Continuing, we can plot **the number of features selected by each learner** in the different resampling iterations:
 
-```{r efs-016}
+```{r index-016}
 #| warning: false
 
 autoplot(efs, type = "n_features", theme = theme_minimal(base_size = 14)) +
@@ -280,7 +280,7 @@ We observe that RF needed more features to achieve the best average performance,
 Both performance scores and number of features selected by the RFE optimization process can be visualized jointly in the Pareto plot.
 Here we also draw the **Pareto front**, i.e. the set of points that represent the trade-off between the number of features and performance (classification accuracy).
 As we see below, these points are derived from multiple learners and resamplings:
-```{r efs-017}
+```{r index-017}
 #| warning: false
 
 autoplot(efs, type = "pareto", theme = theme_minimal(base_size = 14)) +
@@ -290,10 +290,10 @@ autoplot(efs, type = "pareto", theme = theme_minimal(base_size = 14)) +
 
 We can also draw an **estimated Pareto front curve** by fitting a linear model with the inverse of the number of selected features ($1/x$) of the empirical Pareto front as input, and the associated performance scores as output:
 
-```{r efs-018}
+```{r index-018}
 #| warning: false
 
-autoplot(efs, type = "pareto", pareto_front = "estimated", 
+autoplot(efs, type = "pareto", pareto_front = "estimated",
          theme = theme_minimal(base_size = 14)) +
   scale_color_brewer(palette = "Set1") +
   labs(title = "Estimated Pareto front")
@@ -308,7 +308,7 @@ This approach calculates the perpendicular distance of each point from the line 
 The knee point is then identified as the point with the maximum distance from this line [@Das1999].
 
 Using the empirical and estimated Pareto fronts, we observe that the optimal knee points correspond to different numbers of features:
-```{r efs-019}
+```{r index-019}
 efs$knee_points()
 efs$knee_points(type = "estimated")
 ```
@@ -323,19 +323,19 @@ The `stabm` R package [@Bommert2021] implements many measures for the assessment
 We can use these measures to assess and visualize the stability across all resampling iterations and learners (`global = "TRUE"`) or per each learner separately (`global = "FALSE"`).
 
 The default stability measure is the **Jaccard Index**:
-```{r efs-020}
+```{r index-020}
 efs$stability(stability_measure = "jaccard", global = TRUE)
 ```
 
 Stability per learner:
-```{r efs-021}
+```{r index-021}
 efs$stability(stability_measure = "jaccard", global = FALSE)
 ```
 
 We observe that the RF model was the most stable in identifying similar predictive features across the different subsamples of the dataset, while the SVM model the least stable.
 
 To visualize stability, the following code generates a stability barplot:
-```{r efs-022}
+```{r index-022}
 #| warning: false
 
 autoplot(efs, type = "stability", theme = theme_minimal(base_size = 14)) +
@@ -343,10 +343,10 @@ autoplot(efs, type = "stability", theme = theme_minimal(base_size = 14)) +
 ```
 
 Alternatively, the **Nogueira** stability measure can be used, which unlike the Jaccard Index, it's a chance-corrected similarity measure [@Nogueira2018]:
-```{r efs-023}
+```{r index-023}
 #| warning: false
-autoplot(efs, type = "stability", stability_measure = "nogueira", 
-         stability_args = list(p = task$n_features), 
+autoplot(efs, type = "stability", stability_measure = "nogueira",
+         stability_args = list(p = task$n_features),
          theme = theme_minimal(base_size = 14)) +
   scale_fill_brewer(palette = "Set1")
 ```
@@ -359,7 +359,7 @@ Now we will focus on how to create a consensus ranked feature list based on the 
 The most straightforward ranking is obtained by counting how often each feature appears in the 'best' feature subsets (`"features"`).
 Below we show the top 8 features, i.e. up to the cutoff derived from the knee point of the estimated Pareto front.
 The column `"score"` represents these counts, while the column `"norm_score"` is the **feature selection frequency** or also known as **selection probability** [@Meinshausen2010]:
-```{r efs-024}
+```{r index-024}
 efs$feature_ranking(method = "av", use_weights = FALSE, committee_size = 8)
 ```
 
@@ -371,7 +371,7 @@ The `committee_size` specifies how many (top-ranked) features to return.
 Internally, `$feature_ranking()` uses the [`fastVoteR`](https://bblodfon.github.io/fastVoteR/) R package, which supports more advanced ranking methods.
 For example, we can perform **weighted ranking**, by considering the varying performance (accuracy) of each learner.
 This results in the same top 8 features but with slightly different ordering:
-```{r efs-025}
+```{r index-025}
 efs$feature_ranking(method = "av", use_weights = TRUE, committee_size = 8)
 ```
 
@@ -381,7 +381,7 @@ Specifically, models that select more features distribute their "approval" acros
 Conversely, **features chosen by models with fewer selected features receive higher weights**, as their selection reflects stronger individual importance.
 This approach ensures that sparsely selected features are prioritized in the ranking, leading to a different set of top-ranked features compared to standard approval voting.
 For instance, in the example above, the `"V10"` feature enters the top 8 features, replacing `"V4"`:
-```{r efs-026}
+```{r index-026}
 efs$feature_ranking(method = "sav", committee_size = 8)
 ```
 
@@ -389,7 +389,7 @@ efs$feature_ranking(method = "sav", committee_size = 8)
 
 The ultimate goal of the ensemble feature selection process is to identify predictive and stable features.
 By combining the ranked feature list with the Pareto-derived cutoff, we can select the final set of features for further modeling:
-```{r efs-027}
+```{r index-027}
 n_features = efs$knee_points(type = "estimated")$n_features
 res = efs$feature_ranking(method = "sav", committee_size = n_features)
 res$feature

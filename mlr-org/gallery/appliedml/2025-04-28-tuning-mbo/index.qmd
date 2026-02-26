@@ -25,7 +25,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -51,7 +51,7 @@ In the rest of this section, we will first provide an introduction to black box 
 
 Let's load the packages required for this exercise:
 
-```{r}
+```{r index-002}
 library(bbotk)
 library(mlr3verse)
 library(mlr3mbo)
@@ -60,7 +60,7 @@ set.seed(123)
 
 Before we apply BO to hyperparamter optimization (HPO), we try to optimize the following simple sinusoidal function:
 
-```{r}
+```{r index-003}
 sinus_1D = function(xs) 2 * xs$x1 * sin(14 * xs$x1) * sin(xs$x2) * xs$x2
 ```
 
@@ -86,7 +86,7 @@ The initial set of points that is evaluated before a surrogate model can be fit 
 
 To construct an initial design, we will use one of the four design generators available in `paradox`. Let's try grid search first, assuming an initial design of nine points on a domain of two numeric variables ranging from 0 to 1:
 
-```{r}
+```{r index-004}
 domain = ps(x1 = p_dbl(0, 1), x2 = p_dbl(0, 1))
 generate_design_grid(domain, resolution = 3)$data
 ```
@@ -101,7 +101,7 @@ As you can see, this is more or less a simple `data.table` that encodes the set 
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-005, eval = params$showsolution}
 sobol_design = generate_design_sobol(domain, n = 30)$data
 head(sobol_design)
 ```
@@ -117,12 +117,12 @@ To generate training data for our surrogate model, we need a few more things:
 
 - An `Objective` function that wraps the actual mapping from a domain (all possible function inputs) to a codomain (all possible function outputs). Objective functions can be created using different classes, all of which inherit from `Objective`. Here, we will use `ObjectiveRFun`.
 
-```{r}
+```{r index-006}
 # We have already defined our domain, but will do here again:
 domain = ps(x1 = p_dbl(0, 1), x2 = p_dbl(0, 1))
 # Our codomain:
 codomain = ps(y = p_dbl(tags = "minimize"))
-# Our objective: 
+# Our objective:
 objective = ObjectiveRFun$new(sinus_1D, domain = domain, codomain = codomain)
 ```
 
@@ -134,11 +134,11 @@ Optimization Instance
 
 Let's define our optimization instance and evaluate it on our initial Sobol design:
 
-```{r, echo = FALSE}
+```{r index-007, echo = FALSE}
 lgr::get_logger("bbotk")$set_threshold("warn")
 ```
 
-```{r}
+```{r index-008}
 instance = OptimInstanceSingleCrit$new(objective,
   terminator = trm("evals", n_evals = 20))
 instance$eval_batch(sobol_design)
@@ -151,7 +151,7 @@ instance$eval_batch(sobol_design)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-009, eval = params$showsolution}
 instance$archive$data
 ```
 
@@ -163,9 +163,9 @@ instance$archive$data
 
 A surrogate model wraps a regression learner that models the unknown black box function based on observed data. In `mlr3mbo`, the `SurrogateLearner` is a higher-level `R6` class inheriting from the base Surrogate class, designed to construct and manage the surrogate model, including automatic construction of the `TaskRegr` that the learner should be trained on at each iteration of the BO loop.
 
-Any regression learner in `mlr3` can be used. However, most acquisition functions depend on both mean and standard deviation predictions from the surrogate model, the latter of which requires the `"se"` `predict_type` to be supported. Therefore not all learners are suitable for all scenarios. Typical choices  are random forests or Gaussian processes `(lrn("regr.km"))`, which we will use here. You can learn more about Gaussian processes in Williams and Rasmussen ([2006](https://gaussianprocess.org/gpml/chapters/RW.pdf)). 
+Any regression learner in `mlr3` can be used. However, most acquisition functions depend on both mean and standard deviation predictions from the surrogate model, the latter of which requires the `"se"` `predict_type` to be supported. Therefore not all learners are suitable for all scenarios. Typical choices  are random forests or Gaussian processes `(lrn("regr.km"))`, which we will use here. You can learn more about Gaussian processes in Williams and Rasmussen ([2006](https://gaussianprocess.org/gpml/chapters/RW.pdf)).
 
-```{r}
+```{r index-010}
 lrn_gp = lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS",
   control = list(trace = FALSE))
 ```
@@ -174,7 +174,7 @@ The Matérn covariance function is a kernel used in Gaussian processes to model 
 
 A `SurrogateLearner` can be constructed by passing a `LearnerRegr` object to the sugar function `srlrn()`, alongside the archive of the instance:
 
-```{r}
+```{r index-011}
 surrogate = srlrn(lrn_gp, archive = instance$archive)
 ```
 
@@ -196,7 +196,7 @@ Fitting the surrogate model will require calling one of the methods of `surrogat
 
 :::{.b64-solution}
 
-```{r Dice-1, eval = params$showsolution}
+```{r index-012, eval = params$showsolution}
 requireNamespace("DiceKriging")
 library(DiceKriging)
 
@@ -215,7 +215,7 @@ Roughly speaking, an acquisition function relies on the prediction of a surrogat
 
 A popular example is the **expected improvement**, which tells us how much we can expect a candidate point to improve over the best function value observed so far (the ‘incumbent’), given the performance prediction of the surrogate model. Calculating the expected improvement requires mean and standard deviation predictions from the model.
 
-In `mlr3mbo`, acquisition functions are stored in the `mlr_acqfunctions` dictionary and can be constructed with `acqf()`, passing the key of the method you want to use and our surrogate learner. In our running example, we will use the expected improvement to choose the next candidate for evaluation. 
+In `mlr3mbo`, acquisition functions are stored in the `mlr_acqfunctions` dictionary and can be constructed with `acqf()`, passing the key of the method you want to use and our surrogate learner. In our running example, we will use the expected improvement to choose the next candidate for evaluation.
 
 **Task: Construct an aquisition function object using expected improvement. Then, update the aquisition function object.**
 
@@ -226,7 +226,7 @@ In `mlr3mbo`, acquisition functions are stored in the `mlr_acqfunctions` diction
 
 :::{.b64-solution}
 
-```{r Dice-2, eval = params$showsolution}
+```{r index-013, eval = params$showsolution}
 requireNamespace("DiceKriging")
 library(DiceKriging)
 
@@ -236,7 +236,7 @@ acq_function$update()
 
 The best y-value the acquisition function has seen so far:
 
-```{r, eval = params$showsolution}
+```{r index-014, eval = params$showsolution}
 acq_function$y_best
 ```
 
@@ -252,7 +252,7 @@ An acquisition function optimizer of class `AcqOptimizer` is used to optimize th
 
 `AcqOptimizer` objects are constructed with `acqo()`, which takes as input an `Optimizer`, a Terminator, and the acquisition function. Optimizers are stored in the `mlr_optimizers` dictionary and can be constructed with the sugar function `opt()`. Let's select an optimizer first:
 
-```{r}
+```{r index-015}
 optimizer = opt("nloptr", algorithm = "NLOPT_GN_ORIG_DIRECT")
 ```
 
@@ -265,7 +265,7 @@ optimizer = opt("nloptr", algorithm = "NLOPT_GN_ORIG_DIRECT")
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-016, eval = params$showsolution}
 acq_optimizer = acqo(
   optimizer = optimizer,
   terminator = trm("evals", n_evals = 200),
@@ -286,7 +286,7 @@ This is the next hyperparameter configuration we would want to evaluate. This re
 
 We have now shown how to run a single iteration of the BO algorithm loop manually. In practice, one would use `OptimizerMbo` to put all these pieces together to automate the process. To determine the behavior of the BO algorithm on a global level, we need a **loop function**. We use the Efficient Global Optimization (EGO) algorithm, aka `bayesopt_ego` provided by `mlr_loop_functions`. You do not need to pass any of these building blocks to each other manually as the `opt()` constructor will do this for you:
 
-```{r}
+```{r index-017}
 loop_function = mlr_loop_functions$get("bayesopt_ego")
 
 surrogate = srlrn(lrn("regr.km",
@@ -316,7 +316,7 @@ optimizer = opt("mbo",
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-018, eval = params$showsolution}
 instance = OptimInstanceSingleCrit$new(objective,
   terminator = trm("evals", n_evals = 100))
 sobol_design = generate_design_sobol(domain, n = 100)$data
@@ -331,9 +331,9 @@ optimizer$optimize(instance)
 
 # 3 BO for HPO with `TunerMbo`
 
-`mlr3mbo` can be used for HPO by making use of `TunerMbo`, which is a wrapper around `OptimizerMbo` and works in the exact same way. As an example, we want to tune the cost and gamma parameters of `lrn("classif.svm")` with a radial kernel on `tsk("sonar")` with three-fold CV. 
+`mlr3mbo` can be used for HPO by making use of `TunerMbo`, which is a wrapper around `OptimizerMbo` and works in the exact same way. As an example, we want to tune the cost and gamma parameters of `lrn("classif.svm")` with a radial kernel on `tsk("sonar")` with three-fold CV.
 
-```{r}
+```{r index-019}
 lrn_svm = lrn("classif.svm", kernel = "radial",
   type = "C-classification",
   cost  = to_tune(1e-5, 1e5, logscale = TRUE),
@@ -362,7 +362,7 @@ See `?mlr3tuning::tune` for help.
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-020, eval = params$showsolution}
 instance = tune(tuner,
                 tsk("sonar"),
                 lrn_svm,

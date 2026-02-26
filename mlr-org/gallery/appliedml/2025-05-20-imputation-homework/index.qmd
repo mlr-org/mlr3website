@@ -25,7 +25,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -39,7 +39,7 @@ Imputation is the process of filling in missing data in a data set using statist
 
 We will use `mlr3` for machine learning and `mlr3oml` for data access from OpenML:
 
-```{r, message = FALSE}
+```{r index-002, message = FALSE}
 library(mlr3verse)
 library(mlr3tuning)
 library(mlr3oml)
@@ -50,16 +50,16 @@ set.seed(12345)
 
 We will use bike sharing data for 731 days in Washington, D.C, where the target variable is `"rentals"`.
 
-Let's load the data and remove an unwanted column: 
+Let's load the data and remove an unwanted column:
 
-```{r}
+```{r index-003}
 bikes = as.data.frame(odt(id = 45103)$data)[,-c(10)]
 bikes$rentals = as.numeric(as.character(bikes$rentals))
 ```
 
 Further, we artificially generate missing data entries for the feature `temp`:
 
-```{r}
+```{r index-004}
 rows <- sample(nrow(bikes), 300, replace = FALSE)
 bikes[rows, "temp"] <- NA
 ```
@@ -86,7 +86,7 @@ Expressing two competing imputation methods in a graph can be done with branchin
 :::{.b64-solution}
 
 
-```{r, messages=FALSE}
+```{r index-005, messages=FALSE}
 impute = list(
   "impute_lm" = po("imputelearner", id = "impute_lm", learner = po("imputehist") %>>% lrn("regr.lm")),
   "impute_knn" = po("imputelearner", id = "impute_knn", learner = po("imputehist") %>>% lrn("regr.kknn"))
@@ -112,7 +112,7 @@ For the latter, we have to define a dependency to only vary `k` if kNN is chosen
 
 Remember that a graph can be treated as any other learner, and therefore, its parameter set can be accessed correspondingly. This means you can find the relevant parameter names in the correct field of the graph object.
 You can use the following code snippet to define dependencies:
-```{r, eval=FALSE}
+```{r index-006, eval=FALSE}
 tune_ps$add_dep("...", "...", CondEqual$new("..."))
 ```
 Take a look at `??ParamSet` for further information.
@@ -133,7 +133,7 @@ A parameter space can be defined using the `ps()` sugar function.
 :::{.b64-solution}
 
 
-```{r, messages=FALSE}
+```{r index-007, messages=FALSE}
 tune_ps = ps(
   branch.selection = p_fct(c("impute_lm", "impute_knn")),
   impute_knn.regr.kknn.k = p_int(1L, 8L)
@@ -153,7 +153,7 @@ Create a task for the bike rental data and tune a graph learner with grid search
 <details>
 <summary>**Hint 1:**</summary>
 
-```{r, eval=FALSE}
+```{r index-008, eval=FALSE}
 task = ...
 
 instance = tune(...)
@@ -170,7 +170,7 @@ autoplot(...)
 :::{.b64-solution}
 
 
-```{r, messages=FALSE}
+```{r index-009, messages=FALSE}
 task = TaskRegr$new(id = "bikes", backend = bikes, target = "rentals")
 
 instance = tune(

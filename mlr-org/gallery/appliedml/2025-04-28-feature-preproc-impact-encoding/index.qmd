@@ -25,7 +25,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -35,9 +35,9 @@ Apply what you have learned about using pipelines for efficient pre-processing a
 
 # House Prices in King county
 
-In this exercise, we want to model house sale prices in King county in the state of Washington, USA. 
+In this exercise, we want to model house sale prices in King county in the state of Washington, USA.
 
-```{r}
+```{r index-002}
 set.seed(124)
 library(mlr3verse)
 library("mlr3tuningspaces")
@@ -46,7 +46,7 @@ data("kc_housing", package = "mlr3data")
 
 We do some simple feature pre-processing first:
 
-```{r}
+```{r index-003}
 # Transform time to numeric variable:
 library(anytime)
 dates = anytime(kc_housing$date)
@@ -65,7 +65,7 @@ str(kc_housing)
 
 Before we train a model, let's reserve some data for evaluating our model later on:
 
-```{r}
+```{r index-004}
 task = as_task_regr(kc_housing, target = "price")
 split = partition(task, ratio = 0.6)
 
@@ -82,18 +82,18 @@ tasktest
 
 XGBoost ([Chen and Guestrin, 2016](https://dl.acm.org/doi/10.1145/2939672.2939785) is a highly performant library for gradient-boosted trees. As some other ML learners, it cannot handle categorical data, so categorical features must be encoded as numerical variables. In the King county data, there are two categorical features encoded as `factor`:
 
-```{r}
+```{r index-005}
 ft = task$feature_types
 ft[ft[[2]] == "factor"]
 ```
 
 Categorical features can be grouped by their cardinality, which refers to the number of levels they contain: binary features (two levels), low-cardinality features, and high-cardinality features; there is no universal threshold for when a feature should be considered high-cardinality and this threshold can even be tuned. Low-cardinality features can be handled by one-hot encoding. One-hot encoding is a process of converting categorical features into a binary representation, where each possible category is represented as a separate binary feature. Theoretically, it is sufficient to create one less binary feature than levels. This is typically called dummy or treatment encoding and is required if the learner is a generalized linear model (GLM) or additive model (GAM). For now, let's check the cardinality of `waterfront` and `zipcode`:
 
-```{r}
+```{r index-006}
 lengths(task$levels())
 ```
 
-Obviously, `waterfront` is a low-cardinality feature suitable for dummy (also called treatment) encoding and `zipcode` is a very high-cardinality feature. Some learners support handling categorical features but may still crash for high-cardinality features if they internally apply encodings that are only suitable for low-cardinality features, such as one-hot encoding. 
+Obviously, `waterfront` is a low-cardinality feature suitable for dummy (also called treatment) encoding and `zipcode` is a very high-cardinality feature. Some learners support handling categorical features but may still crash for high-cardinality features if they internally apply encodings that are only suitable for low-cardinality features, such as one-hot encoding.
 
 # Impact encoding
 
@@ -116,15 +116,15 @@ Create a pipeline that pre-processes each factor variable with impact encoding. 
 
 <details>
   <summary>**Hint 1:**</summary>
-  
+
 The pipeline must be embedded in the `autotuner`: the learner supplied to the `autotuner` must include the feature preprocessing and the XGboost learner.
 
 </details>
 
 <details>
   <summary>**Hint 2:**</summary>
-  
-```{r, eval = FALSE}
+
+```{r index-007, eval = FALSE}
 # Create xgboost learner:
 xgb = lrn(...)
 
@@ -157,7 +157,7 @@ glrn_xgb_impact$id = "XGB_enc_impact"
 
 </details>
 
-```{r, eval = !params$showsolution, echo = FALSE, results='asis'}
+```{r index-008, eval = !params$showsolution, echo = FALSE, results='asis'}
 cat("<!--")
 ```
 
@@ -167,8 +167,8 @@ cat("<!--")
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
-# Create xgboost learner 
+```{r index-009, eval = params$showsolution}
+# Create xgboost learner
 xgb = lrn("regr.xgboost")
 as.data.table(xgb$param_set$values)
 
@@ -209,14 +209,14 @@ Benchmark your impact encoding pipeline from the previous task against a simple 
 
 <details>
   <summary>**Hint 1:**</summary>
-  
+
 To conduct the benchmark, use `benchmark(benchmark_grid(...))`.
 
 </details>
 
 <details>
   <summary>**Hint 2:**</summary>
-  
+
 To conduct performance evaluation, use `$aggregate()` on the benchmark object.
 
 </details>
@@ -227,7 +227,7 @@ To conduct performance evaluation, use `$aggregate()` on the benchmark object.
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution, results = 'hide'}
+```{r index-010, eval = params$showsolution, results = 'hide'}
 # Pipeline for One-Hot Encoding only:
 auto_xgb_oh = auto_tuner(
   tuner = tuner,
@@ -246,17 +246,17 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 bmr = benchmark(benchmark_grid(tasktrain, c(auto_xgb_oh, auto_xgb_impact), rsmp_cv2))
 ```
 
-```{r, eval = params$showsolution}
+```{r index-011, eval = params$showsolution}
 # Aggregate results:
 bmr$aggregate(measure = msr("regr.mse"))[, .(learner_id, regr.mse)]
 ```
 
-```{r, eval = params$showsolution, results = 'hide'}
+```{r index-012, eval = params$showsolution, results = 'hide'}
 auto_xgb_oh$train(tasktrain)
 auto_xgb_impact$train(tasktrain)
 ```
 
-```{r, eval = params$showsolution}
+```{r index-013, eval = params$showsolution}
 auto_xgb_oh$predict(tasktest)$score()
 auto_xgb_impact$predict(tasktest)$score()
 ```

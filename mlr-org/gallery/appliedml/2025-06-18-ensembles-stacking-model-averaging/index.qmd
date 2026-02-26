@@ -24,7 +24,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -69,7 +69,7 @@ n = 1,000 observations of credits
 
 # Prerequisites
 
-```{r}
+```{r index-002}
 library(mlr3)
 library(mlr3learners)
 library(mlr3pipelines)
@@ -95,7 +95,7 @@ Create a pipeline to train a decision tree with a maximum depth of 3, using 10-f
 
 :::{.b64-solution}
 
-```{r}
+```{r index-003}
 resampling = rsmp("cv", folds  = 10L)$instantiate(task)
 pl = po("subsample") %>>% po("learner", learner = lrn("classif.rpart", maxdepth = 3L))
 pl$plot()
@@ -123,7 +123,7 @@ Plot each of the three decision trees of the ensemble after training on all data
 
 :::{.b64-solution}
 
-```{r}
+```{r index-004}
 # Greplicate: The pipeline is reproduced 3x, to build a simple bagging structure
 gr = ppl("greplicate", graph = pl, n = 3L)
 gr = gr %>>% po("classifavg")  # average class prediction
@@ -159,7 +159,7 @@ What is missing to actually mimic a Random Forest?
 
 :::{.b64-solution}
 
-```{r}
+```{r index-005}
 dt = lrn("classif.rpart", maxdepth = 3L)
 dt$id = "tree"
 dt$train(task)
@@ -188,8 +188,8 @@ Use 10-fold CV to evaluate the ROC AUC of the models.
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-006, eval = FALSE}
 dt$param_set$set_values(.values = list(maxdepth = NULL))
 grl$...
 ...
@@ -216,7 +216,7 @@ autoplot(..., measure = ...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-007, eval = params$showsolution}
 dt$param_set$set_values(.values = list(maxdepth = NULL))
 grl$param_set$set_values(.values = list(classif.rpart_1.maxdepth = NULL, classif.rpart_2.maxdepth = NULL, classif.rpart_3.maxdepth = NULL))
 
@@ -262,8 +262,8 @@ By default classifavg uses equal weights to combine the predictions of the model
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-008, eval = FALSE}
 dt = lrn(...)
 dt$predict_type = "prob"
 kknn = lrn(...)
@@ -288,7 +288,7 @@ b$aggregate(...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-009, eval = params$showsolution}
 dt = lrn("classif.rpart")
 dt$predict_type = "prob"
 kknn = lrn("classif.kknn", k = 7L)
@@ -321,8 +321,8 @@ Can you manually find a weighting scheme that results in better performance than
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-010, eval = FALSE}
 grl_weights_adjusted = grl$clone(deep = TRUE)
 grl_weights_adjusted$param_set$set_values(...)
 grl_weights_adjusted$id = paste0(grl_weights_adjusted$id, ".weights_adjusted")
@@ -339,7 +339,7 @@ b$aggregate(...)
 
 :::{.b64-solution}
 
-```{r}
+```{r index-011}
 grl_weights_adjusted = grl$clone(deep = TRUE)
 grl_weights_adjusted$param_set$set_values(.values = list(classifavg.weights = c(0.3, 0.1, 0.6)))
 grl_weights_adjusted$id = paste0(grl_weights_adjusted$id, ".weights_adjusted")
@@ -375,14 +375,14 @@ Create the `objective_function` (a standard R function) accepting `xs` (a list) 
 
 <details>
   <summary>**Hint 1:**</summary>
-  If you are not yet familiar with the `bbotk` package, a good starting point is: https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-black-box-optimization and 
+  If you are not yet familiar with the `bbotk` package, a good starting point is: https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-black-box-optimization and
   https://cran.r-project.org/web/packages/bbotk/vignettes/bbotk.html
 </details>
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-012, eval = FALSE}
 grl_weights_optimized = grl$clone(deep = TRUE)
 grl_weights_optimized$id = paste0(grl_weights_optimized$id, ".weights_optimized_naive")
 
@@ -402,7 +402,7 @@ objective_function = function(xs) {
 
 :::{.b64-solution}
 
-```{r}
+```{r index-013}
 grl_weights_optimized = grl$clone(deep = TRUE)
 grl_weights_optimized$id = paste0(grl_weights_optimized$id, ".weights_optimized_naive")
 
@@ -420,31 +420,31 @@ objective_function = function(xs) {
 
 :::
 
-  
+
 ## 3.2 Domain
 
-Create the `domain` (the space we optimize over): Here, we optimize over the three numeric weight parameters with values from 0 to 1. 
+Create the `domain` (the space we optimize over): Here, we optimize over the three numeric weight parameters with values from 0 to 1.
 
 <details>
   <summary>**Hint 1:**</summary>
   Eventally, have a look at `?p_dbl`.
 </details>
-  
+
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-014, eval = FALSE}
 domain = ps(w_dt = ..., w_kknn = ..., w_log_reg = ...)
 ```
 </details>
-  
+
 :::{.callout-note collapse="true"}
 
 ### Solution
 
 :::{.b64-solution}
 
-```{r}
+```{r index-015}
 domain = ps(w_dt = p_dbl(0, 1), w_kknn = p_dbl(0, 1), w_log_reg = p_dbl(0, 1))
 ```
 
@@ -452,39 +452,39 @@ domain = ps(w_dt = p_dbl(0, 1), w_kknn = p_dbl(0, 1), w_log_reg = p_dbl(0, 1))
 
 :::
 
-  
+
 ## 3.3 Codomain
 
 Create the codomain (describing the output space):
 * we maximize the numeric ROC AUC value
 * to make sure that we maximize instead of minimize (the `bbotk` default) set `tags = "maximize"`of this `p_dbl`
-  
+
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-016, eval = FALSE}
 codomain = ps(classif.auc = ...) # make sure to specify `tags = "maximize"`
 ```
 </details>
-  
+
 :::{.callout-note collapse="true"}
 
 ### Solution
 
 :::{.b64-solution}
 
-```{r}
+```{r index-017}
 codomain = ps(classif.auc = p_dbl(0.5, 1, tags = "maximize"))
 ```
 
 :::
 
 :::
-  
+
 ## 3.4 Wrap up
 
 Collect everything in an `OptimInstanceSingleCrit`.
- 
+
 Use random search as an optimizer and terminate after 10 function evaluations.
 Why is our approach (i.e., how we constructed the objective function) ineffective?
 
@@ -495,8 +495,8 @@ Why is our approach (i.e., how we constructed the objective function) ineffectiv
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-018, eval = FALSE}
 objective = ObjectiveRFun$new(
   fun = ...,
   domain = ...,
@@ -520,7 +520,7 @@ optimizer$optimize(instance)
 
 :::{.b64-solution}
 
-```{r}
+```{r index-019}
 objective = ObjectiveRFun$new(
   fun = objective_function,
   domain = domain,
@@ -537,7 +537,7 @@ optimizer = opt("random_search")
 optimizer$optimize(instance)
 ```
 
-```{r}
+```{r index-020}
 instance$result
 ```
 
@@ -566,8 +566,8 @@ Note that you can reuse most logic from the previous exercise and the only inter
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-021, eval = FALSE}
 k = resampling$param_set$get_values()[["folds"]]
 
 dt_pred = resample(...)
@@ -618,7 +618,7 @@ optimizer$optimize(instance)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution, results = "hide"}
+```{r index-022, eval = params$showsolution, results = "hide"}
 k = resampling$param_set$get_values()[["folds"]]
 
 dt_pred = resample(task, dt, resampling)
@@ -662,7 +662,7 @@ optimizer = opt("cmaes")
 optimizer$optimize(instance)
 ```
 
-```{r, eval = params$showsolution}
+```{r index-023, eval = params$showsolution}
 instance$result
 ```
 
