@@ -22,7 +22,7 @@ image: cover.jpg
 
 {{< include ../../_setup.qmd >}}
 
-```{r 2023-01-31-default-configuration-001}
+```{r index-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -51,7 +51,7 @@ In this article, we will tune the hyperparameters of a random forest and compare
 We tune the hyperparameters of the `r ref("mlr_learners_classif.ranger", "ranger learner")` on the `r ref("mlr_tasks_spam", "spam")` data set.
 The search space is taken from @bischl_hyperparameter_2021.
 
-```{r 2023-01-31-default-configuration-002}
+```{r index-002}
 #| message: false
 library(mlr3tuning)
 library(mlr3learners)
@@ -69,7 +69,7 @@ The default configuration is evaluated in the first batch of the tuning run.
 The other batches use the specified tuning method.
 In this example, they are randomly drawn configurations.
 
-```{r 2023-01-31-default-configuration-003}
+```{r index-003}
 instance = tune(
   tuner = tnr("random_search", batch_size = 5),
   task = tsk("spam"),
@@ -84,7 +84,7 @@ instance = tune(
 The default configuration is recorded in the first row of the archive.
 The other rows contain the results of the random search.
 
-```{r 2023-01-31-default-configuration-004}
+```{r index-004}
 as.data.table(instance$archive)[, .(batch_nr, mtry.ratio, replace, sample.fraction, num.trees, classif.ce)]
 ```
 
@@ -92,7 +92,7 @@ We plot the performances of the evaluated hyperparameter configurations.
 The blue line connects the best configuration of each batch.
 We see that the default configuration already performs well and the optimized configurations can not beat it.
 
-```{r 2023-01-31-default-configuration-005}
+```{r index-005}
 library(mlr3viz)
 
 autoplot(instance, type = "performance")

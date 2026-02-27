@@ -87,7 +87,7 @@ n = 1,000 observations of bank customers
 
 We first load the data from the `rchallenge` package (you may need to install it first) and get a brief overview.
 
-```{r}
+```{r index-001}
 # install.packages("rchallenge")
 library("rchallenge")
 data("german")
@@ -111,9 +111,9 @@ More systematically in `mlr3` they can be expressed via five components:
 
 ## Split Data in Training and Test Data
 
-Your task is to split the `german` dataset into 70 \% training data and 30 \% 
+Your task is to split the `german` dataset into 70 \% training data and 30 \%
 test data by randomly sampling rows.
-Later, we will use the training data to learn an ML model and use the test data 
+Later, we will use the training data to learn an ML model and use the test data
 to assess its performance.
 
 <details>
@@ -122,7 +122,7 @@ to assess its performance.
 We use part of the available data (the training data) to train our model.
 The remaining/hold-out data (test data) is used to evaluate the trained model.
 This is exactly how we anticipate using the model in practice:
-We want to fit the model to existing data and then make predictions on 
+We want to fit the model to existing data and then make predictions on
 new, unseen data points for which we do not know the outcome/target values.
 
 Note: Hold-out splitting requires a dataset that is sufficiently
@@ -149,7 +149,7 @@ Set a seed (e.g, `set.seed(100L)`) to make your results reproducible.
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-002, eval=FALSE}
 # Sample ids for training and test split
 set.seed(100L)
 train_ids = sample(row.names(german), 0.7*nrow(...))
@@ -171,7 +171,7 @@ test_set = german[...,]
 
 We first sample row ids by using `sample()` and identify the non-selected rows via `setdiff()`.
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-003, eval=params$showsolution, base64encode=params$base64encode}
 
 set.seed(100L)
 train_ids = sample(row.names(german), 0.7*nrow(german))
@@ -182,7 +182,7 @@ str(test_ids)
 
 Based on that, we create two datasets: one for training and one for testing.
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-004, eval=params$showsolution, base64encode=params$base64encode}
 
 train_set = german[train_ids,]
 test_set = german[test_ids, ]
@@ -194,8 +194,8 @@ test_set = german[test_ids, ]
 
 ## Create a Classification Task
 
-Install and load the `mlr3verse` package which is a collection of multiple add-on packages in the `mlr3` universe (if you fail installing `mlr3verse`, try to install and load only the `mlr3` and `mlr3learners` packages). 
-Then, create a classification task using the training data as an input and `credit_risk` as the target variable (with the class label `good` as the positive class). 
+Install and load the `mlr3verse` package which is a collection of multiple add-on packages in the `mlr3` universe (if you fail installing `mlr3verse`, try to install and load only the `mlr3` and `mlr3learners` packages).
+Then, create a classification task using the training data as an input and `credit_risk` as the target variable (with the class label `good` as the positive class).
 By defining an `mlr3` task, we conceptualize the ML problem we want to solve (here we face a classification task).
 As we have a classification task here, make sure you properly specify the class that should be used as the positive class (i.e., the class label for which we would like to predict probabilities - here `good` if you are interested in predicting a probability for the creditworthiness of customers).
 
@@ -209,7 +209,7 @@ Use e.g. `as_task_classif()` to create a classification task.
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-005, eval=FALSE}
 library(mlr3verse)
 task = as_task_classif(x = ..., target = ..., ... = "good")
 ```
@@ -225,7 +225,7 @@ task = as_task_classif(x = ..., target = ..., ... = "good")
 
 To initialize a `TaskClassif` object, two equivalent calls exist:
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-006, eval=params$showsolution, base64encode=params$base64encode}
 library("mlr3verse")
 task = TaskClassif$new("german_credit", backend = train_set, target = "credit_risk", positive = "good")
 task = as_task_classif(train_set, target = "credit_risk", positive = "good")
@@ -261,7 +261,7 @@ with the task of the previous exercise as an input.
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-007, eval=FALSE}
 logreg = lrn("classif.log_reg")
 logreg$train(...)
 ```
@@ -280,7 +280,7 @@ Using the `$train()` method, we derive optimal hyperparameters (i.e., coefficien
 for our logistic regression model.
 
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-008, eval=params$showsolution, base64encode=params$base64encode}
 
 logreg = lrn("classif.log_reg")
 logreg$train(task)
@@ -307,7 +307,7 @@ is used as the positive class (i.e., the class to which the model predictions wi
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-009, eval=FALSE}
 summary(yourmodel$model)
 ```
 
@@ -324,7 +324,7 @@ Similar to models fitted via `glm()` or `lm()`, we could receive a summary
 of the coefficients (including p-values) using `summary()`.
 
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-010, eval=params$showsolution, base64encode=params$base64encode}
 
 summary(logreg$model)
 ```
@@ -333,7 +333,7 @@ According to the summary, e.g., `credit_history` and `status` significantly infl
 By looking on `task$positive`, we see that the class `good` (creditworthy client) is the positive class.
 This means that a positive sign of the estimated coefficient of a feature means that the feature has a positive influence on being a creditworthy client (while a negative sign will have a negative influence).
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-011, eval=params$showsolution, base64encode=params$base64encode}
 
 task$positive
 ```
@@ -360,7 +360,7 @@ of `$predict()`) to derive a `PredictionClassif` object.
 <details>
 <summary>**Hint 2**</summary>
 
-```{r, eval=FALSE}
+```{r index-012, eval=FALSE}
 pred = yourmodel$predict_newdata(...)
 ```
 
@@ -373,7 +373,7 @@ pred = yourmodel$predict_newdata(...)
 
 :::{.b64-solution}
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-013, eval=params$showsolution, base64encode=params$base64encode}
 
 pred_logreg = logreg$predict_newdata(test_set)
 ```
@@ -399,7 +399,7 @@ of the previous exercise.
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-014, eval=FALSE}
 pred_logreg$score()
 ```
 
@@ -416,7 +416,7 @@ By using the `$score()` method, we obtain an estimate for the classification err
 of our model.
 
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-015, eval=params$showsolution, base64encode=params$base64encode}
 
 pred_logreg$score()
 ```
@@ -454,7 +454,7 @@ You can get an overview of performance measures in mlr3 using `as.data.table(msr
 
 :::{.b64-solution}
 
-```{r,eval=params$showsolution, base64encode=params$base64encode}
+```{r index-016,eval=params$showsolution, base64encode=params$base64encode}
 # Train a learner
 logreg = lrn("classif.log_reg", predict_type = "prob")
 logreg$train(task)

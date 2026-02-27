@@ -169,15 +169,6 @@ CRAN-SUBMISSION
 # pkgdown
 docs/
 
-# renv
-library/
-local/
-cellar/
-lock/
-python/
-sandbox/
-staging/
-
 # vscode
 .vscode
 
@@ -190,12 +181,15 @@ Meta/
 #quarto
 mlr-org/blog.xml
 mlr-org/site_libs
-mlr3website/renv/
 search.json
 *.rda
 attic
+
+mlr-org/renv/
 
 /.quarto/
 mlr-org/benchmarks/xgboost_1280_30m_bank_marketing.csv
 mlr-org/benchmarks/xgboost_1280_30m_higgs.csv
 mlr-org/benchmarks/mlr3automl_1280_30m.csv
+
+.claude/

@@ -25,7 +25,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -54,13 +54,13 @@ Train a random forest on 2/3 of the data (training data) and make probabilistic 
 <summary>**Hint 1:**</summary>
 - Create the German credit task using `tsk()` and set the positive class by modifying e.g. `task$positive`.
 - Create a learner using `lrn()` and make sure to specify the `predict_type` so that the learner will predict probabilities instead of classes.
-- When calling the methods `$train()` and `$predict()` of the learner, you can pass an argument `row_ids` to specify which observations should be used for the train and test data. 
+- When calling the methods `$train()` and `$predict()` of the learner, you can pass an argument `row_ids` to specify which observations should be used for the train and test data.
 - You can generate random train-test splits using, e.g., the `partition()` function.
 </details>
 
 <details>
 <summary>**Hint 2:**</summary>
-```{r, eval = FALSE}
+```{r index-002, eval = FALSE}
 library(mlr3verse)
 
 task = tsk(...)
@@ -78,7 +78,7 @@ pred = learner$predict(..., row_ids = ...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-003, eval = params$showsolution}
 library(mlr3verse)
 task = tsk("german_credit")
 task$positive = "good"
@@ -117,7 +117,7 @@ Since `good` was used as the positive class here, the TPR is $P(\hat{Y} = good |
 <details>
   <summary>**Hint 2:**</summary>
 You need to replace `...` in the code below to access the appropriate columns and rows, e.g., `confusion1[1, 1]` is the element in the first row and first column of the confusion matrix and tells you how many observations with ground truth $Y = good$ were classified into the class $\hat{Y} = good$ by the learner.
-```{r, eval = FALSE}
+```{r index-004, eval = FALSE}
 confusion1 = pred$confusion
 TPR1 =  confusion1[...] / sum(confusion1[...])
 TPR1
@@ -125,8 +125,8 @@ FPR1 = confusion1[...] / sum(confusion1[...])
 FPR1
 ```
 
-The names of the TPR and FPR performance measures implemented in `mlr3` can be found by looking at `as.data.table(mlr_measures)`. You can use the code below and pass the names of the `mlr3` measures in a vector to compute both the TPR and FPR: 
-```{r, eval = FALSE}
+The names of the TPR and FPR performance measures implemented in `mlr3` can be found by looking at `as.data.table(mlr_measures)`. You can use the code below and pass the names of the `mlr3` measures in a vector to compute both the TPR and FPR:
+```{r index-005, eval = FALSE}
 pred$score(msrs(...))
 ```
 </details>
@@ -137,7 +137,7 @@ pred$score(msrs(...))
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-006, eval = params$showsolution}
 confusion1 = pred$confusion
 TPR1 = confusion1[1, 1] / sum(confusion1[, 1])
 TPR1
@@ -145,8 +145,8 @@ FPR1 = confusion1[1, 2] / sum(confusion1[, 2])
 FPR1
 ```
 
-Instead of manually computing the TPR and FPR, you could also just use 
-```{r, eval = params$showsolution}
+Instead of manually computing the TPR and FPR, you could also just use
+```{r index-007, eval = params$showsolution}
 pred$score(msrs(c("classif.tpr", "classif.fpr")))
 ```
 
@@ -168,7 +168,7 @@ A prediction object has the method `$set_threshold()` that can be used to set a 
 
 <details>
 <summary>**Hint 2:**</summary>
-```{r, eval = FALSE}
+```{r index-008, eval = FALSE}
 pred$set_threshold(...)
 confusion2 = pred$confusion
 TPR2 =  confusion2[...] / sum(...)
@@ -186,19 +186,19 @@ FPR2 - FPR1
 :::{.b64-solution}
 
 The error of making a false positive - in this case classifying someone who is not creditworthy ($Y = bad$)
-as creditworthy ($\hat Y = good$) - is likely considerably higher than classifying someone who is creditworthy as not creditworthy. 
+as creditworthy ($\hat Y = good$) - is likely considerably higher than classifying someone who is creditworthy as not creditworthy.
 In the first scenario, the company may lose all the money that was not paid back duly. In the letter case, it only misses out on the profit.
 
 We can take this fact into account by using a higher threshold to predict the positive class (`good`), i.e., being more conservative in classifying a good credit risk.
 For illustration purposes, we will use the threshold $0.7$ which is higher than the default threshold $0.5$.
 
-```{r, eval = params$showsolution}
+```{r index-009, eval = params$showsolution}
 pred$set_threshold(0.7)
 pred
 ```
 We can then access the updated confusion matrix and calculate the new FPR and TPR as before.
 
-```{r, eval = params$showsolution}
+```{r index-010, eval = params$showsolution}
 confusion2 = pred$confusion
 TPR2 =  confusion2[1, 1] / sum(confusion2[, 1])
 FPR2 = confusion2[1, 2] / sum(confusion2[, 2])
@@ -206,7 +206,7 @@ FPR2 = confusion2[1, 2] / sum(confusion2[, 2])
 
 When comparing it with the previous values, we observe a lower TPR and FPR.
 
-```{r, eval = params$showsolution}
+```{r index-011, eval = params$showsolution}
 TPR2 - TPR1
 FPR2 - FPR1
 ```
@@ -229,13 +229,13 @@ possible thresholds.
 
 <details>
 <summary>**Hint 1:**</summary>
-You can use `autoplot()` on the prediction object and set the `type` argument to produce a ROC curve. 
+You can use `autoplot()` on the prediction object and set the `type` argument to produce a ROC curve.
 You can open the help page of `autoplot` for a prediction object using `?mlr3viz::autoplot.PredictionClassif`.
 </details>
 
 <details>
 <summary>**Hint 2:**</summary>
-```{r, eval = FALSE}
+```{r index-012, eval = FALSE}
 autoplot(pred, type = ...)
 ```
 </details>
@@ -246,7 +246,7 @@ autoplot(pred, type = ...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-013, eval = params$showsolution}
 autoplot(pred, type = "roc", show_cb = FALSE)
 ```
 
@@ -257,7 +257,7 @@ autoplot(pred, type = "roc", show_cb = FALSE)
 # 5 Threshold tuning
 
 In this exercise, we assume that predicting a false positive is 4 times worse than a false negative.
-Use a measure that considers classification costs (e.g., misclassification costs `msr("classif.costs")$help()`) and tune the threshold of our classifier to systematically optimize the asymmetric cost function. 
+Use a measure that considers classification costs (e.g., misclassification costs `msr("classif.costs")$help()`) and tune the threshold of our classifier to systematically optimize the asymmetric cost function.
 
 ## 5.1 Cost Matrix
 
@@ -276,7 +276,7 @@ The order of the classes in the rows and columns of the matrix must correspond t
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-014, eval = params$showsolution}
 costs = matrix(c(0, 1, 4, 0), nrow = 2, dimnames =
   list("Predicted Credit" = c("good", "bad"),
     Truth = c("good", "bad")))
@@ -289,7 +289,7 @@ costs
 
 ## 5.2 Cost-Sensitive Measure
 
-Next, define a cost-sensitive measure. This measure takes one argument, which is a matrix with row and column names corresponding to the class labels in the task of interest. 
+Next, define a cost-sensitive measure. This measure takes one argument, which is a matrix with row and column names corresponding to the class labels in the task of interest.
 
 <details>
 <summary>**Hint 1:**</summary>
@@ -302,7 +302,7 @@ You can use `as.data.table(mlr_measures)` to find the relevant measure.
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-015, eval = params$showsolution}
 msr_costs = msr("classif.costs", costs = costs)
 msr_costs
 ```
@@ -326,7 +326,7 @@ You need to specify `type = "threshold` within autoplot as well as the previousl
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-016, eval = params$showsolution}
 autoplot(pred, type = "threshold", measure = msr_costs)
 ```
 
@@ -334,7 +334,7 @@ As expected, the optimal threshold is greater than 0.5 which means the optimal m
 
 # Alternative without autoplot
 
-```{r, eval = params$showsolution}
+```{r index-017, eval = params$showsolution}
 library(ggplot2)
 thresholds = seq(0, 1, by = 0.01)
 eval_threshold = function(pred, threshold, measure, task) {
@@ -363,7 +363,7 @@ The optimal threshold can be automated via `po("tunethreshold")`. Create a graph
 <details>
 <summary>**Hint 1:**</summary>
 You can use this code skeleton for the pipeline:
-```{r, eval = FALSE}
+```{r index-018, eval = FALSE}
 logreg = po("learner_cv", lrn(...)) # base learner
 graph =  logreg %>>% po(...) # graph with threshold tuning
 ```
@@ -372,7 +372,7 @@ graph =  logreg %>>% po(...) # graph with threshold tuning
 <details>
 <summary>**Hint 2:**</summary>
 You can use this code skeleton for the benchmark:
-```{r, eval = FALSE}
+```{r index-019, eval = FALSE}
 learners = list(..., lrn("classif.log_reg"))
 bmr = benchmark(benchmark_grid(task, learners,
   rsmp("cv", folds = 3)))
@@ -385,7 +385,7 @@ bmr = benchmark(benchmark_grid(task, learners,
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-020, eval = params$showsolution}
 # Pipeline:
 po_cv = po("learner_cv", lrn("classif.log_reg", predict_type = "prob"))
 graph =  po_cv %>>% po("tunethreshold", measure = msr_costs)
@@ -425,7 +425,7 @@ You can also apply the function `autoplot()` to benchmark results.
 
 <details>
 <summary>**Hint 2:**</summary>
-```{r, eval = FALSE}
+```{r index-021, eval = FALSE}
 resampling = rsmp(..)
 learners = lrns(...)
 design = benchmark_grid(...)
@@ -444,7 +444,7 @@ autoplot(...)
 
 We create and execute the benchmark experiment in the usual fashion.
 
-```{r, eval = params$showsolution}
+```{r index-022, eval = params$showsolution}
 resampling = rsmp("cv", folds = 10)
 learners = list(
   lrn("classif.rpart", predict_type = "prob"),
@@ -454,9 +454,9 @@ design = benchmark_grid(task, learners, resampling)
 bmr = benchmark(design)
 ```
 
-Now we proceed with showing the ROC curve. 
+Now we proceed with showing the ROC curve.
 
-```{r, eval = params$showsolution}
+```{r index-023, eval = params$showsolution}
 autoplot(bmr, type = "roc", show_cb = FALSE)
 ```
 
@@ -486,7 +486,7 @@ You can use the `autoplot()` function and use the AUC as performance measure in 
 
 <details>
 <summary>**Hint 2:**</summary>
-```{r, eval = FALSE}
+```{r index-024, eval = FALSE}
 autoplot(bmr, measure = msr(...))
 ```
 </details>
@@ -497,7 +497,7 @@ autoplot(bmr, measure = msr(...))
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-025, eval = params$showsolution}
 autoplot(bmr, measure = msr("classif.auc"))
 ```
 

@@ -12,7 +12,7 @@ bibliography: ../../bibliography.bib
 
 {{< include ../../_setup.qmd >}}
 
-```{r}
+```{r index-001}
 #| include: false
 requireNamespace("BART")
 ```
@@ -31,7 +31,7 @@ We incorporated the survival `BART` model in `mlr3extralearners` and in this tut
 
 ## Libraries
 
-```{r 2023-10-25-bart-survival-001}
+```{r index-002}
 #| output: false
 library(mlr3extralearners)
 library(mlr3pipelines)
@@ -48,7 +48,7 @@ library(ggplot2)
 
 We will use the Lung Cancer Dataset.
 We convert the `time` variable from days to months to ease the computational burden:
-```{r 2023-10-25-bart-survival-002}
+```{r index-003}
 task_lung = tsk('lung')
 
 d = task_lung$data()
@@ -69,7 +69,7 @@ In this example, we impute the features to show good ML practice.
 :::
 
 In our lung dataset, we encode the `sex` feature and perform model-based imputation with the `rpart` regression learner:
-```{r 2023-10-25-bart-survival-003}
+```{r index-004}
 po_encode = po('encode', method = 'treatment')
 po_impute = po('imputelearner', lrn('regr.rpart'))
 pre = po_encode %>>% po_impute
@@ -78,12 +78,12 @@ task
 ```
 
 No missing values in our data:
-```{r 2023-10-25-bart-survival-004}
+```{r index-005}
 task$missings()
 ```
 
 We partition the data to train and test sets:
-```{r 2023-10-25-bart-survival-005}
+```{r index-006}
 set.seed(42)
 part = partition(task, ratio = 0.9)
 ```
@@ -91,7 +91,7 @@ part = partition(task, ratio = 0.9)
 ## Train and Test
 
 We train the `BART` model and predict on the test set:
-```{r 2023-10-25-bart-survival-006}
+```{r index-007}
 # default `ndpost` value: 1000. We reduce it to 50 to speed up calculations in this tutorial
 learner = lrn("surv.bart", nskip = 250, ndpost = 50, keepevery = 10, mc.cores = 10)
 learner$train(task, row_ids = part$train)
@@ -104,7 +104,7 @@ See more details about `BART`'s parameters on the online [documentation](https:/
 ### distr
 
 What kind of object is the predicted `distr`?
-```{r 2023-10-25-bart-survival-007}
+```{r index-008}
 p$distr
 ```
 
@@ -118,7 +118,7 @@ p$distr
 
 Actually the `$distr` is an active [R6](https://r6.r-lib.org/index.html) field - this means that some computation is required to create it.
 What the prediction object actually stores internally is a 3d survival array (can be used directly with no performance overhead):
-```{r 2023-10-25-bart-survival-008}
+```{r index-009}
 dim(p$data$distr)
 ```
 
@@ -130,7 +130,7 @@ In our case, $23 \times 31 \times 50 = 35650$ so the conversion to an `Arrdist` 
 :::
 
 An example using the internal prediction data: get all the posterior probabilities of the 3rd patient in the test set, at 12 months (1 year):
-```{r 2023-10-25-bart-survival-009}
+```{r index-010}
 p$data$distr[3, 12, ]
 ```
 
@@ -141,7 +141,7 @@ In survival analysis, $S(t) = 1 - F(t)$, where $S(t)$ the survival function and 
 The latter can be interpreted as `risk` or probability of death up to time $t$.
 
 We can verify the above from the prediction object:
-```{r 2023-10-25-bart-survival-010}
+```{r index-011}
 surv_array = 1 - distr6::gprm(p$distr, "cdf") # 3d array
 all_equal(p$data$distr, surv_array)
 ```
@@ -155,7 +155,7 @@ To calculate `crank`, we need a survival matrix.
 So we have to choose which 3rd dimension we should use from the predicted survival array.
 This is what the `which.curve` parameter of the `learner` does:
 
-```{r 2023-10-25-bart-survival-011}
+```{r index-012}
 learner$param_set$get_values()$which.curve
 ```
 
@@ -166,7 +166,7 @@ Other possible values for `which.curve` are `mean` or a number denoting the exac
 ## Feature importance
 
 Default score is the **observed count of each feature** in the trees (so the higher the score, the more important the feature):
-```{r 2023-10-25-bart-survival-012}
+```{r index-013}
 learner$param_set$values$importance
 learner$importance()
 ```
@@ -178,7 +178,7 @@ We need to check that MCMC has converged, meaning that the chains have reached a
 
 We use Geweke's convergence diagnostic test as it is implemented in the `BART` R package.
 We choose 10 random patients from the train set to evaluate the MCMC convergence.
-```{r 2023-10-25-bart-survival-013}
+```{r index-014}
 #| label: diag-mcmc
 #| fig-cap: "Geweke plot for MCMC diagnostics. Z-scores for the difference in the mean survival prediction between the first 10% and last 50% part of a Markov chain. The predictions are taken from 10 random patients in the train set. Red lines indicate the a = 0.05 critical line. Only a few z-scores exceed the 95% limits so we conclude that convergence has been attained."
 #| fig-align: center
@@ -217,7 +217,7 @@ We will use the following survival metrics:
 
 For the first measure we will use the ERV (**Explained Residual Variation**) version, which standardizes the score against a Kaplan-Meier (KM) baseline [@Sonabend2022a].
 This means that values close to $0$ represent performance similar to a KM model, negative values denote worse performance than KM and $1$ is the absolute best possible score.
-```{r 2023-10-25-bart-survival-014}
+```{r index-015}
 measures = list(
   msr("surv.graf", ERV = TRUE),
   msr("surv.cindex", weight_meth = "G2", id = "surv.cindex.uno")
@@ -237,29 +237,28 @@ All metrics use by default the **median survival distribution** from the 3d arra
 Performing resampling with the `BART` learner is very easy using `mlr3`.
 
 We first stratify the data by `status`, so that in each resampling the proportion of censored vs un-censored patients remains the same:
-```{r 2023-10-25-bart-survival-015}
+```{r index-016}
 task$col_roles$stratum = 'status'
 task$strata
 ```
 
-```{r 2023-10-25-bart-survival-016}
-#| cache: true
+```{r index-017}
 rr = resample(task, learner, resampling = rsmp("cv", folds = 5), store_backends = TRUE)
 ```
 
 No errors or warnings:
-```{r 2023-10-25-bart-survival-017}
+```{r index-018}
 rr$errors
 rr$warnings
 ```
 
 Performance in each fold:
-```{r 2023-10-25-bart-survival-018}
+```{r index-019}
 rr$score(measures)
 ```
 
 Mean cross-validation performance:
-```{r 2023-10-25-bart-survival-019}
+```{r index-020}
 rr$aggregate(measures)
 ```
 
@@ -268,7 +267,7 @@ rr$aggregate(measures)
 We will choose two patients from the test set and plot their survival prediction posterior estimates.
 
 Let's choose the patients with the worst and the best survival time:
-```{r 2023-10-25-bart-survival-020}
+```{r index-021}
 death_times = p$truth[,1]
 sort(death_times)
 
@@ -282,19 +281,19 @@ death_times # 1st is worst, 2nd is best
 ```
 
 Subset `Arrdist` to only the above 2 patients:
-```{r 2023-10-25-bart-survival-021}
+```{r index-022}
 arrd = p$distr[patient_ids]
 arrd
 ```
 
 We choose time points (in months) for the survival estimates:
-```{r 2023-10-25-bart-survival-022}
+```{r index-023}
 months = seq(1, 36) # 1 month - 3 years
 ```
 
 We use the `$distr` interface and the `$survival` property to get survival probabilities from an `Arrdist` object as well as the **quantile credible intervals** (CIs).
 The median survival probabilities can be extracted as follows:
-```{r 2023-10-25-bart-survival-023}
+```{r index-024}
 med = arrd$survival(months) # 'med' for median
 
 colnames(med) = paste0(patient_ids, "_med")
@@ -305,13 +304,13 @@ head(med)
 We can briefly verify model's predictions: 1st patient survival probabilities on any month are lower (worst) compared to the 2nd patient.
 
 Note that subsetting an `Arrdist` (3d array) creates a `Matdist` (2d matrix), for example we can explicitly get the median survival probabilities:
-```{r 2023-10-25-bart-survival-024}
+```{r index-025}
 matd_median = arrd[, 0.5] # median
 head(matd_median$survival(months)) # same as with `arrd`
 ```
 
 Using the `mean` posterior survival probabilities or the ones from the last posterior draw is also possible and can be done as follows:
-```{r 2023-10-25-bart-survival-025}
+```{r index-026}
 matd_mean = arrd[, "mean"] # mean (if needed)
 head(matd_mean$survival(months))
 matd_50draw = arrd[, 50] # the 50th posterior draw
@@ -320,7 +319,7 @@ head(matd_50draw$survival(months))
 
 To get the CIs we will subset the `Arrdist` using a quantile number (0-1), which extracts a `Matdist` based on the cdf.
 The survival function is 1 - cdf, so low and upper bounds are reversed:
-```{r 2023-10-25-bart-survival-026}
+```{r index-027}
 low  = arrd[, 0.975]$survival(months) # 2.5% bound
 high = arrd[, 0.025]$survival(months) # 97.5% bound
 colnames(low)  = paste0(patient_ids, "_low")
@@ -330,7 +329,7 @@ high = as_tibble(high)
 ```
 
 The median posterior survival probabilities for the two patient of interest and the corresponding CI bounds in a tidy format are:
-```{r 2023-10-25-bart-survival-027}
+```{r index-028}
 surv_tbl =
   bind_cols(low, med, high) %>%
   pivot_longer(cols = !month, values_to = "surv",
@@ -340,7 +339,7 @@ surv_tbl
 ```
 
 We draw survival curves with the uncertainty for the survival probability quantified:
-```{r 2023-10-25-bart-survival-028}
+```{r index-029}
 #| label: surv-with-uq
 #| fig-cap: "Uncertainty quantification for the survival prediction of two patients in the test set using 95% credible intervals. The two vertical lines correspond to the reported time of death (in months) for the two patients."
 #| fig-align: center
@@ -373,7 +372,7 @@ Since `sex` is a categorical feature, we fit a linear model using as target vari
 The square root of that value is the correlation measure we want.
 :::
 
-```{r 2023-10-25-bart-survival-029}
+```{r index-030}
 # code from https://christophm.github.io/interpretable-ml-book/ale.html
 mycor = function(cnames, data) {
   x.num = data[, cnames[1], with = FALSE][[1]]
@@ -389,7 +388,7 @@ combs
 ```
 
 `sex` doesn't correlate strongly with any other feature, so we can compute the PDP:
-```{r 2023-10-25-bart-survival-030}
+```{r index-031}
 # create two datasets: one with males and one with females
 # all other features remain the same (use train data, 205 patients)
 d = task$data(rows = part$train) # `rows = part$test` to use the test set
@@ -434,7 +433,7 @@ pdp_tbl = bind_rows(data_males, data_females)
 pdp_tbl
 ```
 
-```{r 2023-10-25-bart-survival-031}
+```{r index-032}
 #| label: surv-pdp
 #| fig-cap: "Friedman’s partial dependence function with 95% prediction intervals: males vs females. Females show on average larger survival estimates compared to men, across all time points. Overlapping shaded area represents men and women that have similar survival characteristics."
 #| fig-align: center

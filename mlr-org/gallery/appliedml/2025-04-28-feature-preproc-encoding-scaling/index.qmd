@@ -26,7 +26,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -69,7 +69,7 @@ n = 1,000 observations of credits
 - `status`: Status of the debtor's checking account with the bank
 - `telephone`: Whether there is a telephone landline registered on the debtor's name
 
-```{r}
+```{r index-002}
 library(mlr3)
 library(mlr3learners)
 library(xgboost)
@@ -77,11 +77,11 @@ task = tsk("german_credit")
 ```
 
 <details>
-  <summary>**Recap: mlr3 Tasks**</summary> 
+  <summary>**Recap: mlr3 Tasks**</summary>
 
 An `mlr3` `Task` encapsulates data with meta-information, such as the name of the target variable and the type of the learning problem (in our example this would be a **classification** task, where the target is a factor label with relatively few distinct values).
 
-```{r}
+```{r index-003}
 task
 ```
 
@@ -89,19 +89,19 @@ We get a short summary of the task: It has 1000 observations and 21 columns of w
 
 By using the `$data()` method, we get access to the data (in the form of a `data.table`):
 
-```{r}
+```{r index-004}
 str(task$data())
 ```
 
 Note that a `mlr3` `Task` object comes with plenty of functionality in the form of fields, methods and active bindings, see `?Task`, e.g., to get a summary of all feature names, you can use:
 
-```{r}
+```{r index-005}
 task$feature_names
 ```
 
 To obtain information about the types of features of the task (similarly like in the data dictionary above), we can inspect the active binding fields of the task object (see, `?Task`):
 
-```{r}
+```{r index-006}
 task$feature_types
 ```
 
@@ -114,18 +114,18 @@ Use the one-hot encoding `PipeOp` to convert all categorical features from the `
 
 <details>
   <summary>**Hint 1:**</summary>
-  
+
   Load the `mlr3pipelines` package and get an overview of possible `PipeOp` that can be used for different preprocessing steps by printing `mlr_pipeops` or the first two columns of the corresponding table `as.data.table(mlr_pipeops)[,1:2]`. Look for a **factor encoding** and pass the corresponding `key` for factor encoding to the `po()` function (see also the help page `?PipeOpEncode`). Then, use the `$train()` method of the `PipeOp` object which expects a **list** containing the task to be converted as input and produces a **list** containing the converted task.
 
 </details>
 
 <details>
   <summary>**Hint 2:**</summary>
-  
-```{r, eval = FALSE}
+
+```{r index-007, eval = FALSE}
 library(mlr3pipelines)
 # Create a PipeOp object that applies one-hot encoding
-poe = po(...) 
+poe = po(...)
 # Apply a created PipeOp to e.g. preprocess an input
 encoded_task = poe$train(input = ...)$output
 str(...$data())
@@ -139,7 +139,7 @@ str(...$data())
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-008, eval = params$showsolution}
 library(mlr3pipelines)
 poe = po("encode", method = "one-hot")
 # Use the $help() method to open a help page of any PipeOp object
@@ -157,7 +157,7 @@ str(encoded_task$data())
 
 Some learners cannot handle categorical features such as the the `xgboost` learner (which gives an error message when applied to a task containing categorical features):
 
-```{r, error=TRUE}
+```{r index-009, error=TRUE}
 library(mlr3verse)
 lrnxg = lrn("classif.xgboost")
 lrnxg$train(task)
@@ -176,14 +176,14 @@ Train the ML pipeline on the `german_credit` task and make predictions on the tr
 
 <details>
   <summary>**Hint 2:**</summary>
-  
-```{r, eval = FALSE}
+
+```{r index-010, eval = FALSE}
 library(mlr3verse)
 lrnxg = lrn("classif.xgboost")
 poe = po(...)
 graph = ...
 
-glrn = as_learner(...) 
+glrn = as_learner(...)
 ...$train(...)
 ...$predict(...)
 ```
@@ -196,13 +196,13 @@ glrn = as_learner(...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-011, eval = params$showsolution}
 library(mlr3verse)
 lrnxg = lrn("classif.xgboost")
 poe = po("encode", method = "one-hot")
 graph = poe %>>% lrnxg
 
-glrn = as_learner(graph) # Alternative: glrn = GraphLearner$new(graph) 
+glrn = as_learner(graph) # Alternative: glrn = GraphLearner$new(graph)
 glrn$train(task)
 glrn$predict(task)
 ```
@@ -214,7 +214,7 @@ glrn$predict(task)
 
 # 3 Feature Transformation for Decision Trees
 
-The structure of a decision tree is insensitive to monotonic transformations of the features (and scaling is a monotonic transformation). 
+The structure of a decision tree is insensitive to monotonic transformations of the features (and scaling is a monotonic transformation).
 This means that although the scaled features are different to non-scaled features, the decision tree will have the same structure (the values of the split points for numeric feature might be different as the numeric features will have a different scale, but the structure of the decision tree will stay the same).
 
 ## 3.1 Preprocessing
@@ -232,7 +232,7 @@ Use the `PipeOp` to scale all numeric features from the `german_credit` task and
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-012, eval = params$showsolution}
 library(mlr3pipelines)
 pos = po("scale")
 poyj = po("yeojohnson")
@@ -268,7 +268,7 @@ Create two ML pipelines, one that combines the `classif.rpart` learner with the 
 
 The solution shows that the decision tree structure is exactly the same (although the split points of the numeric features such as `amount` and `duration` are different due to the transformed features):
 
-```{r, eval = params$showsolution}
+```{r index-013, eval = params$showsolution}
 library(mlr3pipelines)
 library(mlr3learners)
 library(xgboost)
@@ -286,7 +286,7 @@ rpart.plot(rpscale$model$classif.rpart$model)
 rpart.plot(rpyeojohnson$model$classif.rpart$model)
 ```
 
-```{r, eval = FALSE}
+```{r index-014, eval = FALSE}
 # Alternative solution using the transformed tasks:
 rp = lrn("classif.rpart")
 
@@ -316,14 +316,14 @@ In this exercise we want to conduct a benchmark that illustrates these claims.
 Consider the k-NN learner without scaling `lrn("classif.kknn", scale = FALSE)` and the decision tree `lrn("classif.rpart")`.
 Combine these two learners once with `po("scale")` (for normalization, i.e., subtracting the mean and dividing by the standard deviation) and once with `po("yeojohnson")` for Yeo-Johnson transformation of the numeric features.
 Then, setup a benchmark to compare their performance (including the non-scaled k-NN `lrn("classif.kknn", scale = FALSE)` and decision tree `lrn("classif.rpart")`) using 10-fold cross-validation.
-In total, you will benchmark 6 learners, the 4 ML pipelines and the 2 learners. 
+In total, you will benchmark 6 learners, the 4 ML pipelines and the 2 learners.
 For reproducibility, use the seed `set.seed(2023)`.
 
 
 <details>
   <summary>**Hint:**</summary>
 
-```{r, eval = FALSE}
+```{r index-015, eval = FALSE}
 library(mlr3pipelines)
 
 set.seed(2023)
@@ -351,7 +351,7 @@ autoplot(bmr)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-016, eval = params$showsolution}
 library(mlr3pipelines)
 pos = po("scale")
 poyj = po("yeojohnson")

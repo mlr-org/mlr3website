@@ -86,7 +86,7 @@ One explanation for why `mlr3` might in some cases use an unusual amount of memo
 This configuration option is enabled by default when managing dependencies via `renv`, see issue [#1713](https://github.com/rstudio/renv/issues/1713).
 To opt out of this default run the code below, e.g. by adding it to your `.Rprofile`:
 
-```{r}
+```{r faq-001}
 options("install.opts" = "--without-keep.source")
 ```
 
@@ -97,7 +97,8 @@ Note that this is different than controlling the generic mlr3 logger, which is c
 Most of these learners provide some option in their paramset to control output behavior.
 Another option is to simply use [Encapsulation](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-logging), likely in the `evaluate` mode, running the learner in the same R session, but with caught exceptions and redirected output.
 
-```{r}
+```{r faq-002}
+#| eval: false
 library(mlr3)
 library(mlr3learners)
 mytask = tsk("iris")
@@ -117,7 +118,7 @@ This is illustrated below:
 
 1. Using an old `mlr3` version:
 
-   ```{r, eval = FALSE}
+   ```{r faq-003, eval = FALSE}
    learner = lrn("classif.rpart")
    learner$train(tsk("iris"))
    saveRDS(learner, "learner.rds")
@@ -125,7 +126,7 @@ This is illustrated below:
 
 1. With a subsequent `mlr3` version:
 
-   ```{r, eval = FALSE}
+   ```{r faq-004, eval = FALSE}
    learner = lrn("classif.rpart")
    learner_old = readRDS("learner.rds")
    learner$state = learner_old$state
@@ -153,7 +154,7 @@ This also affects `ResampleResult` and `BenchmarkResult` objects.
 The lazy-load database is an internal feature of R, and has issues handling active bindings ([https://github.com/r-lib/R6/issues/152](https://github.com/r-lib/R6/issues/152)).
 Fortunately, it is possible to disable lazy-loading by setting the chunk option `cache.lazy` to `FALSE`:
 
-```{r, eval = FALSE}
+```{r faq-005, eval = FALSE}
 knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE)
 ```
 

@@ -26,7 +26,7 @@ format:
 
 
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 requireNamespace("kknn")
 requireNamespace("mlr3learners")
@@ -56,7 +56,7 @@ The learner we are focusing on here is a decision tree implemented in [`rpart`](
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-002, eval=FALSE}
 library(mlr3)
 task = tsk(...)
 lrn_rpart = lrn(...) # create the learner
@@ -73,7 +73,7 @@ lrn_rpart$... # access the raw model object that was fitted
 
 :::{.b64-solution}
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-003, eval=params$showsolution, base64encode=params$base64encode}
 library(mlr3)
 task = tsk("german_credit")
 lrn_rpart = lrn("classif.rpart")
@@ -104,7 +104,7 @@ Note that different packages exist to plot the decision tree structure in a visu
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-004, eval=FALSE}
 library("rpart")
 ...(lrn_rpart$...)
 text(lrn_rpart$...)
@@ -125,7 +125,7 @@ library("rpart.plot")
 
 The possibility of visualizing a tree makes it interpretable and helps to understand how new predictions are calculated.
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-005, eval=params$showsolution, base64encode=params$base64encode}
 library(rpart.plot)
 
 rpart.plot(lrn_rpart$model)
@@ -133,19 +133,19 @@ rpart.plot(lrn_rpart$model)
 __Note:__ Other functions to visualize an `rpart` tree are:
 
 - The (very) basic `rpart` plot method:
-```{r, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
+```{r index-006, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
 plot(lrn_rpart$model)
 text(lrn_rpart$model, use.n = TRUE)
 ```
 - Convert the `rpart` object to a `party` object to automatically use the respective `plot()` method:
-```{r, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
+```{r index-007, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
 library(partykit)
 partytree = as.party(lrn_rpart$model)
 plot(partytree)
 ```
 
 - Use [`ggparty`](https://cran.r-project.org/web/packages/ggparty/vignettes/ggparty-graphic-partying.html) to create highly customizable plots:
-```{r, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
+```{r index-008, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
 library(ggparty)
 
 ggparty(partytree) +
@@ -184,7 +184,7 @@ Use the `mlr3` learner `classif.ranger` which uses the [`ranger`](https://cran.r
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-009, eval=FALSE}
 library(mlr3)
 library(mlr3learners)
 
@@ -201,7 +201,7 @@ lrn_ranger$...(...) # train the learner on the task
 
 :::{.b64-solution}
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-010, eval=params$showsolution, base64encode=params$base64encode}
 library(mlr3)
 library(mlr3learners)
 
@@ -231,7 +231,7 @@ A benchmark requires three arguments: a task, a list of learners, and a resampli
 :::{.b64-solution}
 
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-011, eval=params$showsolution, base64encode=params$base64encode}
 tree = lrn("classif.rpart", predict_type = "prob")
 forest = lrn("classif.ranger", predict_type = "prob")
 
@@ -274,9 +274,9 @@ In the next step, we will use this list to see how the model performance changes
 
 <details>
 <summary>**Hint 1:**</summary>
-The learners we are focusing on here is a decision tree implemented in [`rpart`](https://cran.r-project.org/web/packages/rpart/) and a random forest implemented in  [`ranger`](https://cran.r-project.org/web/packages/ranger/index.html). The corresponding `mlr3` learner key is `"classif.rpart"` and `"classif.ranger"`. 
+The learners we are focusing on here is a decision tree implemented in [`rpart`](https://cran.r-project.org/web/packages/rpart/) and a random forest implemented in  [`ranger`](https://cran.r-project.org/web/packages/ranger/index.html). The corresponding `mlr3` learner key is `"classif.rpart"` and `"classif.ranger"`.
 In `mlr3`, we can get an overview about all hyperparameters in the `$param_set` slot. With a `mlr3` learner it is possible to get help about the underlying method by using the `$help()` method (e.g. `?lrn_ranger$help()`):
-```{r, eval=FALSE}
+```{r index-012, eval=FALSE}
 lrn("classif.rpart")$help()
 lrn("classif.ranger")$help()
 ```
@@ -286,7 +286,7 @@ If you are looking for a short description of the meaning of a hyperparameter, y
 <details>
 <summary>**Hint 2:**</summary>
 The possible choices for the hyperparameters can also be viewed with `$param_set`. Setting the hyperparameters can be done directly in the `lrn()` call:
-```{r, eval=FALSE}
+```{r index-013, eval=FALSE}
 # Define a list of learners for the benchmark:
 lrns = list(
   lrn("classif.rpart", ...),
@@ -305,7 +305,7 @@ lrns = list(
 
 :::{.b64-solution}
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-014, eval=params$showsolution, base64encode=params$base64encode}
 library(mlr3verse)
 set.seed(31415L)
 
@@ -335,7 +335,7 @@ The function to conduct the benchmark is `benchmark` and requires to define the 
 
 <details>
 <summary>**Hint 2:**</summary>
-```{r, eval=FALSE}
+```{r index-015, eval=FALSE}
 set.seed(31415L)
 
 lrns = list(
@@ -362,7 +362,7 @@ mlr3viz::autoplot(bmr, measure = msr("classif.ce"))
 
 :::{.b64-solution}
 
-```{r, eval=params$showsolution, base64encode=params$base64encode}
+```{r index-016, eval=params$showsolution, base64encode=params$base64encode}
 set.seed(31415L)
 
 lrns = list(

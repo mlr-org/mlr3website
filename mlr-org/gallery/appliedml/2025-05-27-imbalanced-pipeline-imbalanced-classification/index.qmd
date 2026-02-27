@@ -24,7 +24,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -54,26 +54,26 @@ The data does not contain the original images but extracted numerical features.
 
 ## Descriptive analysis and preprocessing
 
-```{r}
+```{r index-002}
 library(data.table)
 oil = fread("../data/oil_spill.csv")
 ```
 In our modeling approach we ignore spatial correlation in the patches and therefore drop the first column.
 
-```{r}
+```{r index-003}
 oil$V1 = NULL
 ```
 
 We also encode the target variable as a factor and rename it.
 
-```{r}
+```{r index-004}
 oil$oilspill = factor(oil$V50, levels = c(0, 1), labels = c("no", "yes"))
 oil$V50 = NULL
 ```
 
 The following gives us a nice compact summary of the data.
 
-```{r, echo=TRUE, out.width='.8\\textwidth', fig.width=8, fig.height=3}
+```{r index-005, echo=TRUE, out.width='.8\\textwidth', fig.width=8, fig.height=3}
 skimr::skim(oil)
 ```
 
@@ -106,16 +106,16 @@ Inspect the results and answer whether accuracy is a good metric for this proble
 
 <details>
   <summary>**Recap: Stratification**</summary>
-  
+
   Stratification consists of dividing the population into subsets (called strata) within each of which an independent sample is selected. When setting the column role `"stratum"`, resamplings that are applied to the task will automatically take the set stratum into account.
 
   For binary classification problems, the column role `"positive"` is important, because metrics like the TPR and FPR can only be understood when knowing what is defined as the positive class.
-  
+
 </details>
 
 <details>
   <summary>**Hint 1:**</summary>
-  
+
   The function `as_task_classif()` can help to create a classification task from the dataset.
   You can set the positive class and the stratification role by changing `task$positive` and `task$col_roles$stratum` after creating the task.
 
@@ -126,7 +126,7 @@ Inspect the results and answer whether accuracy is a good metric for this proble
 <details>
   <summary>**Hint 2:**</summary>
 
-```{r, eval = FALSE}
+```{r index-006, eval = FALSE}
 library(mlr3verse)
 task = as_task_classif(...)
 task$col_roles$stratum = ...
@@ -147,7 +147,7 @@ bmr$aggregate(...)
 :::{.b64-solution}
 
   We convert the dataset to a task and set the stratum and the positive class.
-```{r}
+```{r index-007}
 library(mlr3verse)
 task = as_task_classif(oil, target = "oilspill")
 task$col_roles$stratum = "oilspill"
@@ -156,7 +156,7 @@ task$positive = "yes"
 
   Now we conduct the benchmark experiment and compare the resulting predictions using the accuracy, FPR and TPR.
 
-```{r}
+```{r index-008}
 learners = lrns(c("classif.rpart", "classif.ranger"))
 res = rsmp("repeated_cv", folds = 3, repeats = 5)$instantiate(task)
 design = benchmark_grid(task, learners, res)
@@ -201,7 +201,7 @@ variable? Compare this new metric with the standard accuracy used in the previou
 
 </details>
 
-```{r, eval = !params$showsolution, echo = FALSE, results='asis'}
+```{r index-009, eval = !params$showsolution, echo = FALSE, results='asis'}
 cat("<!--")
 ```
 
@@ -218,7 +218,7 @@ cat("<!--")
 
   Comparing the balanced accuracy with the standard accuracy paints a very different picture.
 
-```{r}
+```{r index-010}
 bmr$aggregate(msrs(c("classif.acc", "classif.bacc")))
 ```
 
@@ -253,7 +253,7 @@ Add it to the benchmark result and compare the models with respect to the balanc
 <details>
   <summary>**Hint 2:**</summary>
 
-```{r, eval = FALSE}
+```{r index-011, eval = FALSE}
 graph = po(
   "classbalancing",
   ratio = ...,
@@ -283,7 +283,7 @@ autoplot(bmr, measure = ...)
 
   We start by creating and visualizing the machine learning pipeline.
 
-```{r, eval = params$showsolution}
+```{r index-012, eval = params$showsolution}
 graph = po("classbalancing", ratio = 2, reference = "minor", adjust = "minor") %>>%
   lrn("classif.ranger")
 
@@ -292,13 +292,13 @@ graph$plot()
 
   The instantiated resampling can be retrieved from the design. We can select any row, because all instantiated resamplings from the previous benchmark experiment are identical.
 
-```{r, eval = params$showsolution}
+```{r index-013, eval = params$showsolution}
 resampling = design$resampling[[1L]]
 identical(design$resampling[[1L]], design$resampling[[2L]])
 ```
 
   We convert the graph to a learner and execute our usual routine.
-```{r, eval = params$showsolution}
+```{r index-014, eval = params$showsolution}
 learner_balanced = as_learner(graph)
 
 rr = resample(task, learner_balanced, resampling)
@@ -308,7 +308,7 @@ bmr = c(bmr, rr)
 
   This time we compare the balanced accuracy values using a boxplot. The individual data-points for each boxplot are folds of the repeated crossvalidation.
 
-```{r, eval = params$showsolution}
+```{r index-015, eval = params$showsolution}
 autoplot(bmr, measure = msr("classif.bacc"))
 ```
 
@@ -326,7 +326,7 @@ Repeat the previous experiment, but now not only upsample the minority class lik
 
 <details>
   <summary>**Recap: Downsampling**</summary>
-  
+
   Downsampling is a mechanism that reduces the count of training samples falling
 under the majority class.
 
@@ -334,7 +334,7 @@ under the majority class.
 
 <details>
   <summary>**Hint 1:**</summary>
-  
+
   Adjust the pipeline from the previous exercise.
   Have a look what the `adjust` parameter of `po("classbalancing")` can be set to.
 
@@ -343,7 +343,7 @@ under the majority class.
 <details>
   <summary>**Hint 2:**</summary>
 
-```{r, eval = FALSE}
+```{r index-016, eval = FALSE}
 graph = po(
   "classbalancing",
   ratio = ...,
@@ -366,7 +366,7 @@ learner_balanced_all$id = ... # Set an id so that you can distinguish the pipeli
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-017, eval = params$showsolution}
 graph = po(
   "classbalancing",
   ratio = 2,
@@ -397,7 +397,7 @@ Add another logistic learner to the benchmark that uses instance-specific weight
 
 <details>
   <summary>**Hint 1:**</summary>
-  
+
 Use a graph that contains `po("classweights")` to specify the weights before the model training.
 
 </details>
@@ -408,7 +408,7 @@ Use a graph that contains `po("classweights")` to specify the weights before the
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-018, eval = params$showsolution}
 # Learner with instance-specific weights
 graph = po("classweights", minor_weight = 2) %>>%
   lrn("classif.log_reg")
@@ -443,7 +443,7 @@ Construct an `auto_tuner` with a 3-fold inner CV and a grid search over a suitab
 <details>
   <summary>**Hint 1:**</summary>
 
-```{r, eval = FALSE}
+```{r index-019, eval = FALSE}
 graph = po("classbalancing", reference = "minor", adjust = "all") %>>%
   lrn("classif.ranger")
 
@@ -474,7 +474,7 @@ autoplot(bmr, measure = msr("classif.bacc"))
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-020, eval = params$showsolution}
 
 graph = po("classbalancing", reference = "minor", adjust = "all") %>>%
   lrn("classif.ranger")

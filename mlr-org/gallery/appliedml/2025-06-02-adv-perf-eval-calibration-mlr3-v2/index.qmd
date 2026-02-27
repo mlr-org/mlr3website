@@ -24,7 +24,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -37,7 +37,7 @@ In a calibrated model, the predicted probability for an input feature vector can
 
 We will use `mlr3` for machine learning, and `mlr3calibration` specifically for calibration:
 
-```{r, message = FALSE}
+```{r index-002, message = FALSE}
 if (!require("mlr3calibration")) {
   remotes::install_github("AdriGl117/mlr3calibration")
 }
@@ -50,11 +50,11 @@ set.seed(12345)
 
 # Data: predicting cell segmentation quality
 
-The `modeldata` package contains a data set called `cells`. Initially distributed by [Hill and Haney (2007)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-340), they showed how to create models that predict the _quality_ of the image analysis of cells. The outcome has two levels: `"PS"` (for poorly segmented images) or `"WS"` (well-segmented). There are 56 image features that can be used to build a classifier. 
+The `modeldata` package contains a data set called `cells`. Initially distributed by [Hill and Haney (2007)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-340), they showed how to create models that predict the _quality_ of the image analysis of cells. The outcome has two levels: `"PS"` (for poorly segmented images) or `"WS"` (well-segmented). There are 56 image features that can be used to build a classifier.
 
-Let's load the data and remove an unwanted column: 
+Let's load the data and remove an unwanted column:
 
-```{r}
+```{r index-003}
 library(modeldata)
 data(cells, package = "modeldata")
 cells$case <- NULL
@@ -79,7 +79,7 @@ You can use `partition()` on a given task object to create simple train-test spl
 
 :::{.b64-solution}
 
-```{r}
+```{r index-004}
 task = as_task_classif(cells, target = "class")
 splits = partition(task)
 cells_train = task$clone()$filter(splits$train)
@@ -92,7 +92,7 @@ cells_test = task$clone()$filter(splits$test)
 
 ## 1.2 Training a Naive Bayes model
 
-We'll show the utility of calibration tools by using a type of model that, in this instance, is likely to produce a poorly calibrated model. The Naive Bayes classifier is a well-established model that assumes that the predictors are statistically _independent_ of one another (to simplify the calculations).  While that is certainly not the case for this data, the model can be effective at discriminating between the classes. Unfortunately, when there are many predictors in the model, it has a tendency to produce class probability distributions that are pathological. The predictions tend to gravitate to values near zero or one, producing distributions that are "U"-shaped ([Kuhn and Johnson, 2013](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q=%22Applied+Predictive+Modeling%22&btnG=)). 
+We'll show the utility of calibration tools by using a type of model that, in this instance, is likely to produce a poorly calibrated model. The Naive Bayes classifier is a well-established model that assumes that the predictors are statistically _independent_ of one another (to simplify the calculations).  While that is certainly not the case for this data, the model can be effective at discriminating between the classes. Unfortunately, when there are many predictors in the model, it has a tendency to produce class probability distributions that are pathological. The predictions tend to gravitate to values near zero or one, producing distributions that are "U"-shaped ([Kuhn and Johnson, 2013](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q=%22Applied+Predictive+Modeling%22&btnG=)).
 
 To demonstrate, let's set up a Naive Bayes learner and train it using the training data.
 
@@ -109,7 +109,7 @@ First, create and train the learner.
 
 :::{.b64-solution}
 
-```{r} 
+```{r index-005}
 learner = lrn("classif.naive_bayes", predict_type = "prob")
 learner$id <- "Uncalibrated Learner"
 learner$train(cells_train)
@@ -128,7 +128,7 @@ Next, use the trained model to predict on unseen test data. In `mlr3`, this will
 
 You can use this code skeleton to produce the desired output:
 
-```{r, eval = FALSE}
+```{r index-006, eval = FALSE}
 learner$predict(...)
 ```
 
@@ -140,7 +140,7 @@ learner$predict(...)
 
 :::{.b64-solution}
 
-```{r}
+```{r index-007}
 prediction = learner$predict(cells_test)
 prediction
 ```
@@ -160,7 +160,7 @@ We want to use two metrics to judge how well the model performs. First, the area
 
 :::{.b64-solution}
 
-```{r}
+```{r index-008}
 measures = msrs(c("classif.auc", "classif.bbrier"))
 prediction$score(measures)
 ```
@@ -173,7 +173,7 @@ prediction$score(measures)
 
 Let's assess if our model is well-calibrated. Spoiler: it is not. The first clue is the extremely U-shaped distribution of the probability scores:
 
-```{r, message = FALSE}
+```{r index-009, message = FALSE}
 hist(prediction$data$prob, breaks = (0:10)/10)
 ```
 
@@ -194,7 +194,7 @@ Then, assess if the model is calibrated with `calibrationplot()`. The calibratio
 
 :::{.b64-solution}
 
-```{r}
+```{r index-010}
 calibrationplot(list(learner), cells_test)
 ```
 The model is not well-calibrated. For predicted probabilities from 0 to 0.4, it seems to underestimate the true probability, for predicted probabilities higher than 0.4, it tends to overestimate the true probability.
@@ -205,7 +205,7 @@ The model is not well-calibrated. For predicted probabilities from 0 to 0.4, it 
 
 ## 1.6 Platt Scaling
 
-The good news is that we can do something about this. There are tools to "fix" the probability estimates so that they have better properties, such as falling along the diagonal lines in the diagnostic plots shown above. Different methods improve the predictions in different ways. 
+The good news is that we can do something about this. There are tools to "fix" the probability estimates so that they have better properties, such as falling along the diagonal lines in the diagnostic plots shown above. Different methods improve the predictions in different ways.
 
 The most common approach is Platt scaling, also called logistic calibration. This works in the following way: The original model is used to predict on the validation data set, returning predicted probabilities. We already know these probabilities are off, i.e., not well-calibrated. Then, we fit a simple logistic regression model, using the predicted probabilities from the original model as "x/feature" and the true labels as "y/target". In this way, we stack a second model on top of the first one: Original Model -> Probabilities -> Logistic Regression Model -> Calibrated Probabilities.
 
@@ -217,7 +217,7 @@ In `mlr3calibration`, to calibrate a learner you need a base learner (which will
 <details>
 <summary>**Hint 1:**</summary>
 
-```{r, eval = FALSE}
+```{r index-011, eval = FALSE}
 learner_uncal = ...
 rsmp = ...
 learner_cal = as_learner(PipeOpCalibration$new(...))
@@ -239,7 +239,7 @@ Check the documentation of `PipeOpCalibration` with `??PipeOpCalibration`.
 
 :::{.b64-solution}
 
-```{r}
+```{r index-012}
 learner_uncal = lrn("classif.naive_bayes", predict_type = "prob")
 rsmp = rsmp("holdout")
 learner_cal = as_learner(PipeOpCalibration$new(learner = learner_uncal, method = "platt", rsmp = rsmp))
@@ -258,7 +258,8 @@ The calibrated learner can be trained on a `task` as any other learner. Train th
 
 :::{.b64-solution}
 
-```{r}
+```{r index-013}
+#| eval: false
 learner_cal$train(cells_train)
 calibrationplot(list(learner, learner_cal), cells_test, bins = 5)
 ```
@@ -269,7 +270,7 @@ An improvement can also be observed here, as the calibration diagrams of the cal
 
 :::
 
- 
+
 # 2 Isotonic regression
 
 A different approach to calibration is to use isotonic regression. In a manner similar to logistic calibration, use `mlr3` to calibrate the Naive Bayes model using isotonic regression. Do we improve the calibration in comparison to Platt scaling?
@@ -277,7 +278,7 @@ A different approach to calibration is to use isotonic regression. In a manner s
 <details>
 <summary>**Hint 1:**</summary>
 
-```{r, eval = FALSE}
+```{r index-014, eval = FALSE}
 learner_uncal = ...
 rsmp = ...
 learner_cal = as_learner(PipeOpCalibration$new(...))
@@ -300,9 +301,10 @@ calibrationplot(...)
 
 :::{.b64-solution}
 
-Yes, we can see in the plot that it is very close to the true probabilities: 
+Yes, we can see in the plot that it is very close to the true probabilities:
 
-```{r}
+```{r index-015}
+#| eval: false
 # Train base model on training set
 learner_uncal <- lrn("classif.naive_bayes", predict_type = "prob")
 rsmp = rsmp("holdout")
@@ -336,7 +338,7 @@ Fit 10 Naive Bayes models using 10-fold CV and calibrate each of these models us
 
 You can use the following code skeleton, detailing the required steps:
 
-```{r, eval = FALSE}
+```{r index-016, eval = FALSE}
 pipeline_cal = as_learner(PipeOpCalibration$new(learner = ...,
                                                 rsmp = ...,
                                                 method = ...))
@@ -353,7 +355,8 @@ calibrationplot(..., smooth = TRUE)
 
 :::{.b64-solution}
 
-```{r}
+```{r index-017}
+#| eval: false
 pipeline_cal = as_learner(PipeOpCalibration$new(learner = lrn("classif.naive_bayes", predict_type = "prob"),
                                                 rsmp = rsmp("cv", folds = 10),
                                                 method = "beta"))
