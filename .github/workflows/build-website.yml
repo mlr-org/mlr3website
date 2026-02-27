@@ -28,7 +28,8 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           additional-repositories: https://mlr-org.r-universe.dev
-          extra-packages: mlr-org/survdistr
+          extra-packages: |
+            mlr-org/survdistr
 
       - name: Install torch
         shell: Rscript {0}
