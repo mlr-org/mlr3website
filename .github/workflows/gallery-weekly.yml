@@ -2,12 +2,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 13 * * 2"
-  push:
-    paths:
-      - "mlr-org/gallery/**"
-  pull_request:
-    paths:
-      - "mlr-org/gallery/**"
 
 name: gallery-weekly
 
@@ -22,8 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install mlr3website
-        run: R CMD INSTALL .
+      - name: Install mlr3website without dependencies
+        shell: Rscript {0}
+        run: |
+          pak::pkg_install(".", dependencies = FALSE)
 
       - name: Render gallery
         run: |
