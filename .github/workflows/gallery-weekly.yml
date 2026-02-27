@@ -16,11 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install mlr3website without dependencies
-        shell: Rscript {0}
-        run: |
-          pak::pkg_install(".", dependencies = FALSE)
-
       - name: Render gallery
         run: |
           cd mlr-org
