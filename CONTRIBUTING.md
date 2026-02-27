@@ -23,16 +23,28 @@ Posts are stored in `mlr-org/gallery/{category}/{post-name}/index.qmd`.
 4. Render the post using the `mlrorg/mlr3-gallery` Docker image before opening a PR:
 
 ```bash
-docker run --name mlr3gallery \
-  -v $(pwd):/mlr3website \
+docker run --name mlr3-gallery \
+  -v $(pwd):/workspace \
+  -w /workspace \
   --rm \
-  mlrorg/mlr3-gallery \
-  bash -c "cd /mlr3website && R CMD INSTALL . && cd mlr-org && quarto render gallery/{category}/{post}/index.qmd"
+  mlrorg/mlr3-gallery:latest \
+  bash -c "cd mlr-org && quarto render gallery/{category}/{post}/index.qmd"
 ```
 
 Because gallery posts are not re-rendered in CI, you must include the rendered output in the `mlr-org/_freeze/` subdirectory when submitting a pull request.
 Rendering the website after adding a new gallery post with docker can fail with permission errors.
 Run `sudo chown -R $USER .` to fix this.
+
+### Rendering the gallery with docker
+
+```bash
+ docker run --name mlr3-gallery \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  --rm \
+  mlrorg/mlr3-gallery:latest \
+  bash -c "cd mlr-org && quarto render gallery/"
+```
 
 ### Front Matter
 
