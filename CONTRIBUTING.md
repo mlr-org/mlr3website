@@ -1,5 +1,6 @@
 # Contributing to the mlr3 Website
 
+
 ## Rendering the Website
 
 Clone the repository, install the `mlr3website` R package, and preview using:
@@ -98,3 +99,10 @@ Before submitting a pull request:
 - Check that the preview builds without errors.
 
 For questions, open an issue or reach out on [Mattermost](https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/).
+
+## Installing the mlr3website R package
+
+```R
+pak::repo_add("https://mlr-org.r-universe.dev")
+pak::pkg_install(c("mlr-org/survdistr", "."), dependencies = TRUE)
+```

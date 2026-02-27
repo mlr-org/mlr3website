@@ -2,9 +2,16 @@ all: serve
 
 .PHONY : help
 help :
+	@echo "install				: Install the mlr3website package and dependencies."
 	@echo "serve				: Start a http server to serve the book."
 	@echo "serverefresh			: Clear cache and start a http server to serve the book."
 	@echo "render				: Render website."
+
+install:
+	Rscript -e 'pak::repo_add("https://mlr-org.r-universe.dev"); pak::pkg_install(c("mlr-org/survdistr", "."), dependencies = TRUE)'
+
+install-nodeps:
+	Rscript -e 'pak::repo_add("https://mlr-org.r-universe.dev"); pak::pkg_install(c("mlr-org/survdistr", "."))'
 
 serve:
 	quarto preview mlr-org/
