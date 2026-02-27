@@ -29,15 +29,11 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
 
-      - name: Install mlr3website package
+      - name: Install mlr3website package with dependencies
         shell: Rscript {0}
         run: |
           pak::repo_add("https://mlr-org.r-universe.dev")
           pak::pkg_install(c("mlr-org/survdistr", "."), dependencies = TRUE)
-
-      - name: Install torch
-        shell: Rscript {0}
-        run: |
           torch::install_torch()
 
       - name: Render site
