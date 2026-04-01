@@ -25,7 +25,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -46,7 +46,7 @@ Nested resampling evaluates a learner combined with a tuning strategy to correct
 
 For this exercise, we use the same setup as for the tuning use-case with a 3-fold CV, `msr("classif.ce")` as performance measure, a random search, and a termination combination of 40 evaluations. Define an `AutoTuner` with `auto_tuner()` and train it on the `german_credit` task:
 
-```{r}
+```{r index-002}
 library(mlr3verse)
 task = tsk("german_credit")
 ```
@@ -63,7 +63,7 @@ The `AutoTuner` is defined by `auto_tuner()` by specifying the `learner`, `resam
 
 <details>
 <summary>**Hint 2**</summary>
-```{r, eval=FALSE}
+```{r index-003, eval=FALSE}
 library(mlr3)
 library(mrl3learners)
 library(mlr3tuning)
@@ -104,7 +104,7 @@ at$...(...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-004, eval = params$showsolution}
 library(mlr3)
 library(mlr3learners)
 library(mlr3tuning)
@@ -138,24 +138,24 @@ at$train(task)
 ```
 
 The tuning archive of the internal tuning instance can be accessed via:
-```{r, eval = params$showsolution}
+```{r index-005, eval = params$showsolution}
 arx = at$tuning_instance$archive
 # or
 arx = at$archive
 ```
 
 The trained learner on the best parameter configuration is stored in `at$learner`:
-```{r, eval = params$showsolution}
+```{r index-006, eval = params$showsolution}
 at$learner
 ```
 
 The configuration aligns with the result of the tuning (on the scale of the param set):
-```{r, eval = params$showsolution}
+```{r index-007, eval = params$showsolution}
 at$tuning_result
 ```
 
 As already mentioned, the tuning instance can addressed via `at$tuning_instance`. From this instance we can obtain all information from the tuning:
-```{r, eval = params$showsolution}
+```{r index-008, eval = params$showsolution}
 at$tuning_instance$result_y
 at$tuning_instance$result_x_domain
 ```
@@ -177,7 +177,7 @@ As for normal learner, we first have to define the resampling strategy and then 
 
 <details>
 <summary>**Hint 2**</summary>
-```{r, eval=FALSE}
+```{r index-009, eval=FALSE}
 outer = rsmp(...)
 res = ...(task = ..., learner = ..., resampling = outer)
 ```
@@ -190,7 +190,7 @@ res = ...(task = ..., learner = ..., resampling = outer)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-010, eval = params$showsolution}
 set.seed(31415)
 
 outer = rsmp("cv", folds = 3)
@@ -200,7 +200,7 @@ res = resample(task = task, learner = at, resampling = outer)
 ```
 
 The estimated generalization error then can be obtained by calling `$aggregate()` with the specific measure. The results from the individual folds can be obtained with `$score()`:
-```{r, eval = params$showsolution}
+```{r index-011, eval = params$showsolution}
 res$aggregate(msr("classif.ce"))
 res$score(msr("classif.ce"))
 ```
@@ -212,7 +212,7 @@ res$score(msr("classif.ce"))
 
 ## Benchmark comparison
 
-Conduct a benchmark to compare the previous KNN-AutoTuner that automatically finds the best hyperparameters with an untuned k-NN and two further but untuned learners in with their default hyperparametervalues (e.g., a decision tree and a random forest without tuning them). 
+Conduct a benchmark to compare the previous KNN-AutoTuner that automatically finds the best hyperparameters with an untuned k-NN and two further but untuned learners in with their default hyperparametervalues (e.g., a decision tree and a random forest without tuning them).
 Think about suitable learners (which you already know) and run a benchmark with `benchmark()`. What can you observe (especially when looking at the untuned methods vs. the tuned k-NN model)?
 
 <details>
@@ -223,7 +223,7 @@ A list of all possible learners can be achieved via `as.data.table(mlr_learners)
 <details>
 <summary>**Hint 2**</summary>
 Conducting the benchmark requires to pass a `benchmark_grid()` to the `benchmark()` function:
-```{r, eval=FALSE}
+```{r index-012, eval=FALSE}
 l1 = lrn(...)
 l2 = lrn(...)
 l3 = lrn(...)
@@ -241,7 +241,7 @@ bmr = ...(...(
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-013, eval = params$showsolution}
 set.seed(31415)
 
 library(mlr3learners)
@@ -261,7 +261,7 @@ bmr = benchmark(benchmark_grid(
 
 Again, we can calculate the generalization error with `$aggregate()` or visualize the result with `mlr3viz` and the `autoplot()` function:
 
-```{r, eval = params$showsolution}
+```{r index-014, eval = params$showsolution}
 bmr$aggregate(msr("classif.ce"))
 
 library(mlr3verse)
@@ -278,5 +278,5 @@ We observe that the random forest is very good out of the box without tuning. Fo
 # Summary
 
 - We learned how to encapsulate a learner from its HPs by wrapping it in an `AutoTuner`.
-- The `AutoTuner` does so by applying internal HPO using an inner resampling. 
+- The `AutoTuner` does so by applying internal HPO using an inner resampling.
 - We have to additionally resample the `AutoTuner` to get valid estimations (outer resampling) and be able to compare it with other learners. The outer resampling that is applied to a learner that already performs resampling intrinsically (the inner resampling) for finding the best HPC is called nested resampling.

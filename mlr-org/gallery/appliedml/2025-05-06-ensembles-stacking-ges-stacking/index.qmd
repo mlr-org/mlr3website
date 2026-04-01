@@ -1,5 +1,5 @@
 ---
-title: Greedy Ensemble Selection and Stacking 
+title: Greedy Ensemble Selection and Stacking
 group: Ensembles Stacking
 categories:
   - ensembles stacking
@@ -24,7 +24,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -70,7 +70,7 @@ n = 1,000 observations of credits
 
 # Prerequisites
 
-```{r}
+```{r index-002}
 library(mlr3)
 library(mlr3learners)
 library(mlr3pipelines)
@@ -103,7 +103,7 @@ In this exercise, we will also use an outer test split to properly evaluate the 
 After you have implemented GES, make sure to benchmark the weights it found against the weights found by CMA-ES.
 
 You can use the following code to do this:
-```{r, eval=FALSE}
+```{r index-003, eval=FALSE}
 bg = benchmark_grid(task, list(grl, grl_weights_optimized_cmaes, dt, kknn, log_reg, featureless), outer_split)
 b = benchmark(bg)
 b$aggregate(msr("classif.auc"))
@@ -126,8 +126,8 @@ GES is conceptually very simple:
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-004, eval = FALSE}
 outer_split = rsmp("holdout")$instantiate(task)
 
 #########################################################################################
@@ -268,7 +268,7 @@ grl_weights_optimized_ges$param_set$get_values()[["classifavg.weights"]]
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-005, eval = params$showsolution}
 outer_split = rsmp("holdout")$instantiate(task)
 
 #########################################################################################
@@ -337,7 +337,7 @@ grl_weights_optimized_cmaes$param_set$set_values(.values = list(classifavg.weigh
 grl_weights_optimized_cmaes$id = paste0(grl_weights_optimized_cmaes$id, ".optimized_cmaes")
 #########################################################################################
 ```
-```{r, eval = params$showsolution}
+```{r index-006, eval = params$showsolution}
 #########################################################################################
 ### GES implementation
 get_ges_weights = function(selected, learner_num_ids) {
@@ -397,7 +397,7 @@ grl_weights_optimized_ges$param_set$set_values(.values = list(classifavg.weights
 grl_weights_optimized_ges$id = paste0(grl_weights_optimized_ges$id, ".optimized_ges")
 #########################################################################################
 ```
-```{r, eval = params$showsolution}
+```{r index-007, eval = params$showsolution}
 bg = benchmark_grid(task, list(grl, grl_weights_optimized_cmaes, grl_weights_optimized_ges, dt, kknn, log_reg, featureless), outer_split)
 b = benchmark(bg)
 b$aggregate(msr("classif.auc"))
@@ -440,8 +440,8 @@ Use 5-fold CV to evaluate the ROC AUC of the models.
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-008, eval = FALSE}
 resampling = rsmp("cv", folds = ...)$instantiate(task)
 dt = lrn("classif.rpart")
 dt$predict_type = "prob"
@@ -489,7 +489,7 @@ autoplot(..., measure = ...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-009, eval = params$showsolution}
 resampling = rsmp("cv", folds = 5L)$instantiate(task)
 dt = lrn("classif.rpart")
 dt$predict_type = "prob"
@@ -526,7 +526,7 @@ level0_train_output
 This is a task that contains the probability predictions for each class from each learner.
 To also have the predicted class, we could set the `resampling.keep_response` of the learner_cv `PipeOp`.
 
-```{r, eval = params$showsolution}
+```{r index-010, eval = params$showsolution}
 level1 = lrn("classif.log_reg", id = "log_reg_out")
 level1$predict_type = "prob"
 
@@ -553,15 +553,15 @@ Use 5-fold CV to evaluate the ROC AUC of the models.
 
 <details>
   <summary>**Hint 1:**</summary>
-  You can essentially reuse most of your logic on how to build the graph from the previous exercise. 
+  You can essentially reuse most of your logic on how to build the graph from the previous exercise.
   To wrap a learner within an ensemble and use its predictions, the learner_cv `PipeOp` is essential.
   Have a look at its `resampling.method` parameter to see how to cross-validate level 0 predictions.
 </details>
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-011, eval = FALSE}
 level0 = gunion(
   list(
     po("learner_cv", learner = dt, resampling.method = "cv", resampling.folds = 3L),
@@ -586,7 +586,7 @@ autoplot(...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-012, eval = params$showsolution}
 level0 = gunion(
   list(
     po("learner_cv", learner = dt, resampling.method = "cv", resampling.folds = 3L),
@@ -627,8 +627,8 @@ Use 5-fold CV to evaluate the ROC AUC of the models.
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-013, eval = FALSE}
 level0 = gunion(
   list(
     po("learner_cv", learner = dt, resampling.method = "cv", resampling.folds = 3L),
@@ -655,7 +655,7 @@ autoplot(...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-014, eval = params$showsolution}
 level0 = gunion(
   list(
     po("learner_cv", learner = dt, resampling.method = "cv", resampling.folds = 3L),
@@ -702,8 +702,8 @@ Use 5-fold CV to evaluate the ROC AUC of the models.
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-015, eval = FALSE}
 level0 = gunion(
   list(
     po("learner_cv", id = "dt1_0", learner = dt, resampling.method = "cv", resampling.folds = 3L),
@@ -740,7 +740,7 @@ autoplot(...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-016, eval = params$showsolution}
 level0 = gunion(
   list(
     po("learner_cv", id = "dt1_0", learner = dt, resampling.method = "cv", resampling.folds = 3L),

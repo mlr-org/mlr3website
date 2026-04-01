@@ -19,7 +19,7 @@ image: cover.jpg
 
 {{< include ../../_setup.qmd >}}
 
-```{r 2023-02-07-recursive-feature-elimination-001}
+```{r index-001}
 #| include: false
 requireNamespace("gbm")
 
@@ -68,7 +68,7 @@ We will explore both variants in more detail below.
 It implements the `r ref("mlr_fselectors_rfe", "RFE")` and `r ref("mlr_fselectors_rfecv", "RFE-CV")` algorithm.
 We load all packages of the ecosystem with the `r ref("mlr3verse")` package.
 
-```{r 2023-02-07-recursive-feature-elimination-002}
+```{r index-002}
 #| message: false
 
 library(mlr3verse)
@@ -76,7 +76,7 @@ library(mlr3verse)
 
 We retrieve the `r ref("mlr_fselectors_rfe", "RFE")` optimizer with the `r ref("fs()")` function.
 
-```{r 2023-02-07-recursive-feature-elimination-003}
+```{r index-003}
 optimizer = fs("rfe",
   n_features = 1,
   feature_number = 1,
@@ -104,11 +104,11 @@ The `"mean"` should only be used if the learner's importance scores can be reaso
 The objective of the `r ref("mlr_tasks_sonar", text = "Sonar")` data set is to predict whether a sonar signal bounced off a metal cylinder or a rock.
 The data set includes 60 numerical features (see @fig-features).
 
-```{r 2023-02-07-recursive-feature-elimination-004}
+```{r index-004}
 task = tsk("sonar")
 ```
 
-```{r 2023-02-07-recursive-feature-elimination-005}
+```{r index-005}
 #| code-fold: true
 #| column: page
 #| fig-width: 12
@@ -135,7 +135,7 @@ ggplot(data, aes(x = value, fill = Class)) +
 
 We start with the `r ref("mlr_learners_classif.gbm", "GBM learner")` and set the predict type to `"prob"` to obtain class probabilities.
 
-```{r 2023-02-07-recursive-feature-elimination-006}
+```{r index-006}
 learner = lrn("classif.gbm",
   distribution = "bernoulli",
   predict_type = "prob")
@@ -145,7 +145,7 @@ Now we define the feature selection problem by using the `r ref("fsi()")` functi
 In addition to the task and learner, we have to select a `r ref("Resampling", text = "resampling strategy")` and `r ref("Measure", text = "performance measure")` to determine how the performance of a feature subset is evaluated.
 We pass the `"none"` terminator because the `n_features` parameter of the optimizer determines when the feature selection stops.
 
-```{r 2023-02-07-recursive-feature-elimination-007}
+```{r index-007}
 instance = fsi(
   task = task,
   learner = learner,
@@ -157,7 +157,7 @@ instance = fsi(
 We are now ready to start the RFE.
 To do this, we simply pass the instance to the `$optimize()` method of the optimizer.
 
-```{r 2023-02-07-recursive-feature-elimination-008}
+```{r index-008}
 #| output: false
 
 optimizer$optimize(instance)
@@ -169,7 +169,7 @@ The optimizer saves the best feature set and the corresponding estimated perform
 We observe that the performance increases first as the number of features decreases.
 As soon as informative features are removed, the performance drops.
 
-```{r 2023-02-07-recursive-feature-elimination-009}
+```{r index-009}
 #| code-fold: true
 #| label: fig-gbm
 #| fig-cap: "Performance of the gradient-boosting models depending on the number of features."
@@ -197,7 +197,7 @@ ggplot(data, aes(x = n, y = classif.auc)) +
 
 The importance scores of the feature sets are recorded in the archive.
 
-```{r 2023-02-07-recursive-feature-elimination-010}
+```{r index-010}
 #| column: body-outset
 
 as.data.table(instance$archive)[, list(features, classif.auc, importance)]
@@ -208,7 +208,7 @@ as.data.table(instance$archive)[, list(features, classif.auc, importance)]
 Now we will select the optimal feature set for an SVM with a linear kernel.
 The importance scores are the weights of the model.
 
-```{r 2023-02-07-recursive-feature-elimination-011}
+```{r index-011}
 learner = lrn("classif.svm",
   type = "C-classification",
   kernel = "linear",
@@ -220,7 +220,7 @@ The `r ref("mlr_learners_classif.svm", "SVM learner")` does not support the calc
 The reason is that importance scores cannot be determined with all kernels.
 This can be seen by the missing `"importance"` property.
 
-```{r 2023-02-07-recursive-feature-elimination-012}
+```{r index-012}
 learner$properties
 ```
 
@@ -228,7 +228,7 @@ Using the `"mlr3fselect.svm_rfe"` callback however makes it possible to use a li
 The callback adds the `$importance()` method internally to the learner.
 We load the callback with the `r ref("clbk()")` function and pass it as the `"callback"` argument to `r ref("fsi()")`.
 
-```{r 2023-02-07-recursive-feature-elimination-013}
+```{r index-013}
 instance = fsi(
   task = task,
   learner = learner,
@@ -240,7 +240,7 @@ instance = fsi(
 
 We start the feature selection.
 
-```{r 2023-02-07-recursive-feature-elimination-014}
+```{r index-014}
 #| output: false
 
 optimizer$optimize(instance)
@@ -249,7 +249,7 @@ optimizer$optimize(instance)
 @fig-svm shows the average performance of the SVMs depending on the number of features.
 We can see that the performance increases significantly with a reduced feature set.
 
-```{r 2023-02-07-recursive-feature-elimination-015}
+```{r index-015}
 #| code-fold: true
 #| label: fig-svm
 #| fig-cap: "Performance of the support vector machines depending on the number of features."
@@ -278,7 +278,7 @@ ggplot(data, aes(x = n, y = classif.auc)) +
 For datasets with a lot of features, it is more efficient to remove several features per iteration.
 We show an example where 25% of the features are removed in each iteration.
 
-```{r 2023-02-07-recursive-feature-elimination-016}
+```{r index-016}
 #| output: false
 
 optimizer = fs("rfe", n_features = 1, feature_fraction = 0.75)
@@ -296,7 +296,7 @@ optimizer$optimize(instance)
 
 @fig-svm-2 shows a similar optimization curve as @fig-svm but with fewer evaluated feature sets.
 
-```{r 2023-02-07-recursive-feature-elimination-017}
+```{r index-017}
 #| code-fold: true
 #| label: fig-svm-2
 #| fig-cap: "Optimization path of the feature selection."
@@ -383,7 +383,7 @@ We retrieve the `r ref("mlr_fselectors_rfecv", "RFE-CV")` optimizer.
 RFE-CV has almost the same control parameters as the RFE optimizer.
 The only difference is that no aggregation is needed.
 
-```{r 2023-02-07-recursive-feature-elimination-018}
+```{r index-018}
 optimizer = fs("rfecv",
   n_features = 1,
   feature_number = 1)
@@ -394,7 +394,7 @@ The 6-fold cross-validation results in 6 RFE runs.
 You can choose any other resampling strategy with multiple iterations.
 Let's start the feature selection.
 
-```{r 2023-02-07-recursive-feature-elimination-019}
+```{r index-019}
 #| output: false
 
 learner = lrn("classif.svm",
@@ -422,7 +422,7 @@ We visualize the selection of the optimal number of features.
 Each point is the mean performance of the number of features.
 We achieved the best performance with 19 features.
 
-```{r 2023-02-07-recursive-feature-elimination-020}
+```{r index-020}
 #| code-fold: true
 #| label: fig-rfecv
 #| fig-cap: "Estimation of the optimal number of features. The best mean performance is achieved with 19 features (blue line)."
@@ -460,7 +460,7 @@ ggplot(aggr, aes(x = batch_nr, y = y)) +
 The archive contains the extra column `"iteration"` that indicates in which resampling iteration the feature set was evaluated.
 The feature subsets of the final RFE run have no value in the `"iteration"` column because they were evaluated on the complete data set.
 
-```{r 2023-02-07-recursive-feature-elimination-021}
+```{r index-021}
 #| column: body-outset
 
 as.data.table(instance$archive)[, list(features, classif.auc, iteration, importance)]
@@ -473,7 +473,7 @@ The final model is trained with the optimal feature set on the full data set.
 The optimal set consists of 19 features and is stored in `instance$result_feature_set`.
 We subset the task to the optimal feature set and train the learner.
 
-```{r 2023-02-07-recursive-feature-elimination-022}
+```{r index-022}
 #| output: false
 
 task$select(instance$result_feature_set)

@@ -1,5 +1,5 @@
 ---
-title: Filters 
+title: Filters
 group: Advanced Feature Preprocessing
 categories:
   - advanced feature preprossesing
@@ -25,7 +25,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -35,9 +35,9 @@ Apply what you have learned about using pipelines for efficient pre-processing a
 
 # House Prices in King county
 
-In this exercise, we want to model house sale prices in King county in the state of Washington, USA. 
+In this exercise, we want to model house sale prices in King county in the state of Washington, USA.
 
-```{r}
+```{r index-002}
 set.seed(124)
 library(mlr3verse)
 library(mlr3tuningspaces)
@@ -46,7 +46,7 @@ data("kc_housing", package = "mlr3data")
 
 We do some simple feature pre-processing first:
 
-```{r}
+```{r index-003}
 # Transform time to numeric variable:
 library(anytime)
 dates = anytime(kc_housing$date)
@@ -67,7 +67,7 @@ str(kc_housing)
 
 To test different strategies for feature selection in this exercise, we create two artificial features that are (mostly) uncorrelated with the outcome `price`:
 
-```{r}
+```{r index-004}
 # Uncorrelated feature x1:
 kc_housing$x1 <- runif(n = nrow(kc_housing))
 cor(kc_housing$x1, kc_housing$price)
@@ -81,7 +81,7 @@ cor(kc_housing$x2, kc_housing$price)
 
 Before we train a model, let's reserve some data for evaluating our model later on:
 
-```{r}
+```{r index-005}
 task = as_task_regr(kc_housing, target = "price")
 split = partition(task, ratio = 0.6)
 
@@ -96,7 +96,7 @@ tasktest$filter(split$test)
 
 In the King county data, there are two categorial features encoded as `factor`:
 
-```{r}
+```{r index-006}
 lengths(task$levels())
 ```
 
@@ -126,7 +126,7 @@ The pipeline should be tuned within an `autotuner` with random search, two-fold 
 <details>
 <summary>**Hint 1:**</summary>
 
-Check out the help page of `lts` from `mlr3tuningspaces`. 
+Check out the help page of `lts` from `mlr3tuningspaces`.
 
 </details>
 
@@ -144,8 +144,8 @@ Ensure that the learner uses the default value for the `replace` hyperparameter.
 
 :::{.b64-solution}
 
-```{r, include = params$showsolution}
-# Create rf learner 
+```{r index-007, include = params$showsolution}
+# Create rf learner
 rf = lrn("regr.ranger", replace = TRUE)
 
 # Set search space from mlr3tuningspaces
@@ -164,7 +164,7 @@ factor_po = po("encode", method = "one-hot",
                id = "low_card_enc") %>>%
             po("encodeimpact",
                affect_columns = selector_cardinality_greater_than(10),
-               id = "high_card_enc") 
+               id = "high_card_enc")
 
 
 # Combine rf_ts with impact encoding and the filter
@@ -204,7 +204,7 @@ An alternative filter method is information gain (https://mlr3filters.mlr-org.co
 
 :::{.b64-solution}
 
-```{r, include = params$showsolution}
+```{r index-008, include = params$showsolution}
 # Create "information_gain" filter pipeline element
 info_filter = po("filter", filter = flt("information_gain"))
 # Use the 8 features with the highest filter value
@@ -234,9 +234,9 @@ score_rf_info
 
 ## Exercise 3: Pearson correlation vs. Information gain
 
-We receive the following performance scores for the two filter methods: 
+We receive the following performance scores for the two filter methods:
 
-```{r}
+```{r index-009}
 score_rf_cor
 score_rf_info
 ```
@@ -249,20 +249,20 @@ As you can see, the Pearson correlation filter seems to select features that res
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-010, eval = params$showsolution}
 auto_rf_cor$model$learner$model$correlation$features
 auto_rf_info$model$learner$model$information_gain$features
 ```
 
 The correlation filter does not select `x2`, a feature that we artificially created and is uncorrelated with the outcome `price`. However, the information gain filter selects for `x2`. This can be seen from how it was computed in the first place:
 
-```{r, eval = params$showsolution}
+```{r index-011, eval = params$showsolution}
 kc_housing$x2 <- sin(0.01*kc_housing$price*kc_housing$grade)
 ```
 
 Indeed, it is a sin-transformed function of the `price` and `grade`, something that is not necessarily obvious from a simple visual inspection:
 
-```{r, eval = params$showsolution}
+```{r index-012, eval = params$showsolution}
 plot(kc_housing$x2, kc_housing$price)
 ```
 

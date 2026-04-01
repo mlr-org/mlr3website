@@ -14,13 +14,8 @@
 
 ## Setup
 
-The website is rendered in a virtual environment. The `renv` package is
-used to manage the virtual environment. This ensures that we all edit
-the website with the same package versions.
-
 1.  Clone the `mlr-org/mlr3website` repository.
-2.  Call `renv::restore(project = "mlr-org/")` to download and install
-    all required packages.
+2.  Install the `mlr3website` package with `R CMD INSTALL .`.
 3.  Run the following command from your terminal to preview the website:
 
 ``` bash
@@ -31,7 +26,7 @@ quarto preview mlr-org/
 
 **Freeze**
 
-The gallery posts are frozen i.e. the documents are not re-rendered
+The gallery posts are frozen i.e. the documents are not re-rendered
 during a global project render. Calling `quarto preview mlr-org/` or
 `quarto render mlr-org/` will not render the gallery posts again.
 Calling `quarto render` on a single file or subdirectory will re-render
@@ -68,17 +63,10 @@ Because the gallery posts are not rendered in the CI, you need to ensure
 that the rendered file is contained in the `mlr-org/_freeze`
 subdirectory.
 
-If your post needs a new package or package version:
-
-1.  Install the package with `renv::install()` in the virtual
-    environment.
-2.  Call `renv::snapshot()` to record the package in `renv.lock`.
-3.  Commit `renv.lock` with the new post.
-
 ## How to Change the Website
 
 Pages are `.qmd` files located in the `mlr-org/` directory
-(e.g. `packages.Rmd`). See [quarto.org](https://quarto.org) to learn
+(e.g. `packages.Rmd`). See [quarto.org](https://quarto.org) to learn
 more about Quarto.
 
 ## Workflows
@@ -87,11 +75,10 @@ more about Quarto.
 
 Builds website. On `main`, the website is pushed to `gh-pages` branch.
 On pull request, the website is previewed with Netlify. The gallery is
-frozen. Note that this does not use the `renv` file but instead uses
-only the dependencies from the `mlr3website` package. This e.g. ensures
-that the overview lists are up to date.
+frozen. The workflow uses the dependencies from the `mlr3website`
+package. This e.g. ensures that the overview lists are up to date.
 
 **gallery-weekly.yml**
 
-The workflow restores the renv virtual environment and updates all
-packages. Then all gallery posts are re-rerendered. Runs once a week.
+The gallery is rendered in a Docker container (`mlrorg/mlr3-gallery`)
+which includes all required packages. Runs once a week.

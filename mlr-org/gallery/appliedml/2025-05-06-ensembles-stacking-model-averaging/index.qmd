@@ -1,5 +1,5 @@
 ---
-title: Model Averaging 
+title: Model Averaging
 group: Ensembles Stacking
 categories:
   - ensembles stacking
@@ -24,7 +24,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -69,7 +69,7 @@ n = 1,000 observations of credits
 
 # Prerequisites
 
-```{r}
+```{r index-002}
 library(mlr3)
 library(mlr3learners)
 library(mlr3pipelines)
@@ -106,8 +106,8 @@ What is missing to actually mimic a Random Forest?
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-003, eval = FALSE}
 resampling = rsmp("cv", folds  = 10L)$instantiate(task)
 pl = po("...") %>>% po("...", learner = ...)
 graph = ppl("greplicate", ...)
@@ -132,7 +132,7 @@ rpart.plot(graphLearner$...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-004, eval = params$showsolution}
 resampling = rsmp("cv", folds  = 10L)$instantiate(task)
 pl = po("subsample") %>>% po("learner", learner = lrn("classif.rpart", maxdepth = 3L))
 graph = ppl("greplicate", graph = pl, n = 3L)
@@ -172,8 +172,8 @@ As a follow up question, would it make sense to change the weights used by the c
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-005, eval = FALSE}
 dt$param_set$set_values(.values = list(maxdepth = NULL))
 graphLearner$...
 ...
@@ -200,7 +200,7 @@ autoplot(..., measure = ...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-006, eval = params$showsolution}
 dt$param_set$set_values(.values = list(maxdepth = NULL))
 graphLearner$param_set$set_values(.values = list(classif.rpart_1.maxdepth = NULL, classif.rpart_2.maxdepth = NULL, classif.rpart_3.maxdepth = NULL))
 
@@ -246,8 +246,8 @@ Can you manually find a weighting scheme that results in better performance than
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-007, eval = FALSE}
 dt = lrn(...)
 dt$predict_type = "prob"
 kknn = lrn(...)
@@ -280,7 +280,7 @@ b$aggregate(...)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-008, eval = params$showsolution}
 dt = lrn("classif.rpart")
 dt$predict_type = "prob"
 kknn = lrn("classif.kknn", k = 7L)
@@ -327,25 +327,25 @@ To construct the `OptimInstanceSingleCrit` do the following:
   - use `resample` on  this weighted ensemble
   - extract the ROC AUC and return it in a list
 * create the `domain` (the space we optimize over):
-  - we optimize over the three numeric weight parameters with values from 0 to 1 (have a look at `?p_dbl`) 
+  - we optimize over the three numeric weight parameters with values from 0 to 1 (have a look at `?p_dbl`)
 * create the codomain (describing the output space):
   - we maximize the numeric ROC AUC value
   - to make sure that we maximize instead of minimize (the `bbotk` default) set `tags = "maximize"`of this `p_dbl`
 * collect everything in an `OptimInstanceSingleCrit`
- 
+
 Use random search as an optimizer and terminate after 10 function evaluations.
 Why is our approach (i.e., how we constructed the objective function) ineffective?
 
 <details>
   <summary>**Hint 1:**</summary>
-  If you are not yet familiar with the `bbotk` package, a good starting point is: https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-black-box-optimization and 
+  If you are not yet familiar with the `bbotk` package, a good starting point is: https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-black-box-optimization and
   https://cran.r-project.org/web/packages/bbotk/vignettes/bbotk.html
 </details>
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-009, eval = FALSE}
 grl_weights_optimized = graphLearner$clone(deep = TRUE)
 grl_weights_optimized$id = paste0(grl_weights_optimized$id, ".weights_optimized_naive")
 
@@ -384,7 +384,7 @@ optimizer$optimize(instance)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution, results = "hide"}
+```{r index-010, eval = params$showsolution, results = "hide"}
 grl_weights_optimized = graphLearner$clone(deep = TRUE)
 grl_weights_optimized$id = paste0(grl_weights_optimized$id, ".weights_optimized_naive")
 
@@ -416,7 +416,7 @@ optimizer = opt("random_search")
 optimizer$optimize(instance)
 ```
 
-```{r, eval = params$showsolution}
+```{r index-011, eval = params$showsolution}
 instance$result
 ```
 
@@ -445,8 +445,8 @@ Note that you can reuse most logic from the previous exercise and the only inter
 
 <details>
   <summary>**Hint 2:**</summary>
- 
-```{r, eval = FALSE}
+
+```{r index-012, eval = FALSE}
 k = resampling$param_set$get_values()[["folds"]]
 
 dt_pred = resample(...)
@@ -497,7 +497,7 @@ optimizer$optimize(instance)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution, results = "hide"}
+```{r index-013, eval = params$showsolution, results = "hide"}
 library(adagio)
 
 k = resampling$param_set$get_values()[["folds"]]
@@ -543,7 +543,7 @@ optimizer = opt("cmaes")
 optimizer$optimize(instance)
 ```
 
-```{r, eval = params$showsolution}
+```{r index-014, eval = params$showsolution}
 instance$result
 ```
 

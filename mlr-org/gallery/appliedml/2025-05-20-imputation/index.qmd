@@ -25,7 +25,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -38,7 +38,7 @@ Imputation is the process of filling in missing data in a data set using statist
 
 We will use `mlr3` for machine learning and `mlr3oml` for data access from OpenML:
 
-```{r, message = FALSE}
+```{r index-002, message = FALSE}
 library(mlr3verse)
 library(mlr3tuning)
 library(mlr3oml)
@@ -49,9 +49,9 @@ set.seed(12345)
 
 We will use house price data on 13,932 single-family homes sold in Miami in 2016. The target variable is `"SALE_PRC"`.
 
-Let's load the data and remove an unwanted column: 
+Let's load the data and remove an unwanted column:
 
-```{r}
+```{r index-003}
 miami = as.data.frame(odt(id = 43093)$data[,-c(3)])
 miami[1:16] = lapply(miami[1:16], as.numeric)
 miami[,c(14,16)] = lapply(miami[,c(14,16)], as.factor)
@@ -59,7 +59,7 @@ miami[,c(14,16)] = lapply(miami[,c(14,16)], as.factor)
 
 Further, we artificially generate missing data entries for three features:
 
-```{r}
+```{r index-004}
 indices = which(miami$age > 50)
 
 for (i in c("OCEAN_DIST", "TOT_LVG_AREA", "structure_quality")) {
@@ -83,7 +83,7 @@ There exists a shortcut for setting up the imputation based on randomly sampling
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-005, eval=FALSE}
 impute_numeric = po("...", affect_columns = selector_type("..."))
 impute_factor = po("...", affect_columns = ...(c("factor", "ordered")))
 ```
@@ -96,7 +96,7 @@ impute_factor = po("...", affect_columns = ...(c("factor", "ordered")))
 
 :::{.b64-solution}
 
-```{r}
+```{r index-006}
 impute_numeric = po("imputesample", affect_columns = selector_type("numeric"))
 impute_factor = po("imputeoor", affect_columns = selector_type(c("factor", "ordered")))
 ```
@@ -130,7 +130,7 @@ You can plot a graph using the corresponding R6 method of the graph object.
 
 :::{.b64-solution}
 
-```{r}
+```{r index-007}
 graph = impute_numeric %>>%
   impute_factor %>>%
   lrn("regr.ranger")
@@ -152,7 +152,7 @@ Alternative to a pipeline that includes a learner, we can even set up a simpler 
 
 :::{.b64-solution}
 
-```{r}
+```{r index-008}
 graph_im = impute_numeric %>>% impute_factor
 
 task = TaskRegr$new(id = "miami", backend = miami, target = "SALE_PRC")
@@ -182,7 +182,7 @@ Specifically, you need three things:
 <details>
 <summary>**Hint 2:**</summary>
 
-```{r, eval=FALSE}
+```{r index-009, eval=FALSE}
 resampling = rsmp("cv", ...)
 resampling$instantiate(...)
 rr = resample(task = ..., learner = ..., resampling = ...)
@@ -197,7 +197,7 @@ rr$...()
 
 :::{.b64-solution}
 
-```{r, messages=FALSE}
+```{r index-010, messages=FALSE}
 resampling = rsmp("cv", folds = 3L)
 resampling$instantiate(task)
 rr = resample(task = task, learner = graph, resampling = resampling)
@@ -232,7 +232,7 @@ As the documentation states, if a learner used for imputation is itself supposed
 
 :::{.b64-solution}
 
-```{r}
+```{r index-011}
 impute_rpart = po("imputelearner",
                   learner = lrn("regr.rpart"),
                   affect_columns = selector_type("numeric"))
@@ -264,7 +264,7 @@ As before, use 3-fold cross-validation to compare the error of the two pipelines
 
 :::{.b64-solution}
 
-```{r, messages=FALSE}
+```{r index-012, messages=FALSE}
 rr_rpart = resample(task = task, learner = graph_rpart, resampling = resampling)
 rr_lm = resample(task = task, learner = graph_lm, resampling = resampling)
 rr_rpart$aggregate()
@@ -296,7 +296,7 @@ You can read more about branching in `??mlr_pipeops_branch`.
 
 :::{.b64-solution}
 
-```{r, messages=FALSE}
+```{r index-013, messages=FALSE}
 impute = list(
   "imputehist" = po("imputehist"),
   "imputerpart" = po("imputelearner", learner = lrn("regr.rpart"))
@@ -337,7 +337,7 @@ A parameter space can be defined using the `ps()` sugar function.
 
 :::{.b64-solution}
 
-```{r, messages=FALSE}
+```{r index-014, messages=FALSE}
 tune_ps = ps(
   regr.ranger.mtry = p_int(2L, 8L),
   branch.selection = p_fct(c("imputehist", "imputerpart")),
@@ -356,7 +356,7 @@ Now, tune the pipeline using an AutoTuner with 3-fold CV and random search. You 
 <details>
 <summary>**Hint 1:**</summary>
 
-```{r, eval=FALSE}
+```{r index-015, eval=FALSE}
 # AutoTuner
 glrn_tuned = AutoTuner$new(...)
 # Train
@@ -373,7 +373,7 @@ glrn_tuned = AutoTuner$new(...)
 
 :::{.b64-solution}
 
-```{r, messages=FALSE}
+```{r index-016, messages=FALSE}
 # AutoTuner
 glrn_tuned = AutoTuner$new(graph_branch,
   resampling = rsmp("cv", folds = 3L),

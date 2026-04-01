@@ -12,28 +12,33 @@ BugReports: https://github.com/mlr-org/mlr3website/issues
 Depends:
     R (>= 3.6.0)
 Imports:
+    adagio,
     apcluster,
     batchtools,
     bbotk,
+    betacal,
     checkmate,
     data.table,
     DBI,
+    DiceKriging,
+    FSelectorRcpp,
+    glmnet,
     gt,
     here,
     htmltools,
+    klaR,
     miesmuschel,
     mlr3batchmark,
     mlr3benchmark,
     mlr3cluster,
     mlr3data,
     mlr3db,
-    mlr3extralearners,
     mlr3fairness,
     mlr3fda,
     mlr3filters,
     mlr3fselect,
-    mlr3inferr,
     mlr3hyperband,
+    mlr3inferr,
     mlr3learners,
     mlr3mbo,
     mlr3measures,
@@ -43,9 +48,9 @@ Imports:
     mlr3proba,
     mlr3spatial,
     mlr3spatiotempcv,
+    mlr3torch,
     mlr3tuning,
     mlr3tuningspaces,
-    mlr3torch,
     mlr3verse,
     mlr3viz,
     paradox,
@@ -56,19 +61,11 @@ Imports:
     rprojroot,
     RSQLite,
     stringi,
-    torchvision,
-    DiceKriging,
-    FSelectorRcpp,
-    klaR,
-    betacal,
-    adagio,
-    glmnet
-Remotes:
-    mlr-org/mlr3extralearners,
-    mlr-org/mlr3torch,
-    mlr-org/mlr3,
-    mlr-org/mlr3proba,
-    mlr-org/mlr3inferr
+    torchvision
+Suggests:
+    mlr3extralearners,
+    mlr3proba
+Additional_repositories:https://mlr-org.r-universe.dev
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1

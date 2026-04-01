@@ -35,13 +35,13 @@ The example describes a very involved use-case, where the behavior of `r ref("Pi
 
 We load the `r ref_pkg("mlr3verse")` package which pulls in the most important packages for this example.
 
-```{r 2020-02-25-remove-correlated-features-001, message=FALSE}
+```{r index-001, message=FALSE}
 library(mlr3verse)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
 
-```{r 2020-02-25-remove-correlated-features-002}
+```{r index-002}
 set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -50,18 +50,44 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 The basic pipeline looks as follows:
 We use `r ref("PipeOpSelect")` to select a set of variables followed by a `r ref("mlr_learners_classif.rpart", "rpart learner")`.
 
-```{r 2020-02-25-remove-correlated-features-003}
+```{r index-003}
 graph_learner = po("select") %>>% lrn("classif.rpart")
 ```
 
 Now we get to the magic:
 
-We want to use the function `r ref("caret::findCorrelation()")` from the `r ref_pkg("caret")` package in order to select uncorrelated variables.
-This function has a `cutoff` parameter, that specifies the maximum correlation allowed between variables.
+We want to find and remove correlated variables given a `cutoff` parameter that specifies the maximum correlation allowed between variables.
 In order to expose this variable as a `numeric` parameter we can tune over we specify the following `r ref("ParamSet")`:
 
-```{r 2020-02-25-remove-correlated-features-004}
-search_space = ps(cutoff = p_dbl(0, 1))
+```{r index-004}
+search_space = ps(
+  cutoff = p_dbl(0, 1),
+  .extra_trafo = function(x, param_set) {
+    cutoff = x$cutoff
+    x$select.selector = function(task) {
+      fn = task$feature_names
+      data = task$data(cols = fn)
+      # find correlated features to drop (replaces caret::findCorrelation)
+      abs_cor = abs(cor(data))
+      diag(abs_cor) = 0
+      drop = character(0)
+      nms = colnames(abs_cor)
+      while (nrow(abs_cor) > 1L) {
+        max_cor = max(abs_cor[upper.tri(abs_cor)])
+        if (max_cor <= cutoff) break
+        idx = which(abs_cor == max_cor, arr.ind = TRUE)[1L, ]
+        avg = colMeans(abs_cor)
+        drop_i = idx[which.max(avg[idx])]
+        drop = c(drop, nms[drop_i])
+        abs_cor = abs_cor[-drop_i, -drop_i, drop = FALSE]
+        nms = nms[-drop_i]
+      }
+      setdiff(fn, drop)
+    }
+    x$cutoff = NULL
+    x
+  }
+)
 ```
 
 We define a function `select_cutoff` that takes as input a `r ref("Task")` and returns a list of features we aim to keep.
@@ -69,18 +95,8 @@ We define a function `select_cutoff` that takes as input a `r ref("Task")` and r
 Now we use a `trafo` to transform the `cutoff` into a set of variables, which is what `r ref("PipeOpSelect")` can work with.
 Note that we use `x$cutoff = NULL` in order to remove the temporary parameter we introduced, as `r ref("PipeOpSelect")` does not know what to do with it.
 
-```{r 2020-02-25-remove-correlated-features-005}
-search_space$trafo = function(x, param_set) {
-  cutoff = x$cutoff
-  x$select.selector = function(task) {
-    fn = task$feature_names
-    data = task$data(cols = fn)
-    drop = caret::findCorrelation(cor(data), cutoff = cutoff, exact = TRUE, names = TRUE)
-    setdiff(fn, drop)
-  }
-  x$cutoff = NULL
-  x
-}
+```{r index-005}
+# trafo is now defined in ps() above
 ```
 
 If you are not sure, you understand the `trafo` concept, consult the [mlr3book](https://mlr3book.mlr-org.com/paradox.html).
@@ -88,7 +104,7 @@ It has a section on the `trafo` concept.
 
 Now we tune over different values for `cutoff`.
 
-```{r 2020-02-25-remove-correlated-features-006}
+```{r index-006}
 instance = tune(
   tuner = tnr("grid_search"),
   task = tsk("iris"),
@@ -105,11 +121,11 @@ In order to demonstrate that different cutoff values result in different feature
 Note this inspects only the trained models of the first CV fold of each evaluated model.
 The features being excluded depends on the training data seen by the pipeline and may be different in different folds, even at the same cutoff value.
 
-```{r 2020-02-25-remove-correlated-features-007, echo=FALSE}
+```{r index-007, echo=FALSE}
 resample_result = instance$archive$benchmark_result$resample_results$resample_result
 ```
 
-```{r 2020-02-25-remove-correlated-features-008}
+```{r index-008}
 as.data.table(instance$archive)[
   order(cutoff),
   list(cutoff, classif.ce,

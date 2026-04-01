@@ -25,7 +25,7 @@ format:
 {{< include ../../_setup.qmd >}}
 {{< include ../../_setup_encrypt_lua.qmd >}}
 
-```{r, include=FALSE}
+```{r index-001, include=FALSE}
 set.seed(123)
 ```
 
@@ -37,7 +37,7 @@ The objective of this exercise is to get hands-on experience with conducting lar
 
 We need the following libraries:
 
-```{r library}
+```{r index-002}
 library('mlr3verse')
 library('mlr3oml')
 library('data.table')
@@ -55,7 +55,7 @@ To draw meaningful conclusions from benchmark experiments, a good choice of data
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-003, eval = params$showsolution}
 # Get data
 odata = list_oml_tasks(
   number_features = c(10, 20),
@@ -80,7 +80,7 @@ head(odata)
 
 # Exercise 2: Working with OpenML data
 
-Notably, `list_oml__data_tasks()` only retrieves relevant information about the tasks, and not the data itself. Convert this list of tasks by directly transforming it to `mlr3` tasks with applying `otsk()` to each `data_id`. Find out how you can load and inspect the data from a single task in the list. 
+Notably, `list_oml__data_tasks()` only retrieves relevant information about the tasks, and not the data itself. Convert this list of tasks by directly transforming it to `mlr3` tasks with applying `otsk()` to each `data_id`. Find out how you can load and inspect the data from a single task in the list.
 
 :::{.callout-note collapse="true"}
 
@@ -88,7 +88,7 @@ Notably, `list_oml__data_tasks()` only retrieves relevant information about the 
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-004, eval = params$showsolution}
 # List of tasks
 tasklist <- lapply(odata$task_id, otsk)
 
@@ -104,7 +104,7 @@ tasklist[[17]]$data$data
 
 ## Exercise 3.1: OpenML Task and Learners
 
-For this task, look at the german credit data set. 
+For this task, look at the german credit data set.
 Download it from OpenML (task id: 31) and create a task.
 Define a tree, an SVM and a Random Forest as they shall be benchmarked later.
 
@@ -114,7 +114,7 @@ Define a tree, an SVM and a Random Forest as they shall be benchmarked later.
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-005, eval = params$showsolution}
 oml_task = OMLTask$new(31)
 oml_data = as_data_backend(oml_task$data)
 task = as_task_classif(oml_data, target = "class")
@@ -132,15 +132,16 @@ learners = list(
 ## Exercise 3.2: Batchtools experiment registry
 
 Create and configure a Batchtools experiment registry:
-```{r, eval = params$showsolution}
+```{r index-006, eval = params$showsolution}
+unlink("mlr3_experiments", recursive = TRUE)
 reg = makeExperimentRegistry(
   file.dir = "mlr3_experiments",
   packages = c("mlr3", "mlr3verse"),
   seed = 1
 )
 ```
-You can add problems and algorithms to the registry using the following code: 
-```{r, eval = params$showsolution}
+You can add problems and algorithms to the registry using the following code:
+```{r index-007, eval = params$showsolution}
 addProblem("task", data = task)
 addAlgorithm(name = "mlr3", fun = function(job, data, instance, learner) {
   learner = lrn(learner)
@@ -149,7 +150,7 @@ addAlgorithm(name = "mlr3", fun = function(job, data, instance, learner) {
 })
 ```
 Define the design of experiments:
-```{r, eval = params$showsolution}
+```{r index-008, eval = params$showsolution}
 prob_design = list(task = data.table())
 algo_design = list(mlr3 = data.frame(learner = sapply(learners, function(x) {x$id}),
                                      stringsAsFactors = FALSE))
@@ -157,7 +158,7 @@ addExperiments(prob.designs = prob_design, algo.designs = algo_design)
 summarizeExperiments()
 ```
 Test a single job to ensure it works correctly:
-```{r, eval = params$showsolution}
+```{r index-009, eval = params$showsolution}
 testJob(1)
 ```
 
@@ -170,7 +171,7 @@ testJob(1)
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-010, eval = params$showsolution}
 # Adding more learners
 learners2 = list(
   lrn("classif.rpart"),
@@ -190,13 +191,13 @@ addAlgorithm(name = "mlr3res", fun = function(job, data, instance, learner) {
 
 # Define the design of experiments
 prob_design2 = list(task = data.table())
-algo_design2 = list(mlr3res = data.frame(learner = sapply(learners2, 
-                                                          function(x) {x$id}), 
+algo_design2 = list(mlr3res = data.frame(learner = sapply(learners2,
+                                                          function(x) {x$id}),
                                          stringsAsFactors = FALSE))
 addExperiments(prob.designs = prob_design2, algo.designs = algo_design2)
 summarizeExperiments()
 ```
-```{r, eval = params$showsolution}
+```{r index-011, eval = params$showsolution}
 # Test a single job to ensure it works correctly
 testJob(1)
 ```
@@ -207,14 +208,14 @@ testJob(1)
 
 ## Exercise 3.3: Benchmark
 
-Submit jobs to be executed in parallel:   
-```{r, eval = FALSE}
+Submit jobs to be executed in parallel:
+```{r index-012, eval = FALSE}
 submitJobs()
 waitForJobs() # Wait for the jobs to finish
 ```
 
 Collect and analyze the results:
-```{r, eval = FALSE}
+```{r index-013, eval = FALSE}
 res = reduceResultsList()
 print(res)
 ```
@@ -228,14 +229,14 @@ Plot the performance metrics of the different learners using the `ggplot2` packa
 
 :::{.b64-solution}
 
-```{r, eval = params$showsolution}
+```{r index-014, eval = params$showsolution}
 submitJobs()
 waitForJobs() # Wait for the jobs to finish
 res = reduceResultsList()
 print(res)
 ```
 
-```{r, eval = params$showsolution}
+```{r index-015, eval = params$showsolution}
 # Collect results into a data.table
 results = rbindlist(lapply(res, function(x) data.table(acc = x$measure)))
 results$learner = algo_design2$mlr3res$learner
@@ -256,3 +257,8 @@ ggplot(results, aes(x = learner, y = acc)) +
 # Summary
 
 We downloaded various data sets from OpenML and used batch tools to parallelize a benchmark study.
+
+```{r index-016}
+#| include: false
+unlink("mlr3_experiments", recursive = TRUE)
+```

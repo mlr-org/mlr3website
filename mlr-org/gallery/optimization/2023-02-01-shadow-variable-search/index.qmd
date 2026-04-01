@@ -21,7 +21,7 @@ image: cover.png
 
 {{< include ../../_setup.qmd >}}
 
-```{r 2023-02-01-shadow-variable-search-001}
+```{r index-001}
 #| include: false
 
 lgr::get_logger("mlr3")$set_threshold("warn")
@@ -56,7 +56,7 @@ Therefore, only the previously selected features have a true influence on the ta
 It implements the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` algorithm.
 We load all packages of the ecosystem with the `r ref("mlr3verse")` package.
 
-```{r 2023-02-01-shadow-variable-search-002}
+```{r index-002}
 #| message: false
 
 library(mlr3verse)
@@ -65,7 +65,7 @@ library(mlr3verse)
 We retrieve the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` optimizer with the `r ref("fs()")` function.
 The algorithm has no control parameters.
 
-```{r 2023-02-01-shadow-variable-search-003}
+```{r index-003}
 optimizer = fs("shadow_variable_search")
 ```
 
@@ -74,11 +74,11 @@ optimizer = fs("shadow_variable_search")
 The objective of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set is to predict whether a person has diabetes or not.
 The data set includes 768 patients with 8 measurements (see @fig-features).
 
-```{r 2023-02-01-shadow-variable-search-004}
+```{r index-004}
 task = tsk("pima")
 ```
 
-```{r 2023-02-01-shadow-variable-search-005}
+```{r index-005}
 #| code-fold: true
 #| column: page
 #| fig-width: 14
@@ -102,14 +102,14 @@ ggplot(data, aes(x = value, fill = diabetes)) +
 
 The data set contains missing values.
 
-```{r 2023-02-01-shadow-variable-search-006}
+```{r index-006}
 task$missings()
 ```
 
 Support vector machines cannot handle missing values.
 We impute the missing values with the `r ref("mlr_pipeops_imputehist", "histogram imputation")` method.
 
-```{r 2023-02-01-shadow-variable-search-007}
+```{r index-007}
 learner = po("imputehist") %>>% lrn("classif.svm", predict_type = "prob")
 ```
 
@@ -119,7 +119,7 @@ Now we define the feature selection problem by using the `r ref("fsi()")` functi
 In addition to the task and learner, we have to select a `r ref("Resampling", text = "resampling strategy")` and `r ref("Measure", text = "performance measure")` to determine how the performance of a feature subset is evaluated.
 We pass the `"none"` terminator because the shadow variable search algorithm terminates by itself.
 
-```{r 2023-02-01-shadow-variable-search-008}
+```{r index-008}
 instance = fsi(
   task = task,
   learner = learner,
@@ -132,7 +132,7 @@ instance = fsi(
 We are now ready to start the shadow variable search.
 To do this, we simply pass the instance to the `$optimize()` method of the optimizer.
 
-```{r 2023-02-01-shadow-variable-search-009}
+```{r index-009}
 optimizer$optimize(instance)
 ```
 
@@ -142,7 +142,7 @@ The optimizer returns the best feature set and the corresponding estimated perfo
 The feature glucose was selected first and in the following iterations age, mass and pedigree.
 Then a shadow variable was selected and the feature selection was terminated.
 
-```{r 2023-02-01-shadow-variable-search-010}
+```{r index-010}
 #| code-fold: true
 #| label: fig-optimization-path
 #| fig-cap: "Optimization path of the shadow variable search."
@@ -179,7 +179,7 @@ The archive contains all evaluated feature sets.
 We can see that each feature has a corresponding shadow variable.
 We only show the variables age, glucose and insulin and their shadow variables here.
 
-```{r 2023-02-01-shadow-variable-search-011}
+```{r index-011}
 as.data.table(instance$archive)[, .(age, glucose, insulin, permuted__age, permuted__glucose, permuted__insulin, classif.auc)]
 ```
 
@@ -189,7 +189,7 @@ The learner we use to make predictions on new data is called the final model.
 The final model is trained with the optimal feature set on the full data set.
 We subset the task to the optimal feature set and train the learner.
 
-```{r 2023-02-01-shadow-variable-search-012}
+```{r index-012}
 #| output: false
 
 task$select(instance$result_feature_set)
