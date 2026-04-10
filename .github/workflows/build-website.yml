@@ -31,6 +31,9 @@ jobs:
         with:
           extra-packages: mlr-org/survdistr
 
+      - name: Install mlr3website package
+        run: R CMD INSTALL .
+
       - name: Install torch
         shell: Rscript {0}
         run: |
