@@ -211,7 +211,7 @@ The most common approach is Platt scaling, also called logistic calibration. Thi
 
 If effective, the logistic regression model estimates the probability regions where the original model is off (as shown in the diagnostic plot). For example, suppose that when the model predicts a 2% event rate, the logistic regression model estimates that it under-predicts the probability by 5% (relative to the observed data). Given this gap, new predictions are adjusted up so that the probability estimates are more in-line with the data.
 
-In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibration method (Platt, Beta or Isotonic). Initialize 1) another Naive Bayes base learner, 2) a holdout resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibration` object. It requires the base learner (`learner`), the calibration method (`method`), and the resampling method (`rsmp`) as arguments to be initialized. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
+In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibration method (Platt, Beta or Isotonic). Initialize 1) another Naive Bayes base learner, 2) a holdout resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibrationPerFold` object. It requires the base learner (`learner`), the calibration method (`method`), and the resampling method (`resampling`) as arguments to be initialized. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
 
 
 <details>
@@ -220,7 +220,7 @@ In `mlr3calibration`, to calibrate a learner you need a base learner (which will
 ```{r index-011, eval = FALSE}
 learner_uncal = ...
 rsmp = ...
-learner_cal = as_learner(PipeOpCalibration$new(...))
+learner_cal = as_learner(PipeOpCalibrationPerFold$new(...))
 learner_cal$id <- "Platt Calibrated Learner"
 ```
 
@@ -229,7 +229,7 @@ learner_cal$id <- "Platt Calibrated Learner"
 <details>
 <summary>**Hint 2:**</summary>
 
-Check the documentation of `PipeOpCalibration` with `??PipeOpCalibration`.
+Check the documentation of `PipeOpCalibrationPerFold` with `??PipeOpCalibrationPerFold`.
 
 </details>
 
@@ -242,7 +242,7 @@ Check the documentation of `PipeOpCalibration` with `??PipeOpCalibration`.
 ```{r index-012}
 learner_uncal = lrn("classif.naive_bayes", predict_type = "prob")
 rsmp = rsmp("holdout")
-learner_cal = as_learner(PipeOpCalibration$new(learner = learner_uncal, method = "platt", rsmp = rsmp))
+learner_cal = as_learner(PipeOpCalibrationPerFold$new(learner = learner_uncal, method = "platt", resampling = rsmp))
 learner_cal$id <- "Platt Calibrated Learner"
 ```
 
@@ -281,7 +281,7 @@ A different approach to calibration is to use isotonic regression. In a manner s
 ```{r index-014, eval = FALSE}
 learner_uncal = ...
 rsmp = ...
-learner_cal = as_learner(PipeOpCalibration$new(...))
+learner_cal = as_learner(PipeOpCalibrationPerFold$new(...))
 learner_cal$id <- "Isotonic Calibrated Learner"
 learner_cal$train(cells_train)
 
@@ -310,7 +310,7 @@ learner_uncal <- lrn("classif.naive_bayes", predict_type = "prob")
 rsmp = rsmp("holdout")
 
 # Train isotonic calibrator using validation predictions
-learner_cal_iso = as_learner(PipeOpCalibration$new(learner = learner_uncal, method = "isotonic", rsmp = rsmp))
+learner_cal_iso = as_learner(PipeOpCalibrationPerFold$new(learner = learner_uncal, method = "isotonic", resampling = rsmp))
 learner_cal_iso$id <- "Isotonic Calibrated Learner"
 learner_cal_iso$train(cells_train)
 
@@ -327,7 +327,7 @@ calibrationplot(list(learner, learner_cal, learner_cal_iso), cells_test, bins = 
 
 # 3 Resamping for Calibration with mlr3
 
-`PipeOpCalibration` can be treated as any other `PipeOp` object. Therefore, we can use them within more complex tuning and pipeline constructs, i.e. in cross-validation (CV), to assess calibration methods.
+`PipeOpCalibrationPerFold` can be treated as any other `PipeOp` object. Therefore, we can use them within more complex tuning and pipeline constructs, i.e. in cross-validation (CV), to assess calibration methods.
 
 Fit 10 Naive Bayes models using 10-fold CV and calibrate each of these models using beta calibration, another calibration method.
 
@@ -339,8 +339,8 @@ Fit 10 Naive Bayes models using 10-fold CV and calibrate each of these models us
 You can use the following code skeleton, detailing the required steps:
 
 ```{r index-016, eval = FALSE}
-pipeline_cal = as_learner(PipeOpCalibration$new(learner = ...,
-                                                rsmp = ...,
+pipeline_cal = as_learner(PipeOpCalibrationPerFold$new(learner = ...,
+                                                resampling = ...,
                                                 method = ...))
 pipeline_cal$id <- "Beta Calibrated Learner"
 pipeline_cal$...
@@ -357,8 +357,8 @@ calibrationplot(..., smooth = TRUE)
 
 ```{r index-017}
 #| eval: false
-pipeline_cal = as_learner(PipeOpCalibration$new(learner = lrn("classif.naive_bayes", predict_type = "prob"),
-                                                rsmp = rsmp("cv", folds = 10),
+pipeline_cal = as_learner(PipeOpCalibrationPerFold$new(learner = lrn("classif.naive_bayes", predict_type = "prob"),
+                                                resampling = rsmp("cv", folds = 10),
                                                 method = "beta"))
 pipeline_cal$id <- "Beta Calibrated Learner"
 pipeline_cal$train(cells_train)

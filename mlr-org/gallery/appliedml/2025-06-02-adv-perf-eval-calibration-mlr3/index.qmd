@@ -124,7 +124,7 @@ The model is not well-calibrated. For predicted probabilities from 0 to 0.4, it 
 
 ## 1.3 Calibration strategy
 
-In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibration method (Platt, Beta or Isotonic). Initialize 1) another XGBOOST base learner, 2) a 5-fold CV resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibration` object. It requires the base learner (`learner`), the calibration method (`method`), and the resampling method (`rsmp`) as arguments to be initialized. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
+In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibration method (Platt, Beta or Isotonic). Initialize 1) another XGBOOST base learner, 2) a 5-fold CV resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibrationPerFold` object. It requires the base learner (`learner`), the calibration method (`method`), and the resampling method (`resampling`) as arguments to be initialized. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
 
 <details>
 <summary>**Hint 1:**</summary>
@@ -132,7 +132,7 @@ In `mlr3calibration`, to calibrate a learner you need a base learner (which will
 ```{r index-006, eval = FALSE}
 learner_uncal = ...
 rsmp = ...
-learner_cal = as_learner(PipeOpCalibration$new(...))
+learner_cal = as_learner(PipeOpCalibrationPerFold$new(...))
 learner_cal$id <- "Platt Calibrated Learner"
 ```
 
@@ -141,7 +141,7 @@ learner_cal$id <- "Platt Calibrated Learner"
 <details>
 <summary>**Hint 2:**</summary>
 
-Check the documentation of `PipeOpCalibration` with `??PipeOpCalibration`.
+Check the documentation of `PipeOpCalibrationPerFold` with `??PipeOpCalibrationPerFold`.
 
 </details>
 
@@ -154,7 +154,7 @@ Check the documentation of `PipeOpCalibration` with `??PipeOpCalibration`.
 ```{r index-007}
 learner_uncal = lrn("classif.xgboost", predict_type = "prob")
 rsmp = rsmp("cv", folds = 5)
-learner_cal = as_learner(PipeOpCalibration$new(learner = learner_uncal, method = "platt", rsmp = rsmp))
+learner_cal = as_learner(PipeOpCalibrationPerFold$new(learner = learner_uncal, method = "platt", resampling = rsmp))
 learner_cal$id <- "Platt Calibrated Learner"
 ```
 
@@ -224,7 +224,7 @@ The calibrated model has a much lower ECE. Therefore, we can infer that Platt sc
 
 # 3 Tuning and Pipelines
 
-`PipeOpCalibration` can be treated as any other `PipeOp` object. Therefore, we can use them within more complex tuning and pipeline constructs. There are many sensible options. For example, we could pass a tuned base learner to the calibrator or tune the base learner within the calibrator. Similarly, we can include a calibrated learner in a pipeline or choose to calibrate the entire pipeline. Let's try how to connect a feature filter to a calibrator. Construct a pipeline that 1) filters the 10 most relevant features according to their information gain, 2) then fits a random forest, and 3) calibrate this pipeline with beta calibration using 5-fold CV. Express this calibrated pipeline as learner, train it on the training task and plot the calibration plot with the Platt scaled and beta-calibrated models.
+`PipeOpCalibrationPerFold` can be treated as any other `PipeOp` object. Therefore, we can use them within more complex tuning and pipeline constructs. There are many sensible options. For example, we could pass a tuned base learner to the calibrator or tune the base learner within the calibrator. Similarly, we can include a calibrated learner in a pipeline or choose to calibrate the entire pipeline. Let's try how to connect a feature filter to a calibrator. Construct a pipeline that 1) filters the 10 most relevant features according to their information gain, 2) then fits a random forest, and 3) calibrate this pipeline with beta calibration using 5-fold CV. Express this calibrated pipeline as learner, train it on the training task and plot the calibration plot with the Platt scaled and beta-calibrated models.
 
 
 
@@ -236,7 +236,7 @@ You may use this skeleton code for the required steps.
 ```{r index-010, eval = FALSE}
 po_filter = po(...)
 pipeline = as_learner(... %>>% ...)
-pipeline_cal = as_learner(PipeOpCalibration$new(...))
+pipeline_cal = as_learner(PipeOpCalibrationPerFold$new(...))
 pipeline_cal$id <- "Beta Calibrated Learner"
 pipeline_cal$train(...)
 calibrationplot(...)
@@ -254,8 +254,8 @@ calibrationplot(...)
 #| eval: false
 po_filter = po("filter", filter = flt("information_gain"), param_vals = list(filter.nfeat = 10L))
 pipeline = as_learner(po_filter %>>% lrn("classif.ranger", predict_type = "prob"))
-pipeline_cal = as_learner(PipeOpCalibration$new(learner = pipeline,
-                                                rsmp = rsmp("cv", folds = 10),
+pipeline_cal = as_learner(PipeOpCalibrationPerFold$new(learner = pipeline,
+                                                resampling = rsmp("cv", folds = 10),
                                                 method = "beta"))
 pipeline_cal$id <- "Beta Calibrated Learner"
 pipeline_cal$train(task_train)
