@@ -124,7 +124,7 @@ The model is not well-calibrated. For predicted probabilities from 0 to 0.4, it 
 
 ## 1.3 Calibration strategy
 
-In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibration method (Platt, Beta or Isotonic). Initialize 1) another XGBOOST base learner, 2) a 5-fold CV resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibrationPerFold` object. It requires the base learner (`learner`), the calibration method (`method`), and the resampling method (`rsmp`) as arguments to be initialized. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
+In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibration method (Platt, Beta or Isotonic). Initialize 1) another XGBOOST base learner, 2) a 5-fold CV resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibrationPerFold` object. It requires the base learner (`learner`), the calibration method (`method`), and the resampling method (`resampling`) as arguments to be initialized. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
 
 <details>
 <summary>**Hint 1:**</summary>
@@ -154,7 +154,7 @@ Check the documentation of `PipeOpCalibrationPerFold` with `??PipeOpCalibrationP
 ```{r index-007}
 learner_uncal = lrn("classif.xgboost", predict_type = "prob")
 rsmp = rsmp("cv", folds = 5)
-learner_cal = as_learner(PipeOpCalibrationPerFold$new(learner = learner_uncal, method = "platt", rsmp = rsmp))
+learner_cal = as_learner(PipeOpCalibrationPerFold$new(learner = learner_uncal, method = "platt", resampling = rsmp))
 learner_cal$id <- "Platt Calibrated Learner"
 ```
 
@@ -255,7 +255,7 @@ calibrationplot(...)
 po_filter = po("filter", filter = flt("information_gain"), param_vals = list(filter.nfeat = 10L))
 pipeline = as_learner(po_filter %>>% lrn("classif.ranger", predict_type = "prob"))
 pipeline_cal = as_learner(PipeOpCalibrationPerFold$new(learner = pipeline,
-                                                rsmp = rsmp("cv", folds = 10),
+                                                resampling = rsmp("cv", folds = 10),
                                                 method = "beta"))
 pipeline_cal$id <- "Beta Calibrated Learner"
 pipeline_cal$train(task_train)
