@@ -1,6 +1,6 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
-# Created by https://www.toptal.com/developers/gitignore/api/windows,visualstudiocode,r,macos,linux
-# Edit at https://www.toptal.com/developers/gitignore?templates=windows,visualstudiocode,r,macos,linux
+# Created by https://www.toptal.com/developers/gitignore/api/windows,visualstudiocode,macos,linux,r
+# Edit at https://www.toptal.com/developers/gitignore?templates=windows,visualstudiocode,macos,linux,r
 
 ### Linux ###
 *~
@@ -150,16 +150,17 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/windows,visualstudiocode,r,macos,linux
+# End of https://www.toptal.com/developers/gitignore/api/windows,visualstudiocode,macos,linux,r
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
 # R
-/.Rprofile
+.Rprofile
 README.html
 src/*.o
 src/*.so
 src/*.dll
+.clangd
 
 # CRAN
 cran-comments.md
@@ -169,27 +170,17 @@ CRAN-SUBMISSION
 # pkgdown
 docs/
 
-# vscode
-.vscode
+# renv
+renv/
+renv.lock
 
 # revdep
 revdep/
 
-# misc
-Meta/
+# Quarto build artifacts
+mlr-org/site_libs/
 
-#quarto
-mlr-org/blog.xml
-mlr-org/site_libs
-search.json
-*.rda
-attic
-
-mlr-org/renv/
-
-/.quarto/
-mlr-org/benchmarks/xgboost_1280_30m_bank_marketing.csv
-mlr-org/benchmarks/xgboost_1280_30m_higgs.csv
-mlr-org/benchmarks/mlr3automl_1280_30m.csv
-
-.claude/
+# AI
+.claude/settings.local.json
+CLAUDE.md
+.claude/worktrees

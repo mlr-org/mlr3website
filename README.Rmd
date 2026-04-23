@@ -2,80 +2,14 @@
 output: github_document
 ---
 
-
 # mlr-org Website <img src="man/figures/logo.png" align="right" width = "120" />
 
 [![build-website](https://github.com/mlr-org/mlr3website/actions/workflows/build-website.yml/badge.svg)](https://github.com/mlr-org/mlr3website/actions/workflows/build-website.yml)
 
-# Project Structure
+## Visit the website
 
-* `mlr3website` - The root directory contains the `mlr3website` R package.
-* `mlr-org/` - Quarto project.
-* `mlr-org/gallery` - Gallery posts.
-* `.github/workflows` Contains workflows to build the website and render gallery posts
+The website is available at [mlr-org.com](https://mlr-org.com/).
 
-## Setup
+## Contributing to the website
 
-1. Clone the `mlr-org/mlr3website` repository.
-1. Install the `mlr3website` package with `R CMD INSTALL .`.
-1. Run the following command from your terminal to preview the website:
-
-```bash
-quarto preview mlr-org/
-```
-
-## Notes
-
-**Freeze**
-
-The gallery posts are frozen i.e. the documents are not re-rendered during a global project render.
-Calling `quarto preview mlr-org/` or `quarto render mlr-org/` will not render the gallery posts again.
-Calling `quarto render` on a single file or subdirectory will re-render the single file or all files in the subdirectory.
-
-**RSS**
-
-The rss feed of the gallery is published on [R-bloggers](https://www.r-bloggers.com/).
-
-**CSS**
-
-The global css rules are stored in `mlr-og/custom.scss`.
-When editing the file, try to stick to the BEM naming pattern and use SASS.
-We use the Bootswatch [Yeti](https://bootswatch.com/yeti/) theme.
-A few style options are specified in `mlr-org/_quarto.yml` in the `Theme` section.
-
-## How to Add a Gallery Post
-
-The gallery is divided into four broad categories `basic`, `optimization`, `pipelines` and `technical`.
-The posts are stored in the corresponding subdirectories in `mlr-org/gallery`.
-If you write a series, add it to the `series` directory.
-
-1. Create a subdirectory in `mlr-org/gallery/{category}`.
-1. Start with a new `index.qmd` file and write your post.
-1. Use only one sentence for the description and start with a verb.
-   Do not repeat the title.
-   See the previously published articles for examples.
-1. Render the post with `quarto render mlr-org/gallery/{category}/{post}/index.qmd`.
-
-Because the gallery posts are not rendered in the CI, you need to ensure that the rendered file is contained in the
-`mlr-org/_freeze` subdirectory.
-
-## How to Change the Website
-
-Pages are `.qmd` files located in the `mlr-org/` directory (e.g. `packages.Rmd`).
-See [quarto.org](https://quarto.org) to learn more about Quarto.
-
-## Workflows
-
-**build-website.yml**
-
-Builds website.
-On `main`, the website is pushed to `gh-pages` branch.
-On pull request, the website is previewed with Netlify.
-The gallery is frozen.
-The workflow uses the dependencies from the `mlr3website` package.
-This e.g. ensures that the overview lists are up to date.
-
-**gallery-weekly.yml**
-
-The gallery is rendered in a Docker container (`mlrorg/mlr3-gallery`) which includes all required packages.
-Runs once a week.
+Read the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information on how to contribute to the book.

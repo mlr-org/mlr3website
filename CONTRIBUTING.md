@@ -1,18 +1,41 @@
 # Contributing to the mlr3 Website
 
+Thank you for contributing to the mlr3website.
+This document covers everything you need to know before editing the website.
 
-## Rendering the Website
+# Project Structure
+
+* `mlr3website` - The root directory contains the `mlr3website` R package.
+* `mlr-org/` - Quarto project.
+* `mlr-org/gallery` - Gallery posts.
+* `.github/workflows` Contains workflows to build the website and render gallery posts
+
+## Rendering the website
+
+1. Clone this repository and navigate to the `mlr3website` directory.
+2. Pull the Docker image: `docker pull mlrorg/mlr3-website`.
+3. Preview the website:
 
 Clone the repository, install the `mlr3website` R package, and preview using:
 
 ```bash
-R CMD INSTALL .
-quarto preview mlr-org/
+docker run --name mlr3website \
+ -v $(pwd):/mlr3website_latest \
+ --user $(id -u):$(id -g) \
+ -e HOME=/tmp \
+ --tmpfs /tmp:exec \
+ --rm \
+ -p 8888:8888 \
+ mlrorg/mlr3-website quarto preview mlr3website_latest/mlr-org --port 8888 --host 0.0.0.0 --no-browser
 ```
 
-The website is served at `http://localhost:4200` by default.
+`--user $(id -u):$(id -g)` ensures files written by the container (e.g. under `_freeze/`) are owned by your host user instead of root.
+`--tmpfs /tmp:exec` and `-e HOME=/tmp` give the non-root user a writable tmpdir and home directory, which quarto, pandoc, and R caches require.
 
-## Adding a Gallery Post
+Access the preview at `http://0.0.0.0:8888`.
+Add `--cache-refresh` to force a cache refresh.
+
+## Adding a gallery post
 
 The gallery is divided into five categories: `basic`, `optimization`, `pipelines`, `technical`, and `appliedml`.
 Posts are stored in `mlr-org/gallery/{category}/{post-name}/index.qmd`.
@@ -20,31 +43,21 @@ Posts are stored in `mlr-org/gallery/{category}/{post-name}/index.qmd`.
 1. Create a subdirectory in `mlr-org/gallery/{category}/` with a name following the pattern `YYYY-MM-DD-short-description`.
 2. Create an `index.qmd` file in the subdirectory.
 3. Include the setup file at the top of the post body: `{{< include ../../_setup.qmd >}}`.
-4. Render the post using the `mlrorg/mlr3-gallery` Docker image before opening a PR:
+4. Render the post using the `mlrorg/mlr3-website` Docker image before opening a PR:
 
 ```bash
-docker run --name mlr3-gallery \
+docker run --name mlr3website \
   -v $(pwd):/workspace \
   -w /workspace \
+  --user $(id -u):$(id -g) \
+  -e HOME=/tmp \
+  --tmpfs /tmp:exec \
   --rm \
-  mlrorg/mlr3-gallery:latest \
+  mlrorg/mlr3-website:latest \
   bash -c "cd mlr-org && quarto render gallery/{category}/{post}/index.qmd"
 ```
 
 Because gallery posts are not re-rendered in CI, you must include the rendered output in the `mlr-org/_freeze/` subdirectory when submitting a pull request.
-Rendering the website after adding a new gallery post with docker can fail with permission errors.
-Run `sudo chown -R $USER .` to fix this.
-
-### Rendering the gallery with docker
-
-```bash
- docker run --name mlr3-gallery \
-  -v $(pwd):/workspace \
-  -w /workspace \
-  --rm \
-  mlrorg/mlr3-gallery:latest \
-  bash -c "cd mlr-org && quarto render gallery/"
-```
 
 ### Front Matter
 
@@ -112,9 +125,17 @@ Before submitting a pull request:
 
 For questions, open an issue or reach out on [Mattermost](https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/).
 
-## Installing the mlr3website R package
+## Workflows
 
-```R
-pak::repo_add("https://mlr-org.r-universe.dev")
-pak::pkg_install(c("mlr-org/survdistr", "."), dependencies = TRUE)
-```
+**build-website.yml**
+
+Builds website.
+On `main`, the website is pushed to `gh-pages` branch.
+On pull request, the website is previewed with Netlify.
+The gallery is frozen.
+
+**gallery-weekly.yml**
+
+The gallery is rendered in a Docker container (`mlrorg/mlr3-website`) which includes all required packages.
+Runs once a week.
+
