@@ -1,16 +1,16 @@
 #' @export
 list_cell = function(value) {
   if (!length(value)) return(NULL)
-  tags$ul(class = "object-table__list",
-    map(value, function(x) tags$li(class = "object-table__list-item", x))
+  htmltools::tags$ul(class = "object-table__list",
+    lapply(value, function(x) htmltools::tags$li(class = "object-table__list-item", x))
   )
 }
 
 #' @export
 package_list_cell = function(value) {
   if (!length(value)) return(NULL)
-  tags$ul(class = "object-table__list",
-    map(value, function(x) tags$li(class = "object-table__list-item", ref_pkg(x, pkg = x, format = "htmltools")))
+  htmltools::tags$ul(class = "object-table__list",
+    lapply(value, function(x) htmltools::tags$li(class = "object-table__list-item", ref_pkg(x, pkg = x, format = "htmltools")))
   )
 }
 
