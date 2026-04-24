@@ -8,7 +8,7 @@ name: gallery-weekly
 jobs:
   gallery-weekly:
     runs-on: ubuntu-latest
-    container: mlrorg/mlr3-gallery:latest
+    container: mlrorg/mlr3-website:latest
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
