@@ -47,6 +47,11 @@ set.seed(7832)
 lgr::get_logger("mlr3")$set_threshold("warn")
 ```
 
+```{r index-002a}
+#| include: false
+future::plan("sequential")
+```
+
 # Data
 
 In the following, we rely on some toy data.

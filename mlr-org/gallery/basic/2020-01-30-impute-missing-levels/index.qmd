@@ -83,7 +83,7 @@ autoplot(task$clone()$select(c("insulin", "triceps")), type = "pairs")
 An overview over implemented `r ref("PipeOp")`s for imputation can be obtained like so:
 
 ```{r index-008}
-as.data.table(mlr_pipeops)[tags %in% "missings", list(key)]
+mlr_pipeops$keys("^impute")
 ```
 
 ## Construct Operators
