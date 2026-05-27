@@ -23,8 +23,7 @@ The `r ref("mlr_pipeops_filter", text = "Filter PipeOp")` allows to use filters 
 #| column: page
 
 content = map_dtr(setdiff(mlr_filters$keys(), "ensemble"), function(key) {
-  m = withCallingHandlers(mlr_filters$get(key, .prototype = TRUE),
-    packageNotFoundWarning = function(w) invokeRestart("muffleWarning"))
+  m = mlr_filters$get(key, .prototype = TRUE)
   list(key = key, label = m$label, task_types = list(m$task_types), packages = list(m$packages))
 })
 content[, packages := map(packages, function(value) setdiff(value, c("mlr3", "mlr3filters")))]
