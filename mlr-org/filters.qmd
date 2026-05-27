@@ -22,7 +22,11 @@ The `r ref("mlr_pipeops_filter", text = "Filter PipeOp")` allows to use filters 
 #| echo: false
 #| column: page
 
-content = as.data.table(mlr_filters)[, .(key, label, task_types, packages)]
+content = map_dtr(setdiff(mlr_filters$keys(), "ensemble"), function(key) {
+  m = withCallingHandlers(mlr_filters$get(key, .prototype = TRUE),
+    packageNotFoundWarning = function(w) invokeRestart("muffleWarning"))
+  list(key = key, label = m$label, task_types = list(m$task_types), packages = list(m$packages))
+})
 content[, packages := map(packages, function(value) setdiff(value, c("mlr3", "mlr3filters")))]
 
 ref_cell = function(value) {
