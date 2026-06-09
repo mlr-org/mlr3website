@@ -148,6 +148,8 @@ This also makes the `Task` objects stored in `ResampleResult` and `BenchmarkResu
 This also affects `ResampleResult` and `BenchmarkResult` objects.
 * `Learner` objects stored with mlr3 <= 1.5.0 cannot be loaded with mlr3 >= 1.6.0 because the `$predict_raw` field was added to the `Learner` class.
 This also affects `ResampleResult` and `BenchmarkResult` objects.
+* `Learner` objects stored with mlr3 <= 1.6.0 cannot be loaded with mlr3 >= 1.7.0 because the `$deadline` field was added to the `Learner` class.
+This also affects `ResampleResult` and `BenchmarkResult` objects.
 
 
 ## Caching of knitr/rmarkdown chunks does not work with mlr3 {#caching-knitr}
