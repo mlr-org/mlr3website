@@ -179,6 +179,8 @@ as.data.table(xgb_ts$param_set$values)
 # Set nrounds and nthread:
 xgb_ts$param_set$values$nrounds = 100
 xgb_ts$param_set$values$nthread = parallel::detectCores()
+# Set booster explicitly as the search space tunes tree-specific parameters:
+xgb_ts$param_set$values$booster = "gbtree"
 
 # Combine xgb_ts with impact encoding
 xgb_ts_impact = as_learner(po("encodeimpact") %>>% xgb_ts)

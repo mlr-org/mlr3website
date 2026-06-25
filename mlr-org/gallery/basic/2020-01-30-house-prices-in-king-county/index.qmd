@@ -309,7 +309,7 @@ For now, we do not use the **zipcode** column, as `r ref_pkg("xgboost")` cannot 
 The **AutoTuner** automatically performs nested cross-validation.
 
 ```{r index-026}
-lrn_xgb = lrn("regr.xgboost")
+lrn_xgb = lrn("regr.xgboost", booster = "gbtree")
 
 # Define the search space
 search_space = ps(

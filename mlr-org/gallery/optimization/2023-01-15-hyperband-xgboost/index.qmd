@@ -183,7 +183,7 @@ We begin by loading the `r ref("mlr_learners_classif.xgboost", "XGBoost learner.
 #| message: false
 library("mlr3verse")
 
-learner = lrn("classif.xgboost")
+learner = lrn("classif.xgboost", booster = "gbtree")
 ```
 
 The next thing we do is define the search space.
