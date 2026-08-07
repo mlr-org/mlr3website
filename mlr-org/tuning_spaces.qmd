@@ -58,12 +58,12 @@ library(mlr3verse)
 learner = lts(lrn("classif.rpart"))
 
 # retrieve task
-task = tsk("pima")
+task = tsk("diabetes")
 
 # load tuner and set batch size
 tuner = tnr("random_search", batch_size = 10)
 
-# hyperparameter tuning on the pima data set
+# hyperparameter tuning on the diabetes data set
 instance = tune(
   tuner = tnr("grid_search", resolution = 5, batch_size = 25),
   task = task,

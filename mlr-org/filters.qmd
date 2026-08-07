@@ -47,13 +47,13 @@ reactable(content, columns = list(
 
 ## Example Usage
 
-Use the $-\log_{10}()$-transformed $p$-values of a Kruskal-Wallis rank sum test (implemented in `r ref("kruskal.test()")`) for filtering features of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` tasks.
+Use the $-\log_{10}()$-transformed $p$-values of a Kruskal-Wallis rank sum test (implemented in `r ref("kruskal.test()")`) for filtering features of the `r ref("mlr_tasks_diabetes", text = "Diabetes")` tasks.
 
 ```{r, echo=TRUE}
 library("mlr3verse")
 
 # retrieve a task
-task = tsk("pima")
+task = tsk("diabetes")
 
 # retrieve a filter
 filter = flt("kruskal_test")

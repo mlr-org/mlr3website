@@ -56,7 +56,7 @@ terminator = trm("perf_reached", level = 0.25)
 tuner = tnr("random_search", batch_size = 10)
 
 # retrieve task
-task = tsk("pima")
+task = tsk("diabetes")
 
 # load learner and set search space
 learner = lts(lrn("classif.rpart"))
@@ -70,7 +70,7 @@ instance = ti(
   terminator = terminator
 )
 
-# hyperparameter tuning on the pima data set
+# hyperparameter tuning on the diabetes data set
 tuner$optimize(instance)
 
 # best performing hyperparameter configuration
