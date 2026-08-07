@@ -10,6 +10,8 @@ toc: false
 ```{r}
 #| include: false
 
+library("mlr3learners")
+library("mlr3torch")
 library("mlr3tuningspaces")
 
 lgr::get_logger("mlr3")$set_threshold("warn")
@@ -25,6 +27,9 @@ See the respective manual page for the article from which they were extracted.
 
 content = as.data.table(mlr_tuning_spaces)[, .(key, label, learner, n_values)]
 
+learners = as.data.table(mlr_learners, objects = TRUE)
+learner_man = set_names(map_chr(learners$object, function(x) if (is.null(x$man)) NA_character_ else x$man), learners$key)
+
 ref_cell = function(value) {
   if (!length(value)) return(NULL)
   mlr3website::ref(sprintf("%s_%s", "mlr_tuning_spaces", value), text = value, format = "htmltools")
@@ -32,7 +37,9 @@ ref_cell = function(value) {
 
 learner_cell = function(value) {
   if (!length(value)) return(NULL)
-  mlr3website::ref(sprintf("%s_%s", "mlr_learners", value), text = value, format = "htmltools")
+  man = learner_man[[value]]
+  if (is.null(man) || is.na(man)) return(value)
+  mlr3website::ref(man, text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(
