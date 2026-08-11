@@ -41,12 +41,12 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 
 ## Construct the Base Objects
 
-First, we take an example task with missing values (`r ref("mlr_tasks_pima", "pima")`) and create the `r ref("mlr_learners_classif.ranger", "ranger learner")`:
+First, we take an example task with missing values (`r ref("mlr_tasks_diabetes", "diabetes")`) and create the `r ref("mlr_learners_classif.ranger", "ranger learner")`:
 
 ```{r index-003}
 library(mlr3learners)
 
-task = tsk("pima")
+task = tsk("diabetes")
 print(task)
 
 learner = lrn("classif.ranger")
@@ -72,7 +72,7 @@ For comparison, other learners, e.g. the `r ref("mlr_learners_classif.rpart", "r
 lrn("classif.rpart")$properties
 ```
 
-Before we dive deeper, we quickly try to visualize the columns with many missing values:
+Before we dive deeper, we quickly try to visualize two of the columns with missing values:
 
 ```{r index-007, message = FALSE, warning = FALSE, fig.width=10, fig.height=8}
 autoplot(task$clone()$select(c("insulin", "triceps")), type = "pairs")
@@ -182,7 +182,7 @@ In order to showcase this, we create a copy of the task with several more missin
 dt = task$data()
 dt[1:10, "age"] = NA
 dt[30:70, "pedigree"] = NA
-task_2 = as_task_classif(dt, id = "pima2", target = "diabetes")
+task_2 = as_task_classif(dt, id = "diabetes2", target = "diabetes")
 ```
 
 And now we learn on `task`, while trying to predict on `task_2`.
@@ -213,7 +213,7 @@ By default, `affect_columns` would be set to `selector_invert(selector_type(c("f
 We also set the parameter `which` to `"all"` to add indicator columns for all features, regardless whether values were missing during training or not.
 
 In order to test out our new graph, we again create a situation where our task has missing factor levels.
-As the (`r ref("mlr_tasks_pima", "pima")`) task does not have any factor levels, we use the
+As the (`r ref("mlr_tasks_diabetes", "diabetes")`) task does not have any factor levels, we use the
 famous (`r ref("mlr_tasks_boston_housing", "boston_housing")`) task.
 
 ```{r index-020}

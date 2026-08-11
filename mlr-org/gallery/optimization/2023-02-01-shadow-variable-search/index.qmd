@@ -1,5 +1,5 @@
 ---
-title: "Shadow Variable Search on the Pima Indian Diabetes Data Set"
+title: "Shadow Variable Search on the Diabetes Data Set"
 description: |
   Run a feature selection with permutated features.
 categories:
@@ -34,7 +34,7 @@ set.seed(1)
 Feature selection is the process of finding an optimal set of features to improve the performance, interpretability and robustness of machine learning algorithms.
 In this article, we introduce the *Shadow Variable Search* algorithm which is a [wrapper method](https://mlr3book.mlr-org.com/feature-selection.html#fs-wrapper) for feature selection.
 Wrapper methods iteratively add features to the model that optimize a performance measure.
-As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set.
+As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_diabetes", text = "diabetes")` data set.
 We assume that you are already familiar with the basic building blocks of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
 If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/feature-selection.html) of the mlr3book first.
 Some knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
@@ -71,11 +71,11 @@ optimizer = fs("shadow_variable_search")
 
 # Task and Learner
 
-The objective of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set is to predict whether a person has diabetes or not.
-The data set includes 768 patients with 8 measurements (see @fig-features).
+The objective of the `r ref("mlr_tasks_diabetes", text = "diabetes")` data set is to predict whether a person has diabetes or not.
+The data set includes 128 patients with 8 measurements (see @fig-features).
 
 ```{r index-004}
-task = tsk("pima")
+task = tsk("diabetes")
 ```
 
 ```{r index-005}
@@ -84,7 +84,7 @@ task = tsk("pima")
 #| fig-width: 14
 #| fig-height: 3
 #| label: fig-features
-#| fig-cap: "Distribution of the features in the Pima Indian Diabetes data set."
+#| fig-cap: "Distribution of the features in the diabetes data set."
 #| warning: false
 
 library(ggplot2)
@@ -139,8 +139,8 @@ optimizer$optimize(instance)
 The optimizer returns the best feature set and the corresponding estimated performance.
 
 @fig-optimization-path shows the optimization path of the feature selection.
-The feature glucose was selected first and in the following iterations age, mass and pedigree.
-Then a shadow variable was selected and the feature selection was terminated.
+The feature glucose was selected in the first iteration.
+In the second iteration, a shadow variable achieved the best performance and the feature selection was terminated.
 
 ```{r index-010}
 #| code-fold: true

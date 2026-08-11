@@ -39,7 +39,7 @@ The other parts can be found here:
 
 In this post, we build a simple preprocessing pipeline and tune it.
 For this, we are using the `r ref_pkg("mlr3pipelines")` extension package.
-First, we start by imputing missing values in the [Pima Indians Diabetes data set](https://mlr3.mlr-org.com/reference/mlr_tasks_pima.html).
+First, we start by imputing missing values in the [diabetes data set](https://mlr3.mlr-org.com/reference/mlr_tasks_diabetes.html).
 After that, we encode a factor column to numerical dummy columns in the data set.
 Next, we combine both preprocessing steps to a `r ref("Graph")` and create a `r ref("GraphLearner")`.
 Finally, nested resampling is used to compare the performance of two imputation methods.
@@ -62,13 +62,13 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 ```
 
-In this example, we use the [Pima Indians Diabetes data set](https://mlr3.mlr-org.com/reference/mlr_tasks_pima.html) which is used to predict whether or not a patient has diabetes.
+In this example, we use the [diabetes data set](https://mlr3.mlr-org.com/reference/mlr_tasks_diabetes.html) which is used to predict whether or not a patient has diabetes.
 The patients are characterized by 8 numeric features of which some have missing values.
 We alter the data set by categorizing the feature `pressure` (blood pressure) into the categories `"low"`, `"mid"`, and `"high"`.
 
 ```{r index-004}
 # retrieve the task from mlr3
-task = tsk("pima")
+task = tsk("diabetes")
 
 # create data frame with categorized pressure feature
 data = task$data(cols = "pressure")
@@ -123,8 +123,8 @@ Let's compare an observation with missing values to the observation with imputed
 
 ```{r index-010}
 rbind(
-  task$data()[8,],
-  task_imputed$data()[8,]
+  task$data()[1,],
+  task_imputed$data()[1,]
 )
 ```
 

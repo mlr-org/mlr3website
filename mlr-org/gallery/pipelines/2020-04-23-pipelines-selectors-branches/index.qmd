@@ -49,26 +49,26 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 ```
 
-The `r ref("mlr_tasks_pima", "Pima Indian Diabetes classification task")` will be used.
+The `r ref("mlr_tasks_diabetes", "diabetes classification task")` will be used.
 
 ```{r index-003}
-task_pima = tsk("pima")
-skimr::skim(task_pima$data())
+task_diabetes = tsk("diabetes")
+skimr::skim(task_diabetes$data())
 ```
 
 ## Selection of features for preprocessing steps
 
-Several features of the `pima` task have missing values:
+Several features of the `diabetes` task have missing values:
 
 ```{r index-004}
-task_pima$missings()
+task_diabetes$missings()
 ```
 
 A common approach in such situations is to impute the missing values and to add a missing indicator column as explained in the [Impute missing variables](https://mlr3gallery.mlr-org.com/posts/2020-01-30-impute-missing-levels/) post.
 Suppose we want to use
 
-* `r ref("PipeOpImputeHist")` on features "glucose", "mass" and "pressure" which have only few missing values and
-* `r ref("PipeOpImputeMedian")` on features "insulin" and "triceps" which have much more missing values.
+* `r ref("PipeOpImputeHist")` on the features "glucose", "mass" and "pressure" and
+* `r ref("PipeOpImputeMedian")` on the features "insulin" and "triceps".
 
 In the following subsections, we show two approaches to implement this.
 
@@ -91,9 +91,9 @@ When `r ref("PipeOp")`s are constructed this way, they will perform the specifie
 
 ```{r index-006}
 # no missings in "glucose", "mass" and "pressure"
-imputer_hist$train(list(task_pima))[[1]]$missings()
+imputer_hist$train(list(task_diabetes))[[1]]$missings()
 # no missings in "insulin" and "triceps"
-imputer_median$train(list(task_pima))[[1]]$missings()
+imputer_median$train(list(task_diabetes))[[1]]$missings()
 ```
 
 We construct a pipeline that combines `imputer_hist` and `imputer_median`.
@@ -105,13 +105,13 @@ In the end, we obtain a data set without missing values:
 # combine the two impuation methods
 impute_graph = imputer_hist %>>% imputer_median
 impute_graph$plot(html = FALSE)
-impute_graph$train(task_pima)[[1]]$missings()
+impute_graph$train(task_diabetes)[[1]]$missings()
 ```
 
 The `r ref("PipeOpMissInd")` operator replaces features with missing values with a missing value indicator:
 
 ```{r index-008}
-miss_ind$train(list(task_pima))[[1]]$data()
+miss_ind$train(list(task_diabetes))[[1]]$data()
 ```
 
 Obviously, this step can not be applied to the already imputed data as there are no missing values.
@@ -126,7 +126,7 @@ impute_missind$plot(html = FALSE)
 ```
 
 ```{r index-010}
-impute_missind$train(task_pima)[[1]]$data()
+impute_missind$train(task_diabetes)[[1]]$data()
 ```
 
 ### 2. Select the features for each preprocessing step and apply the preprocessing steps to this subset
@@ -143,7 +143,7 @@ imputer_hist_2$plot(html = FALSE)
 ```
 
 ```{r index-012}
-imputer_hist_2$train(task_pima)[[1]]$data()
+imputer_hist_2$train(task_diabetes)[[1]]$data()
 ```
 
 ```{r index-013}
@@ -151,7 +151,7 @@ imputer_median_2 =
   po("select", selector = selector_name(c("insulin", "triceps")), id = "slct2") %>>%
   po("imputemedian")
 
-imputer_median_2$train(task_pima)[[1]]$data()
+imputer_median_2$train(task_diabetes)[[1]]$data()
 ```
 
 To reproduce the result of the fist example (1.), we need to copy the data four times and apply `imputer_hist_2`, `imputer_median_2` and `miss_ind` on each of the three copies.
@@ -159,7 +159,7 @@ The fourth copy is required to select the features without missing values and to
 We can do this as follows:
 
 ```{r index-014, fig.height = 6, fig.width = 6}
-other_features = task_pima$feature_names[task_pima$missings()[-1] == 0]
+other_features = task_diabetes$feature_names[task_diabetes$missings()[-1] == 0]
 
 imputer_missind_2 = po("copy", 4) %>>%
   gunion(list(imputer_hist_2,
@@ -173,7 +173,7 @@ imputer_missind_2$plot(html = FALSE)
 
 ```{r index-015}
 #| column: page
-imputer_missind_2$train(task_pima)[[1]]$data()
+imputer_missind_2$train(task_diabetes)[[1]]$data()
 ```
 
 Note that when there is one input channel, it is automatically copied as many times as needed for the downstream `r ref("PipeOp")`s.
@@ -188,7 +188,7 @@ imputer_missind_3 = gunion(list(imputer_hist_2,
   po("select", selector = selector_name(other_features), id = "slct3"))) %>>%
   po("featureunion")
 
-imputer_missind_3$train(task_pima)[[1]]$data()
+imputer_missind_3$train(task_diabetes)[[1]]$data()
 ```
 
 Usually, `po("copy")` is required when there are more than one input channels and multiple output channels, and their numbers do not match.
@@ -246,11 +246,11 @@ graph_learner = as_learner(graph)
 
 cv3 = rsmp("cv", folds = 3)
 
-cv3$instantiate(task_pima) # to generate folds for cross validation
+cv3$instantiate(task_diabetes) # to generate folds for cross validation
 
 instance = tune(
   tuner = tnr("random_search"),
-  task = task_pima,
+  task = task_diabetes,
   learner = graph_learner,
   resampling = rsmp("cv", folds = 3),
   measure = msr("classif.ce"),
