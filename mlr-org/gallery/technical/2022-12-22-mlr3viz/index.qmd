@@ -123,7 +123,7 @@ autoplot(task, type = "pairs")
 The `"prediction"` plot shows the decision boundary of a classification learner and the true class labels as points.
 
 ```{r index-008}
-task = tsk("pima")$select(c("age", "pedigree"))
+task = tsk("diabetes")$select(c("age", "pedigree"))
 learner = lrn("classif.rpart")
 learner$train(task)
 
@@ -133,7 +133,7 @@ autoplot(learner, type = "prediction", task)
 Using probabilities.
 
 ```{r index-009}
-task = tsk("pima")$select(c("age", "pedigree"))
+task = tsk("diabetes")$select(c("age", "pedigree"))
 learner = lrn("classif.rpart", predict_type = "prob")
 learner$train(task)
 
@@ -359,7 +359,7 @@ Points mark the observations of the test set and the color presents the truth.
 ```{r index-032}
 #| warning: false
 
-task = tsk("pima")
+task = tsk("diabetes")
 task$filter(seq(100))
 task$select(c("age", "glucose"))
 learner = lrn("classif.rpart")
@@ -374,7 +374,7 @@ Alternatively, we can plot class probabilities.
 ```{r index-033}
 #| warning: false
 
-task = tsk("pima")
+task = tsk("diabetes")
 task$filter(seq(100))
 task$select(c("age", "glucose"))
 learner = lrn("classif.rpart", predict_type = "prob")
@@ -389,7 +389,7 @@ In addition to the test set, we can also plot the train set.
 ```{r index-034}
 #| warning: false
 
-task = tsk("pima")
+task = tsk("diabetes")
 task$filter(seq(100))
 task$select(c("age", "glucose"))
 learner = lrn("classif.rpart", predict_type = "prob", predict_sets = c("train", "test"))
@@ -474,7 +474,7 @@ autoplot(rr, type = "prediction")
 We show the performance distribution of a benchmark with multiple tasks.
 
 ```{r index-040}
-tasks = tsks(c("pima", "sonar"))
+tasks = tsks(c("diabetes", "sonar"))
 learner = lrns(c("classif.featureless", "classif.rpart", "classif.xgboost"), predict_type = "prob")
 resampling = rsmps("cv")
 bmr = benchmark(benchmark_grid(tasks, learner, resampling))
@@ -485,7 +485,7 @@ autoplot(bmr, type = "boxplot")
 We plot a benchmark result with one task and multiple learners.
 
 ```{r index-041}
-tasks = tsk("pima")
+tasks = tsk("diabetes")
 learner = lrns(c("classif.featureless", "classif.rpart", "classif.xgboost"), predict_type = "prob")
 resampling = rsmps("cv")
 bmr = benchmark(benchmark_grid(tasks, learner, resampling))

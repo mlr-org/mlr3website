@@ -60,7 +60,7 @@ First we create a learner that predicts probabilities and use it to predict on h
 
 ```{r index-004}
 learner = lrn("classif.rpart", predict_type = "prob")
-rr = resample(tsk("pima"), learner, rsmp("holdout"))
+rr = resample(tsk("diabetes"), learner, rsmp("holdout"))
 prd = rr$prediction()
 prd
 ```
@@ -80,7 +80,7 @@ against predicting fewer negative cases (second row) or vice versa.
 
 ```{r index-006}
 # Lower threshold: More positives
-prd$set_threshold(0.25)$confusion
+prd$set_threshold(0.2)$confusion
 ```
 
 ```{r index-007}
