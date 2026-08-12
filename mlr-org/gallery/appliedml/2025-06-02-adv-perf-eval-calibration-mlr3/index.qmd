@@ -40,7 +40,7 @@ We will use `mlr3` for machine learning, and `mlr3calibration` specifically for 
 
 ```{r index-002, message = FALSE}
 if (!require("mlr3calibration")) {
-  remotes::install_github("AdriGl117/mlr3calibration")
+  remotes::install_github("giuseppec/mlr3calibration")
 }
 library(mlr3calibration)
 library(mlr3verse)
@@ -94,12 +94,12 @@ task_test = task$clone()$filter(splits$test)
 
 ## 1.2 Assess model calibration
 
-Train an XBOOST model on the training data. To do so, initialize an XGBOOST learner with `predict_type = "prob"`. Then, set `learner$id <- "Uncalibrated Learner"` for later reference. Train the learner on the correct task. Then, assess if the model is calibrated with `calibrationplot()`. The calibration plot shows the relationship between the predicted probabilities and the true outcomes. The plot is divided into bins, and within each bin, the mean predicted probability and the mean observed outcome are calculated. The calibration plot can be smoothed by setting `smooth = TRUE`.
+Train an XBOOST model on the training data. To do so, initialize an XGBOOST learner with `predict_type = "prob"`. Then, set `learner$id <- "Uncalibrated Learner"` for later reference. Train the learner on the correct task. Then, assess if the model is calibrated with `calibration_plot()`. The calibration plot shows the relationship between the predicted probabilities and the true outcomes. The plot is divided into bins, and within each bin, the mean predicted probability and the mean observed outcome are calculated. The calibration plot can be smoothed by setting `smooth = TRUE`.
 
 <details>
 <summary>**Hint 1:**</summary>
 
-`calibrationplot()` requires a `list` of learners even if the list contains only one argument.
+`calibration_plot()` requires a `list` of learners even if the list contains only one argument.
 
 </details>
 
@@ -113,7 +113,7 @@ Train an XBOOST model on the training data. To do so, initialize an XGBOOST lear
 learner = lrn("classif.xgboost", predict_type = "prob")
 learner$id <- "Uncalibrated Learner"
 learner$train(task_train)
-calibrationplot(list(learner), task_test, smooth = TRUE)
+calibration_plot(list(learner), task_test, smooth = TRUE)
 ```
 
 The model is not well-calibrated. For predicted probabilities from 0 to 0.4, it seems to underestimate the true probability, for predicted probabilities higher than 0.4, it tends to overestimate the true probability.
@@ -124,15 +124,15 @@ The model is not well-calibrated. For predicted probabilities from 0 to 0.4, it 
 
 ## 1.3 Calibration strategy
 
-In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibration method (Platt, Beta or Isotonic). Initialize 1) another XGBOOST base learner, 2) a 5-fold CV resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibrationPerFold` object. It requires the base learner (`learner`), the calibration method (`method`), and the resampling method (`resampling`) as arguments to be initialized. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
+In `mlr3calibration`, to calibrate a learner you need a base learner (which will fit a model that is calibrated afterwards), a resampling strategy, and a calibrator (Platt, Beta or Isotonic). Initialize 1) another XGBOOST base learner, 2) a 5-fold CV resampling object, and 3) a calibration strategy. The calibration strategy in `mlr3calibration` is implemented as `PipeOpCalibrate` object, which is constructed with `po("calibrate")`. It requires the base learner (`learner`), the calibrator (`calibrator`), and the resampling method (`resampling`) as arguments to be initialized. Calibrators are constructed with the sugar function `clb()`, for example `clb("platt")`. Practically, we want to use the calibration strategy as learner, so we have to express the pipeline operator within `as_learner()`. After that, set `learner_cal$id <- "Platt Calibrated Learner"` for later reference.
 
 <details>
 <summary>**Hint 1:**</summary>
 
 ```{r index-006, eval = FALSE}
 learner_uncal = ...
-rsmp = ...
-learner_cal = as_learner(PipeOpCalibrationPerFold$new(...))
+resampling = ...
+learner_cal = as_learner(po("calibrate", ...))
 learner_cal$id <- "Platt Calibrated Learner"
 ```
 
@@ -141,7 +141,7 @@ learner_cal$id <- "Platt Calibrated Learner"
 <details>
 <summary>**Hint 2:**</summary>
 
-Check the documentation of `PipeOpCalibrationPerFold` with `??PipeOpCalibrationPerFold`.
+Check the documentation of `PipeOpCalibrate` with `??PipeOpCalibrate`.
 
 </details>
 
@@ -153,8 +153,8 @@ Check the documentation of `PipeOpCalibrationPerFold` with `??PipeOpCalibrationP
 
 ```{r index-007}
 learner_uncal = lrn("classif.xgboost", predict_type = "prob")
-rsmp = rsmp("cv", folds = 5)
-learner_cal = as_learner(PipeOpCalibrationPerFold$new(learner = learner_uncal, method = "platt", resampling = rsmp))
+resampling = rsmp("cv", folds = 5)
+learner_cal = as_learner(po("calibrate", learner = learner_uncal, calibrator = clb("platt"), resampling = resampling))
 learner_cal$id <- "Platt Calibrated Learner"
 ```
 
@@ -173,9 +173,8 @@ The calibrated learner can be trained on a `task` as any other learner. Train th
 :::{.b64-solution}
 
 ```{r index-008}
-#| eval: false
 learner_cal$train(task_train)
-calibrationplot(list(learner, learner_cal), task_test, smooth = TRUE)
+calibration_plot(list(learner, learner_cal), task_test, smooth = TRUE)
 ```
 
 While the calibrated learner does not exhibit perfect calibration, it is much better calibrated then the uncalibrated learner, especially for predicted probabilities smaller than 0.5.
@@ -192,7 +191,7 @@ the diagonal perfectly calibrated line. Compute the ECE for both models. The cal
 <details>
 <summary>**Hint 1:**</summary>
 
-Check `??mlr3calibration::ece` on how to initialize the ECE measure within `$score()`.
+The ECE measure is constructed with `msr("classif.ece")` and passed to `$score()`.
 
 </details>
 
@@ -203,13 +202,12 @@ Check `??mlr3calibration::ece` on how to initialize the ECE measure within `$sco
 :::{.b64-solution}
 
 ```{r index-009}
-#| eval: false
 # Predictions
 preds_uncal = learner$predict(task_test)
 preds_cal = learner_cal$predict(task_test)
 # Calculate the ECE
-ece_uncal = preds_uncal$score(ece$new())
-ece_cal = preds_cal$score(ece$new())
+ece_uncal = preds_uncal$score(msr("classif.ece"))
+ece_cal = preds_cal$score(msr("classif.ece"))
 # Uncalibrated ECE
 ece_uncal
 # Calibrated ECE
@@ -224,7 +222,7 @@ The calibrated model has a much lower ECE. Therefore, we can infer that Platt sc
 
 # 3 Tuning and Pipelines
 
-`PipeOpCalibrationPerFold` can be treated as any other `PipeOp` object. Therefore, we can use them within more complex tuning and pipeline constructs. There are many sensible options. For example, we could pass a tuned base learner to the calibrator or tune the base learner within the calibrator. Similarly, we can include a calibrated learner in a pipeline or choose to calibrate the entire pipeline. Let's try how to connect a feature filter to a calibrator. Construct a pipeline that 1) filters the 10 most relevant features according to their information gain, 2) then fits a random forest, and 3) calibrate this pipeline with beta calibration using 5-fold CV. Express this calibrated pipeline as learner, train it on the training task and plot the calibration plot with the Platt scaled and beta-calibrated models.
+`PipeOpCalibrate` can be treated as any other `PipeOp` object. Therefore, we can use them within more complex tuning and pipeline constructs. There are many sensible options. For example, we could pass a tuned base learner to the calibrator or tune the base learner within the calibrator. Similarly, we can include a calibrated learner in a pipeline or choose to calibrate the entire pipeline. Let's try how to connect a feature filter to a calibrator. Construct a pipeline that 1) filters the 10 most relevant features according to their information gain, 2) then fits a random forest, and 3) calibrate this pipeline with beta calibration using 5-fold CV. Express this calibrated pipeline as learner, train it on the training task and plot the calibration plot with the Platt scaled and beta-calibrated models.
 
 
 
@@ -236,10 +234,10 @@ You may use this skeleton code for the required steps.
 ```{r index-010, eval = FALSE}
 po_filter = po(...)
 pipeline = as_learner(... %>>% ...)
-pipeline_cal = as_learner(PipeOpCalibrationPerFold$new(...))
+pipeline_cal = as_learner(po("calibrate", ...))
 pipeline_cal$id <- "Beta Calibrated Learner"
 pipeline_cal$train(...)
-calibrationplot(...)
+calibration_plot(...)
 ```
 
 </details>
@@ -251,15 +249,14 @@ calibrationplot(...)
 :::{.b64-solution}
 
 ```{r index-011}
-#| eval: false
 po_filter = po("filter", filter = flt("information_gain"), param_vals = list(filter.nfeat = 10L))
 pipeline = as_learner(po_filter %>>% lrn("classif.ranger", predict_type = "prob"))
-pipeline_cal = as_learner(PipeOpCalibrationPerFold$new(learner = pipeline,
-                                                resampling = rsmp("cv", folds = 10),
-                                                method = "beta"))
+pipeline_cal = as_learner(po("calibrate", learner = pipeline,
+                             resampling = rsmp("cv", folds = 10),
+                             calibrator = clb("beta")))
 pipeline_cal$id <- "Beta Calibrated Learner"
 pipeline_cal$train(task_train)
-calibrationplot(list(learner_cal, pipeline_cal), task_test, smooth = TRUE)
+calibration_plot(list(learner_cal, pipeline_cal), task_test, smooth = TRUE)
 ```
 
 The beta-calibrated random forest model seems very well-calibrated.
