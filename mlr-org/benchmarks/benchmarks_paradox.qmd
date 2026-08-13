@@ -54,6 +54,8 @@ We start by measuring the runtime of the `ps()` function when initializing a par
 The runtime increases from 2 to 10 to 100 ms but is independent of the type of the parameters.
 Getting values with the `$get_values()` method takes around 100 µs.
 The `$set_values()` method takes a half millisecond for 5 values and 14 ms for 500 values.
+Collecting parameter sets in a `ParamSetCollection` takes 0.5 ms for 2 sets and 1.1 ms for 50 sets.
+Getting values from a collection takes 0.03 ms for 2 sets and 0.4 ms for 50 sets, whereas setting values takes 0.1 ms for 2 sets and 7.5 ms for 50 sets.
 
 # Initialize {#initialize}
 
@@ -87,6 +89,38 @@ table_paradox = function(data) {
     tab_row_group(
       label = "5 Parameters",
       rows = size == 5
+    )
+  }
+
+table_paradox_collection = function(data) {
+  data = data[, -c("mad_runtime")]
+  setcolorder(data, c("paradox", "type", "n_sets", "size", "median_runtime"))
+  setorderv(data, c("type", "n_sets"), order = c(1, 1))
+
+  data %>%
+    gt() %>%
+    cols_label(
+      paradox = "paradox",
+      type = "Type",
+      n_sets = "Sets",
+      size = "Size",
+      median_runtime = "Runtime"
+    ) %>%
+    cols_units(
+      median_runtime = "ms"
+    ) %>%
+    fmt_number(columns = c("median_runtime"), n_sigfig = 2, sep_mark = "") %>%
+    tab_row_group(
+      label = "50 Parameter Sets",
+      rows = n_sets == 50
+    ) %>%
+    tab_row_group(
+      label = "10 Parameter Sets",
+      rows = n_sets == 10
+    ) %>%
+    tab_row_group(
+      label = "2 Parameter Sets",
+      rows = n_sets == 2
     )
   }
 ```
@@ -349,6 +383,86 @@ param_set$subspaces()
 #|   Runtime of the `$subspaces()` method by paradox version, space size, parameter type and paradox version.
 #|   The table includes runtimes for spaces of size 5, 50 and 500 parameters and for numeric, categorical and mixed parameters.
 table_paradox(results_runtime$subspaces)
+```
+
+# Parameter Set Collections {#param_set_collections}
+
+The benchmarks in this section measure the runtime of a `ParamSetCollection` that combines 2, 10 and 50 parameter sets with 5 parameters each.
+The results are only available for paradox versions 1.0.1 and later.
+
+## Initialize {#collection_initialize}
+
+The runtime of collecting parameter sets in a `ParamSetCollection` is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set_collection = ParamSetCollection$new(list(
+  set_1 = param_set_1,
+  set_2 = param_set_2
+))
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `ParamSetCollection` initialization by paradox version, number of collected sets and parameter type.
+#|   The table includes runtimes for collections of 2, 10 and 50 parameter sets with 5 parameters each and for numeric, categorical and mixed parameters.
+table_paradox_collection(results_runtime$param_set_collection_initialize)
+```
+
+## Ids {#collection_ids}
+
+The runtime of the `$ids()` method of a `ParamSetCollection` is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set_collection$ids()
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$ids()` method by paradox version, number of collected sets and parameter type.
+#|   The table includes runtimes for collections of 2, 10 and 50 parameter sets with 5 parameters each and for numeric, categorical and mixed parameters.
+table_paradox_collection(results_runtime$param_set_collection_ids)
+```
+
+## Get Values {#collection_get_values}
+
+The runtime of the `$get_values()` method of a `ParamSetCollection` is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set_collection$get_values()
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$get_values()` method by paradox version, number of collected sets and parameter type.
+#|   The table includes runtimes for collections of 2, 10 and 50 parameter sets with 5 parameters each and for numeric, categorical and mixed parameters.
+table_paradox_collection(results_runtime$param_set_collection_get_values)
+```
+
+## Set Values {#collection_set_values}
+
+The runtime of the `$set_values()` method of a `ParamSetCollection` is measured for different paradox versions.
+
+```{r}
+#| eval: false
+param_set_collection$set_values(set_1.a = 1)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: |
+#|   Runtime of the `$set_values()` method by paradox version, number of collected sets and parameter type.
+#|   The table includes runtimes for collections of 2, 10 and 50 parameter sets with 5 parameters each and for numeric, categorical and mixed parameters.
+table_paradox_collection(results_runtime$param_set_collection_set_values)
 ```
 
 
