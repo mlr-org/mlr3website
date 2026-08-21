@@ -32,6 +32,8 @@ package_grid = function(content) {
   div(class = "grid grid-three",
     pmap(content, function(category, name, status, url, text, on_cran, ...) {
         has_homepage = grepl("mlr-org.com", url, ignore.case = TRUE)
+        # packages outside the mlr-org organization link to their own repository
+        github_url = if (grepl("github.com", url, fixed = TRUE)) url else sprintf("https://github.com/mlr-org/%s", name)
         div(class = "grid__item",
           h3(class = "grid__title",
             a(class = "grid__title-link", href = url, name),
@@ -44,7 +46,7 @@ package_grid = function(content) {
           div(class = "grid__item-footer",
             if (has_homepage) a(class = "grid__link-footer", href = url, "aria-label" = "Go to homepage", tags$i(class = "bi bi-house grid__icon-footer", title = "Homepage")),
             if (has_homepage) a(class = "grid__link-footer", href = paste0(url, "reference/"), "aria-label" = "Go to Reference Manual", tags$i(class = "bi bi-question-circle grid__icon-footer", title = "Reference Manual")),
-            a(class = "grid__link-footer", href = sprintf("https://github.com/mlr-org/%s", name), "aria-label" = "Go to Project Page", tags$i(class = "bi bi-github grid__icon-footer", title = "Github Project")),
+            a(class = "grid__link-footer", href = github_url, "aria-label" = "Go to Project Page", tags$i(class = "bi bi-github grid__icon-footer", title = "Github Project")),
             if (on_cran) a(class = "grid__link-footer", href = sprintf("https://cran.r-project.org/package=%s", name), "aria-label" = "Go to CRAN page", tags$i(class = "fab fa-r-project grid__icon-footer", title = "CRAN Website"))
           )
         )
@@ -77,9 +79,12 @@ content = rowwise_table(
     "analysis",        "mlr3benchmark",     "stable",       "https://mlr3benchmark.mlr-org.com/",         "Analysis and tools for benchmarking",
     "analysis",        "mlr3inferr",        "stable",       "https://mlr3inferr.mlr-org.com/",            "Statistical methods for inference on the generalization error",
     "analysis",        "mlr3summary",       "stable",       "https://github.com/mlr-org/mlr3summary",     "Summary methods for mlr3",
+    "analysis",        "mlr3resampling",    "stable",       "https://github.com/tdhock/mlr3resampling",   "Resampling algorithms for comparing data subsets",
     "tasks",           "mlr3spatiotempcv",  "stable",       "https://mlr3spatiotempcv.mlr-org.com/",      "Spatiotemporal resampling and visualization methods",
     "tasks",           "mlr3cluster",       "stable",       "https://mlr3cluster.mlr-org.com/",           "Cluster analysis",
     "tasks",           "mlr3proba",         "stable",       "https://mlr3proba.mlr-org.com/",             "Probabilistic predictions",
+    "tasks",           "mlr3cmprsk",        "experimental", "https://mlr3cmprsk.mlr-org.com/",            "Machine learning for competing risks analysis",
+    "tasks",           "mlr3survival",      "planned",      "https://mlr3survival.mlr-org.com/",          "Machine learning for survival analysis",
     "tasks",           "mlr3forecast",      "experimental", "https://mlr3forecast.mlr-org.com/",          "Time series analysis",
     "tasks",           "mlr3spatial",       "stable",       "https://mlr3spatial.mlr-org.com/",           "Spatial data backends and prediction functions",
     "tasks",           "mlr3fda",           "stable",       "https://mlr3fda.mlr-org.com",                "Functional Data Analysis",
@@ -87,6 +92,7 @@ content = rowwise_table(
     "other",           "paradox",           "stable",       "https://paradox.mlr-org.com/",               "Universal parameter space description and tools",
     "other",           "mlr3misc",          "stable",       "https://mlr3misc.mlr-org.com/",              "Miscellaneous helper functions for mlr3",
     "other",           "mlr3measures",      "stable",       "https://mlr3measures.mlr-org.com/",          "Performance measures for supervised learning",
+    "other",           "survdistr",         "stable",       "https://survdistr.mlr-org.com/",             "Containers for the prediction outputs of survival models",
     "parallelization", "mlr3batchmark",     "stable",       "https://github.com/mlr-org/mlr3batchmark/",  "Connector between mlr3 and batchtools",
     "parallelization", "rush",              "stable",       "https://github.com/mlr-org/rush",            "Asynchronous parallelization"
 )
