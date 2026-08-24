@@ -1,14 +1,12 @@
-FROM trestletech/plumber
+FROM rstudio/plumber
 
-RUN R -e 'install.packages(c("data.table", "mlr3", "mlr3misc", "mlr3pipelines"))'
+WORKDIR /app
 
-RUN mkdir /data
-COPY gl.rds /data
-COPY feature_info.rds /data
-COPY fix_feature_types.R /data
-COPY predict_gl.R /data
-WORKDIR /data
+RUN R -e 'pak::pak(c("mlr3", "mlr3pipelines"))'
 
-EXPOSE 1030
-ENTRYPOINT ["R", "-e", \
-    "r = plumber::plumb('/data/predict_gl.R'); r$run(port = 1030, host = '0.0.0.0')"]
+COPY train_gl.R predict_gl.R ./
+RUN Rscript train_gl.R
+
+EXPOSE 8000
+
+CMD ["predict_gl.R"]

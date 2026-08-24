@@ -1,27 +1,15 @@
-# train_gl.R
-
 library(mlr3)
 library(mlr3pipelines)
 
-data = tsk("boston_housing")$data()
-data = data[, c("medv", "crim", "tax", "town")]
-task = TaskRegr$new("boston", backend = data, target = "medv")
+task_housing = tsk("boston_housing")
+task_housing$select(c("crim", "tax", "town"))
 
-g = po("imputemedian") %>>%
+graph = po("imputemedian") %>>%
   po("imputeoor") %>>%
   po("fixfactors") %>>%
   lrn("regr.rpart")
 
-gl = GraphLearner$new(g)
+learner = as_learner(graph)
+learner$train(task_housing)
 
-gl$train(task)
-
-saveRDS(gl, "gl.rds")
-
-feature_info = list(
-  feature_names = task$feature_names,
-  feature_types = task$feature_types,
-  levels = task$levels()
-)
-
-saveRDS(feature_info, "feature_info.rds")
+saveRDS(learner, "model.rds")
