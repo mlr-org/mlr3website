@@ -60,7 +60,7 @@ When working with high-performance computing clusters, jobs are often bound by s
 Exceeding these limits results in the job being terminated and the loss of any results generated.
 Therefore, it's important to ensure that the tuning process is designed to adhere to these time constraints.
 
-The `trm("runtime")` controls the duration of the tuning process.
+The `trm("run_time")` controls the duration of the tuning process.
 We must take into account that the terminator can only check if the time limit is reached between batches.
 We must therefore set the time lower than the runtime of the job.
 How much lower depends on the runtime or time limit of the individual learners.
@@ -85,7 +85,7 @@ This approach ensures the tuning process is efficient and adheres to the constra
 
 When using [nested resampling](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html#sec-nested-resampling), time constraints become more complex as they are applied across various levels.
 As before, the time limit for an individual learner during the tuning is set with `$timeout`.
-The time limit for the tuning processes in the auto tuners is controlled with the `trm("runtime")`.
+The time limit for the tuning processes in the auto tuners is controlled with the `trm("run_time")`.
 It's important to note that once the auto tuner enters the final phase of fitting the model and making predictions on the outer test set, the time limit governed by the terminator no longer applies.
 Additionally, the time limit previously set on the learner is temporarily deactivated, allowing the auto tuner to complete its task uninterrupted.
 However, a separate time limit can be assigned to each auto tuner using `$timeout`.
@@ -132,7 +132,7 @@ rr = resample(task, at, rsmp("cv", folds = 5))
 
 We delved into the setting of time constraints across different levels in the mlr3 ecosystem.
 From individual learners to the complexities of nested resampling, we've seen how effectively managing time limits can significantly enhance the efficiency and reliability of machine learning workflows.
-By utilizing the `trm("runtime")` for tuning processes and setting `$timeout` for individual learners and auto tuners, we can ensure that our machine learning tasks are not only effective but also adhere to the practical time constraints of shared computational resources.
+By utilizing the `trm("run_time")` for tuning processes and setting `$timeout` for individual learners and auto tuners, we can ensure that our machine learning tasks are not only effective but also adhere to the practical time constraints of shared computational resources.
 For more information, see also the error handling section in the [mlr3book](https://mlr3book.mlr-org.com/chapters/chapter5/advanced_tuning_methods_and_black_box_optimization.html#sec-encapsulation-fallback).
 
 {{< include ../../_session_info.qmd >}}
