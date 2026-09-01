@@ -63,7 +63,7 @@ task = tsk("german_credit")
 We also might want to use multiple cores to reduce long run times of tuning runs.
 
 ```{r index-005, eval = FALSE}
-future::plan("multiprocess")
+future::plan("multisession")
 ```
 
 ## Evaluation

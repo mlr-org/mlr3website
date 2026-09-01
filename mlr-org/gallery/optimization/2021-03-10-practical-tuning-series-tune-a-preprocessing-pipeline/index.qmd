@@ -305,7 +305,7 @@ graph_learner_1 = as_learner(graph_1)
 graph_learner_1$param_set$values$encode.method = to_tune(c("one-hot", "treatment"))
 
 at_1 = auto_tuner(
-  method = "grid_search",
+  tuner = tnr("grid_search"),
   learner = graph_learner_1,
   resampling = resampling,
   measure = msr("classif.ce"),
@@ -316,7 +316,7 @@ graph_learner_2 = as_learner(graph_2)
 graph_learner_2$param_set$values$encode.method = to_tune(c("one-hot", "treatment"))
 
 at_2 = auto_tuner(
-  method = "grid_search",
+  tuner = tnr("grid_search"),
   learner = graph_learner_2,
   resampling = resampling,
   measure = msr("classif.ce"),
