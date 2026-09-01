@@ -127,7 +127,7 @@ But the first hyperparameter is special.
 
 ```{r index-007}
 graph$param_set$ids()
-graph$param_set$params$branch.selection
+graph$param_set$subset("branch.selection")
 ```
 
 We can now tune over this pipeline, and probably running grid search seems a good idea to "touch" every
