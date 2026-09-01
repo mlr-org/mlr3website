@@ -357,13 +357,13 @@ b$aggregate(msr("classif.auc"))
 # 3 Optimizing Weights
 
 Building upon the previous exercise, we now want to numerically optimize the weights of the ensemble via `bbotk`.
-To do so, we will have to construct an `OptimInstanceSingleCrit` in which we pass a domain, a search space, a codomain and the actual objective function that is optimized.
+To do so, we will have to construct an `OptimInstanceBatchSingleCrit` in which we pass a domain, a search space, a codomain and the actual objective function that is optimized.
 First, we will implement a naive solution, by changing the weighting scheme in the objective function and evaluating the ensemble based on a resampling.
 Note that when we are optimizing three weights (one for each model), this is in essence a constrained optimization problem with only two degrees of freedom:
 Given the first weight and the second weight and the constraint that all three weights must sum to 1, we can always calculate the third weight.
 We will ignore this in the following and simply optimize each weight on a scale from 0 to 1 and will normalize all weights to sum to 1 within the objective.
 
-To construct the `OptimInstanceSingleCrit` do the following:
+To construct the `OptimInstanceBatchSingleCrit` do the following:
 
 ## 3.1 Objective Function
 
@@ -483,7 +483,7 @@ codomain = ps(classif.auc = p_dbl(0.5, 1, tags = "maximize"))
 
 ## 3.4 Wrap up
 
-Collect everything in an `OptimInstanceSingleCrit`.
+Collect everything in an `OptimInstanceBatchSingleCrit`.
 
 Use random search as an optimizer and terminate after 10 function evaluations.
 Why is our approach (i.e., how we constructed the objective function) ineffective?
@@ -504,7 +504,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_random"
 )
 
-instance = OptimInstanceSingleCrit$new(
+instance = OptimInstanceBatchSingleCrit$new(
   objective = ...
   terminator = trm(...)
 )
@@ -528,7 +528,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_random"
 )
 
-instance = OptimInstanceSingleCrit$new(
+instance = OptimInstanceBatchSingleCrit$new(
   objective = objective,
   terminator = trm("evals", n_evals = 10L)
 )
@@ -552,7 +552,7 @@ There is no need to always retrain and evaluate the learners because we only wei
 In the previous exercise, we optimized the weights of our ensemble - but very inefficiently.
 In this exercise we want to do better.
 Rewrite the objective function to directly operate on the cross-validated predictions and combine the predicted probabilities directly as in model averaging.
-Construct an `OptimInstanceSingleCrit` and optimize it via CMA-ES and terminate after 100 function evaluations.
+Construct an `OptimInstanceBatchSingleCrit` and optimize it via CMA-ES and terminate after 100 function evaluations.
 
 Note that you can reuse most logic from the previous exercise and the only interesting part is how to rewrite the objective function.
 
@@ -602,7 +602,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_cmaes"
 )
 
-instance = OptimInstanceSingleCrit$new(
+instance = OptimInstanceBatchSingleCrit$new(
   objective = ...,
   terminator = ...
 )
@@ -653,7 +653,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_cmaes"
 )
 
-instance = OptimInstanceSingleCrit$new(
+instance = OptimInstanceBatchSingleCrit$new(
   objective = objective,
   terminator = trm("evals", n_evals = 100L)
 )
