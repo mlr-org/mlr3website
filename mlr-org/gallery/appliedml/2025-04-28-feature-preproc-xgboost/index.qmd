@@ -410,15 +410,6 @@ tuning task.
 - `nrounds` set to 100L.
 - The number of early stopping rounds set to 5 (this could be tuned, as well, but we simplify things) in order to stop earlier if there was no improvement in the previous 5 iterations.
 
-```{r index-014, eval = FALSE, include = FALSE}
-# does not work as the task has no predefined role Test
-library("xgboost")
-set.seed(2001L)
-
-split = partition(task, ratio = 0.9)
-task$set_row_roles(rows = split$test, roles = "test")
-```
-
 ```{r index-015}
 library("xgboost")
 set.seed(2001L)

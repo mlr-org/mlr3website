@@ -86,7 +86,7 @@ cv10 = rsmp("cv")$instantiate(task)
 We also might want to use multiple cores to reduce long run times of tuning runs.
 
 ```{r index-006, eval = FALSE}
-future::plan("multiprocess")
+future::plan("multisession")
 ```
 
 ## Intro
