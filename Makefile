@@ -1,8 +1,11 @@
 IMAGE = mlrorg/mlr3-website:latest
 PORT = 8888
+# the image is only built for amd64, arm64 hosts have to emulate it
+PLATFORM = linux/amd64
 
 # run as the host user so that files written to _freeze/ are not owned by root
 DOCKER_RUN = docker run --rm \
+	--platform $(PLATFORM) \
 	-v $(CURDIR):/workspace \
 	-w /workspace/mlr-org \
 	--user $$(id -u):$$(id -g) \
@@ -22,7 +25,7 @@ help:
 	@echo "clean-gallery-artifacts  : Remove render artifacts (index.html, index_files/, index.knit.md, index.rmarkdown) from gallery source directories."
 
 pull:
-	docker pull $(IMAGE)
+	docker pull --platform $(PLATFORM) $(IMAGE)
 
 preview:
 	$(DOCKER_RUN) -p $(PORT):$(PORT) $(IMAGE) quarto preview --port $(PORT) --host 0.0.0.0 --no-browser
