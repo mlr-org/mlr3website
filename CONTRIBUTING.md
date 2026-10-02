@@ -131,6 +131,7 @@ For questions, open an issue or reach out on [Mattermost](https://lmmisld-lmu-st
 
 Builds website.
 On `main`, the website is pushed to `gh-pages` branch.
+This happens on every push, once a week, and when the workflow is started manually, so that the overview tables pick up new package releases.
 On pull request, the website is previewed with Netlify.
 The gallery is frozen.
 
