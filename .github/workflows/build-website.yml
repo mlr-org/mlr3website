@@ -1,5 +1,8 @@
 on:
   workflow_dispatch:
+  # overview tables are built from the installed packages, so they go stale without a rebuild
+  schedule:
+    - cron: "0 5 * * 1"
   push:
     branches:
       - main
@@ -37,7 +40,7 @@ jobs:
           netlify_url: mlr3website.netlify.app
 
       - name: Deploy
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
