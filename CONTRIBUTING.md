@@ -35,6 +35,8 @@ docker run --name mlr3website \
 Access the preview at `http://0.0.0.0:8888`.
 Add `--cache-refresh` to force a cache refresh.
 
+The `Makefile` wraps these Docker commands, run `make help` to list the available targets.
+
 ## Adding a gallery post
 
 The gallery is divided into five categories: `basic`, `optimization`, `pipelines`, `technical`, and `appliedml`.
