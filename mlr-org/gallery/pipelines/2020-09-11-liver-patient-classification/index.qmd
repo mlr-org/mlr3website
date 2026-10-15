@@ -402,7 +402,7 @@ table(po_over$train(list(task_liver))$output$truth()) # Check class balance
 ```{r index-017, results="hide"}
 # Learners with balanced/oversampled data
 learners_bal = lapply(learners, function(x) {
-  GraphLearner$new(po_scale %>>% po_over %>>% x)
+  as_learner(po_scale %>>% po_over %>>% x)
 })
 lapply(learners_bal, function(x) x$predict_sets = c("train", "test"))
 ```

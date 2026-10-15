@@ -58,7 +58,7 @@ g = po("imputemedian") %>>%
 We wrap this `r ref("Graph")` in a `r ref("GraphLearner")` and can train on the `r ref("Task")`:
 
 ```{r index-005}
-gl = GraphLearner$new(g)
+gl = as_learner(g)
 gl$train(task)
 ```
 

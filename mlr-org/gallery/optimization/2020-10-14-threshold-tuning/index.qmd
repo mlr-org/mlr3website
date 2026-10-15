@@ -108,7 +108,7 @@ A simple example would be:
 
 ```{r index-008}
 gr = lrn("classif.rpart", predict_type = "prob") %>>% po("threshold")
-l = GraphLearner$new(gr)
+l = as_learner(gr)
 ```
 
 Note, that `predict_type` = "prob" is required for `po("threshold")` to have any effect.
@@ -197,7 +197,7 @@ A simple example would be:
 ```{r index-014}
 gr = po("learner_cv", lrn("classif.rpart", predict_type = "prob")) %>>%
   po("tunethreshold")
-l2 = GraphLearner$new(gr)
+l2 = as_learner(gr)
 ```
 
 Note, that `predict_type` = "prob" is required for `po("tunethreshold")` to have any effect.

@@ -12,7 +12,7 @@ g = po("imputemedian") %>>%
   po("fixfactors") %>>%
   lrn("regr.rpart")
 
-gl = GraphLearner$new(g)
+gl = as_learner(g)
 
 gl$train(task)
 

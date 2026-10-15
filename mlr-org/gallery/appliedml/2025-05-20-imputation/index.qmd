@@ -358,7 +358,7 @@ Now, tune the pipeline using an AutoTuner with 3-fold CV and random search. You 
 
 ```{r index-015, eval=FALSE}
 # AutoTuner
-glrn_tuned = AutoTuner$new(...)
+glrn_tuned = auto_tuner(...)
 # Train
 ...
 # Optimal HP set
@@ -375,7 +375,7 @@ glrn_tuned = AutoTuner$new(...)
 
 ```{r index-016, messages=FALSE}
 # AutoTuner
-glrn_tuned = AutoTuner$new(graph_branch,
+glrn_tuned = auto_tuner(learner = graph_branch,
   resampling = rsmp("cv", folds = 3L),
   search_space = tune_ps,
   measure = msr("regr.mse"),
