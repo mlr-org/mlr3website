@@ -39,7 +39,7 @@ In addition to filtering, wrapper methods are another variant of selecting featu
 
 For wrapper methods, we need the package `mlr3fselect`, at whose heart the following `R6` classes are:
 
-- `FSelectInstanceSingleCrit`, `FSelectInstanceMultiCrit`: These two classes describe the feature selection problem and store the results.
+- `FSelectInstanceBatchSingleCrit`, `FSelectInstanceBatchMultiCrit`: These two classes describe the feature selection problem and store the results.
 - `FSelector`: This class is the base class for implementations of feature selection algorithms.
 
 # Prerequisites
@@ -64,7 +64,7 @@ lrn_ranger = lrn("classif.ranger")
 
 ## 1.1 Create the Framework
 
-Create an `FSelectInstanceSingleCrit` object using `fsi()`. The instance should use a 3-fold cross validation, classification accuracy as the `measure` and terminate after 20 evaluations. For simplification only consider the features `age`, `amount`, `credit_history` and `duration`.
+Create an `FSelectInstanceBatchSingleCrit` object using `fsi()`. The instance should use a 3-fold cross validation, classification accuracy as the `measure` and terminate after 20 evaluations. For simplification only consider the features `age`, `amount`, `credit_history` and `duration`.
 
 <details>
 <summary>**Hint 1:**</summary>
@@ -108,7 +108,7 @@ instance = fsi(
 
 ## 1.2 Start the Feature Selection
 
-Start the feature selection step by selecting `sequential` using the `FSelector` class via `fs()` and pass the `FSelectInstanceSingleCrit` object to the `$optimize()` method of the initialized `FSelector` object.
+Start the feature selection step by selecting `sequential` using the `FSelector` class via `fs()` and pass the `FSelectInstanceBatchSingleCrit` object to the `$optimize()` method of the initialized `FSelector` object.
 
 <details>
 <summary>**Hint 1:**</summary>

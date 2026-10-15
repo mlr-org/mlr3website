@@ -182,7 +182,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_cmaes"
 )
 
-instance = OptimInstanceSingleCrit$new(
+instance = OptimInstanceBatchSingleCrit$new(
   objective = objective,
   terminator = trm("evals", n_evals = 100L)
 )
@@ -323,7 +323,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_cmaes"
 )
 
-instance = OptimInstanceSingleCrit$new(
+instance = OptimInstanceBatchSingleCrit$new(
   objective = objective,
   terminator = trm("evals", n_evals = 100L)
 )

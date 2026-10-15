@@ -128,7 +128,7 @@ objective = ObjectiveRFun$new(sinus_1D, domain = domain, codomain = codomain)
 
 Further:
 
-- `OptimInstanceSingleCrit` to construct an optimization instance that describes the optimization problem and stores the results
+- `OptimInstanceBatchSingleCrit` to construct an optimization instance that describes the optimization problem and stores the results
 - `Optimizer` which is used to construct and configure optimization algorithms.
 Optimization Instance
 
@@ -139,7 +139,7 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 ```
 
 ```{r index-008}
-instance = OptimInstanceSingleCrit$new(objective,
+instance = OptimInstanceBatchSingleCrit$new(objective,
   terminator = trm("evals", n_evals = 20))
 instance$eval_batch(sobol_design)
 ```
@@ -317,7 +317,7 @@ optimizer = opt("mbo",
 :::{.b64-solution}
 
 ```{r index-018, eval = params$showsolution}
-instance = OptimInstanceSingleCrit$new(objective,
+instance = OptimInstanceBatchSingleCrit$new(objective,
   terminator = trm("evals", n_evals = 100))
 sobol_design = generate_design_sobol(domain, n = 100)$data
 instance$eval_batch(sobol_design)
