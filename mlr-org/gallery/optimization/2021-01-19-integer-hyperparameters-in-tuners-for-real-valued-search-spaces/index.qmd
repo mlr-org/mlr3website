@@ -45,7 +45,7 @@ We want to tune the integer-valued hyperparameter `k` which defines the numbers 
 
 ```{r index-004}
 learner = lrn("classif.kknn")
-print(learner$param_set$params$k)
+learner$param_set$subset("k")
 ```
 
 # Tuning
