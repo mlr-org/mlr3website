@@ -245,6 +245,11 @@ The learned tree relies on several variables in order to distinguish between che
 The features we split along are **grade**, **sqft_living**, but also some features related to the area (longitude and latitude).
 We can visualize the price across different regions in order to get more info:
 
+::: {.callout-warning}
+The `stamen_watercolor` base map is served by Stadia Maps, which took over the Stamen tile sets in 2023 and requires a free API key.
+Register a key with `ggmap::register_stadiamaps()` before running the chunk below, otherwise the tile request fails.
+:::
+
 ```{r index-022, message = FALSE, eval = FALSE}
 # Load the ggmap package in order to visualize on a map
 library(ggmap)
@@ -256,7 +261,7 @@ qmplot(long, lat, maptype = "stamen_watercolor", color = log(price),
 
 # And the zipcode
 qmplot(long, lat, maptype = "stamen_watercolor", color = zipcode,
-  data = kc_housing[train.idx[1:3000], ]) + guides(color = FALSE)
+  data = kc_housing[train.idx[1:3000], ]) + guides(color = "none")
 ```
 
 We can see that the price is clearly associated with the zipcode when comparing then two plots.
