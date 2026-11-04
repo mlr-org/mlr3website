@@ -331,7 +331,7 @@ To construct the `OptimInstanceBatchSingleCrit` do the following:
 * create the codomain (describing the output space):
   - we maximize the numeric ROC AUC value
   - to make sure that we maximize instead of minimize (the `bbotk` default) set `tags = "maximize"`of this `p_dbl`
-* collect everything in an `OptimInstanceBatchSingleCrit`
+* collect everything in an `OptimInstanceBatchSingleCrit` using `oi()`
 
 Use random search as an optimizer and terminate after 10 function evaluations.
 Why is our approach (i.e., how we constructed the objective function) ineffective?
@@ -368,7 +368,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_random"
 )
 
-instance = OptimInstanceBatchSingleCrit$new(
+instance = oi(
   objective = ...
   terminator = trm(...)
 )
@@ -407,7 +407,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_random"
 )
 
-instance = OptimInstanceBatchSingleCrit$new(
+instance = oi(
   objective = objective,
   terminator = trm("evals", n_evals = 10L)
 )
@@ -431,7 +431,7 @@ There is no need to always retrain and evaluate the learners because we only wei
 In the previous exercise, we optimized the weights of our ensemble - but very inefficiently.
 In this exercise we want to do better.
 Rewrite the objective function to directly operate on the cross-validated predictions and combine the predicted probabilities directly as in model averaging.
-Construct an `OptimInstanceBatchSingleCrit` and optimize it via CMA-ES and terminate after 100 function evaluations.
+Construct an `OptimInstanceBatchSingleCrit` using `oi()` and optimize it via CMA-ES and terminate after 100 function evaluations.
 
 Note that you can reuse most logic from the previous exercise and the only interesting part is how to rewrite the objective function.
 
@@ -481,7 +481,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_cmaes"
 )
 
-instance = OptimInstanceBatchSingleCrit$new(
+instance = oi(
   objective = ...,
   terminator = ...
 )
@@ -534,7 +534,7 @@ objective = ObjectiveRFun$new(
   id = "optimize_grl_weights_cmaes"
 )
 
-instance = OptimInstanceBatchSingleCrit$new(
+instance = oi(
   objective = objective,
   terminator = trm("evals", n_evals = 100L)
 )
