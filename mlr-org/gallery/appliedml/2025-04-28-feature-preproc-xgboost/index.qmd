@@ -270,11 +270,11 @@ Specifically, you should conduct the following steps:
 2. Setup the classification error as a tuning measure with `msr()`.
 3. Initialize cross-validation as the resampling strategy using `rsmp()`.
 4. Setup 10 evaluations as the termination criterion using `trm()`.
-5. Initialize a `TuningInstanceSingleCrit` object using `ti()` and the objects
+5. Initialize a `TuningInstanceBatchSingleCrit` object using `ti()` and the objects
 produced in steps 1.-4. as well as the task and learner as an input.
 6. Define random search as the tuner object using `tnr()`.
 7. Call the `$optimize()` method of the tuner object with the initialized
-`TuningInstanceSingleCrit` as an input.
+`TuningInstanceBatchSingleCrit` as an input.
 
 </details>
 
@@ -361,7 +361,7 @@ Which tree depth was the best performing one?
 <details>
 <summary>**Hint 1:**</summary>
 
-Inspect the tuned instance (of class `TuningInstanceSingleCrit`, it was the input to `$optimize()`).
+Inspect the tuned instance (of class `TuningInstanceBatchSingleCrit`, it was the input to `$optimize()`).
 Look, for example, at the `$result` field.
 
 </details>
