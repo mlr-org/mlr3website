@@ -104,10 +104,13 @@ If the user has not specified which file to review, ask them to provide the path
 Work through the file systematically:
 
 1. **Read the entire file first** before writing any feedback.
-3. Check R code blocks for all R Code Rules.
-4. Check prose for all English Writing Rules.
-5. Check Quarto formatting for all Quarto / Formatting Rules.
-6. Collect all issues before reporting.
+2. Check R code blocks for all R Code Rules.
+3. Check prose for all English Writing Rules.
+4. Check Quarto formatting for all Quarto / Formatting Rules.
+5. Collect all issues before reporting.
+
+If you need to render the post to check its output, use the `mlrorg/mlr3-website:latest` Docker image as described in the "Rendering environment" section of `AGENTS.md`.
+Never render with a local R or Quarto installation.
 
 ## Response Format
 

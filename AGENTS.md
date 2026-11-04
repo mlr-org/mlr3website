@@ -24,18 +24,73 @@ This is not a CRAN package — the helpers exist only to support rendering.
 - `R/name_chunks.R` — chunk naming utility for gallery posts.
 - `R/zzz.R` — package initialization and mlr3 ecosystem package database.
 
+## Rendering environment
+
+Always render the website inside the `mlrorg/mlr3-website:latest` Docker image, never with a local R or Quarto installation.
+The image provides the R packages, the Quarto version, the `mlr3website` helper package, and the system dependencies the website needs.
+It is the same image the CI workflows in `.github/workflows/` use.
+Its Dockerfile lives in [mlr-org/mlr3docker](https://github.com/mlr-org/mlr3docker) under `mlr3website/Dockerfile`.
+
+Do not assume you are already in a container; check with `test -f /.dockerenv`.
+All commands below run from the repository root.
+
+```
+# Pull the latest image so it matches CI
+docker pull mlrorg/mlr3-website:latest
+
+# Preview the website at http://0.0.0.0:8888 (auto-reloads on save)
+docker run --name mlr3website --rm \
+  -v $(pwd):/mlr3website -w /mlr3website \
+  --user $(id -u):$(id -g) -e HOME=/tmp --tmpfs /tmp:exec -e R_PROFILE_USER=/dev/null \
+  -p 8888:8888 \
+  mlrorg/mlr3-website:latest quarto preview mlr-org --port 8888 --host 0.0.0.0 --no-browser
+
+# Render the full website
+docker run --rm \
+  -v $(pwd):/mlr3website -w /mlr3website \
+  --user $(id -u):$(id -g) -e HOME=/tmp --tmpfs /tmp:exec -e R_PROFILE_USER=/dev/null \
+  mlrorg/mlr3-website:latest quarto render mlr-org
+
+# Render a single gallery post
+docker run --rm \
+  -v $(pwd):/mlr3website -w /mlr3website \
+  --user $(id -u):$(id -g) -e HOME=/tmp --tmpfs /tmp:exec -e R_PROFILE_USER=/dev/null \
+  mlrorg/mlr3-website:latest quarto render mlr-org/gallery/{category}/{post}/index.qmd
+```
+
+Why the flags matter:
+
+- `--user $(id -u):$(id -g)` makes files written by the container (e.g., under `mlr-org/_freeze/`) owned by the host user instead of root.
+- `-e HOME=/tmp` and `--tmpfs /tmp:exec` give the non-root user a writable home and temp directory, which Quarto, pandoc, and R caches require.
+- `-e R_PROFILE_USER=/dev/null` skips the personal `.Rprofile` in the repository root (ignored by git).
+  It loads packages the image does not have, such as `testthat` and `languageserver`, so every R session in the container fails without this flag.
+
+The image ships the `mlr3website` helper package from the `main` branch on GitHub.
+If you changed the helpers in `R/`, install them into a temporary library before rendering, as CI does with `R CMD INSTALL .`:
+
+```
+docker run --rm \
+  -v $(pwd):/mlr3website -w /mlr3website \
+  --user $(id -u):$(id -g) -e HOME=/tmp --tmpfs /tmp:exec -e R_PROFILE_USER=/dev/null \
+  mlrorg/mlr3-website:latest bash -c '
+    mkdir -p /tmp/rlib && R CMD INSTALL --no-test-load --library=/tmp/rlib . &&
+    R_LIBS=/tmp/rlib quarto render mlr-org'
+```
+
+Add `--cache-refresh` to force a cache refresh.
+If a gallery post needs a package the image does not have, install it temporarily into the same temporary library inside the `docker run` call, because the image's site library is not writable for the non-root user:
+
+```
+bash -c 'mkdir -p /tmp/rlib && R_LIBS=/tmp/rlib Rscript -e "pak::pak(\"package\")" &&
+  R_LIBS=/tmp/rlib quarto render mlr-org/gallery/{category}/{post}/index.qmd'
+```
+
+Then add the package to `mlr3website/Dockerfile` in mlr3docker.
+Do not build or push the image yourself; CI in mlr3docker does that once the Dockerfile change is merged.
+
 ## Key commands
 
 ```
-# Preview the website locally (auto-reloads on save)
-quarto preview mlr-org
-
-# Render the full website
-quarto render mlr-org
-
-# Render a single gallery post
-quarto render mlr-org/gallery/{category}/{post}/index.qmd
-
 # Load the helper functions in R/ for interactive use
 Rscript -e "devtools::load_all(); code"
 
