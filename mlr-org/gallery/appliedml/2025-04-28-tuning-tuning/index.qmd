@@ -102,7 +102,7 @@ Now, we want to tune the k-NN model with the search space from the previous exer
   - Resampling: 3-fold cross validation using `rsmp()`
   - Terminator: 40 evaluations using `trm()`
   - Search space: See previous exercise
-  - We use the default performance measure (`msr("classif.ce")` for classification and `msr("classif.mse")` for regression)
+  - We use the default performance measure (`msr("classif.ce")` for classification and `msr("regr.mse")` for regression)
 
   The tuning instance is then defined by calling `ti()`.
   The random search optimization algorithm is obtained from `tnr()` with the corresponding key as argument.
