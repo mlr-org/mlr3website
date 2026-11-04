@@ -246,7 +246,7 @@ Applying nested resampling ensures a fair comparison of the predictive performan
 ```{r index-021}
 graph_1 = po("encode") %>>%
   learner
-graph_learner_1 = GraphLearner$new(graph_1)
+graph_learner_1 = as_learner(graph_1)
 
 graph_learner_1$param_set$values$encode.method = to_tune(c("one-hot", "treatment"))
 
@@ -264,7 +264,7 @@ at_1 = auto_tuner(
 graph_2 = po("encode") %>>%
   po("imputeoor") %>>%
   learner
-graph_learner_2 = GraphLearner$new(graph_2)
+graph_learner_2 = as_learner(graph_2)
 
 graph_learner_2$param_set$values$encode.method = to_tune(c("one-hot", "treatment"))
 
