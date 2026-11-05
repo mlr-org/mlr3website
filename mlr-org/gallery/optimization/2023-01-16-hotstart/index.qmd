@@ -135,7 +135,7 @@ During the development process, we overestimated the speed benefits of hotstarti
 We can therefore only advise against using forward hotstarting during tuning.
 It is much more efficient to use the internal early-stopping mechanism of XGBoost.
 This eliminates the need to copy models to the worker.
-See the [gallery post](/gallery/optimization/2022-11-04-early-stopping-with-xgboost) on early stopping for an example.
+See the [book section on internal tuning](https://mlr3book.mlr-org.com/chapters/chapter15/predsets_valid_inttune.html#sec-internal-tuning) for an example of early stopping.
 We might improve the efficiency of the hotstarting mechanism in the future, if there are convincing use cases.
 
 # Manual Hotstarting

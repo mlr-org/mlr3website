@@ -114,7 +114,7 @@ as.data.table(knn$param_set)[, c("id", "class", "lower", "upper", "nlevels"), wi
 
 We first tune the `k` parameter (i.e. the number of nearest neighbors), between 3 to 20.
 Second, we tune the `distance` function, allowing L1 and L2 distances.
-To do so, we use the `paradox` package to define a search space (see the [online vignette](https://mlr3book.mlr-org.com/paradox.html) for a more complete introduction.
+To do so, we use the `paradox` package to define a search space (see the [online vignette](https://mlr3book.mlr-org.com/chapters/chapter16/advanced_hyperparameter_specification_using_paradox.html) for a more complete introduction.
 
 ```{r index-010}
 search_space = ps(

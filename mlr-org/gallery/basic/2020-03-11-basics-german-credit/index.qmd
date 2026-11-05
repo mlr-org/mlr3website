@@ -162,7 +162,7 @@ Many learners can be obtained via the `r ref_pkg("mlr3learners")` package.
 Additionally, many learners are provided via the `r ref_pkg("mlr3extralearners")` package, from GitHub.
 These two resources combined account for a large fraction of standard learning algorithms.
 As `r ref_pkg("mlr3")` usually only wraps learners from packages, it is even easy to create a formal `r ref("Learner")` by yourself.
-You may find the section about [extending mlr3](https://mlr3book.mlr-org.com/extending.html) in the `r ref_pkg("mlr3book")` very helpful.
+You may find the section about [extending mlr3](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-extending) in the `r ref_pkg("mlr3book")` very helpful.
 If you happen to write your own `r ref("Learner")` in `r ref_pkg("mlr3")`, we would be happy if you share it with the `r ref_pkg("mlr3")` community.
 
 All available `r ref("Learner")`s (i.e. all which you have installed from `r ref_pkg("mlr3")`, `mlr3learners`, `mlr3extralearners`, or self-written ones) are registered in the dictionary `r ref("mlr_learners")`:

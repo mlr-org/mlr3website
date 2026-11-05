@@ -45,7 +45,7 @@ library(mlr3verse)
 ```
 
 We decrease the verbosity of the logger to keep the output clearly represented.
-The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r ref_pkg("mlr3")` packages.
+The [`lgr`](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-logging) package is used for logging in all `r ref_pkg("mlr3")` packages.
 The `r ref_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r ref_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r ref_pkg("mlr3tuning")` ).
 
 ```{r index-002}
@@ -186,7 +186,7 @@ This example would run on 8 cores (`= 2 * 4`) on the local machine.
 
 # Resources
 
-The [mlr3book](https://mlr3book.mlr-org.com/) includes a chapters on [parallelization](https://mlr3book.mlr-org.com/parallelization.html).
+The [mlr3book](https://mlr3book.mlr-org.com/) includes a chapters on [parallelization](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization).
 The [mlr3cheatsheets](https://cheatsheets.mlr-org.com/) contain frequently used commands and workflows of mlr3.
 
 {{< include ../../_session_info.qmd >}}

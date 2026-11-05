@@ -45,7 +45,7 @@ This is the second part of the Hyperband series.
 The first part can be found here [Hyperband Series - Iterative Training](/gallery/optimization/2023-01-15-hyperband-xgboost).
 If you don't know much about Hyperband, check out the first post which explains the algorithm in detail.
 We assume that you are already familiar with tuning in the mlr3 ecosystem.
-If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/optimization.html) or the [Hyperparameter Optimization on the Palmer Penguins Data Set](/gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
+If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html) or the [Practical Tuning Series](/gallery/optimization/2021-03-09-practical-tuning-series-tune-a-support-vector-machine) post.
 A little knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
 
 # Hyperparameter Optimization
@@ -103,7 +103,7 @@ graph_learner$param_set$set_values(
 ```
 
 Support vector machines often crash or never finish the training with certain hyperparameter configurations.
-We set a timeout of 30 seconds and a [fallback learner](https://mlr3book.mlr-org.com/optimization.html#sec-encapsulation-fallback) to handle these cases.
+We set a timeout of 30 seconds and a [fallback learner](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-fallback) to handle these cases.
 
 ```{r index-007}
 graph_learner$encapsulate(method = "evaluate", fallback = lrn("classif.featureless"))

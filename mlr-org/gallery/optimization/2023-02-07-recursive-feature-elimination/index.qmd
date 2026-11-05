@@ -415,7 +415,7 @@ optimizer$optimize(instance)
 
 ::: {.callout-warning}
 The performance of the optimal feature set is calculated on the complete data set and should not be reported as the performance of the final model.
-Estimate the performance of the final model with [nested resampling](https://mlr3book.mlr-org.com/optimization.html#sec-nested-resampling).
+Estimate the performance of the final model with [nested resampling](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html#sec-nested-resampling).
 :::
 
 We visualize the selection of the optimal number of features.
