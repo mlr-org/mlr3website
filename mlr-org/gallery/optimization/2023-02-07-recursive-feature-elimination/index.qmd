@@ -34,10 +34,10 @@ set.seed(1)
 
 Feature selection is the process of finding an optimal subset of features in order to improve the performance, interpretability and robustness of machine learning algorithms.
 In this article, we introduce the wrapper feature selection method *Recursive Feature Elimination*.
-[Wrapper methods](https://mlr3book.mlr-org.com/feature-selection.html#fs-wrapper) iteratively select features that optimize a performance measure.
+[Wrapper methods](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html#sec-fs-wrapper) iteratively select features that optimize a performance measure.
 As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.gbm", "gradient boosting machine")` and `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_sonar", text = "Sonar")` data set.
 We assume that you are already familiar with the basic building blocks of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
-If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/feature-selection.html) of the mlr3book first.
+If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html) of the mlr3book first.
 
 # Recursive Feature Elimination
 
@@ -415,7 +415,7 @@ optimizer$optimize(instance)
 
 ::: {.callout-warning}
 The performance of the optimal feature set is calculated on the complete data set and should not be reported as the performance of the final model.
-Estimate the performance of the final model with [nested resampling](https://mlr3book.mlr-org.com/optimization.html#sec-nested-resampling).
+Estimate the performance of the final model with [nested resampling](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html#sec-nested-resampling).
 :::
 
 We visualize the selection of the optimal number of features.
@@ -486,6 +486,6 @@ The trained model can now be used to predict new, external data.
 
 The RFE algorithm is a valuable feature selection method, especially for high-dimensional datasets with only a few observations.
 The numerous settings of the algorithm in mlr3 make it possible to apply it to many datasets and learners.
-If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/feature-selection.html).
+If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html).
 
 {{< include ../../_session_info.qmd >}}

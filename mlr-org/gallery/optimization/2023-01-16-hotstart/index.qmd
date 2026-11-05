@@ -33,7 +33,7 @@ lgr::get_logger("bbotk")$set_threshold("warn")
 
 Hotstarting a learner resumes the training from an already fitted model.
 An example would be to train an already fit XGBoost model for an additional 500 boosting iterations.
-In mlr3, we call this process **Hotstarting**, where a learner has access to a cache of already trained models which is called a `r ref("mlr3::HoststartStack")`
+In mlr3, we call this process **Hotstarting**, where a learner has access to a cache of already trained models which is called a `r ref("mlr3::HotstartStack")`
 We distinguish between forward and backward hotstarting.
 We start this post with backward hotstarting and then talk about the less efficient forward hotstarting.
 
@@ -135,7 +135,7 @@ During the development process, we overestimated the speed benefits of hotstarti
 We can therefore only advise against using forward hotstarting during tuning.
 It is much more efficient to use the internal early-stopping mechanism of XGBoost.
 This eliminates the need to copy models to the worker.
-See the [gallery post](/gallery/optimization/2022-11-04-early-stopping-with-xgboost) on early stopping for an example.
+See the [book section on internal tuning](https://mlr3book.mlr-org.com/chapters/chapter15/predsets_valid_inttune.html#sec-internal-tuning) for an example of early stopping.
 We might improve the efficiency of the hotstarting mechanism in the future, if there are convincing use cases.
 
 # Manual Hotstarting

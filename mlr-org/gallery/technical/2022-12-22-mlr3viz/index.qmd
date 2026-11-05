@@ -48,7 +48,7 @@ You can change the plot with the `type` argument.
 The help pages list all possible choices.
 The easiest way to access the help pages is via the [pkgdown website](https://mlr3viz.mlr-org.com/reference/index.html).
 The plots use the `r ref_pkg("viridis")` color pallet and the appearance is controlled with the `theme` argument.
-By default, the `r ref("ggpplot2::theme_minimal()", "minimal theme")` is applied.
+By default, the `r ref("ggplot2::ggtheme", "minimal theme")` is applied.
 
 # Tasks
 

@@ -24,9 +24,9 @@ This is often useful when we for example want to use **linear models**.
 ## Prerequisites
 
 This tutorial assumes familiarity with the basics of `r ref_pkg("mlr3pipelines")`.
-Consult the [mlr3book](https://mlr3book.mlr-org.com/pipelines.html) if some aspects are not  fully understandable.
+Consult the [mlr3book](https://mlr3book.mlr-org.com/chapters/chapter7/sequential_pipelines.html) if some aspects are not  fully understandable.
 Additionally, we compare different cutoff values via tuning using the `r ref_pkg("mlr3tuning")` package.
-Again, the [mlr3book](https://mlr3book.mlr-org.com/paradox.html) has an intro to `r ref_pkg("mlr3tuning")` and `r ref_pkg("paradox")`.
+Again, the [mlr3book](https://mlr3book.mlr-org.com/chapters/chapter16/advanced_hyperparameter_specification_using_paradox.html) has an intro to `r ref_pkg("mlr3tuning")` and `r ref_pkg("paradox")`.
 
 The example describes a very involved use-case, where the behavior of `r ref("PipeOpSelect")` is manipulated via a **trafo** on it's `r ref("ParamSet")`
 
@@ -98,7 +98,7 @@ Note that we use `x$cutoff = NULL` in order to remove the temporary parameter we
 # trafo is now defined in ps() above
 ```
 
-If you are not sure, you understand the `trafo` concept, consult the [mlr3book](https://mlr3book.mlr-org.com/paradox.html).
+If you are not sure, you understand the `trafo` concept, consult the [mlr3book](https://mlr3book.mlr-org.com/chapters/chapter16/advanced_hyperparameter_specification_using_paradox.html).
 It has a section on the `trafo` concept.
 
 Now we tune over different values for `cutoff`.

@@ -141,7 +141,7 @@ ru_pkg = function(pkg, format = "markdown") {
   checkmate::assert_choice(format, c("markdown", "html", "htmltools"))
 
   parts = strsplit(pkg, "/", fixed = TRUE)[[1L]]
-  url = sprintf("https://%s.r-universe.dev/ui#package:%s", parts[1L], parts[2L])
+  url = sprintf("https://%s.r-universe.dev/%s", parts[1L], parts[2L])
   switch(format,
     "markdown" = sprintf("[%s](%s)", parts[2L], url),
     "html" = sprintf("<a href = \"%s\">%s</a>", url, parts[2L]),

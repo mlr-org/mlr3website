@@ -32,11 +32,11 @@ set.seed(1)
 # Scope
 
 Feature selection is the process of finding an optimal set of features to improve the performance, interpretability and robustness of machine learning algorithms.
-In this article, we introduce the *Shadow Variable Search* algorithm which is a [wrapper method](https://mlr3book.mlr-org.com/feature-selection.html#fs-wrapper) for feature selection.
+In this article, we introduce the *Shadow Variable Search* algorithm which is a [wrapper method](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html#sec-fs-wrapper) for feature selection.
 Wrapper methods iteratively add features to the model that optimize a performance measure.
 As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_diabetes", text = "diabetes")` data set.
 We assume that you are already familiar with the basic building blocks of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
-If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/feature-selection.html) of the mlr3book first.
+If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html) of the mlr3book first.
 Some knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
 
 # Shadow Variable Search
@@ -202,6 +202,6 @@ The trained model can now be used to predict new, external data.
 
 The shadow variable search is a fast feature selection method that is easy to use.
 More information on the theoretical background can be found in @wu_controlling_2007 and @thomas_probing_2017.
-If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/feature-selection.html).
+If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html).
 
 {{< include ../../_session_info.qmd >}}

@@ -59,7 +59,7 @@ flowchart LR
 
 We assume that you are familiar with the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html) and know the basic concepts of [remote sensing](https://en.wikipedia.org/wiki/Remote_sensing).
 If not, we recommend reading the [mlr3book](https://mlr3book.mlr-org.com/) first.
-If you are interested in spatial resampling, check out the book chapter on [spatial analysis](https://mlr3book.mlr-org.com/special.html#spatiotemporal).
+If you are interested in spatial resampling, check out the book chapter on [spatial analysis](https://mlr3book.mlr-org.com/chapters/chapter13/beyond_regression_and_classification.html#sec-spatiotemporal).
 
 # Land Cover Classification
 
@@ -119,7 +119,7 @@ ggplot() +
 The `r ref("as_task_classif_st()")` function directly creates a spatial task from the point layer.
 This makes it unnecessary to transform the point layer to a `data.frame` with coordinates.
 Spatial tasks additionally store the coordinates of the training points.
-The coordinates are useful when estimating the performance of the model with [spatial resampling](https://mlr3book.mlr-org.com/special.html#spatiotemp-cv).
+The coordinates are useful when estimating the performance of the model with [spatial resampling](https://mlr3book.mlr-org.com/chapters/chapter13/beyond_regression_and_classification.html#sec-spatiotemporal).
 
 ```{r index-006}
 task = as_task_classif_st(leipzig_vector, target = "land_cover")

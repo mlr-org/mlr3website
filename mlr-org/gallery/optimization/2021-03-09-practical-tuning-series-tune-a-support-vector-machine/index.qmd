@@ -54,7 +54,7 @@ library(mlr3verse)
 ```
 
 We initialize the random number generator with a fixed seed for reproducibility, and decrease the verbosity of the logger to keep the output clearly represented.
-The [`lgr`](https://mlr3book.mlr-org.com/logging.html) package is used for logging in all `r ref_pkg("mlr3")` packages.
+The [`lgr`](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-logging) package is used for logging in all `r ref_pkg("mlr3")` packages.
 The `r ref_pkg("mlr3")` logger prints the logging messages from the base package, whereas the `r ref_pkg("bbotk")`  logger is responsible for logging messages from the optimization packages (e.g. `r ref_pkg("mlr3tuning")` ).
 
 ```{r index-003}
@@ -333,7 +333,7 @@ Instead, we have to use nested resampling to get an unbiased performance estimat
 # Nested Resampling
 
 Tuning should not be performed on the same resampling sets which are used for evaluating the model itself, since this would result in a biased performance estimate.
-[Nested resampling](https://mlr3book.mlr-org.com/nested-resampling.html) uses an outer and inner resampling to separate the tuning from the performance estimation of the model.
+[Nested resampling](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html#sec-nested-resampling) uses an outer and inner resampling to separate the tuning from the performance estimation of the model.
 We can use the `r ref("AutoTuner")` class for running nested resampling.
 The `r ref("AutoTuner")` wraps a `r ref("Learner")` and tunes the hyperparameter of the learner during `$train()`.
 This is our inner resampling loop.
@@ -416,7 +416,7 @@ rr = tune_nested(
 
 # Resources
 
-The [mlr3book](https://mlr3book.mlr-org.com/) includes chapters on [tuning spaces](https://mlr3book.mlr-org.com/searchspace.html) and [hyperparameter tuning](https://mlr3book.mlr-org.com/tuning.html).
+The [mlr3book](https://mlr3book.mlr-org.com/) includes chapters on [tuning spaces](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html#sec-tuning-spaces) and [hyperparameter tuning](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html).
 The [mlr3cheatsheets](https://cheatsheets.mlr-org.com/) contain frequently used commands and workflows of mlr3.
 
 {{< include ../../_session_info.qmd >}}

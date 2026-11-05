@@ -25,10 +25,10 @@ requireNamespace("praznik")
 The use-case illustrated below touches on the following concepts:
 
 - Data preprocessing
-- [Task](https://mlr3book.mlr-org.com/tasks.html)
-- [Fitting a learner](https://mlr3book.mlr-org.com/train-predict.html)
-- [Resampling](https://mlr3book.mlr-org.com/resampling.html)
-- [Tuning](https://mlr3book.mlr-org.com/tuning.html)
+- [Task](https://mlr3book.mlr-org.com/chapters/chapter2/data_and_basic_modeling.html#sec-tasks)
+- [Fitting a learner](https://mlr3book.mlr-org.com/chapters/chapter2/data_and_basic_modeling.html#sec-training)
+- [Resampling](https://mlr3book.mlr-org.com/chapters/chapter3/evaluation_and_benchmarking.html#sec-resampling)
+- [Tuning](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html)
 
 The relevant sections in the `mlr3book` are linked to for the reader's convenience.
 
@@ -402,7 +402,7 @@ For this purpose we can use a `r ref("mlr3filters::Filter")` implemented in `r r
 This can prevent our learner from overfitting make it easier for humans to interpret models as fewer variables influence the resulting prediction.
 
 In this example, we use `PipeOpFilter` (via `po("filter", ...)`) to add a feature-filter before training the model.
-For a more in-depth insight, refer to the sections on `r ref_pkg("mlr3pipelines")`  and `mlr3filters` in the **mlr3 book**: [Feature Selection](https://mlr3book.mlr-org.com/fs.html) and [Pipelines](https://mlr3book.mlr-org.com/pipelines.html).
+For a more in-depth insight, refer to the sections on `r ref_pkg("mlr3pipelines")`  and `mlr3filters` in the **mlr3 book**: [Feature Selection](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html) and [Pipelines](https://mlr3book.mlr-org.com/chapters/chapter7/sequential_pipelines.html).
 
 ```{r index-033}
 filter = flt("mrmr")
