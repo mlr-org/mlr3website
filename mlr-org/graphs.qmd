@@ -36,18 +36,28 @@ help_pages = rbindlist(map(grep("^mlr3", loadedNamespaces(), value = TRUE), func
 }))
 
 content = as.data.table(mlr_graphs)
-content[, alias := sprintf("mlr_graphs_%s", key)]
-content = help_pages[content, .(key, label = sub("\\.$", "", label), package), on = "alias", mult = "first"]
+content[, constructor := map(key, function(value) mlr_graphs$items[[value]]$value)]
+content[, topic := sprintf("mlr_graphs_%s", key)]
+
+documented = content[topic %in% help_pages$alias]
+content[topic %nin% help_pages$alias, topic := map_chr(constructor, function(value) {
+  index = which(map_lgl(documented$constructor, identical, value))
+  if (length(index)) documented$topic[index[1L]] else NA_character_
+})]
+
+content = help_pages[content, .(key, label = sub("\\.$", "", label), package, topic), on = c(alias = "topic"),
+  mult = "first"]
 
 ref_cell = function(value, index) {
   if (is.na(content$package[index])) return(value)
-  mlr3website::ref(sprintf("%s_%s", "mlr_graphs", value), text = value, format = "htmltools")
+  mlr3website::ref(content$topic[index], text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(
     key = colDef(name = "Key", cell = ref_cell),
     label = colDef(name = "Label", na = ""),
-    package = colDef(name = "Package", cell = function(value) if (is.na(value)) "" else package_cell(value))
+    package = colDef(name = "Package", cell = function(value) if (is.na(value)) "" else package_cell(value)),
+    topic = colDef(show = FALSE)
   ),
   searchable = TRUE,
   pagination = FALSE,
