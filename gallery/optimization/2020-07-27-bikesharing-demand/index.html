@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Henri Funk">
+<meta name="author" content="Andreas Hofheinz">
+<meta name="author" content="Marius Girnat">
+<meta name="author" content="Marc Becker">
+<meta name="dcterms.date" content="2020-07-27">
+<meta name="description" content="Tune, benchmark, and compare k-nearest neighbors, decision tree, and random forest pipelines to predict the hourly demand of a bike sharing system.">
+
+<title>Bike Sharing Demand – mlr-org</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-f8ac16e74e8ea135ab34397c3551fb2e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 5,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">mlr-org</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-overview" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Overview</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-overview">    
+        <li>
+    <a class="dropdown-item" href="../../../ecosystem.html">
+ <span class="dropdown-text">Ecosystem</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../dependencies.html">
+ <span class="dropdown-text">Dependencies</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tasks.html">
+ <span class="dropdown-text">Tasks</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../learners.html">
+ <span class="dropdown-text">Learners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../resamplings.html">
+ <span class="dropdown-text">Resamplings</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../measures.html">
+ <span class="dropdown-text">Measures</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../pipeops.html">
+ <span class="dropdown-text">Pipeline Operators</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../graphs.html">
+ <span class="dropdown-text">Graphs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../torch_pipeops.html">
+ <span class="dropdown-text">Torch Pipeline Operators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../tuners.html">
+ <span class="dropdown-text">Tuners</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../tuning_spaces.html">
+ <span class="dropdown-text">Tuning Spaces</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../terminators.html">
+ <span class="dropdown-text">Terminators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../../filters.html">
+ <span class="dropdown-text">Feature Selection Filter</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../fselectors.html">
+ <span class="dropdown-text">Feature Selection Wrapper</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../resources.html"> 
+<span class="menu-text">Resources</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../book.html"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-benchmarks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Benchmarks</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-benchmarks">    
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3.html">
+ <span class="dropdown-text">mlr3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3fselect.html">
+ <span class="dropdown-text">mlr3fselect</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_mlr3tuning.html">
+ <span class="dropdown-text">mlr3tuning</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_async.html">
+ <span class="dropdown-text">mlr3tuning async</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmark_rush.html">
+ <span class="dropdown-text">rush</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../benchmarks/benchmarks_paradox.html">
+ <span class="dropdown-text">paradox</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../team.html"> 
+<span class="menu-text">Team</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-more" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">More</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-more">    
+        <li>
+    <a class="dropdown-item" href="../../../support.html">
+ <span class="dropdown-text">Support</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../contributing.html">
+ <span class="dropdown-text">Contributing</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../faq.html">
+ <span class="dropdown-text">Frequently Asked Questions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../blogroll.html">
+ <span class="dropdown-text">Blogroll</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/mlr-org"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Bike Sharing Demand</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+  <div id="quarto-announcement" data-announcement-id="e0f274a507f3d20c715bbb7a0e228b0d" class="alert alert-primary hidden"><i class="bi bi-info-circle quarto-announcement-icon"></i><div class="quarto-announcement-content">
+<p>The website features runtime <a href="../../../benchmarks/benchmarks_paradox.html">benchmarks</a> of the paradox package now.</p>
+</div><i class="bi bi-x-lg quarto-announcement-action"></i></div>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <div class="quarto-title-block"><div><h1 class="title">Bike Sharing Demand</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+                  <div>
+        <div class="description">
+          <p>Tune, benchmark, and compare k-nearest neighbors, decision tree, and random forest pipelines to predict the hourly demand of a bike sharing system.</p>
+        </div>
+      </div>
+                </div>
+  </div>
+
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-contents">
+               <p>Henri Funk </p>
+               <p>Andreas Hofheinz </p>
+               <p>Marius Girnat </p>
+               <p><a href="https://github.com/be-marc">Marc Becker</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">July 27, 2020</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#preamble" id="toc-preamble" class="nav-link active" data-scroll-target="#preamble">Preamble</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a>
+  <ul class="collapse">
+  <li><a href="#exploratory-analysis" id="toc-exploratory-analysis" class="nav-link" data-scroll-target="#exploratory-analysis">Exploratory analysis</a></li>
+  <li><a href="#preprocessing" id="toc-preprocessing" class="nav-link" data-scroll-target="#preprocessing">Preprocessing</a></li>
+  <li><a href="#target-transformation" id="toc-target-transformation" class="nav-link" data-scroll-target="#target-transformation">Target transformation</a></li>
+  </ul></li>
+  <li><a href="#modeling" id="toc-modeling" class="nav-link" data-scroll-target="#modeling">Modeling</a>
+  <ul class="collapse">
+  <li><a href="#k-nearest-neighbors" id="toc-k-nearest-neighbors" class="nav-link" data-scroll-target="#k-nearest-neighbors">k-nearest neighbors</a></li>
+  <li><a href="#decision-tree" id="toc-decision-tree" class="nav-link" data-scroll-target="#decision-tree">Decision tree</a></li>
+  <li><a href="#random-forest" id="toc-random-forest" class="nav-link" data-scroll-target="#random-forest">Random forest</a></li>
+  <li><a href="#tuning-over-learners" id="toc-tuning-over-learners" class="nav-link" data-scroll-target="#tuning-over-learners">Tuning over learners</a></li>
+  </ul></li>
+  <li><a href="#benchmark" id="toc-benchmark" class="nav-link" data-scroll-target="#benchmark">Benchmark</a></li>
+  <li><a href="#prediction" id="toc-prediction" class="nav-link" data-scroll-target="#prediction">Prediction</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="preamble" class="level1">
+<h1>Preamble</h1>
+<p>This use case was created as part of the Introduction to Machine Learning lecture at LMU Munich. The goal of the project was to create and compare one or several machine learning pipelines for the problem at hand, together with an exploratory analysis and an exposition of the results. The authors contributed the post to the gallery, and it was edited for better legibility. We want to thank the authors for allowing us to publish their results. Note that the correctness of the results cannot be guaranteed.</p>
+</section>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Bike sharing is a network of publicly shared bicycles that can be rented for a certain period of time at different locations within a city and returned at any station. Suppliers of such networks must always have enough bicycles available, and the demand depends on a variety of factors such as the time of day and the weather. A forecasting system that predicts the demand from these factors helps to plan the distribution of bicycles. In this post, we develop such a system with <a href="https://mlr3verse.mlr-org.com">mlr3verse</a>.</p>
+<p>We use the bike sharing data set by <span class="citation" data-cites="Fanaee">Fanaee-T and Gama (<a href="#ref-Fanaee" role="doc-biblioref">2013</a>)</span>, which contains hourly rental counts of the Capital Bikeshare system in Washington, D.C. from 2011 and 2012. The same data was used in the <a href="https://www.kaggle.com/c/bike-sharing-demand">Kaggle Bike Sharing Demand</a> competition. After a short exploratory analysis, we engineer features and transform the target. We then tune a k-nearest neighbors, a decision tree, and a random forest learner and compare them with nested resampling. We also tune over the choice of the learner itself with a branched pipeline. Finally, we predict the demand on a held-out test set.</p>
+<p>This tutorial assumes familiarity with the basics of <a href="https://mlr3tuning.mlr-org.com">mlr3tuning</a> and <a href="https://mlr3pipelines.mlr-org.com">mlr3pipelines</a>. Consult the <a href="https://mlr3book.mlr-org.com">mlr3book</a> if some aspects are not fully understandable. We load the <a href="https://mlr3verse.mlr-org.com">mlr3verse</a> package, <a href="https://cran.r-project.org/package=data.table">data.table</a> for data manipulation, and <a href="https://cran.r-project.org/package=ggplot2">ggplot2</a> for plotting.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="data" class="level1">
+<h1>Data</h1>
+<p>The data is available from the <a href="https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset">UCI Machine Learning Repository</a>. We download the archive and read the hourly data.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>path_zip <span class="ot">=</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".zip"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip"</span>, path_zip, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>bikes <span class="ot">=</span> <span class="fu">fread</span>(<span class="fu">unzip</span>(path_zip, <span class="at">files =</span> <span class="st">"hour.csv"</span>, <span class="at">exdir =</span> <span class="fu">tempdir</span>()))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We create a timestamp from the date and the hour, convert the nominal features to factors with readable levels, and give some columns more descriptive names. The season is coded in the data as astronomical seasons, so January belongs to winter.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>bikes[, datetime <span class="sc">:</span><span class="er">=</span> <span class="fu">as.POSIXct</span>(dteday, <span class="at">tz =</span> <span class="st">"UTC"</span>) <span class="sc">+</span> hr <span class="sc">*</span> <span class="dv">3600</span>]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>bikes <span class="ot">=</span> bikes[, <span class="fu">list</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  datetime,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">season =</span> <span class="fu">factor</span>(season, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"winter"</span>, <span class="st">"spring"</span>, <span class="st">"summer"</span>, <span class="st">"fall"</span>)),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">holiday =</span> <span class="fu">factor</span>(holiday, <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"no"</span>, <span class="st">"yes"</span>)),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">workingday =</span> <span class="fu">factor</span>(workingday, <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"no"</span>, <span class="st">"yes"</span>)),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">weather =</span> <span class="fu">factor</span>(weathersit, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"clear"</span>, <span class="st">"mist"</span>, <span class="st">"light rain"</span>, <span class="st">"heavy rain"</span>)),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  temp,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  atemp,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">humidity =</span> hum,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  windspeed,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  casual,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  registered,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">count =</span> cnt</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The columns of the data set have the following meaning. The weather variables are normalized to the interval <span class="math inline">\([0, 1]\)</span>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Column</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>datetime</code></td>
+<td style="text-align: left;">Date and hour of the observation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>season</code></td>
+<td style="text-align: left;">Winter, spring, summer, or fall</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>holiday</code></td>
+<td style="text-align: left;">Whether the day is a public holiday</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>workingday</code></td>
+<td style="text-align: left;">Whether the day is neither a weekend nor a holiday</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>weather</code></td>
+<td style="text-align: left;">Clear or few clouds, mist, light rain or snow, and heavy rain or snow</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>temp</code></td>
+<td style="text-align: left;">Temperature</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>atemp</code></td>
+<td style="text-align: left;">“Feels like” temperature</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>humidity</code></td>
+<td style="text-align: left;">Relative humidity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>windspeed</code></td>
+<td style="text-align: left;">Wind speed</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>casual</code></td>
+<td style="text-align: left;">Number of rentals by non-registered users</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>registered</code></td>
+<td style="text-align: left;">Number of rentals by registered users</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>count</code></td>
+<td style="text-align: left;">Total number of rentals</td>
+</tr>
+</tbody>
+</table>
+<p>Like in the Kaggle competition, we use the first 19 days of each month as training data and the remaining days as test data. In contrast to the competition, the UCI data contains the true counts for the test days, so we can evaluate our final model on them.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data_train <span class="ot">=</span> bikes[<span class="fu">mday</span>(datetime) <span class="sc">&lt;</span> <span class="dv">20</span>L]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data_test <span class="ot">=</span> bikes[<span class="fu">mday</span>(datetime) <span class="sc">&gt;=</span> <span class="dv">20</span>L]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">train =</span> <span class="fu">nrow</span>(data_train), <span class="at">test =</span> <span class="fu">nrow</span>(data_test))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>train  test 
+10886  6493 </code></pre>
+</div>
+</div>
+<section id="exploratory-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-analysis">Exploratory analysis</h2>
+<p>The figure below shows the correlations between the numeric variables of the training data. The temperature <code>temp</code> and the “feels like” temperature <code>atemp</code> are almost perfectly correlated, which makes sense since both measure nearly the same thing. The number of rentals <code>count</code> is positively correlated with both temperatures and negatively correlated with the humidity.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-006-1.png" class="img-fluid figure-img" alt="Heat map of pairwise correlations between count, temp, atemp, humidity, and windspeed, with temp and atemp correlated at 0.98." width="672"></p>
+<figcaption>Correlation matrix of the numeric variables in the training data.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The demand over the whole period of the training data shows a positive trend and a seasonal pattern, with a higher demand in summer than in winter.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-007-1.png" class="img-fluid figure-img" alt="Scatter plot of hourly rental counts from 2011 to 2012 with a smoothed trend line that rises in summer, falls in winter, and is higher in 2012 than in 2011." width="672"></p>
+<figcaption>Hourly bike sharing demand in the training data over time.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The demand strongly depends on the hour of the day. The figure below shows peaks in the morning and in the late afternoon, which correspond to commuting times. At higher temperatures, the demand is generally higher.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-008-1.png" class="img-fluid figure-img" alt="Jittered scatter plot of rental counts against the hour of the day with peaks around 8 and 17 to 18 o'clock; warmer hours have higher counts." width="672"></p>
+<figcaption>Bike sharing demand by hour of the day, colored by the feels like temperature.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="preprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="preprocessing">Preprocessing</h2>
+<p>The total count is the sum of the rentals by casual and registered users.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(data_train<span class="sc">$</span>count, data_train<span class="sc">$</span>casual <span class="sc">+</span> data_train<span class="sc">$</span>registered)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>We cannot use <code>casual</code> and <code>registered</code> as features since we only know them once we also know the target <code>count</code>. We also drop <code>temp</code> because it carries almost the same information as <code>atemp</code>.</p>
+<p>Each timestamp is unique and therefore has no predictive value on its own. However, if we split it into the hour, the weekday, the month, and the year, we obtain useful features. The function <code>engineer_features()</code> adds these features and removes the columns that we do not use.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>engineer_features <span class="ot">=</span> <span class="cf">function</span>(data) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">=</span> <span class="fu">copy</span>(data)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  data[, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">hour =</span> <span class="fu">factor</span>(<span class="fu">hour</span>(datetime)),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">weekday =</span> <span class="fu">factor</span>(<span class="fu">weekdays</span>(datetime)),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">month =</span> <span class="fu">factor</span>(<span class="fu">month</span>(datetime)),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">factor</span>(<span class="fu">year</span>(datetime))</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  )]</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  data[, <span class="fu">c</span>(<span class="st">"datetime"</span>, <span class="st">"casual"</span>, <span class="st">"registered"</span>, <span class="st">"temp"</span>) <span class="sc">:</span><span class="er">=</span> <span class="cn">NULL</span>]</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  data</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>data_train_features <span class="ot">=</span> <span class="fu">engineer_features</span>(data_train)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>data_test_features <span class="ot">=</span> <span class="fu">engineer_features</span>(data_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>po("datefeatures")</code> offers an alternative that automatically extracts a set of date-related features from a <code>POSIXct</code> column inside a pipeline.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We assume that we want to describe the existing data as well as possible rather than forecast the demand of future years. In a forecasting scenario, we would need a time-aware resampling strategy so that the model is evaluated on data from the future.</p>
+</div>
+</div>
+<p>We create a regression task from the training data with <code>count</code> as the target.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>task_bikes <span class="ot">=</span> <span class="fu">as_task_regr</span>(data_train_features, <span class="at">target =</span> <span class="st">"count"</span>, <span class="at">id =</span> <span class="st">"bike_sharing"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>task_bikes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+── &lt;TaskRegr&gt; (10886x12) ───────────────────────────────────────────────────────────────────────────────────────────────
+• Target: count
+• Properties: -
+• Features (11):
+  • fct (8): holiday, hour, month, season, weather, weekday, workingday, year
+  • dbl (3): atemp, humidity, windspeed</code></pre>
+</div>
+</div>
+</section>
+<section id="target-transformation" class="level2">
+<h2 class="anchored" data-anchor-id="target-transformation">Target transformation</h2>
+<p>The target <code>count</code> is highly right-skewed. The figure below shows that a transformation <span class="math inline">\(z = \log(x + 1)\)</span> makes its distribution much less skewed.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-012-1.png" class="img-fluid figure-img" alt="Two density plots side by side; the left one of count is strongly right-skewed, the right one of log(count + 1) is closer to symmetric." width="672"></p>
+<figcaption>Density of the target before (left) and after (right) the log transformation.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The learners are trained on the transformed target, and their predictions must be transformed back to the original scale with <span class="math inline">\(x = \exp(z) - 1\)</span>. <a href="https://mlr3pipelines.mlr-org.com">mlr3pipelines</a> automates this with <code>ppl("targettrafo")</code>. The pipeline transforms the target with <code>po("targetmutate")</code> before training and inverts the transformation of the predictions afterwards. The function <code>log_target()</code> wraps a learner or graph in this pipeline and returns a <a href="https://mlr3pipelines.mlr-org.com/reference/mlr_learners_graph.html"><code>GraphLearner</code></a> with a short id.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>log_target <span class="ot">=</span> <span class="cf">function</span>(graph, id) {</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  trafo <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"targetmutate"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">trafo =</span> <span class="cf">function</span>(x) <span class="fu">log1p</span>(x),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">inverter =</span> <span class="cf">function</span>(x) <span class="fu">list</span>(<span class="at">response =</span> <span class="fu">expm1</span>(x<span class="sc">$</span>response))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  learner <span class="ot">=</span> <span class="fu">as_learner</span>(<span class="fu">ppl</span>(<span class="st">"targettrafo"</span>, <span class="at">graph =</span> graph, <span class="at">trafo_pipeop =</span> trafo))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  learner<span class="sc">$</span>id <span class="ot">=</span> id</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  learner</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="modeling" class="level1">
+<h1>Modeling</h1>
+<p>We consider three learners: <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.kknn.html"><code>k-nearest neighbors</code></a>, a <a href="https://mlr3.mlr-org.com/reference/mlr_learners_regr.rpart.html"><code>decision tree</code></a>, and a <a href="https://mlr3learners.mlr-org.com/reference/mlr_learners_regr.ranger.html"><code>random forest</code></a>. We tune two hyperparameters of each learner with an <a href="https://mlr3tuning.mlr-org.com/reference/AutoTuner.html"><code>AutoTuner</code></a>, which is a learner that tunes its hyperparameters during training. To compare the learners fairly, all <code>AutoTuner</code>s share the same settings:</p>
+<ul>
+<li>We estimate the performance of a hyperparameter configuration with a 3-fold cross-validation. In practice, we would use more folds, but we keep the computational costs low here.</li>
+<li>Like the Kaggle competition, we minimize the root mean squared log error (RMSLE).</li>
+<li>We use a grid search.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>resampling_inner <span class="ot">=</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>L)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>measure <span class="ot">=</span> <span class="fu">msr</span>(<span class="st">"regr.rmsle"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="k-nearest-neighbors" class="level2">
+<h2 class="anchored" data-anchor-id="k-nearest-neighbors">k-nearest neighbors</h2>
+<p>We tune the number of neighbors <code>k</code> and the parameter <code>distance</code> of the Minkowski distance. The grid search with a resolution of 10 creates 30 configurations, from which the terminator randomly selects 20.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>learner_kknn <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.kknn"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>at_kknn <span class="ot">=</span> <span class="fu">auto_tuner</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"grid_search"</span>, <span class="at">resolution =</span> <span class="dv">10</span>L),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">log_target</span>(learner_kknn, <span class="at">id =</span> <span class="st">"kknn"</span>),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling_inner,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"evals"</span>, <span class="at">n_evals =</span> <span class="dv">20</span>L),</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">search_space =</span> <span class="fu">ps</span>(</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.kknn.k =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">50</span>L),</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.kknn.distance =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">3</span>L)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>at_kknn<span class="sc">$</span><span class="fu">train</span>(task_bikes)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>at_kknn<span class="sc">$</span>tuning_result[, <span class="fu">list</span>(regr.kknn.k, regr.kknn.distance, regr.rmsle)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   regr.kknn.k regr.kknn.distance regr.rmsle
+         &lt;int&gt;              &lt;int&gt;      &lt;num&gt;
+1:          12                  3  0.6335987</code></pre>
+</div>
+</div>
+<p>The figure below shows the RMSLE of the evaluated configurations. A larger order of the Minkowski distance leads to a clearly lower error. With very few neighbors, the model overfits, and with many neighbors, the estimate becomes too smooth. The best configuration uses <code>distance = 3</code> and a moderate number of neighbors.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-016-1.png" class="img-fluid figure-img" alt="Scatter plot of k against distance colored by RMSLE; the error increases with k and the best configuration has a small k." width="672"></p>
+<figcaption>RMSLE of the evaluated configurations of the k-nearest neighbors learner. The best configuration is circled.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="decision-tree" class="level2">
+<h2 class="anchored" data-anchor-id="decision-tree">Decision tree</h2>
+<p>For the decision tree, we tune <code>minsplit</code>, the minimum number of observations in a node for a split to be attempted, and the complexity parameter <code>cp</code>. A split that does not decrease the overall lack of fit by a factor of <code>cp</code> is not attempted. We search <code>cp</code> on a log scale because small values are more interesting.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>learner_rpart <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.rpart"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>at_rpart <span class="ot">=</span> <span class="fu">auto_tuner</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"grid_search"</span>, <span class="at">resolution =</span> <span class="dv">10</span>L),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">log_target</span>(learner_rpart, <span class="at">id =</span> <span class="st">"rpart"</span>),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling_inner,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"evals"</span>, <span class="at">n_evals =</span> <span class="dv">20</span>L),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">search_space =</span> <span class="fu">ps</span>(</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.rpart.minsplit =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">2</span>L, <span class="at">upper =</span> <span class="dv">30</span>L),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.rpart.cp =</span> <span class="fu">p_dbl</span>(<span class="at">lower =</span> <span class="fl">1e-4</span>, <span class="at">upper =</span> <span class="fl">0.1</span>, <span class="at">logscale =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>at_rpart<span class="sc">$</span><span class="fu">train</span>(task_bikes)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>at_rpart<span class="sc">$</span>tuning_result[, <span class="fu">list</span>(regr.rpart.minsplit, <span class="at">regr.rpart.cp =</span> <span class="fu">exp</span>(regr.rpart.cp), regr.rmsle)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   regr.rpart.minsplit regr.rpart.cp regr.rmsle
+                 &lt;int&gt;         &lt;num&gt;      &lt;num&gt;
+1:                  14         1e-04  0.4461599</code></pre>
+</div>
+</div>
+<p>The complexity parameter dominates the performance. A lower <code>cp</code> reduces pruning and results in larger trees, which perform better on this data set. The influence of <code>minsplit</code> is small.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-018-1.png" class="img-fluid figure-img" alt="Scatter plot of log cp against minsplit colored by RMSLE; the error decreases with smaller cp values." width="672"></p>
+<figcaption>RMSLE of the evaluated configurations of the decision tree. The complexity parameter is shown on the log scale. The best configuration is circled.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="random-forest" class="level2">
+<h2 class="anchored" data-anchor-id="random-forest">Random forest</h2>
+<p>For the random forest, we combine tuning with feature selection. First, we calculate the impurity importance of the features with a random forest and the importance filter from <a href="https://mlr3filters.mlr-org.com">mlr3filters</a>.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>learner_importance <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.ranger"</span>, <span class="at">importance =</span> <span class="st">"impurity"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>filter_importance <span class="ot">=</span> <span class="fu">flt</span>(<span class="st">"importance"</span>, <span class="at">learner =</span> learner_importance)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>filter_importance<span class="sc">$</span><span class="fu">calculate</span>(task_bikes)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.table</span>(filter_importance)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       feature       score
+        &lt;char&gt;       &lt;num&gt;
+ 1:       hour 166072130.6
+ 2:      atemp  42047138.4
+ 3:   humidity  31324148.0
+ 4:       year  25844848.0
+ 5:      month  19653122.7
+ 6:     season  11299355.1
+ 7:  windspeed  11185695.1
+ 8: workingday  10921182.9
+ 9:    weekday  10792609.8
+10:    weather   6365419.0
+11:    holiday    751904.4</code></pre>
+</div>
+</div>
+<p>The hour of the day is by far the most important feature, followed by the temperature, the humidity, and the year. Some features, such as <code>holiday</code>, contribute little. To test whether the random forest benefits from dropping them, we build a graph that keeps only the <code>filter.nfeat</code> most important features before fitting the random forest.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>learner_ranger <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.ranger"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>graph_ranger <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"filter"</span>, <span class="at">filter =</span> filter_importance, <span class="at">filter.nfeat =</span> <span class="dv">11</span>L) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"learner"</span>, learner_ranger)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We tune the number of selected features <code>importance.filter.nfeat</code> and the hyperparameter <code>mtry.ratio</code>. The latter is the fraction of the selected features that are randomly drawn as split candidates in each node. Tuning the ratio instead of <code>mtry</code> itself ensures that the number of split candidates never exceeds the number of selected features. The grid with a resolution of 5 contains 25 configurations, which we evaluate all.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>at_ranger <span class="ot">=</span> <span class="fu">auto_tuner</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"grid_search"</span>, <span class="at">resolution =</span> <span class="dv">5</span>L),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">log_target</span>(graph_ranger, <span class="at">id =</span> <span class="st">"ranger"</span>),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling_inner,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">search_space =</span> <span class="fu">ps</span>(</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">importance.filter.nfeat =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">11</span>L),</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.ranger.mtry.ratio =</span> <span class="fu">p_dbl</span>(<span class="at">lower =</span> <span class="fl">0.1</span>, <span class="at">upper =</span> <span class="dv">1</span>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>at_ranger<span class="sc">$</span><span class="fu">train</span>(task_bikes)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>at_ranger<span class="sc">$</span>tuning_result[, <span class="fu">list</span>(importance.filter.nfeat, regr.ranger.mtry.ratio, regr.rmsle)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   importance.filter.nfeat regr.ranger.mtry.ratio regr.rmsle
+                     &lt;int&gt;                  &lt;num&gt;      &lt;num&gt;
+1:                      11                  0.775  0.3123926</code></pre>
+</div>
+</div>
+<p>The error decreases with the number of selected features, and the best configurations use 9 or all 11 features. With many features, an <code>mtry.ratio</code> of 0.5 or higher works best, while very small values perform poorly.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-022-1.png" class="img-fluid figure-img" alt="Scatter plot of the number of selected features against mtry.ratio colored by RMSLE; the error is lowest for many features and a high mtry.ratio." width="672"></p>
+<figcaption>RMSLE of the evaluated configurations of the random forest pipeline. The best configuration is circled.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="tuning-over-learners" class="level2">
+<h2 class="anchored" data-anchor-id="tuning-over-learners">Tuning over learners</h2>
+<p>Instead of tuning each learner separately, we can also treat the choice of the learner as a hyperparameter. We create a branched pipeline with <code>ppl("branch")</code> that contains the three learners, and wrap it in the target transformation. The hyperparameter <code>branch.selection</code> selects the learner.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>graph_branch <span class="ot">=</span> <span class="fu">ppl</span>(<span class="st">"branch"</span>, <span class="fu">list</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">kknn =</span> learner_kknn,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">rpart =</span> learner_rpart,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ranger =</span> graph_ranger</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>learner_branch <span class="ot">=</span> <span class="fu">log_target</span>(graph_branch, <span class="at">id =</span> <span class="st">"branch"</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>learner_branch<span class="sc">$</span>graph<span class="sc">$</span><span class="fu">plot</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-023-1.png" class="img-fluid figure-img" alt="Graph of the pipeline: the target transformation is followed by a branch into k-nearest neighbors, decision tree, and random forest with an importance filter; the branches are joined again before the inverse target transformation." width="672"></p>
+<figcaption>Branched pipeline with the three learners.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The search space reuses the ranges from above. The hyperparameters of a learner are only active if the learner is selected, which we express with the <code>depends</code> argument. We use a random search with 30 evaluations because a grid over the combined space would be too large.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>search_space_branch <span class="ot">=</span> <span class="fu">ps</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">branch.selection =</span> <span class="fu">p_fct</span>(<span class="fu">c</span>(<span class="st">"kknn"</span>, <span class="st">"rpart"</span>, <span class="st">"ranger"</span>)),</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.kknn.k =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">50</span>L, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"kknn"</span>),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.kknn.distance =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">3</span>L, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"kknn"</span>),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.rpart.minsplit =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">2</span>L, <span class="at">upper =</span> <span class="dv">30</span>L, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"rpart"</span>),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.rpart.cp =</span> <span class="fu">p_dbl</span>(<span class="at">lower =</span> <span class="fl">1e-4</span>, <span class="at">upper =</span> <span class="fl">0.1</span>, <span class="at">logscale =</span> <span class="cn">TRUE</span>, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"rpart"</span>),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">importance.filter.nfeat =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">11</span>L, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"ranger"</span>),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.ranger.mtry.ratio =</span> <span class="fu">p_dbl</span>(<span class="at">lower =</span> <span class="fl">0.1</span>, <span class="at">upper =</span> <span class="dv">1</span>, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"ranger"</span>)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>at_branch <span class="ot">=</span> <span class="fu">auto_tuner</span>(</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"random_search"</span>),</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> learner_branch,</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling_inner,</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"evals"</span>, <span class="at">n_evals =</span> <span class="dv">30</span>L),</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">search_space =</span> search_space_branch</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="benchmark" class="level1">
+<h1>Benchmark</h1>
+<p>The tuning results above are optimistically biased because the same data was used to select the configuration and to estimate its performance. To obtain an unbiased estimate, we use nested resampling. <a href="https://mlr3.mlr-org.com/reference/benchmark.html"><code>benchmark()</code></a> evaluates every <code>AutoTuner</code> with an outer 3-fold cross-validation, and in each outer fold the <code>AutoTuner</code> tunes again on the training data only. We include the three learners with default hyperparameters as a baseline. These are also wrapped in the target transformation so that the comparison isolates the effect of tuning.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>learners <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_target</span>(learner_kknn, <span class="at">id =</span> <span class="st">"kknn"</span>),</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_target</span>(learner_rpart, <span class="at">id =</span> <span class="st">"rpart"</span>),</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_target</span>(graph_ranger, <span class="at">id =</span> <span class="st">"ranger"</span>),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  at_kknn,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  at_rpart,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  at_ranger,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  at_branch</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>design <span class="ot">=</span> <span class="fu">benchmark_grid</span>(</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">tasks =</span> task_bikes,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">learners =</span> learners,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamplings =</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>L)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>bmr <span class="ot">=</span> <span class="fu">benchmark</span>(design, <span class="at">store_models =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The table and the figure below show the RMSLE in the outer folds.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>bmr<span class="sc">$</span><span class="fu">aggregate</span>(measure)[<span class="fu">order</span>(regr.rmsle), <span class="fu">list</span>(learner_id, regr.rmsle)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     learner_id regr.rmsle
+         &lt;char&gt;      &lt;num&gt;
+1: ranger.tuned  0.3153921
+2: branch.tuned  0.3173665
+3:       ranger  0.4070943
+4:  rpart.tuned  0.4365559
+5:   kknn.tuned  0.5606262
+6:        rpart  0.7437224
+7:         kknn  0.9818190</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-027-1.png" class="img-fluid figure-img" alt="Box plots of the RMSLE per learner; the tuned random forest and the tuned branched pipeline have the lowest errors, the untuned k-nearest neighbors learner the highest." width="672"></p>
+<figcaption>RMSLE of the learners in the outer folds of the nested resampling.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Tuning improves all three learners compared to their default hyperparameters. The k-nearest neighbors learner and the decision tree benefit the most. For the decision tree, the default complexity parameter prunes the tree too strongly. The tuned random forest performs best. The branched pipeline reaches a similar performance because the random search selects the random forest in every outer fold, as the table below shows. Note that the branched pipeline evaluates fewer random forest configurations than the dedicated <code>AutoTuner</code> for the same budget, so tuning over learners is not free.</p>
+<p>Since we stored the models with <code>store_models = TRUE</code>, we can inspect which learner the branched pipeline selected in each outer fold.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>rr_branch <span class="ot">=</span> bmr<span class="sc">$</span><span class="fu">resample_result</span>(<span class="dv">7</span>L)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_inner_tuning_results</span>(rr_branch)[, <span class="fu">list</span>(iteration, branch.selection, regr.rmsle)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   iteration branch.selection regr.rmsle
+       &lt;int&gt;           &lt;char&gt;      &lt;num&gt;
+1:         1           ranger  0.3274521
+2:         2           ranger  0.3451450
+3:         3           ranger  0.3440505</code></pre>
+</div>
+</div>
+</section>
+<section id="prediction" class="level1">
+<h1>Prediction</h1>
+<p>We choose the tuned random forest, which was already trained on the complete training data, and predict the demand on the test days. Since the UCI data contains the true counts of the test days, we can evaluate the prediction on truly unseen data.</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>prediction <span class="ot">=</span> at_ranger<span class="sc">$</span><span class="fu">predict_newdata</span>(data_test_features)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>prediction<span class="sc">$</span><span class="fu">score</span>(measure)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>regr.rmsle 
+ 0.4252552 </code></pre>
+</div>
+</div>
+<p>The error on the test days is noticeably higher than the estimate from nested resampling. The cross-validation splits the observations randomly, so different hours of the same day end up in the training and test folds. The model can exploit the similarity of hours within a day, for example, the shared weather. The test days, in contrast, are completely unseen. A resampling strategy that keeps all hours of a day in the same fold, such as <code>rsmp("custom_cv")</code> grouped by date, would give a more realistic estimate.</p>
+<p>The figure below compares the predicted and the actual demand for each day of the month. The training data covers days 1 to 19 and the test data covers days 20 to 31. The predictions follow the actual values closely on both parts of the data, but they are systematically slightly too low. This is a consequence of the log transformation. The model predicts the mean of <span class="math inline">\(\log(x + 1)\)</span>, and transforming this mean back estimates something closer to the median than to the mean of the counts. Since the counts are right-skewed, the median is lower than the mean. Note that the predictions on the training days are made on data the model has seen during training and are therefore optimistic. The low value on day 31 occurs because only 7 months have 31 days.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/index-030-1.png" class="img-fluid figure-img" alt="Dot plot of the total count per day of the month for actual and predicted values; the predicted values are close to but mostly slightly below the actual values on both training and test days." width="672"></p>
+<figcaption>Total actual and predicted demand by day of the month. Days 1 to 19 are training data and days 20 to 31 are test data.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>We used <a href="https://mlr3verse.mlr-org.com">mlr3verse</a> to tune, benchmark, and compare three learners for predicting the hourly demand of a bike sharing system. <a href="https://mlr3pipelines.mlr-org.com">mlr3pipelines</a> handled the log transformation of the target, the feature selection with an importance filter, and the choice between learners in a branched pipeline. Tuning two hyperparameters of each learner considerably improved its performance, and nested resampling allowed a fair comparison of the tuned learners. The tuned random forest performed best. Its error on the held-out test days was higher than the cross-validation estimate, which shows that the resampling strategy should match how the model is used.</p>
+<p>Further improvements could come from a larger tuning budget, a resampling strategy grouped by day, or a correction of the systematic underestimation caused by the log transformation.</p>
+
+
+<!-- -->
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Fanaee" class="csl-entry" role="listitem">
+Fanaee-T, Hadi, and Joao Gama. 2013. <span>“Event Labeling Combining Ensemble Detectors and Background Knowledge.”</span> <em>Progress in Artificial Intelligence</em>, 1–15.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mlr-org\.com\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Bike Sharing Demand</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co">  - tuning</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co">  - nested resampling</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co">  - benchmarking</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co">  - filtering</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - branching</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co">  - target transformation</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co">  - regression</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: Henri Funk</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: Andreas Hofheinz</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: Marius Girnat</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: Marc Becker</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="co">    url: https://github.com/be-marc</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> 07-27-2020</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> |</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="co">  Tune, benchmark, and compare k-nearest neighbors, decision tree, and random forest pipelines to predict the hourly demand of a bike sharing system.</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> bibliography.bib</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>{{&lt; include ../../_setup.qmd &gt;}}</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-001}</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>future<span class="sc">::</span><span class="fu">plan</span>(<span class="st">"multisession"</span>, <span class="at">workers =</span> <span class="dv">10</span>L)</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>lgr<span class="sc">::</span><span class="fu">get_logger</span>(<span class="st">"mlr3"</span>)<span class="sc">$</span><span class="fu">set_threshold</span>(<span class="st">"warn"</span>)</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>lgr<span class="sc">::</span><span class="fu">get_logger</span>(<span class="st">"bbotk"</span>)<span class="sc">$</span><span class="fu">set_threshold</span>(<span class="st">"warn"</span>)</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a><span class="fu"># Preamble</span></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a>This use case was created as part of the Introduction to Machine Learning lecture at LMU Munich.</span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>The goal of the project was to create and compare one or several machine learning pipelines for the problem at hand, together with an exploratory analysis and an exposition of the results.</span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>The authors contributed the post to the gallery, and it was edited for better legibility.</span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a>We want to thank the authors for allowing us to publish their results.</span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a>Note that the correctness of the results cannot be guaranteed.</span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction</span></span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>Bike sharing is a network of publicly shared bicycles that can be rented for a certain period of time at different locations within a city and returned at any station.</span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>Suppliers of such networks must always have enough bicycles available, and the demand depends on a variety of factors such as the time of day and the weather.</span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>A forecasting system that predicts the demand from these factors helps to plan the distribution of bicycles.</span>
+<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a>In this post, we develop such a system with <span class="in">`r mlr3verse`</span>.</span>
+<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-47"><a href="#cb31-47" aria-hidden="true" tabindex="-1"></a>We use the bike sharing data set by @Fanaee, which contains hourly rental counts of the Capital Bikeshare system in Washington, D.C. from 2011 and 2012.</span>
+<span id="cb31-48"><a href="#cb31-48" aria-hidden="true" tabindex="-1"></a>The same data was used in the <span class="co">[</span><span class="ot">Kaggle Bike Sharing Demand</span><span class="co">](https://www.kaggle.com/c/bike-sharing-demand)</span> competition.</span>
+<span id="cb31-49"><a href="#cb31-49" aria-hidden="true" tabindex="-1"></a>After a short exploratory analysis, we engineer features and transform the target.</span>
+<span id="cb31-50"><a href="#cb31-50" aria-hidden="true" tabindex="-1"></a>We then tune a k-nearest neighbors, a decision tree, and a random forest learner and compare them with nested resampling.</span>
+<span id="cb31-51"><a href="#cb31-51" aria-hidden="true" tabindex="-1"></a>We also tune over the choice of the learner itself with a branched pipeline.</span>
+<span id="cb31-52"><a href="#cb31-52" aria-hidden="true" tabindex="-1"></a>Finally, we predict the demand on a held-out test set.</span>
+<span id="cb31-53"><a href="#cb31-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-54"><a href="#cb31-54" aria-hidden="true" tabindex="-1"></a>This tutorial assumes familiarity with the basics of <span class="in">`r mlr3tuning`</span> and <span class="in">`r mlr3pipelines`</span>.</span>
+<span id="cb31-55"><a href="#cb31-55" aria-hidden="true" tabindex="-1"></a>Consult the <span class="co">[</span><span class="ot">mlr3book</span><span class="co">](https://mlr3book.mlr-org.com)</span> if some aspects are not fully understandable.</span>
+<span id="cb31-56"><a href="#cb31-56" aria-hidden="true" tabindex="-1"></a>We load the <span class="in">`r mlr3verse`</span> package, <span class="in">`r ref_pkg("data.table")`</span> for data manipulation, and <span class="in">`r ref_pkg("ggplot2")`</span> for plotting.</span>
+<span id="cb31-57"><a href="#cb31-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-58"><a href="#cb31-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-002}</span></span>
+<span id="cb31-59"><a href="#cb31-59" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb31-60"><a href="#cb31-60" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span>
+<span id="cb31-61"><a href="#cb31-61" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb31-62"><a href="#cb31-62" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb31-63"><a href="#cb31-63" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-64"><a href="#cb31-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-65"><a href="#cb31-65" aria-hidden="true" tabindex="-1"></a><span class="fu"># Data</span></span>
+<span id="cb31-66"><a href="#cb31-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-67"><a href="#cb31-67" aria-hidden="true" tabindex="-1"></a>The data is available from the <span class="co">[</span><span class="ot">UCI Machine Learning Repository</span><span class="co">](https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset)</span>.</span>
+<span id="cb31-68"><a href="#cb31-68" aria-hidden="true" tabindex="-1"></a>We download the archive and read the hourly data.</span>
+<span id="cb31-69"><a href="#cb31-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-70"><a href="#cb31-70" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-003}</span></span>
+<span id="cb31-71"><a href="#cb31-71" aria-hidden="true" tabindex="-1"></a>path_zip <span class="ot">=</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".zip"</span>)</span>
+<span id="cb31-72"><a href="#cb31-72" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip"</span>, path_zip, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb31-73"><a href="#cb31-73" aria-hidden="true" tabindex="-1"></a>bikes <span class="ot">=</span> <span class="fu">fread</span>(<span class="fu">unzip</span>(path_zip, <span class="at">files =</span> <span class="st">"hour.csv"</span>, <span class="at">exdir =</span> <span class="fu">tempdir</span>()))</span>
+<span id="cb31-74"><a href="#cb31-74" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-75"><a href="#cb31-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-76"><a href="#cb31-76" aria-hidden="true" tabindex="-1"></a>We create a timestamp from the date and the hour, convert the nominal features to factors with readable levels, and give some columns more descriptive names.</span>
+<span id="cb31-77"><a href="#cb31-77" aria-hidden="true" tabindex="-1"></a>The season is coded in the data as astronomical seasons, so January belongs to winter.</span>
+<span id="cb31-78"><a href="#cb31-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-79"><a href="#cb31-79" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-004}</span></span>
+<span id="cb31-80"><a href="#cb31-80" aria-hidden="true" tabindex="-1"></a>bikes[, datetime <span class="sc">:</span><span class="er">=</span> <span class="fu">as.POSIXct</span>(dteday, <span class="at">tz =</span> <span class="st">"UTC"</span>) <span class="sc">+</span> hr <span class="sc">*</span> <span class="dv">3600</span>]</span>
+<span id="cb31-81"><a href="#cb31-81" aria-hidden="true" tabindex="-1"></a>bikes <span class="ot">=</span> bikes[, <span class="fu">list</span>(</span>
+<span id="cb31-82"><a href="#cb31-82" aria-hidden="true" tabindex="-1"></a>  datetime,</span>
+<span id="cb31-83"><a href="#cb31-83" aria-hidden="true" tabindex="-1"></a>  <span class="at">season =</span> <span class="fu">factor</span>(season, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"winter"</span>, <span class="st">"spring"</span>, <span class="st">"summer"</span>, <span class="st">"fall"</span>)),</span>
+<span id="cb31-84"><a href="#cb31-84" aria-hidden="true" tabindex="-1"></a>  <span class="at">holiday =</span> <span class="fu">factor</span>(holiday, <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"no"</span>, <span class="st">"yes"</span>)),</span>
+<span id="cb31-85"><a href="#cb31-85" aria-hidden="true" tabindex="-1"></a>  <span class="at">workingday =</span> <span class="fu">factor</span>(workingday, <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"no"</span>, <span class="st">"yes"</span>)),</span>
+<span id="cb31-86"><a href="#cb31-86" aria-hidden="true" tabindex="-1"></a>  <span class="at">weather =</span> <span class="fu">factor</span>(weathersit, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"clear"</span>, <span class="st">"mist"</span>, <span class="st">"light rain"</span>, <span class="st">"heavy rain"</span>)),</span>
+<span id="cb31-87"><a href="#cb31-87" aria-hidden="true" tabindex="-1"></a>  temp,</span>
+<span id="cb31-88"><a href="#cb31-88" aria-hidden="true" tabindex="-1"></a>  atemp,</span>
+<span id="cb31-89"><a href="#cb31-89" aria-hidden="true" tabindex="-1"></a>  <span class="at">humidity =</span> hum,</span>
+<span id="cb31-90"><a href="#cb31-90" aria-hidden="true" tabindex="-1"></a>  windspeed,</span>
+<span id="cb31-91"><a href="#cb31-91" aria-hidden="true" tabindex="-1"></a>  casual,</span>
+<span id="cb31-92"><a href="#cb31-92" aria-hidden="true" tabindex="-1"></a>  registered,</span>
+<span id="cb31-93"><a href="#cb31-93" aria-hidden="true" tabindex="-1"></a>  <span class="at">count =</span> cnt</span>
+<span id="cb31-94"><a href="#cb31-94" aria-hidden="true" tabindex="-1"></a>)]</span>
+<span id="cb31-95"><a href="#cb31-95" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-96"><a href="#cb31-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-97"><a href="#cb31-97" aria-hidden="true" tabindex="-1"></a>The columns of the data set have the following meaning.</span>
+<span id="cb31-98"><a href="#cb31-98" aria-hidden="true" tabindex="-1"></a>The weather variables are normalized to the interval $<span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$.</span>
+<span id="cb31-99"><a href="#cb31-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-100"><a href="#cb31-100" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Column <span class="pp">|</span> Description <span class="pp">|</span></span>
+<span id="cb31-101"><a href="#cb31-101" aria-hidden="true" tabindex="-1"></a><span class="pp">|:-------|:------------|</span></span>
+<span id="cb31-102"><a href="#cb31-102" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`datetime`</span> <span class="pp">|</span> Date and hour of the observation <span class="pp">|</span></span>
+<span id="cb31-103"><a href="#cb31-103" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`season`</span> <span class="pp">|</span> Winter, spring, summer, or fall <span class="pp">|</span></span>
+<span id="cb31-104"><a href="#cb31-104" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`holiday`</span> <span class="pp">|</span> Whether the day is a public holiday <span class="pp">|</span></span>
+<span id="cb31-105"><a href="#cb31-105" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`workingday`</span> <span class="pp">|</span> Whether the day is neither a weekend nor a holiday <span class="pp">|</span></span>
+<span id="cb31-106"><a href="#cb31-106" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`weather`</span> <span class="pp">|</span> Clear or few clouds, mist, light rain or snow, and heavy rain or snow <span class="pp">|</span></span>
+<span id="cb31-107"><a href="#cb31-107" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`temp`</span> <span class="pp">|</span> Temperature <span class="pp">|</span></span>
+<span id="cb31-108"><a href="#cb31-108" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`atemp`</span> <span class="pp">|</span> "Feels like" temperature <span class="pp">|</span></span>
+<span id="cb31-109"><a href="#cb31-109" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`humidity`</span> <span class="pp">|</span> Relative humidity <span class="pp">|</span></span>
+<span id="cb31-110"><a href="#cb31-110" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`windspeed`</span> <span class="pp">|</span> Wind speed <span class="pp">|</span></span>
+<span id="cb31-111"><a href="#cb31-111" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`casual`</span> <span class="pp">|</span> Number of rentals by non-registered users <span class="pp">|</span></span>
+<span id="cb31-112"><a href="#cb31-112" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`registered`</span> <span class="pp">|</span> Number of rentals by registered users <span class="pp">|</span></span>
+<span id="cb31-113"><a href="#cb31-113" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`count`</span> <span class="pp">|</span> Total number of rentals <span class="pp">|</span></span>
+<span id="cb31-114"><a href="#cb31-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-115"><a href="#cb31-115" aria-hidden="true" tabindex="-1"></a>Like in the Kaggle competition, we use the first 19 days of each month as training data and the remaining days as test data.</span>
+<span id="cb31-116"><a href="#cb31-116" aria-hidden="true" tabindex="-1"></a>In contrast to the competition, the UCI data contains the true counts for the test days, so we can evaluate our final model on them.</span>
+<span id="cb31-117"><a href="#cb31-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-118"><a href="#cb31-118" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-005}</span></span>
+<span id="cb31-119"><a href="#cb31-119" aria-hidden="true" tabindex="-1"></a>data_train <span class="ot">=</span> bikes[<span class="fu">mday</span>(datetime) <span class="sc">&lt;</span> <span class="dv">20</span>L]</span>
+<span id="cb31-120"><a href="#cb31-120" aria-hidden="true" tabindex="-1"></a>data_test <span class="ot">=</span> bikes[<span class="fu">mday</span>(datetime) <span class="sc">&gt;=</span> <span class="dv">20</span>L]</span>
+<span id="cb31-121"><a href="#cb31-121" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">train =</span> <span class="fu">nrow</span>(data_train), <span class="at">test =</span> <span class="fu">nrow</span>(data_test))</span>
+<span id="cb31-122"><a href="#cb31-122" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-123"><a href="#cb31-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-124"><a href="#cb31-124" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exploratory analysis</span></span>
+<span id="cb31-125"><a href="#cb31-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-126"><a href="#cb31-126" aria-hidden="true" tabindex="-1"></a>The figure below shows the correlations between the numeric variables of the training data.</span>
+<span id="cb31-127"><a href="#cb31-127" aria-hidden="true" tabindex="-1"></a>The temperature <span class="in">`temp`</span> and the "feels like" temperature <span class="in">`atemp`</span> are almost perfectly correlated, which makes sense since both measure nearly the same thing.</span>
+<span id="cb31-128"><a href="#cb31-128" aria-hidden="true" tabindex="-1"></a>The number of rentals <span class="in">`count`</span> is positively correlated with both temperatures and negatively correlated with the humidity.</span>
+<span id="cb31-129"><a href="#cb31-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-130"><a href="#cb31-130" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-006}</span></span>
+<span id="cb31-131"><a href="#cb31-131" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-132"><a href="#cb31-132" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Correlation matrix of the numeric variables in the training data."</span></span>
+<span id="cb31-133"><a href="#cb31-133" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Heat map of pairwise correlations between count, temp, atemp, humidity, and windspeed, with temp and atemp correlated at 0.98."</span></span>
+<span id="cb31-134"><a href="#cb31-134" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"count"</span>, <span class="st">"temp"</span>, <span class="st">"atemp"</span>, <span class="st">"humidity"</span>, <span class="st">"windspeed"</span>)</span>
+<span id="cb31-135"><a href="#cb31-135" aria-hidden="true" tabindex="-1"></a>cor_matrix <span class="ot">=</span> <span class="fu">cor</span>(data_train[, cols, <span class="at">with =</span> <span class="cn">FALSE</span>])</span>
+<span id="cb31-136"><a href="#cb31-136" aria-hidden="true" tabindex="-1"></a>cor_data <span class="ot">=</span> <span class="fu">as.data.table</span>(<span class="fu">as.table</span>(cor_matrix))</span>
+<span id="cb31-137"><a href="#cb31-137" aria-hidden="true" tabindex="-1"></a><span class="fu">setnames</span>(cor_data, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"correlation"</span>))</span>
+<span id="cb31-138"><a href="#cb31-138" aria-hidden="true" tabindex="-1"></a>cor_data[, x <span class="sc">:</span><span class="er">=</span> <span class="fu">factor</span>(x, <span class="at">levels =</span> cols)]</span>
+<span id="cb31-139"><a href="#cb31-139" aria-hidden="true" tabindex="-1"></a>cor_data[, y <span class="sc">:</span><span class="er">=</span> <span class="fu">factor</span>(y, <span class="at">levels =</span> <span class="fu">rev</span>(cols))]</span>
+<span id="cb31-140"><a href="#cb31-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-141"><a href="#cb31-141" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cor_data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> correlation)) <span class="sc">+</span></span>
+<span id="cb31-142"><a href="#cb31-142" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb31-143"><a href="#cb31-143" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, correlation)), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb31-144"><a href="#cb31-144" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>(<span class="at">low =</span> <span class="st">"#3288bd"</span>, <span class="at">mid =</span> <span class="st">"white"</span>, <span class="at">high =</span> <span class="st">"#d53e4f"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb31-145"><a href="#cb31-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="st">"Correlation"</span>) <span class="sc">+</span></span>
+<span id="cb31-146"><a href="#cb31-146" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb31-147"><a href="#cb31-147" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-148"><a href="#cb31-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-149"><a href="#cb31-149" aria-hidden="true" tabindex="-1"></a>The demand over the whole period of the training data shows a positive trend and a seasonal pattern, with a higher demand in summer than in winter.</span>
+<span id="cb31-150"><a href="#cb31-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-151"><a href="#cb31-151" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-007}</span></span>
+<span id="cb31-152"><a href="#cb31-152" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-153"><a href="#cb31-153" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb31-154"><a href="#cb31-154" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Hourly bike sharing demand in the training data over time."</span></span>
+<span id="cb31-155"><a href="#cb31-155" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Scatter plot of hourly rental counts from 2011 to 2012 with a smoothed trend line that rises in summer, falls in winter, and is higher in 2012 than in 2011."</span></span>
+<span id="cb31-156"><a href="#cb31-156" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_train, <span class="fu">aes</span>(<span class="at">x =</span> datetime, <span class="at">y =</span> count)) <span class="sc">+</span></span>
+<span id="cb31-157"><a href="#cb31-157" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="st">"darkgrey"</span>) <span class="sc">+</span></span>
+<span id="cb31-158"><a href="#cb31-158" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">color =</span> <span class="st">"#3288bd"</span>) <span class="sc">+</span></span>
+<span id="cb31-159"><a href="#cb31-159" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb31-160"><a href="#cb31-160" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb31-161"><a href="#cb31-161" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-162"><a href="#cb31-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-163"><a href="#cb31-163" aria-hidden="true" tabindex="-1"></a>The demand strongly depends on the hour of the day.</span>
+<span id="cb31-164"><a href="#cb31-164" aria-hidden="true" tabindex="-1"></a>The figure below shows peaks in the morning and in the late afternoon, which correspond to commuting times.</span>
+<span id="cb31-165"><a href="#cb31-165" aria-hidden="true" tabindex="-1"></a>At higher temperatures, the demand is generally higher.</span>
+<span id="cb31-166"><a href="#cb31-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-167"><a href="#cb31-167" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-008}</span></span>
+<span id="cb31-168"><a href="#cb31-168" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-169"><a href="#cb31-169" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Bike sharing demand by hour of the day, colored by the feels like temperature."</span></span>
+<span id="cb31-170"><a href="#cb31-170" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Jittered scatter plot of rental counts against the hour of the day with peaks around 8 and 17 to 18 o'clock; warmer hours have higher counts."</span></span>
+<span id="cb31-171"><a href="#cb31-171" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_train, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">hour</span>(datetime), <span class="at">y =</span> count, <span class="at">color =</span> atemp)) <span class="sc">+</span></span>
+<span id="cb31-172"><a href="#cb31-172" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">width =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb31-173"><a href="#cb31-173" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>(<span class="at">option =</span> <span class="st">"turbo"</span>) <span class="sc">+</span></span>
+<span id="cb31-174"><a href="#cb31-174" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hour"</span>, <span class="at">y =</span> <span class="st">"Count"</span>, <span class="at">color =</span> <span class="st">"atemp"</span>) <span class="sc">+</span></span>
+<span id="cb31-175"><a href="#cb31-175" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb31-176"><a href="#cb31-176" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-177"><a href="#cb31-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-178"><a href="#cb31-178" aria-hidden="true" tabindex="-1"></a><span class="fu">## Preprocessing</span></span>
+<span id="cb31-179"><a href="#cb31-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-180"><a href="#cb31-180" aria-hidden="true" tabindex="-1"></a>The total count is the sum of the rentals by casual and registered users.</span>
+<span id="cb31-181"><a href="#cb31-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-182"><a href="#cb31-182" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-009}</span></span>
+<span id="cb31-183"><a href="#cb31-183" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(data_train<span class="sc">$</span>count, data_train<span class="sc">$</span>casual <span class="sc">+</span> data_train<span class="sc">$</span>registered)</span>
+<span id="cb31-184"><a href="#cb31-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-185"><a href="#cb31-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-186"><a href="#cb31-186" aria-hidden="true" tabindex="-1"></a>We cannot use <span class="in">`casual`</span> and <span class="in">`registered`</span> as features since we only know them once we also know the target <span class="in">`count`</span>.</span>
+<span id="cb31-187"><a href="#cb31-187" aria-hidden="true" tabindex="-1"></a>We also drop <span class="in">`temp`</span> because it carries almost the same information as <span class="in">`atemp`</span>.</span>
+<span id="cb31-188"><a href="#cb31-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-189"><a href="#cb31-189" aria-hidden="true" tabindex="-1"></a>Each timestamp is unique and therefore has no predictive value on its own.</span>
+<span id="cb31-190"><a href="#cb31-190" aria-hidden="true" tabindex="-1"></a>However, if we split it into the hour, the weekday, the month, and the year, we obtain useful features.</span>
+<span id="cb31-191"><a href="#cb31-191" aria-hidden="true" tabindex="-1"></a>The function <span class="in">`engineer_features()`</span> adds these features and removes the columns that we do not use.</span>
+<span id="cb31-192"><a href="#cb31-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-193"><a href="#cb31-193" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-010}</span></span>
+<span id="cb31-194"><a href="#cb31-194" aria-hidden="true" tabindex="-1"></a>engineer_features <span class="ot">=</span> <span class="cf">function</span>(data) {</span>
+<span id="cb31-195"><a href="#cb31-195" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">=</span> <span class="fu">copy</span>(data)</span>
+<span id="cb31-196"><a href="#cb31-196" aria-hidden="true" tabindex="-1"></a>  data[, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(</span>
+<span id="cb31-197"><a href="#cb31-197" aria-hidden="true" tabindex="-1"></a>    <span class="at">hour =</span> <span class="fu">factor</span>(<span class="fu">hour</span>(datetime)),</span>
+<span id="cb31-198"><a href="#cb31-198" aria-hidden="true" tabindex="-1"></a>    <span class="at">weekday =</span> <span class="fu">factor</span>(<span class="fu">weekdays</span>(datetime)),</span>
+<span id="cb31-199"><a href="#cb31-199" aria-hidden="true" tabindex="-1"></a>    <span class="at">month =</span> <span class="fu">factor</span>(<span class="fu">month</span>(datetime)),</span>
+<span id="cb31-200"><a href="#cb31-200" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">factor</span>(<span class="fu">year</span>(datetime))</span>
+<span id="cb31-201"><a href="#cb31-201" aria-hidden="true" tabindex="-1"></a>  )]</span>
+<span id="cb31-202"><a href="#cb31-202" aria-hidden="true" tabindex="-1"></a>  data[, <span class="fu">c</span>(<span class="st">"datetime"</span>, <span class="st">"casual"</span>, <span class="st">"registered"</span>, <span class="st">"temp"</span>) <span class="sc">:</span><span class="er">=</span> <span class="cn">NULL</span>]</span>
+<span id="cb31-203"><a href="#cb31-203" aria-hidden="true" tabindex="-1"></a>  data</span>
+<span id="cb31-204"><a href="#cb31-204" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb31-205"><a href="#cb31-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-206"><a href="#cb31-206" aria-hidden="true" tabindex="-1"></a>data_train_features <span class="ot">=</span> <span class="fu">engineer_features</span>(data_train)</span>
+<span id="cb31-207"><a href="#cb31-207" aria-hidden="true" tabindex="-1"></a>data_test_features <span class="ot">=</span> <span class="fu">engineer_features</span>(data_test)</span>
+<span id="cb31-208"><a href="#cb31-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-209"><a href="#cb31-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-210"><a href="#cb31-210" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
+<span id="cb31-211"><a href="#cb31-211" aria-hidden="true" tabindex="-1"></a><span class="in">`po("datefeatures")`</span> offers an alternative that automatically extracts a set of date-related features from a <span class="in">`POSIXct`</span> column inside a pipeline.</span>
+<span id="cb31-212"><a href="#cb31-212" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-213"><a href="#cb31-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-214"><a href="#cb31-214" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
+<span id="cb31-215"><a href="#cb31-215" aria-hidden="true" tabindex="-1"></a>We assume that we want to describe the existing data as well as possible rather than forecast the demand of future years.</span>
+<span id="cb31-216"><a href="#cb31-216" aria-hidden="true" tabindex="-1"></a>In a forecasting scenario, we would need a time-aware resampling strategy so that the model is evaluated on data from the future.</span>
+<span id="cb31-217"><a href="#cb31-217" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-218"><a href="#cb31-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-219"><a href="#cb31-219" aria-hidden="true" tabindex="-1"></a>We create a regression task from the training data with <span class="in">`count`</span> as the target.</span>
+<span id="cb31-220"><a href="#cb31-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-221"><a href="#cb31-221" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-011}</span></span>
+<span id="cb31-222"><a href="#cb31-222" aria-hidden="true" tabindex="-1"></a>task_bikes <span class="ot">=</span> <span class="fu">as_task_regr</span>(data_train_features, <span class="at">target =</span> <span class="st">"count"</span>, <span class="at">id =</span> <span class="st">"bike_sharing"</span>)</span>
+<span id="cb31-223"><a href="#cb31-223" aria-hidden="true" tabindex="-1"></a>task_bikes</span>
+<span id="cb31-224"><a href="#cb31-224" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-225"><a href="#cb31-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-226"><a href="#cb31-226" aria-hidden="true" tabindex="-1"></a><span class="fu">## Target transformation</span></span>
+<span id="cb31-227"><a href="#cb31-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-228"><a href="#cb31-228" aria-hidden="true" tabindex="-1"></a>The target <span class="in">`count`</span> is highly right-skewed.</span>
+<span id="cb31-229"><a href="#cb31-229" aria-hidden="true" tabindex="-1"></a>The figure below shows that a transformation $z = \log(x + 1)$ makes its distribution much less skewed.</span>
+<span id="cb31-230"><a href="#cb31-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-231"><a href="#cb31-231" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-012}</span></span>
+<span id="cb31-232"><a href="#cb31-232" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-233"><a href="#cb31-233" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Density of the target before (left) and after (right) the log transformation."</span></span>
+<span id="cb31-234"><a href="#cb31-234" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Two density plots side by side; the left one of count is strongly right-skewed, the right one of log(count + 1) is closer to symmetric."</span></span>
+<span id="cb31-235"><a href="#cb31-235" aria-hidden="true" tabindex="-1"></a>data_density <span class="ot">=</span> <span class="fu">rbind</span>(</span>
+<span id="cb31-236"><a href="#cb31-236" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.table</span>(<span class="at">transformation =</span> <span class="st">"count"</span>, <span class="at">value =</span> data_train<span class="sc">$</span>count),</span>
+<span id="cb31-237"><a href="#cb31-237" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.table</span>(<span class="at">transformation =</span> <span class="st">"log(count + 1)"</span>, <span class="at">value =</span> <span class="fu">log1p</span>(data_train<span class="sc">$</span>count))</span>
+<span id="cb31-238"><a href="#cb31-238" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-239"><a href="#cb31-239" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_density, <span class="fu">aes</span>(<span class="at">x =</span> value)) <span class="sc">+</span></span>
+<span id="cb31-240"><a href="#cb31-240" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb31-241"><a href="#cb31-241" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>transformation, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb31-242"><a href="#cb31-242" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Density"</span>) <span class="sc">+</span></span>
+<span id="cb31-243"><a href="#cb31-243" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb31-244"><a href="#cb31-244" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-245"><a href="#cb31-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-246"><a href="#cb31-246" aria-hidden="true" tabindex="-1"></a>The learners are trained on the transformed target, and their predictions must be transformed back to the original scale with $x = \exp(z) - 1$.</span>
+<span id="cb31-247"><a href="#cb31-247" aria-hidden="true" tabindex="-1"></a><span class="in">`r mlr3pipelines`</span> automates this with <span class="in">`ppl("targettrafo")`</span>.</span>
+<span id="cb31-248"><a href="#cb31-248" aria-hidden="true" tabindex="-1"></a>The pipeline transforms the target with <span class="in">`po("targetmutate")`</span> before training and inverts the transformation of the predictions afterwards.</span>
+<span id="cb31-249"><a href="#cb31-249" aria-hidden="true" tabindex="-1"></a>The function <span class="in">`log_target()`</span> wraps a learner or graph in this pipeline and returns a <span class="in">`r ref("GraphLearner")`</span> with a short id.</span>
+<span id="cb31-250"><a href="#cb31-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-251"><a href="#cb31-251" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-013}</span></span>
+<span id="cb31-252"><a href="#cb31-252" aria-hidden="true" tabindex="-1"></a>log_target <span class="ot">=</span> <span class="cf">function</span>(graph, id) {</span>
+<span id="cb31-253"><a href="#cb31-253" aria-hidden="true" tabindex="-1"></a>  trafo <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"targetmutate"</span>,</span>
+<span id="cb31-254"><a href="#cb31-254" aria-hidden="true" tabindex="-1"></a>    <span class="at">trafo =</span> <span class="cf">function</span>(x) <span class="fu">log1p</span>(x),</span>
+<span id="cb31-255"><a href="#cb31-255" aria-hidden="true" tabindex="-1"></a>    <span class="at">inverter =</span> <span class="cf">function</span>(x) <span class="fu">list</span>(<span class="at">response =</span> <span class="fu">expm1</span>(x<span class="sc">$</span>response))</span>
+<span id="cb31-256"><a href="#cb31-256" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb31-257"><a href="#cb31-257" aria-hidden="true" tabindex="-1"></a>  learner <span class="ot">=</span> <span class="fu">as_learner</span>(<span class="fu">ppl</span>(<span class="st">"targettrafo"</span>, <span class="at">graph =</span> graph, <span class="at">trafo_pipeop =</span> trafo))</span>
+<span id="cb31-258"><a href="#cb31-258" aria-hidden="true" tabindex="-1"></a>  learner<span class="sc">$</span>id <span class="ot">=</span> id</span>
+<span id="cb31-259"><a href="#cb31-259" aria-hidden="true" tabindex="-1"></a>  learner</span>
+<span id="cb31-260"><a href="#cb31-260" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb31-261"><a href="#cb31-261" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-262"><a href="#cb31-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-263"><a href="#cb31-263" aria-hidden="true" tabindex="-1"></a><span class="fu"># Modeling</span></span>
+<span id="cb31-264"><a href="#cb31-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-265"><a href="#cb31-265" aria-hidden="true" tabindex="-1"></a>We consider three learners: <span class="in">`r ref("mlr_learners_regr.kknn", "k-nearest neighbors")`</span>, a <span class="in">`r ref("mlr_learners_regr.rpart", "decision tree")`</span>, and a <span class="in">`r ref("mlr_learners_regr.ranger", "random forest")`</span>.</span>
+<span id="cb31-266"><a href="#cb31-266" aria-hidden="true" tabindex="-1"></a>We tune two hyperparameters of each learner with an <span class="in">`r ref("AutoTuner")`</span>, which is a learner that tunes its hyperparameters during training.</span>
+<span id="cb31-267"><a href="#cb31-267" aria-hidden="true" tabindex="-1"></a>To compare the learners fairly, all <span class="in">`AutoTuner`</span>s share the same settings:</span>
+<span id="cb31-268"><a href="#cb31-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-269"><a href="#cb31-269" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>We estimate the performance of a hyperparameter configuration with a 3-fold cross-validation.</span>
+<span id="cb31-270"><a href="#cb31-270" aria-hidden="true" tabindex="-1"></a>  In practice, we would use more folds, but we keep the computational costs low here.</span>
+<span id="cb31-271"><a href="#cb31-271" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Like the Kaggle competition, we minimize the root mean squared log error (RMSLE).</span>
+<span id="cb31-272"><a href="#cb31-272" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>We use a grid search.</span>
+<span id="cb31-273"><a href="#cb31-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-274"><a href="#cb31-274" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-014}</span></span>
+<span id="cb31-275"><a href="#cb31-275" aria-hidden="true" tabindex="-1"></a>resampling_inner <span class="ot">=</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>L)</span>
+<span id="cb31-276"><a href="#cb31-276" aria-hidden="true" tabindex="-1"></a>measure <span class="ot">=</span> <span class="fu">msr</span>(<span class="st">"regr.rmsle"</span>)</span>
+<span id="cb31-277"><a href="#cb31-277" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-278"><a href="#cb31-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-279"><a href="#cb31-279" aria-hidden="true" tabindex="-1"></a><span class="fu">## k-nearest neighbors</span></span>
+<span id="cb31-280"><a href="#cb31-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-281"><a href="#cb31-281" aria-hidden="true" tabindex="-1"></a>We tune the number of neighbors <span class="in">`k`</span> and the parameter <span class="in">`distance`</span> of the Minkowski distance.</span>
+<span id="cb31-282"><a href="#cb31-282" aria-hidden="true" tabindex="-1"></a>The grid search with a resolution of 10 creates 30 configurations, from which the terminator randomly selects 20.</span>
+<span id="cb31-283"><a href="#cb31-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-284"><a href="#cb31-284" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-015}</span></span>
+<span id="cb31-285"><a href="#cb31-285" aria-hidden="true" tabindex="-1"></a>learner_kknn <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.kknn"</span>)</span>
+<span id="cb31-286"><a href="#cb31-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-287"><a href="#cb31-287" aria-hidden="true" tabindex="-1"></a>at_kknn <span class="ot">=</span> <span class="fu">auto_tuner</span>(</span>
+<span id="cb31-288"><a href="#cb31-288" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"grid_search"</span>, <span class="at">resolution =</span> <span class="dv">10</span>L),</span>
+<span id="cb31-289"><a href="#cb31-289" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">log_target</span>(learner_kknn, <span class="at">id =</span> <span class="st">"kknn"</span>),</span>
+<span id="cb31-290"><a href="#cb31-290" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling_inner,</span>
+<span id="cb31-291"><a href="#cb31-291" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb31-292"><a href="#cb31-292" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"evals"</span>, <span class="at">n_evals =</span> <span class="dv">20</span>L),</span>
+<span id="cb31-293"><a href="#cb31-293" aria-hidden="true" tabindex="-1"></a>  <span class="at">search_space =</span> <span class="fu">ps</span>(</span>
+<span id="cb31-294"><a href="#cb31-294" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.kknn.k =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">50</span>L),</span>
+<span id="cb31-295"><a href="#cb31-295" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.kknn.distance =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">3</span>L)</span>
+<span id="cb31-296"><a href="#cb31-296" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb31-297"><a href="#cb31-297" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-298"><a href="#cb31-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-299"><a href="#cb31-299" aria-hidden="true" tabindex="-1"></a>at_kknn<span class="sc">$</span><span class="fu">train</span>(task_bikes)</span>
+<span id="cb31-300"><a href="#cb31-300" aria-hidden="true" tabindex="-1"></a>at_kknn<span class="sc">$</span>tuning_result[, <span class="fu">list</span>(regr.kknn.k, regr.kknn.distance, regr.rmsle)]</span>
+<span id="cb31-301"><a href="#cb31-301" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-302"><a href="#cb31-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-303"><a href="#cb31-303" aria-hidden="true" tabindex="-1"></a>The figure below shows the RMSLE of the evaluated configurations.</span>
+<span id="cb31-304"><a href="#cb31-304" aria-hidden="true" tabindex="-1"></a>A larger order of the Minkowski distance leads to a clearly lower error.</span>
+<span id="cb31-305"><a href="#cb31-305" aria-hidden="true" tabindex="-1"></a>With very few neighbors, the model overfits, and with many neighbors, the estimate becomes too smooth.</span>
+<span id="cb31-306"><a href="#cb31-306" aria-hidden="true" tabindex="-1"></a>The best configuration uses <span class="in">`distance = 3`</span> and a moderate number of neighbors.</span>
+<span id="cb31-307"><a href="#cb31-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-308"><a href="#cb31-308" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-016}</span></span>
+<span id="cb31-309"><a href="#cb31-309" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-310"><a href="#cb31-310" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "RMSLE of the evaluated configurations of the k-nearest neighbors learner. The best configuration is circled."</span></span>
+<span id="cb31-311"><a href="#cb31-311" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Scatter plot of k against distance colored by RMSLE; the error increases with k and the best configuration has a small k."</span></span>
+<span id="cb31-312"><a href="#cb31-312" aria-hidden="true" tabindex="-1"></a>plot_archive <span class="ot">=</span> <span class="cf">function</span>(at, x, y) {</span>
+<span id="cb31-313"><a href="#cb31-313" aria-hidden="true" tabindex="-1"></a>  archive <span class="ot">=</span> <span class="fu">as.data.table</span>(at<span class="sc">$</span>archive)</span>
+<span id="cb31-314"><a href="#cb31-314" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(archive, <span class="fu">aes</span>(<span class="at">x =</span> .data[[x]], <span class="at">y =</span> .data[[y]], <span class="at">color =</span> regr.rmsle)) <span class="sc">+</span></span>
+<span id="cb31-315"><a href="#cb31-315" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>L) <span class="sc">+</span></span>
+<span id="cb31-316"><a href="#cb31-316" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> archive[<span class="fu">which.min</span>(regr.rmsle)], <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">6</span>L, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb31-317"><a href="#cb31-317" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_viridis_c</span>(<span class="at">option =</span> <span class="st">"turbo"</span>) <span class="sc">+</span></span>
+<span id="cb31-318"><a href="#cb31-318" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"RMSLE"</span>) <span class="sc">+</span></span>
+<span id="cb31-319"><a href="#cb31-319" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb31-320"><a href="#cb31-320" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb31-321"><a href="#cb31-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-322"><a href="#cb31-322" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_archive</span>(at_kknn, <span class="st">"regr.kknn.k"</span>, <span class="st">"regr.kknn.distance"</span>)</span>
+<span id="cb31-323"><a href="#cb31-323" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-324"><a href="#cb31-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-325"><a href="#cb31-325" aria-hidden="true" tabindex="-1"></a><span class="fu">## Decision tree</span></span>
+<span id="cb31-326"><a href="#cb31-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-327"><a href="#cb31-327" aria-hidden="true" tabindex="-1"></a>For the decision tree, we tune <span class="in">`minsplit`</span>, the minimum number of observations in a node for a split to be attempted, and the complexity parameter <span class="in">`cp`</span>.</span>
+<span id="cb31-328"><a href="#cb31-328" aria-hidden="true" tabindex="-1"></a>A split that does not decrease the overall lack of fit by a factor of <span class="in">`cp`</span> is not attempted.</span>
+<span id="cb31-329"><a href="#cb31-329" aria-hidden="true" tabindex="-1"></a>We search <span class="in">`cp`</span> on a log scale because small values are more interesting.</span>
+<span id="cb31-330"><a href="#cb31-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-331"><a href="#cb31-331" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-017}</span></span>
+<span id="cb31-332"><a href="#cb31-332" aria-hidden="true" tabindex="-1"></a>learner_rpart <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.rpart"</span>)</span>
+<span id="cb31-333"><a href="#cb31-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-334"><a href="#cb31-334" aria-hidden="true" tabindex="-1"></a>at_rpart <span class="ot">=</span> <span class="fu">auto_tuner</span>(</span>
+<span id="cb31-335"><a href="#cb31-335" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"grid_search"</span>, <span class="at">resolution =</span> <span class="dv">10</span>L),</span>
+<span id="cb31-336"><a href="#cb31-336" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">log_target</span>(learner_rpart, <span class="at">id =</span> <span class="st">"rpart"</span>),</span>
+<span id="cb31-337"><a href="#cb31-337" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling_inner,</span>
+<span id="cb31-338"><a href="#cb31-338" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb31-339"><a href="#cb31-339" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"evals"</span>, <span class="at">n_evals =</span> <span class="dv">20</span>L),</span>
+<span id="cb31-340"><a href="#cb31-340" aria-hidden="true" tabindex="-1"></a>  <span class="at">search_space =</span> <span class="fu">ps</span>(</span>
+<span id="cb31-341"><a href="#cb31-341" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.rpart.minsplit =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">2</span>L, <span class="at">upper =</span> <span class="dv">30</span>L),</span>
+<span id="cb31-342"><a href="#cb31-342" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.rpart.cp =</span> <span class="fu">p_dbl</span>(<span class="at">lower =</span> <span class="fl">1e-4</span>, <span class="at">upper =</span> <span class="fl">0.1</span>, <span class="at">logscale =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb31-343"><a href="#cb31-343" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb31-344"><a href="#cb31-344" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-345"><a href="#cb31-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-346"><a href="#cb31-346" aria-hidden="true" tabindex="-1"></a>at_rpart<span class="sc">$</span><span class="fu">train</span>(task_bikes)</span>
+<span id="cb31-347"><a href="#cb31-347" aria-hidden="true" tabindex="-1"></a>at_rpart<span class="sc">$</span>tuning_result[, <span class="fu">list</span>(regr.rpart.minsplit, <span class="at">regr.rpart.cp =</span> <span class="fu">exp</span>(regr.rpart.cp), regr.rmsle)]</span>
+<span id="cb31-348"><a href="#cb31-348" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-349"><a href="#cb31-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-350"><a href="#cb31-350" aria-hidden="true" tabindex="-1"></a>The complexity parameter dominates the performance.</span>
+<span id="cb31-351"><a href="#cb31-351" aria-hidden="true" tabindex="-1"></a>A lower <span class="in">`cp`</span> reduces pruning and results in larger trees, which perform better on this data set.</span>
+<span id="cb31-352"><a href="#cb31-352" aria-hidden="true" tabindex="-1"></a>The influence of <span class="in">`minsplit`</span> is small.</span>
+<span id="cb31-353"><a href="#cb31-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-354"><a href="#cb31-354" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-018}</span></span>
+<span id="cb31-355"><a href="#cb31-355" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-356"><a href="#cb31-356" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "RMSLE of the evaluated configurations of the decision tree. The complexity parameter is shown on the log scale. The best configuration is circled."</span></span>
+<span id="cb31-357"><a href="#cb31-357" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Scatter plot of log cp against minsplit colored by RMSLE; the error decreases with smaller cp values."</span></span>
+<span id="cb31-358"><a href="#cb31-358" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_archive</span>(at_rpart, <span class="st">"regr.rpart.cp"</span>, <span class="st">"regr.rpart.minsplit"</span>) <span class="sc">+</span></span>
+<span id="cb31-359"><a href="#cb31-359" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"log(regr.rpart.cp)"</span>)</span>
+<span id="cb31-360"><a href="#cb31-360" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-361"><a href="#cb31-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-362"><a href="#cb31-362" aria-hidden="true" tabindex="-1"></a><span class="fu">## Random forest</span></span>
+<span id="cb31-363"><a href="#cb31-363" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-364"><a href="#cb31-364" aria-hidden="true" tabindex="-1"></a>For the random forest, we combine tuning with feature selection.</span>
+<span id="cb31-365"><a href="#cb31-365" aria-hidden="true" tabindex="-1"></a>First, we calculate the impurity importance of the features with a random forest and the importance filter from <span class="in">`r mlr3filters`</span>.</span>
+<span id="cb31-366"><a href="#cb31-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-367"><a href="#cb31-367" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-019}</span></span>
+<span id="cb31-368"><a href="#cb31-368" aria-hidden="true" tabindex="-1"></a>learner_importance <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.ranger"</span>, <span class="at">importance =</span> <span class="st">"impurity"</span>)</span>
+<span id="cb31-369"><a href="#cb31-369" aria-hidden="true" tabindex="-1"></a>filter_importance <span class="ot">=</span> <span class="fu">flt</span>(<span class="st">"importance"</span>, <span class="at">learner =</span> learner_importance)</span>
+<span id="cb31-370"><a href="#cb31-370" aria-hidden="true" tabindex="-1"></a>filter_importance<span class="sc">$</span><span class="fu">calculate</span>(task_bikes)</span>
+<span id="cb31-371"><a href="#cb31-371" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.table</span>(filter_importance)</span>
+<span id="cb31-372"><a href="#cb31-372" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-373"><a href="#cb31-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-374"><a href="#cb31-374" aria-hidden="true" tabindex="-1"></a>The hour of the day is by far the most important feature, followed by the temperature, the humidity, and the year.</span>
+<span id="cb31-375"><a href="#cb31-375" aria-hidden="true" tabindex="-1"></a>Some features, such as <span class="in">`holiday`</span>, contribute little.</span>
+<span id="cb31-376"><a href="#cb31-376" aria-hidden="true" tabindex="-1"></a>To test whether the random forest benefits from dropping them, we build a graph that keeps only the <span class="in">`filter.nfeat`</span> most important features before fitting the random forest.</span>
+<span id="cb31-377"><a href="#cb31-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-378"><a href="#cb31-378" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-020}</span></span>
+<span id="cb31-379"><a href="#cb31-379" aria-hidden="true" tabindex="-1"></a>learner_ranger <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.ranger"</span>)</span>
+<span id="cb31-380"><a href="#cb31-380" aria-hidden="true" tabindex="-1"></a>graph_ranger <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"filter"</span>, <span class="at">filter =</span> filter_importance, <span class="at">filter.nfeat =</span> <span class="dv">11</span>L) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb31-381"><a href="#cb31-381" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"learner"</span>, learner_ranger)</span>
+<span id="cb31-382"><a href="#cb31-382" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-383"><a href="#cb31-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-384"><a href="#cb31-384" aria-hidden="true" tabindex="-1"></a>We tune the number of selected features <span class="in">`importance.filter.nfeat`</span> and the hyperparameter <span class="in">`mtry.ratio`</span>.</span>
+<span id="cb31-385"><a href="#cb31-385" aria-hidden="true" tabindex="-1"></a>The latter is the fraction of the selected features that are randomly drawn as split candidates in each node.</span>
+<span id="cb31-386"><a href="#cb31-386" aria-hidden="true" tabindex="-1"></a>Tuning the ratio instead of <span class="in">`mtry`</span> itself ensures that the number of split candidates never exceeds the number of selected features.</span>
+<span id="cb31-387"><a href="#cb31-387" aria-hidden="true" tabindex="-1"></a>The grid with a resolution of 5 contains 25 configurations, which we evaluate all.</span>
+<span id="cb31-388"><a href="#cb31-388" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-389"><a href="#cb31-389" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-021}</span></span>
+<span id="cb31-390"><a href="#cb31-390" aria-hidden="true" tabindex="-1"></a>at_ranger <span class="ot">=</span> <span class="fu">auto_tuner</span>(</span>
+<span id="cb31-391"><a href="#cb31-391" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"grid_search"</span>, <span class="at">resolution =</span> <span class="dv">5</span>L),</span>
+<span id="cb31-392"><a href="#cb31-392" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">log_target</span>(graph_ranger, <span class="at">id =</span> <span class="st">"ranger"</span>),</span>
+<span id="cb31-393"><a href="#cb31-393" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling_inner,</span>
+<span id="cb31-394"><a href="#cb31-394" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb31-395"><a href="#cb31-395" aria-hidden="true" tabindex="-1"></a>  <span class="at">search_space =</span> <span class="fu">ps</span>(</span>
+<span id="cb31-396"><a href="#cb31-396" aria-hidden="true" tabindex="-1"></a>    <span class="at">importance.filter.nfeat =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">11</span>L),</span>
+<span id="cb31-397"><a href="#cb31-397" aria-hidden="true" tabindex="-1"></a>    <span class="at">regr.ranger.mtry.ratio =</span> <span class="fu">p_dbl</span>(<span class="at">lower =</span> <span class="fl">0.1</span>, <span class="at">upper =</span> <span class="dv">1</span>)</span>
+<span id="cb31-398"><a href="#cb31-398" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb31-399"><a href="#cb31-399" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-400"><a href="#cb31-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-401"><a href="#cb31-401" aria-hidden="true" tabindex="-1"></a>at_ranger<span class="sc">$</span><span class="fu">train</span>(task_bikes)</span>
+<span id="cb31-402"><a href="#cb31-402" aria-hidden="true" tabindex="-1"></a>at_ranger<span class="sc">$</span>tuning_result[, <span class="fu">list</span>(importance.filter.nfeat, regr.ranger.mtry.ratio, regr.rmsle)]</span>
+<span id="cb31-403"><a href="#cb31-403" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-404"><a href="#cb31-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-405"><a href="#cb31-405" aria-hidden="true" tabindex="-1"></a>The error decreases with the number of selected features, and the best configurations use 9 or all 11 features.</span>
+<span id="cb31-406"><a href="#cb31-406" aria-hidden="true" tabindex="-1"></a>With many features, an <span class="in">`mtry.ratio`</span> of 0.5 or higher works best, while very small values perform poorly.</span>
+<span id="cb31-407"><a href="#cb31-407" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-408"><a href="#cb31-408" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-022}</span></span>
+<span id="cb31-409"><a href="#cb31-409" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-410"><a href="#cb31-410" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "RMSLE of the evaluated configurations of the random forest pipeline. The best configuration is circled."</span></span>
+<span id="cb31-411"><a href="#cb31-411" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Scatter plot of the number of selected features against mtry.ratio colored by RMSLE; the error is lowest for many features and a high mtry.ratio."</span></span>
+<span id="cb31-412"><a href="#cb31-412" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_archive</span>(at_ranger, <span class="st">"importance.filter.nfeat"</span>, <span class="st">"regr.ranger.mtry.ratio"</span>)</span>
+<span id="cb31-413"><a href="#cb31-413" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-414"><a href="#cb31-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-415"><a href="#cb31-415" aria-hidden="true" tabindex="-1"></a><span class="fu">## Tuning over learners</span></span>
+<span id="cb31-416"><a href="#cb31-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-417"><a href="#cb31-417" aria-hidden="true" tabindex="-1"></a>Instead of tuning each learner separately, we can also treat the choice of the learner as a hyperparameter.</span>
+<span id="cb31-418"><a href="#cb31-418" aria-hidden="true" tabindex="-1"></a>We create a branched pipeline with <span class="in">`ppl("branch")`</span> that contains the three learners, and wrap it in the target transformation.</span>
+<span id="cb31-419"><a href="#cb31-419" aria-hidden="true" tabindex="-1"></a>The hyperparameter <span class="in">`branch.selection`</span> selects the learner.</span>
+<span id="cb31-420"><a href="#cb31-420" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-421"><a href="#cb31-421" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-023}</span></span>
+<span id="cb31-422"><a href="#cb31-422" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Branched pipeline with the three learners."</span></span>
+<span id="cb31-423"><a href="#cb31-423" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 7</span></span>
+<span id="cb31-424"><a href="#cb31-424" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Graph of the pipeline: the target transformation is followed by a branch into k-nearest neighbors, decision tree, and random forest with an importance filter; the branches are joined again before the inverse target transformation."</span></span>
+<span id="cb31-425"><a href="#cb31-425" aria-hidden="true" tabindex="-1"></a>graph_branch <span class="ot">=</span> <span class="fu">ppl</span>(<span class="st">"branch"</span>, <span class="fu">list</span>(</span>
+<span id="cb31-426"><a href="#cb31-426" aria-hidden="true" tabindex="-1"></a>  <span class="at">kknn =</span> learner_kknn,</span>
+<span id="cb31-427"><a href="#cb31-427" aria-hidden="true" tabindex="-1"></a>  <span class="at">rpart =</span> learner_rpart,</span>
+<span id="cb31-428"><a href="#cb31-428" aria-hidden="true" tabindex="-1"></a>  <span class="at">ranger =</span> graph_ranger</span>
+<span id="cb31-429"><a href="#cb31-429" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb31-430"><a href="#cb31-430" aria-hidden="true" tabindex="-1"></a>learner_branch <span class="ot">=</span> <span class="fu">log_target</span>(graph_branch, <span class="at">id =</span> <span class="st">"branch"</span>)</span>
+<span id="cb31-431"><a href="#cb31-431" aria-hidden="true" tabindex="-1"></a>learner_branch<span class="sc">$</span>graph<span class="sc">$</span><span class="fu">plot</span>()</span>
+<span id="cb31-432"><a href="#cb31-432" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-433"><a href="#cb31-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-434"><a href="#cb31-434" aria-hidden="true" tabindex="-1"></a>The search space reuses the ranges from above.</span>
+<span id="cb31-435"><a href="#cb31-435" aria-hidden="true" tabindex="-1"></a>The hyperparameters of a learner are only active if the learner is selected, which we express with the <span class="in">`depends`</span> argument.</span>
+<span id="cb31-436"><a href="#cb31-436" aria-hidden="true" tabindex="-1"></a>We use a random search with 30 evaluations because a grid over the combined space would be too large.</span>
+<span id="cb31-437"><a href="#cb31-437" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-438"><a href="#cb31-438" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-024}</span></span>
+<span id="cb31-439"><a href="#cb31-439" aria-hidden="true" tabindex="-1"></a>search_space_branch <span class="ot">=</span> <span class="fu">ps</span>(</span>
+<span id="cb31-440"><a href="#cb31-440" aria-hidden="true" tabindex="-1"></a>  <span class="at">branch.selection =</span> <span class="fu">p_fct</span>(<span class="fu">c</span>(<span class="st">"kknn"</span>, <span class="st">"rpart"</span>, <span class="st">"ranger"</span>)),</span>
+<span id="cb31-441"><a href="#cb31-441" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.kknn.k =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">50</span>L, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"kknn"</span>),</span>
+<span id="cb31-442"><a href="#cb31-442" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.kknn.distance =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">3</span>L, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"kknn"</span>),</span>
+<span id="cb31-443"><a href="#cb31-443" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.rpart.minsplit =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">2</span>L, <span class="at">upper =</span> <span class="dv">30</span>L, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"rpart"</span>),</span>
+<span id="cb31-444"><a href="#cb31-444" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.rpart.cp =</span> <span class="fu">p_dbl</span>(<span class="at">lower =</span> <span class="fl">1e-4</span>, <span class="at">upper =</span> <span class="fl">0.1</span>, <span class="at">logscale =</span> <span class="cn">TRUE</span>, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"rpart"</span>),</span>
+<span id="cb31-445"><a href="#cb31-445" aria-hidden="true" tabindex="-1"></a>  <span class="at">importance.filter.nfeat =</span> <span class="fu">p_int</span>(<span class="at">lower =</span> <span class="dv">1</span>L, <span class="at">upper =</span> <span class="dv">11</span>L, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"ranger"</span>),</span>
+<span id="cb31-446"><a href="#cb31-446" aria-hidden="true" tabindex="-1"></a>  <span class="at">regr.ranger.mtry.ratio =</span> <span class="fu">p_dbl</span>(<span class="at">lower =</span> <span class="fl">0.1</span>, <span class="at">upper =</span> <span class="dv">1</span>, <span class="at">depends =</span> branch.selection <span class="sc">==</span> <span class="st">"ranger"</span>)</span>
+<span id="cb31-447"><a href="#cb31-447" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-448"><a href="#cb31-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-449"><a href="#cb31-449" aria-hidden="true" tabindex="-1"></a>at_branch <span class="ot">=</span> <span class="fu">auto_tuner</span>(</span>
+<span id="cb31-450"><a href="#cb31-450" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"random_search"</span>),</span>
+<span id="cb31-451"><a href="#cb31-451" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> learner_branch,</span>
+<span id="cb31-452"><a href="#cb31-452" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling_inner,</span>
+<span id="cb31-453"><a href="#cb31-453" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb31-454"><a href="#cb31-454" aria-hidden="true" tabindex="-1"></a>  <span class="at">terminator =</span> <span class="fu">trm</span>(<span class="st">"evals"</span>, <span class="at">n_evals =</span> <span class="dv">30</span>L),</span>
+<span id="cb31-455"><a href="#cb31-455" aria-hidden="true" tabindex="-1"></a>  <span class="at">search_space =</span> search_space_branch</span>
+<span id="cb31-456"><a href="#cb31-456" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-457"><a href="#cb31-457" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-458"><a href="#cb31-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-459"><a href="#cb31-459" aria-hidden="true" tabindex="-1"></a><span class="fu"># Benchmark</span></span>
+<span id="cb31-460"><a href="#cb31-460" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-461"><a href="#cb31-461" aria-hidden="true" tabindex="-1"></a>The tuning results above are optimistically biased because the same data was used to select the configuration and to estimate its performance.</span>
+<span id="cb31-462"><a href="#cb31-462" aria-hidden="true" tabindex="-1"></a>To obtain an unbiased estimate, we use nested resampling.</span>
+<span id="cb31-463"><a href="#cb31-463" aria-hidden="true" tabindex="-1"></a><span class="in">`r ref("benchmark()")`</span> evaluates every <span class="in">`AutoTuner`</span> with an outer 3-fold cross-validation, and in each outer fold the <span class="in">`AutoTuner`</span> tunes again on the training data only.</span>
+<span id="cb31-464"><a href="#cb31-464" aria-hidden="true" tabindex="-1"></a>We include the three learners with default hyperparameters as a baseline.</span>
+<span id="cb31-465"><a href="#cb31-465" aria-hidden="true" tabindex="-1"></a>These are also wrapped in the target transformation so that the comparison isolates the effect of tuning.</span>
+<span id="cb31-466"><a href="#cb31-466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-467"><a href="#cb31-467" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-025}</span></span>
+<span id="cb31-468"><a href="#cb31-468" aria-hidden="true" tabindex="-1"></a>learners <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb31-469"><a href="#cb31-469" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_target</span>(learner_kknn, <span class="at">id =</span> <span class="st">"kknn"</span>),</span>
+<span id="cb31-470"><a href="#cb31-470" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_target</span>(learner_rpart, <span class="at">id =</span> <span class="st">"rpart"</span>),</span>
+<span id="cb31-471"><a href="#cb31-471" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_target</span>(graph_ranger, <span class="at">id =</span> <span class="st">"ranger"</span>),</span>
+<span id="cb31-472"><a href="#cb31-472" aria-hidden="true" tabindex="-1"></a>  at_kknn,</span>
+<span id="cb31-473"><a href="#cb31-473" aria-hidden="true" tabindex="-1"></a>  at_rpart,</span>
+<span id="cb31-474"><a href="#cb31-474" aria-hidden="true" tabindex="-1"></a>  at_ranger,</span>
+<span id="cb31-475"><a href="#cb31-475" aria-hidden="true" tabindex="-1"></a>  at_branch</span>
+<span id="cb31-476"><a href="#cb31-476" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-477"><a href="#cb31-477" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-478"><a href="#cb31-478" aria-hidden="true" tabindex="-1"></a>design <span class="ot">=</span> <span class="fu">benchmark_grid</span>(</span>
+<span id="cb31-479"><a href="#cb31-479" aria-hidden="true" tabindex="-1"></a>  <span class="at">tasks =</span> task_bikes,</span>
+<span id="cb31-480"><a href="#cb31-480" aria-hidden="true" tabindex="-1"></a>  <span class="at">learners =</span> learners,</span>
+<span id="cb31-481"><a href="#cb31-481" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamplings =</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>L)</span>
+<span id="cb31-482"><a href="#cb31-482" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-483"><a href="#cb31-483" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-484"><a href="#cb31-484" aria-hidden="true" tabindex="-1"></a>bmr <span class="ot">=</span> <span class="fu">benchmark</span>(design, <span class="at">store_models =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb31-485"><a href="#cb31-485" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-486"><a href="#cb31-486" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-487"><a href="#cb31-487" aria-hidden="true" tabindex="-1"></a>The table and the figure below show the RMSLE in the outer folds.</span>
+<span id="cb31-488"><a href="#cb31-488" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-489"><a href="#cb31-489" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-026}</span></span>
+<span id="cb31-490"><a href="#cb31-490" aria-hidden="true" tabindex="-1"></a>bmr<span class="sc">$</span><span class="fu">aggregate</span>(measure)[<span class="fu">order</span>(regr.rmsle), <span class="fu">list</span>(learner_id, regr.rmsle)]</span>
+<span id="cb31-491"><a href="#cb31-491" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-492"><a href="#cb31-492" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-493"><a href="#cb31-493" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-027}</span></span>
+<span id="cb31-494"><a href="#cb31-494" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-495"><a href="#cb31-495" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "RMSLE of the learners in the outer folds of the nested resampling."</span></span>
+<span id="cb31-496"><a href="#cb31-496" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Box plots of the RMSLE per learner; the tuned random forest and the tuned branched pipeline have the lowest errors, the untuned k-nearest neighbors learner the highest."</span></span>
+<span id="cb31-497"><a href="#cb31-497" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(bmr, <span class="at">measure =</span> measure) <span class="sc">+</span></span>
+<span id="cb31-498"><a href="#cb31-498" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"RMSLE"</span>) <span class="sc">+</span></span>
+<span id="cb31-499"><a href="#cb31-499" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb31-500"><a href="#cb31-500" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb31-501"><a href="#cb31-501" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-502"><a href="#cb31-502" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-503"><a href="#cb31-503" aria-hidden="true" tabindex="-1"></a>Tuning improves all three learners compared to their default hyperparameters.</span>
+<span id="cb31-504"><a href="#cb31-504" aria-hidden="true" tabindex="-1"></a>The k-nearest neighbors learner and the decision tree benefit the most.</span>
+<span id="cb31-505"><a href="#cb31-505" aria-hidden="true" tabindex="-1"></a>For the decision tree, the default complexity parameter prunes the tree too strongly.</span>
+<span id="cb31-506"><a href="#cb31-506" aria-hidden="true" tabindex="-1"></a>The tuned random forest performs best.</span>
+<span id="cb31-507"><a href="#cb31-507" aria-hidden="true" tabindex="-1"></a>The branched pipeline reaches a similar performance because the random search selects the random forest in every outer fold, as the table below shows.</span>
+<span id="cb31-508"><a href="#cb31-508" aria-hidden="true" tabindex="-1"></a>Note that the branched pipeline evaluates fewer random forest configurations than the dedicated <span class="in">`AutoTuner`</span> for the same budget, so tuning over learners is not free.</span>
+<span id="cb31-509"><a href="#cb31-509" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-510"><a href="#cb31-510" aria-hidden="true" tabindex="-1"></a>Since we stored the models with <span class="in">`store_models = TRUE`</span>, we can inspect which learner the branched pipeline selected in each outer fold.</span>
+<span id="cb31-511"><a href="#cb31-511" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-512"><a href="#cb31-512" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-028}</span></span>
+<span id="cb31-513"><a href="#cb31-513" aria-hidden="true" tabindex="-1"></a>rr_branch <span class="ot">=</span> bmr<span class="sc">$</span><span class="fu">resample_result</span>(<span class="dv">7</span>L)</span>
+<span id="cb31-514"><a href="#cb31-514" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_inner_tuning_results</span>(rr_branch)[, <span class="fu">list</span>(iteration, branch.selection, regr.rmsle)]</span>
+<span id="cb31-515"><a href="#cb31-515" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-516"><a href="#cb31-516" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-517"><a href="#cb31-517" aria-hidden="true" tabindex="-1"></a><span class="fu"># Prediction</span></span>
+<span id="cb31-518"><a href="#cb31-518" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-519"><a href="#cb31-519" aria-hidden="true" tabindex="-1"></a>We choose the tuned random forest, which was already trained on the complete training data, and predict the demand on the test days.</span>
+<span id="cb31-520"><a href="#cb31-520" aria-hidden="true" tabindex="-1"></a>Since the UCI data contains the true counts of the test days, we can evaluate the prediction on truly unseen data.</span>
+<span id="cb31-521"><a href="#cb31-521" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-522"><a href="#cb31-522" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-029}</span></span>
+<span id="cb31-523"><a href="#cb31-523" aria-hidden="true" tabindex="-1"></a>prediction <span class="ot">=</span> at_ranger<span class="sc">$</span><span class="fu">predict_newdata</span>(data_test_features)</span>
+<span id="cb31-524"><a href="#cb31-524" aria-hidden="true" tabindex="-1"></a>prediction<span class="sc">$</span><span class="fu">score</span>(measure)</span>
+<span id="cb31-525"><a href="#cb31-525" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-526"><a href="#cb31-526" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-527"><a href="#cb31-527" aria-hidden="true" tabindex="-1"></a>The error on the test days is noticeably higher than the estimate from nested resampling.</span>
+<span id="cb31-528"><a href="#cb31-528" aria-hidden="true" tabindex="-1"></a>The cross-validation splits the observations randomly, so different hours of the same day end up in the training and test folds.</span>
+<span id="cb31-529"><a href="#cb31-529" aria-hidden="true" tabindex="-1"></a>The model can exploit the similarity of hours within a day, for example, the shared weather.</span>
+<span id="cb31-530"><a href="#cb31-530" aria-hidden="true" tabindex="-1"></a>The test days, in contrast, are completely unseen.</span>
+<span id="cb31-531"><a href="#cb31-531" aria-hidden="true" tabindex="-1"></a>A resampling strategy that keeps all hours of a day in the same fold, such as <span class="in">`rsmp("custom_cv")`</span> grouped by date, would give a more realistic estimate.</span>
+<span id="cb31-532"><a href="#cb31-532" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-533"><a href="#cb31-533" aria-hidden="true" tabindex="-1"></a>The figure below compares the predicted and the actual demand for each day of the month.</span>
+<span id="cb31-534"><a href="#cb31-534" aria-hidden="true" tabindex="-1"></a>The training data covers days 1 to 19 and the test data covers days 20 to 31.</span>
+<span id="cb31-535"><a href="#cb31-535" aria-hidden="true" tabindex="-1"></a>The predictions follow the actual values closely on both parts of the data, but they are systematically slightly too low.</span>
+<span id="cb31-536"><a href="#cb31-536" aria-hidden="true" tabindex="-1"></a>This is a consequence of the log transformation.</span>
+<span id="cb31-537"><a href="#cb31-537" aria-hidden="true" tabindex="-1"></a>The model predicts the mean of $\log(x + 1)$, and transforming this mean back estimates something closer to the median than to the mean of the counts.</span>
+<span id="cb31-538"><a href="#cb31-538" aria-hidden="true" tabindex="-1"></a>Since the counts are right-skewed, the median is lower than the mean.</span>
+<span id="cb31-539"><a href="#cb31-539" aria-hidden="true" tabindex="-1"></a>Note that the predictions on the training days are made on data the model has seen during training and are therefore optimistic.</span>
+<span id="cb31-540"><a href="#cb31-540" aria-hidden="true" tabindex="-1"></a>The low value on day 31 occurs because only 7 months have 31 days.</span>
+<span id="cb31-541"><a href="#cb31-541" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-542"><a href="#cb31-542" aria-hidden="true" tabindex="-1"></a><span class="in">```{r index-030}</span></span>
+<span id="cb31-543"><a href="#cb31-543" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-544"><a href="#cb31-544" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb31-545"><a href="#cb31-545" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Total actual and predicted demand by day of the month. Days 1 to 19 are training data and days 20 to 31 are test data."</span></span>
+<span id="cb31-546"><a href="#cb31-546" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-alt: "Dot plot of the total count per day of the month for actual and predicted values; the predicted values are close to but mostly slightly below the actual values on both training and test days."</span></span>
+<span id="cb31-547"><a href="#cb31-547" aria-hidden="true" tabindex="-1"></a>prediction_train <span class="ot">=</span> at_ranger<span class="sc">$</span><span class="fu">predict</span>(task_bikes)</span>
+<span id="cb31-548"><a href="#cb31-548" aria-hidden="true" tabindex="-1"></a>data_prediction <span class="ot">=</span> <span class="fu">rbind</span>(</span>
+<span id="cb31-549"><a href="#cb31-549" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.table</span>(<span class="at">datetime =</span> data_train<span class="sc">$</span>datetime, <span class="at">actual =</span> <span class="fu">as.numeric</span>(prediction_train<span class="sc">$</span>truth), <span class="at">predicted =</span> prediction_train<span class="sc">$</span>response),</span>
+<span id="cb31-550"><a href="#cb31-550" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.table</span>(<span class="at">datetime =</span> data_test<span class="sc">$</span>datetime, <span class="at">actual =</span> <span class="fu">as.numeric</span>(prediction<span class="sc">$</span>truth), <span class="at">predicted =</span> prediction<span class="sc">$</span>response)</span>
+<span id="cb31-551"><a href="#cb31-551" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-552"><a href="#cb31-552" aria-hidden="true" tabindex="-1"></a>data_prediction <span class="ot">=</span> <span class="fu">melt</span>(data_prediction, <span class="at">id.vars =</span> <span class="st">"datetime"</span>, <span class="at">variable.name =</span> <span class="st">"type"</span>, <span class="at">value.name =</span> <span class="st">"count"</span>)</span>
+<span id="cb31-553"><a href="#cb31-553" aria-hidden="true" tabindex="-1"></a>data_prediction <span class="ot">=</span> data_prediction[, <span class="fu">list</span>(<span class="at">count =</span> <span class="fu">sum</span>(count)), by <span class="ot">=</span> <span class="fu">list</span>(<span class="at">day =</span> <span class="fu">mday</span>(datetime), type)]</span>
+<span id="cb31-554"><a href="#cb31-554" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-555"><a href="#cb31-555" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_prediction, <span class="fu">aes</span>(<span class="at">x =</span> day, <span class="at">y =</span> count, <span class="at">color =</span> type)) <span class="sc">+</span></span>
+<span id="cb31-556"><a href="#cb31-556" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fl">19.5</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb31-557"><a href="#cb31-557" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>L, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.6</span>)) <span class="sc">+</span></span>
+<span id="cb31-558"><a href="#cb31-558" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">actual =</span> <span class="st">"grey50"</span>, <span class="at">predicted =</span> <span class="st">"#1a9850"</span>)) <span class="sc">+</span></span>
+<span id="cb31-559"><a href="#cb31-559" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Day of the month"</span>, <span class="at">y =</span> <span class="st">"Count"</span>, <span class="at">color =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb31-560"><a href="#cb31-560" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb31-561"><a href="#cb31-561" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-562"><a href="#cb31-562" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-563"><a href="#cb31-563" aria-hidden="true" tabindex="-1"></a><span class="fu"># Conclusion</span></span>
+<span id="cb31-564"><a href="#cb31-564" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-565"><a href="#cb31-565" aria-hidden="true" tabindex="-1"></a>We used <span class="in">`r mlr3verse`</span> to tune, benchmark, and compare three learners for predicting the hourly demand of a bike sharing system.</span>
+<span id="cb31-566"><a href="#cb31-566" aria-hidden="true" tabindex="-1"></a><span class="in">`r mlr3pipelines`</span> handled the log transformation of the target, the feature selection with an importance filter, and the choice between learners in a branched pipeline.</span>
+<span id="cb31-567"><a href="#cb31-567" aria-hidden="true" tabindex="-1"></a>Tuning two hyperparameters of each learner considerably improved its performance, and nested resampling allowed a fair comparison of the tuned learners.</span>
+<span id="cb31-568"><a href="#cb31-568" aria-hidden="true" tabindex="-1"></a>The tuned random forest performed best.</span>
+<span id="cb31-569"><a href="#cb31-569" aria-hidden="true" tabindex="-1"></a>Its error on the held-out test days was higher than the cross-validation estimate, which shows that the resampling strategy should match how the model is used.</span>
+<span id="cb31-570"><a href="#cb31-570" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-571"><a href="#cb31-571" aria-hidden="true" tabindex="-1"></a>Further improvements could come from a larger tuning budget, a resampling strategy grouped by day, or a correction of the systematic underestimation caused by the log transformation.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Created with <i class="bi bi-heart-fill"></i> for #rstats.</p>
+</div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+<p>Website powered by <a href="https://quarto.org/">quarto</a> and <a href="https://www.netlify.com/">Netlify</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
