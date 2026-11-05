@@ -29,6 +29,13 @@ jobs:
       - name: Render site
         run: quarto render mlr-org/
 
+      - name: Upload site for link check
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: mlr-org/_site
+          retention-days: 1
+
       - name: Deploy netlify preview
         if: ${{ github.event_name == 'pull_request' }}
         uses: mlr-org/mlr3infrastructure/quarto-netlify-preview@v2
@@ -50,3 +57,26 @@ jobs:
           branch: gh-pages
           folder: mlr-org/_site
           single-commit: true
+
+  check-links:
+    needs: build-website
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download site
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: mlr-org/_site
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --config lychee.toml
+            --root-dir ${{ github.workspace }}/mlr-org/_site
+            --no-progress
+            "mlr-org/_site/**/*.html"
+          fail: true
