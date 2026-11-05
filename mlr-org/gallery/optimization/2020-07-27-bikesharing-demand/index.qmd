@@ -1,0 +1,571 @@
+---
+title: Bike Sharing Demand
+categories:
+  - tuning
+  - nested resampling
+  - benchmarking
+  - filtering
+  - branching
+  - target transformation
+  - regression
+author:
+  - name: Henri Funk
+  - name: Andreas Hofheinz
+  - name: Marius Girnat
+  - name: Marc Becker
+    url: https://github.com/be-marc
+date: 07-27-2020
+description: |
+  Tune, benchmark, and compare k-nearest neighbors, decision tree, and random forest pipelines to predict the hourly demand of a bike sharing system.
+bibliography: bibliography.bib
+---
+
+{{< include ../../_setup.qmd >}}
+
+```{r index-001}
+#| include: false
+future::plan("multisession", workers = 10L)
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+# Preamble
+
+This use case was created as part of the Introduction to Machine Learning lecture at LMU Munich.
+The goal of the project was to create and compare one or several machine learning pipelines for the problem at hand, together with an exploratory analysis and an exposition of the results.
+The authors contributed the post to the gallery, and it was edited for better legibility.
+We want to thank the authors for allowing us to publish their results.
+Note that the correctness of the results cannot be guaranteed.
+
+# Introduction
+
+Bike sharing is a network of publicly shared bicycles that can be rented for a certain period of time at different locations within a city and returned at any station.
+Suppliers of such networks must always have enough bicycles available, and the demand depends on a variety of factors such as the time of day and the weather.
+A forecasting system that predicts the demand from these factors helps to plan the distribution of bicycles.
+In this post, we develop such a system with `r mlr3verse`.
+
+We use the bike sharing data set by @Fanaee, which contains hourly rental counts of the Capital Bikeshare system in Washington, D.C. from 2011 and 2012.
+The same data was used in the [Kaggle Bike Sharing Demand](https://www.kaggle.com/c/bike-sharing-demand) competition.
+After a short exploratory analysis, we engineer features and transform the target.
+We then tune a k-nearest neighbors, a decision tree, and a random forest learner and compare them with nested resampling.
+We also tune over the choice of the learner itself with a branched pipeline.
+Finally, we predict the demand on a held-out test set.
+
+This tutorial assumes familiarity with the basics of `r mlr3tuning` and `r mlr3pipelines`.
+Consult the [mlr3book](https://mlr3book.mlr-org.com) if some aspects are not fully understandable.
+We load the `r mlr3verse` package, `r ref_pkg("data.table")` for data manipulation, and `r ref_pkg("ggplot2")` for plotting.
+
+```{r index-002}
+#| message: false
+library(mlr3verse)
+library(data.table)
+library(ggplot2)
+```
+
+# Data
+
+The data is available from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset).
+We download the archive and read the hourly data.
+
+```{r index-003}
+path_zip = tempfile(fileext = ".zip")
+download.file("https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip", path_zip, quiet = TRUE)
+bikes = fread(unzip(path_zip, files = "hour.csv", exdir = tempdir()))
+```
+
+We create a timestamp from the date and the hour, convert the nominal features to factors with readable levels, and give some columns more descriptive names.
+The season is coded in the data as astronomical seasons, so January belongs to winter.
+
+```{r index-004}
+bikes[, datetime := as.POSIXct(dteday, tz = "UTC") + hr * 3600]
+bikes = bikes[, list(
+  datetime,
+  season = factor(season, levels = 1:4, labels = c("winter", "spring", "summer", "fall")),
+  holiday = factor(holiday, levels = 0:1, labels = c("no", "yes")),
+  workingday = factor(workingday, levels = 0:1, labels = c("no", "yes")),
+  weather = factor(weathersit, levels = 1:4, labels = c("clear", "mist", "light rain", "heavy rain")),
+  temp,
+  atemp,
+  humidity = hum,
+  windspeed,
+  casual,
+  registered,
+  count = cnt
+)]
+```
+
+The columns of the data set have the following meaning.
+The weather variables are normalized to the interval $[0, 1]$.
+
+| Column | Description |
+|:-------|:------------|
+| `datetime` | Date and hour of the observation |
+| `season` | Winter, spring, summer, or fall |
+| `holiday` | Whether the day is a public holiday |
+| `workingday` | Whether the day is neither a weekend nor a holiday |
+| `weather` | Clear or few clouds, mist, light rain or snow, and heavy rain or snow |
+| `temp` | Temperature |
+| `atemp` | "Feels like" temperature |
+| `humidity` | Relative humidity |
+| `windspeed` | Wind speed |
+| `casual` | Number of rentals by non-registered users |
+| `registered` | Number of rentals by registered users |
+| `count` | Total number of rentals |
+
+Like in the Kaggle competition, we use the first 19 days of each month as training data and the remaining days as test data.
+In contrast to the competition, the UCI data contains the true counts for the test days, so we can evaluate our final model on them.
+
+```{r index-005}
+data_train = bikes[mday(datetime) < 20L]
+data_test = bikes[mday(datetime) >= 20L]
+c(train = nrow(data_train), test = nrow(data_test))
+```
+
+## Exploratory analysis
+
+The figure below shows the correlations between the numeric variables of the training data.
+The temperature `temp` and the "feels like" temperature `atemp` are almost perfectly correlated, which makes sense since both measure nearly the same thing.
+The number of rentals `count` is positively correlated with both temperatures and negatively correlated with the humidity.
+
+```{r index-006}
+#| echo: false
+#| fig-cap: "Correlation matrix of the numeric variables in the training data."
+#| fig-alt: "Heat map of pairwise correlations between count, temp, atemp, humidity, and windspeed, with temp and atemp correlated at 0.98."
+cols = c("count", "temp", "atemp", "humidity", "windspeed")
+cor_matrix = cor(data_train[, cols, with = FALSE])
+cor_data = as.data.table(as.table(cor_matrix))
+setnames(cor_data, c("x", "y", "correlation"))
+cor_data[, x := factor(x, levels = cols)]
+cor_data[, y := factor(y, levels = rev(cols))]
+
+ggplot(cor_data, aes(x = x, y = y, fill = correlation)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = sprintf("%.2f", correlation)), size = 3) +
+  scale_fill_gradient2(low = "#3288bd", mid = "white", high = "#d53e4f", limits = c(-1, 1)) +
+  labs(x = NULL, y = NULL, fill = "Correlation") +
+  theme_minimal()
+```
+
+The demand over the whole period of the training data shows a positive trend and a seasonal pattern, with a higher demand in summer than in winter.
+
+```{r index-007}
+#| echo: false
+#| message: false
+#| fig-cap: "Hourly bike sharing demand in the training data over time."
+#| fig-alt: "Scatter plot of hourly rental counts from 2011 to 2012 with a smoothed trend line that rises in summer, falls in winter, and is higher in 2012 than in 2011."
+ggplot(data_train, aes(x = datetime, y = count)) +
+  geom_point(size = 0.3, color = "darkgrey") +
+  geom_smooth(color = "#3288bd") +
+  labs(x = NULL, y = "Count") +
+  theme_minimal()
+```
+
+The demand strongly depends on the hour of the day.
+The figure below shows peaks in the morning and in the late afternoon, which correspond to commuting times.
+At higher temperatures, the demand is generally higher.
+
+```{r index-008}
+#| echo: false
+#| fig-cap: "Bike sharing demand by hour of the day, colored by the feels like temperature."
+#| fig-alt: "Jittered scatter plot of rental counts against the hour of the day with peaks around 8 and 17 to 18 o'clock; warmer hours have higher counts."
+ggplot(data_train, aes(x = hour(datetime), y = count, color = atemp)) +
+  geom_jitter(alpha = 0.5, size = 0.5, width = 0.3) +
+  scale_color_viridis_c(option = "turbo") +
+  labs(x = "Hour", y = "Count", color = "atemp") +
+  theme_minimal()
+```
+
+## Preprocessing
+
+The total count is the sum of the rentals by casual and registered users.
+
+```{r index-009}
+all.equal(data_train$count, data_train$casual + data_train$registered)
+```
+
+We cannot use `casual` and `registered` as features since we only know them once we also know the target `count`.
+We also drop `temp` because it carries almost the same information as `atemp`.
+
+Each timestamp is unique and therefore has no predictive value on its own.
+However, if we split it into the hour, the weekday, the month, and the year, we obtain useful features.
+The function `engineer_features()` adds these features and removes the columns that we do not use.
+
+```{r index-010}
+engineer_features = function(data) {
+  data = copy(data)
+  data[, `:=`(
+    hour = factor(hour(datetime)),
+    weekday = factor(weekdays(datetime)),
+    month = factor(month(datetime)),
+    year = factor(year(datetime))
+  )]
+  data[, c("datetime", "casual", "registered", "temp") := NULL]
+  data
+}
+
+data_train_features = engineer_features(data_train)
+data_test_features = engineer_features(data_test)
+```
+
+::: {.callout-tip}
+`po("datefeatures")` offers an alternative that automatically extracts a set of date-related features from a `POSIXct` column inside a pipeline.
+:::
+
+::: {.callout-warning}
+We assume that we want to describe the existing data as well as possible rather than forecast the demand of future years.
+In a forecasting scenario, we would need a time-aware resampling strategy so that the model is evaluated on data from the future.
+:::
+
+We create a regression task from the training data with `count` as the target.
+
+```{r index-011}
+task_bikes = as_task_regr(data_train_features, target = "count", id = "bike_sharing")
+task_bikes
+```
+
+## Target transformation
+
+The target `count` is highly right-skewed.
+The figure below shows that a transformation $z = \log(x + 1)$ makes its distribution much less skewed.
+
+```{r index-012}
+#| echo: false
+#| fig-cap: "Density of the target before (left) and after (right) the log transformation."
+#| fig-alt: "Two density plots side by side; the left one of count is strongly right-skewed, the right one of log(count + 1) is closer to symmetric."
+data_density = rbind(
+  data.table(transformation = "count", value = data_train$count),
+  data.table(transformation = "log(count + 1)", value = log1p(data_train$count))
+)
+ggplot(data_density, aes(x = value)) +
+  geom_density() +
+  facet_wrap(~transformation, scales = "free") +
+  labs(x = NULL, y = "Density") +
+  theme_minimal()
+```
+
+The learners are trained on the transformed target, and their predictions must be transformed back to the original scale with $x = \exp(z) - 1$.
+`r mlr3pipelines` automates this with `ppl("targettrafo")`.
+The pipeline transforms the target with `po("targetmutate")` before training and inverts the transformation of the predictions afterwards.
+The function `log_target()` wraps a learner or graph in this pipeline and returns a `r ref("GraphLearner")` with a short id.
+
+```{r index-013}
+log_target = function(graph, id) {
+  trafo = po("targetmutate",
+    trafo = function(x) log1p(x),
+    inverter = function(x) list(response = expm1(x$response))
+  )
+  learner = as_learner(ppl("targettrafo", graph = graph, trafo_pipeop = trafo))
+  learner$id = id
+  learner
+}
+```
+
+# Modeling
+
+We consider three learners: `r ref("mlr_learners_regr.kknn", "k-nearest neighbors")`, a `r ref("mlr_learners_regr.rpart", "decision tree")`, and a `r ref("mlr_learners_regr.ranger", "random forest")`.
+We tune two hyperparameters of each learner with an `r ref("AutoTuner")`, which is a learner that tunes its hyperparameters during training.
+To compare the learners fairly, all `AutoTuner`s share the same settings:
+
+* We estimate the performance of a hyperparameter configuration with a 3-fold cross-validation.
+  In practice, we would use more folds, but we keep the computational costs low here.
+* Like the Kaggle competition, we minimize the root mean squared log error (RMSLE).
+* We use a grid search.
+
+```{r index-014}
+resampling_inner = rsmp("cv", folds = 3L)
+measure = msr("regr.rmsle")
+```
+
+## k-nearest neighbors
+
+We tune the number of neighbors `k` and the parameter `distance` of the Minkowski distance.
+The grid search with a resolution of 10 creates 30 configurations, from which the terminator randomly selects 20.
+
+```{r index-015}
+learner_kknn = lrn("regr.kknn")
+
+at_kknn = auto_tuner(
+  tuner = tnr("grid_search", resolution = 10L),
+  learner = log_target(learner_kknn, id = "kknn"),
+  resampling = resampling_inner,
+  measure = measure,
+  terminator = trm("evals", n_evals = 20L),
+  search_space = ps(
+    regr.kknn.k = p_int(lower = 1L, upper = 50L),
+    regr.kknn.distance = p_int(lower = 1L, upper = 3L)
+  )
+)
+
+at_kknn$train(task_bikes)
+at_kknn$tuning_result[, list(regr.kknn.k, regr.kknn.distance, regr.rmsle)]
+```
+
+The figure below shows the RMSLE of the evaluated configurations.
+A larger order of the Minkowski distance leads to a clearly lower error.
+With very few neighbors, the model overfits, and with many neighbors, the estimate becomes too smooth.
+The best configuration uses `distance = 3` and a moderate number of neighbors.
+
+```{r index-016}
+#| echo: false
+#| fig-cap: "RMSLE of the evaluated configurations of the k-nearest neighbors learner. The best configuration is circled."
+#| fig-alt: "Scatter plot of k against distance colored by RMSLE; the error increases with k and the best configuration has a small k."
+plot_archive = function(at, x, y) {
+  archive = as.data.table(at$archive)
+  ggplot(archive, aes(x = .data[[x]], y = .data[[y]], color = regr.rmsle)) +
+    geom_point(size = 3L) +
+    geom_point(data = archive[which.min(regr.rmsle)], shape = 21, size = 6L, color = "black") +
+    scale_color_viridis_c(option = "turbo") +
+    labs(color = "RMSLE") +
+    theme_minimal()
+}
+
+plot_archive(at_kknn, "regr.kknn.k", "regr.kknn.distance")
+```
+
+## Decision tree
+
+For the decision tree, we tune `minsplit`, the minimum number of observations in a node for a split to be attempted, and the complexity parameter `cp`.
+A split that does not decrease the overall lack of fit by a factor of `cp` is not attempted.
+We search `cp` on a log scale because small values are more interesting.
+
+```{r index-017}
+learner_rpart = lrn("regr.rpart")
+
+at_rpart = auto_tuner(
+  tuner = tnr("grid_search", resolution = 10L),
+  learner = log_target(learner_rpart, id = "rpart"),
+  resampling = resampling_inner,
+  measure = measure,
+  terminator = trm("evals", n_evals = 20L),
+  search_space = ps(
+    regr.rpart.minsplit = p_int(lower = 2L, upper = 30L),
+    regr.rpart.cp = p_dbl(lower = 1e-4, upper = 0.1, logscale = TRUE)
+  )
+)
+
+at_rpart$train(task_bikes)
+at_rpart$tuning_result[, list(regr.rpart.minsplit, regr.rpart.cp = exp(regr.rpart.cp), regr.rmsle)]
+```
+
+The complexity parameter dominates the performance.
+A lower `cp` reduces pruning and results in larger trees, which perform better on this data set.
+The influence of `minsplit` is small.
+
+```{r index-018}
+#| echo: false
+#| fig-cap: "RMSLE of the evaluated configurations of the decision tree. The complexity parameter is shown on the log scale. The best configuration is circled."
+#| fig-alt: "Scatter plot of log cp against minsplit colored by RMSLE; the error decreases with smaller cp values."
+plot_archive(at_rpart, "regr.rpart.cp", "regr.rpart.minsplit") +
+  labs(x = "log(regr.rpart.cp)")
+```
+
+## Random forest
+
+For the random forest, we combine tuning with feature selection.
+First, we calculate the impurity importance of the features with a random forest and the importance filter from `r mlr3filters`.
+
+```{r index-019}
+learner_importance = lrn("regr.ranger", importance = "impurity")
+filter_importance = flt("importance", learner = learner_importance)
+filter_importance$calculate(task_bikes)
+as.data.table(filter_importance)
+```
+
+The hour of the day is by far the most important feature, followed by the temperature, the humidity, and the year.
+Some features, such as `holiday`, contribute little.
+To test whether the random forest benefits from dropping them, we build a graph that keeps only the `filter.nfeat` most important features before fitting the random forest.
+
+```{r index-020}
+learner_ranger = lrn("regr.ranger")
+graph_ranger = po("filter", filter = filter_importance, filter.nfeat = 11L) %>>%
+  po("learner", learner_ranger)
+```
+
+We tune the number of selected features `importance.filter.nfeat` and the hyperparameter `mtry.ratio`.
+The latter is the fraction of the selected features that are randomly drawn as split candidates in each node.
+Tuning the ratio instead of `mtry` itself ensures that the number of split candidates never exceeds the number of selected features.
+The grid with a resolution of 5 contains 25 configurations, which we evaluate all.
+
+```{r index-021}
+at_ranger = auto_tuner(
+  tuner = tnr("grid_search", resolution = 5L),
+  learner = log_target(graph_ranger, id = "ranger"),
+  resampling = resampling_inner,
+  measure = measure,
+  search_space = ps(
+    importance.filter.nfeat = p_int(lower = 1L, upper = 11L),
+    regr.ranger.mtry.ratio = p_dbl(lower = 0.1, upper = 1)
+  )
+)
+
+at_ranger$train(task_bikes)
+at_ranger$tuning_result[, list(importance.filter.nfeat, regr.ranger.mtry.ratio, regr.rmsle)]
+```
+
+The error decreases with the number of selected features, and the best configurations use 9 or all 11 features.
+With many features, an `mtry.ratio` of 0.5 or higher works best, while very small values perform poorly.
+
+```{r index-022}
+#| echo: false
+#| fig-cap: "RMSLE of the evaluated configurations of the random forest pipeline. The best configuration is circled."
+#| fig-alt: "Scatter plot of the number of selected features against mtry.ratio colored by RMSLE; the error is lowest for many features and a high mtry.ratio."
+plot_archive(at_ranger, "importance.filter.nfeat", "regr.ranger.mtry.ratio")
+```
+
+## Tuning over learners
+
+Instead of tuning each learner separately, we can also treat the choice of the learner as a hyperparameter.
+We create a branched pipeline with `ppl("branch")` that contains the three learners, and wrap it in the target transformation.
+The hyperparameter `branch.selection` selects the learner.
+
+```{r index-023}
+#| fig-cap: "Branched pipeline with the three learners."
+#| fig-height: 7
+#| fig-alt: "Graph of the pipeline: the target transformation is followed by a branch into k-nearest neighbors, decision tree, and random forest with an importance filter; the branches are joined again before the inverse target transformation."
+graph_branch = ppl("branch", list(
+  kknn = learner_kknn,
+  rpart = learner_rpart,
+  ranger = graph_ranger
+))
+learner_branch = log_target(graph_branch, id = "branch")
+learner_branch$graph$plot()
+```
+
+The search space reuses the ranges from above.
+The hyperparameters of a learner are only active if the learner is selected, which we express with the `depends` argument.
+We use a random search with 30 evaluations because a grid over the combined space would be too large.
+
+```{r index-024}
+search_space_branch = ps(
+  branch.selection = p_fct(c("kknn", "rpart", "ranger")),
+  regr.kknn.k = p_int(lower = 1L, upper = 50L, depends = branch.selection == "kknn"),
+  regr.kknn.distance = p_int(lower = 1L, upper = 3L, depends = branch.selection == "kknn"),
+  regr.rpart.minsplit = p_int(lower = 2L, upper = 30L, depends = branch.selection == "rpart"),
+  regr.rpart.cp = p_dbl(lower = 1e-4, upper = 0.1, logscale = TRUE, depends = branch.selection == "rpart"),
+  importance.filter.nfeat = p_int(lower = 1L, upper = 11L, depends = branch.selection == "ranger"),
+  regr.ranger.mtry.ratio = p_dbl(lower = 0.1, upper = 1, depends = branch.selection == "ranger")
+)
+
+at_branch = auto_tuner(
+  tuner = tnr("random_search"),
+  learner = learner_branch,
+  resampling = resampling_inner,
+  measure = measure,
+  terminator = trm("evals", n_evals = 30L),
+  search_space = search_space_branch
+)
+```
+
+# Benchmark
+
+The tuning results above are optimistically biased because the same data was used to select the configuration and to estimate its performance.
+To obtain an unbiased estimate, we use nested resampling.
+`r ref("benchmark()")` evaluates every `AutoTuner` with an outer 3-fold cross-validation, and in each outer fold the `AutoTuner` tunes again on the training data only.
+We include the three learners with default hyperparameters as a baseline.
+These are also wrapped in the target transformation so that the comparison isolates the effect of tuning.
+
+```{r index-025}
+learners = list(
+  log_target(learner_kknn, id = "kknn"),
+  log_target(learner_rpart, id = "rpart"),
+  log_target(graph_ranger, id = "ranger"),
+  at_kknn,
+  at_rpart,
+  at_ranger,
+  at_branch
+)
+
+design = benchmark_grid(
+  tasks = task_bikes,
+  learners = learners,
+  resamplings = rsmp("cv", folds = 3L)
+)
+
+bmr = benchmark(design, store_models = TRUE)
+```
+
+The table and the figure below show the RMSLE in the outer folds.
+
+```{r index-026}
+bmr$aggregate(measure)[order(regr.rmsle), list(learner_id, regr.rmsle)]
+```
+
+```{r index-027}
+#| echo: false
+#| fig-cap: "RMSLE of the learners in the outer folds of the nested resampling."
+#| fig-alt: "Box plots of the RMSLE per learner; the tuned random forest and the tuned branched pipeline have the lowest errors, the untuned k-nearest neighbors learner the highest."
+autoplot(bmr, measure = measure) +
+  labs(x = NULL, y = "RMSLE") +
+  coord_flip() +
+  theme_minimal()
+```
+
+Tuning improves all three learners compared to their default hyperparameters.
+The k-nearest neighbors learner and the decision tree benefit the most.
+For the decision tree, the default complexity parameter prunes the tree too strongly.
+The tuned random forest performs best.
+The branched pipeline reaches a similar performance because the random search selects the random forest in every outer fold, as the table below shows.
+Note that the branched pipeline evaluates fewer random forest configurations than the dedicated `AutoTuner` for the same budget, so tuning over learners is not free.
+
+Since we stored the models with `store_models = TRUE`, we can inspect which learner the branched pipeline selected in each outer fold.
+
+```{r index-028}
+rr_branch = bmr$resample_result(7L)
+extract_inner_tuning_results(rr_branch)[, list(iteration, branch.selection, regr.rmsle)]
+```
+
+# Prediction
+
+We choose the tuned random forest, which was already trained on the complete training data, and predict the demand on the test days.
+Since the UCI data contains the true counts of the test days, we can evaluate the prediction on truly unseen data.
+
+```{r index-029}
+prediction = at_ranger$predict_newdata(data_test_features)
+prediction$score(measure)
+```
+
+The error on the test days is noticeably higher than the estimate from nested resampling.
+The cross-validation splits the observations randomly, so different hours of the same day end up in the training and test folds.
+The model can exploit the similarity of hours within a day, for example, the shared weather.
+The test days, in contrast, are completely unseen.
+A resampling strategy that keeps all hours of a day in the same fold, such as `rsmp("custom_cv")` grouped by date, would give a more realistic estimate.
+
+The figure below compares the predicted and the actual demand for each day of the month.
+The training data covers days 1 to 19 and the test data covers days 20 to 31.
+The predictions follow the actual values closely on both parts of the data, but they are systematically slightly too low.
+This is a consequence of the log transformation.
+The model predicts the mean of $\log(x + 1)$, and transforming this mean back estimates something closer to the median than to the mean of the counts.
+Since the counts are right-skewed, the median is lower than the mean.
+Note that the predictions on the training days are made on data the model has seen during training and are therefore optimistic.
+The low value on day 31 occurs because only 7 months have 31 days.
+
+```{r index-030}
+#| echo: false
+#| message: false
+#| fig-cap: "Total actual and predicted demand by day of the month. Days 1 to 19 are training data and days 20 to 31 are test data."
+#| fig-alt: "Dot plot of the total count per day of the month for actual and predicted values; the predicted values are close to but mostly slightly below the actual values on both training and test days."
+prediction_train = at_ranger$predict(task_bikes)
+data_prediction = rbind(
+  data.table(datetime = data_train$datetime, actual = as.numeric(prediction_train$truth), predicted = prediction_train$response),
+  data.table(datetime = data_test$datetime, actual = as.numeric(prediction$truth), predicted = prediction$response)
+)
+data_prediction = melt(data_prediction, id.vars = "datetime", variable.name = "type", value.name = "count")
+data_prediction = data_prediction[, list(count = sum(count)), by = list(day = mday(datetime), type)]
+
+ggplot(data_prediction, aes(x = day, y = count, color = type)) +
+  geom_vline(xintercept = 19.5, linetype = "dashed", color = "grey50") +
+  geom_point(size = 3L, position = position_dodge(width = 0.6)) +
+  scale_color_manual(values = c(actual = "grey50", predicted = "#1a9850")) +
+  labs(x = "Day of the month", y = "Count", color = NULL) +
+  theme_minimal()
+```
+
+# Conclusion
+
+We used `r mlr3verse` to tune, benchmark, and compare three learners for predicting the hourly demand of a bike sharing system.
+`r mlr3pipelines` handled the log transformation of the target, the feature selection with an importance filter, and the choice between learners in a branched pipeline.
+Tuning two hyperparameters of each learner considerably improved its performance, and nested resampling allowed a fair comparison of the tuned learners.
+The tuned random forest performed best.
+Its error on the held-out test days was higher than the cross-validation estimate, which shows that the resampling strategy should match how the model is used.
+
+Further improvements could come from a larger tuning budget, a resampling strategy grouped by day, or a correction of the systematic underestimation caused by the log transformation.

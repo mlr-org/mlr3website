@@ -1,6 +1,8 @@
 update_db = function() {
   if (is.null(db$base) || is.null(db$aliases)) {
-    hdb = hsearch_db(package = unique(c(db$index, db$hosted)), types = "help")
+    pkgs = unique(c(db$index, db$hosted))
+    pkgs = pkgs[vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+    hdb = hsearch_db(package = pkgs, types = "help")
     db$base = setkeyv(as.data.table(hdb$Base), "ID")
     db$aliases = setkeyv(as.data.table(hdb$Aliases), "Alias")
   }
@@ -139,7 +141,7 @@ ru_pkg = function(pkg, format = "markdown") {
   checkmate::assert_choice(format, c("markdown", "html", "htmltools"))
 
   parts = strsplit(pkg, "/", fixed = TRUE)[[1L]]
-  url = sprintf("https://%s.r-universe.dev/ui#package:%s", parts[1L], parts[2L])
+  url = sprintf("https://%s.r-universe.dev/%s", parts[1L], parts[2L])
   switch(format,
     "markdown" = sprintf("[%s](%s)", parts[2L], url),
     "html" = sprintf("<a href = \"%s\">%s</a>", url, parts[2L]),

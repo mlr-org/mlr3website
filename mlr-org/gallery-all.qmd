@@ -5,9 +5,16 @@ page-layout: article
 listing:
   - id: gallery-latest
     template: gallery-all.ejs
-    contents: gallery
+    contents:
+      - gallery/basic
+      - gallery/optimization
+      - gallery/pipelines
+      - gallery/technical
     sort: "date desc"
     feed: true
+    categories: true
+    filter-ui: true
+    page-size: 1000
 date-format: YYYY-MM-DD
 ---
 
@@ -15,3 +22,16 @@ date-format: YYYY-MM-DD
 
 ::: {#gallery-latest}
 :::
+
+```{=html}
+<script>
+window.addEventListener("load", function () {
+  const query = new URLSearchParams(window.location.search).get("filter");
+  const list = window["quarto-listings"] && window["quarto-listings"]["listing-gallery-latest"];
+  const input = document.querySelector(".quarto-listing-filter input.search");
+  if (!query || !list || !input) return;
+  input.value = query;
+  list.search(query);
+});
+</script>
+```

@@ -1,5 +1,5 @@
 ---
-title: "Shadow Variable Search on the Pima Indian Diabetes Data Set"
+title: "Shadow Variable Search on the Diabetes Data Set"
 description: |
   Run a feature selection with permutated features.
 categories:
@@ -21,7 +21,7 @@ image: cover.png
 
 {{< include ../../_setup.qmd >}}
 
-```{r 2023-02-01-shadow-variable-search-001}
+```{r index-001}
 #| include: false
 
 lgr::get_logger("mlr3")$set_threshold("warn")
@@ -32,11 +32,11 @@ set.seed(1)
 # Scope
 
 Feature selection is the process of finding an optimal set of features to improve the performance, interpretability and robustness of machine learning algorithms.
-In this article, we introduce the *Shadow Variable Search* algorithm which is a [wrapper method](https://mlr3book.mlr-org.com/feature-selection.html#fs-wrapper) for feature selection.
+In this article, we introduce the *Shadow Variable Search* algorithm which is a [wrapper method](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html#sec-fs-wrapper) for feature selection.
 Wrapper methods iteratively add features to the model that optimize a performance measure.
-As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set.
+As an example, we will search for the optimal set of features for a `r ref("mlr_learners_classif.svm", "support vector machine")` on the `r ref("mlr_tasks_diabetes", text = "diabetes")` data set.
 We assume that you are already familiar with the basic building blocks of the [mlr3 ecosystem](https://mlr-org.com/ecosystem.html).
-If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/feature-selection.html) of the mlr3book first.
+If you are new to feature selection, we recommend reading the [feature selection chapter](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html) of the mlr3book first.
 Some knowledge about `r ref_pkg("mlr3pipelines")` is beneficial but not necessary to understand the example.
 
 # Shadow Variable Search
@@ -56,7 +56,7 @@ Therefore, only the previously selected features have a true influence on the ta
 It implements the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` algorithm.
 We load all packages of the ecosystem with the `r ref("mlr3verse")` package.
 
-```{r 2023-02-01-shadow-variable-search-002}
+```{r index-002}
 #| message: false
 
 library(mlr3verse)
@@ -65,26 +65,26 @@ library(mlr3verse)
 We retrieve the `r ref("mlr_fselectors_shadow_variable_search", "shadow variable search")` optimizer with the `r ref("fs()")` function.
 The algorithm has no control parameters.
 
-```{r 2023-02-01-shadow-variable-search-003}
+```{r index-003}
 optimizer = fs("shadow_variable_search")
 ```
 
 # Task and Learner
 
-The objective of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set is to predict whether a person has diabetes or not.
-The data set includes 768 patients with 8 measurements (see @fig-features).
+The objective of the `r ref("mlr_tasks_diabetes", text = "diabetes")` data set is to predict whether a person has diabetes or not.
+The data set includes 128 patients with 8 measurements (see @fig-features).
 
-```{r 2023-02-01-shadow-variable-search-004}
-task = tsk("pima")
+```{r index-004}
+task = tsk("diabetes")
 ```
 
-```{r 2023-02-01-shadow-variable-search-005}
+```{r index-005}
 #| code-fold: true
 #| column: page
 #| fig-width: 14
 #| fig-height: 3
 #| label: fig-features
-#| fig-cap: "Distribution of the features in the Pima Indian Diabetes data set."
+#| fig-cap: "Distribution of the features in the diabetes data set."
 #| warning: false
 
 library(ggplot2)
@@ -102,24 +102,24 @@ ggplot(data, aes(x = value, fill = diabetes)) +
 
 The data set contains missing values.
 
-```{r 2023-02-01-shadow-variable-search-006}
+```{r index-006}
 task$missings()
 ```
 
 Support vector machines cannot handle missing values.
 We impute the missing values with the `r ref("mlr_pipeops_imputehist", "histogram imputation")` method.
 
-```{r 2023-02-01-shadow-variable-search-007}
+```{r index-007}
 learner = po("imputehist") %>>% lrn("classif.svm", predict_type = "prob")
 ```
 
 # Feature Selection
 
-Now we define the feature selection problem by using the `r ref("fsi()")` function that constructs an `r ref("FSelectInstanceSingleCrit")`.
+Now we define the feature selection problem by using the `r ref("fsi()")` function that constructs an `r ref("FSelectInstanceBatchSingleCrit")`.
 In addition to the task and learner, we have to select a `r ref("Resampling", text = "resampling strategy")` and `r ref("Measure", text = "performance measure")` to determine how the performance of a feature subset is evaluated.
 We pass the `"none"` terminator because the shadow variable search algorithm terminates by itself.
 
-```{r 2023-02-01-shadow-variable-search-008}
+```{r index-008}
 instance = fsi(
   task = task,
   learner = learner,
@@ -132,17 +132,17 @@ instance = fsi(
 We are now ready to start the shadow variable search.
 To do this, we simply pass the instance to the `$optimize()` method of the optimizer.
 
-```{r 2023-02-01-shadow-variable-search-009}
+```{r index-009}
 optimizer$optimize(instance)
 ```
 
 The optimizer returns the best feature set and the corresponding estimated performance.
 
 @fig-optimization-path shows the optimization path of the feature selection.
-The feature glucose was selected first and in the following iterations age, mass and pedigree.
-Then a shadow variable was selected and the feature selection was terminated.
+The feature glucose was selected in the first iteration.
+In the second iteration, a shadow variable achieved the best performance and the feature selection was terminated.
 
-```{r 2023-02-01-shadow-variable-search-010}
+```{r index-010}
 #| code-fold: true
 #| label: fig-optimization-path
 #| fig-cap: "Optimization path of the shadow variable search."
@@ -179,7 +179,7 @@ The archive contains all evaluated feature sets.
 We can see that each feature has a corresponding shadow variable.
 We only show the variables age, glucose and insulin and their shadow variables here.
 
-```{r 2023-02-01-shadow-variable-search-011}
+```{r index-011}
 as.data.table(instance$archive)[, .(age, glucose, insulin, permuted__age, permuted__glucose, permuted__insulin, classif.auc)]
 ```
 
@@ -189,7 +189,7 @@ The learner we use to make predictions on new data is called the final model.
 The final model is trained with the optimal feature set on the full data set.
 We subset the task to the optimal feature set and train the learner.
 
-```{r 2023-02-01-shadow-variable-search-012}
+```{r index-012}
 #| output: false
 
 task$select(instance$result_feature_set)
@@ -202,5 +202,6 @@ The trained model can now be used to predict new, external data.
 
 The shadow variable search is a fast feature selection method that is easy to use.
 More information on the theoretical background can be found in @wu_controlling_2007 and @thomas_probing_2017.
-If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/feature-selection.html).
+If you want to know more about feature selection in general, we recommend having a look at our [book](https://mlr3book.mlr-org.com/chapters/chapter6/feature_selection.html).
 
+{{< include ../../_session_info.qmd >}}

@@ -46,18 +46,18 @@ reactable(content, columns = list(
 
 ## Example Usage
 
-Run a `r ref("mlr_fselectors_sequential", text = "sequential feature selection")` on the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` data set.
+Run a `r ref("mlr_fselectors_sequential", text = "sequential feature selection")` on the `r ref("mlr_tasks_diabetes", text = "Diabetes")` data set.
 
 ```{r, echo = TRUE}
 library(mlr3verse)
 
 # retrieve task
-task = tsk("pima")
+task = tsk("diabetes")
 
 # load learner
 learner = lrn("classif.rpart")
 
-# feature selection on the pima indians diabetes data set
+# feature selection on the diabetes data set
 instance = fselect(
   fselector = fs("sequential"),
   task = task,

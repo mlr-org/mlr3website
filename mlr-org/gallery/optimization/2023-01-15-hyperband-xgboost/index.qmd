@@ -4,6 +4,8 @@ description: |
   Optimize the hyperparameters of an XGBoost model with Hyperband.
 categories:
   - tuning
+  - hyperband
+  - xgboost
   - classification
 author:
   - name: Marc Becker
@@ -25,7 +27,7 @@ image: cover.png
 
 {{< include ../../_setup.qmd >}}
 
-```{r 2023-01-15-hyperband-xgboost-001}
+```{r index-001}
 #| include: false
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
@@ -43,40 +45,40 @@ This means Hyperband will allocate more boosting iterations to well-performing c
 The number of boosting iterations increases the time to train a model and improves the performance until the model is overfitting to the training data.
 It is therefore a suitable fidelity parameter.
 We assume that you are already familiar with tuning in the mlr3 ecosystem.
-If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/optimization.html) or the [Hyperparameter Optimization on the Palmer Penguins Data Set](/gallery/optimization/2022-11-10-hyperparameter-optimization-on-the-palmer-penguins) post.
+If not, you should start with the [book chapter on optimization](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html) or the [Practical Tuning Series](/gallery/optimization/2021-03-09-practical-tuning-series-tune-a-support-vector-machine) post.
 This is the first part of the Hyperband series.
 The second part can be found here [Hyperband Series - Data Set Subsampling](/gallery/optimization/2023-01-16-hyperband-subsampling).
 
 # Hyperband
 
 Hyperband is an advancement of the Successive Halving algorithm by @jamieson_2016.
-Successive Halving is initialized with the number of starting configurations $n$, the proportion of configurations discarded in each stage $\eta$, and the minimum $r{_{min}}$ and maximum $r{_{max}}$ budget of a single evaluation.
-The algorithm starts by sampling $n$ random configurations and allocating the minimum budget $r{_{min}}$ to them.
+Successive Halving is initialized with the number of starting configurations $n$, the proportion of configurations discarded in each stage $\eta$, and the minimum $r_{min}$ and maximum $r_{max}$ budget of a single evaluation.
+The algorithm starts by sampling $n$ random configurations and allocating the minimum budget $r_{min}$ to them.
 The configurations are evaluated and $\frac{1}{\eta}$ of the worst-performing configurations are discarded.
 The remaining configurations are promoted to the next stage and evaluated on a larger budget.
-This continues until one or more configurations are evaluated on the maximum budget $r{_{max}}$ and the best performing configuration is selected.
+This continues until one or more configurations are evaluated on the maximum budget $r_{max}$ and the best performing configuration is selected.
 The number of stages is calculated so that each stage consumes approximately the same budget.
 This sometimes results in the minimum budget having to be slightly adjusted by the algorithm.
 Successive Halving has the disadvantage that is not clear whether we should choose a large $n$ and try many configurations on a small budget or choose a small $n$ and train more configurations on the full budget.
 
 Hyperband solves this problem by running Successive Halving with different numbers of stating configurations.
 The algorithm is initialized with the same parameters as Successive Halving but without $n$.
-Each run of Successive Halving is called a bracket and starts with a different budget $r{_{0}}$.
+Each run of Successive Halving is called a bracket and starts with a different budget $r_{0}$.
 A smaller starting budget means that more configurations can be tried out.
-The most explorative bracket allocated the minimum budget $r{_{min}}$.
+The most explorative bracket allocated the minimum budget $r_{min}$.
 The next bracket increases the starting budget by a factor of $\eta$.
-In each bracket, the starting budget increases further until the last bracket $s = 0$ essentially performs a random search with the full budget $r{_{max}}$.
-The number of brackets $s{_{max}} + 1$ is calculated with $s{_{max}} = {\log_\eta \frac{r{_{max}} }{r{_{min}}}}$.
-Under the condition that $r{_{0}}$ increases by $\eta$ with each bracket, $r{_{min}}$ sometimes has to be adjusted slightly in order not to use more than $r{_{max}}$ resources in the last bracket.
+In each bracket, the starting budget increases further until the last bracket $s = 0$ essentially performs a random search with the full budget $r_{max}$.
+The number of brackets $s_{max} + 1$ is calculated with $s_{max} = {\log_\eta \frac{r_{max} }{r_{min}}}$.
+Under the condition that $r_{0}$ increases by $\eta$ with each bracket, $r_{min}$ sometimes has to be adjusted slightly in order not to use more than $r_{max}$ resources in the last bracket.
 The number of configurations in the base stages is calculated so that each bracket uses approximately the same amount of budget.
 The following table shows a full run of the Hyperband algorithm.
 The bracket $s = 3$ is the most explorative bracket and $s = 0$ performance a random search on the full budget.
 
-```{r 2023-01-15-hyperband-xgboost-002}
+```{r index-002}
 #| echo: false
 #| fig-cap-location: top
 #| label: fig-schedule
-#| fig-cap: Hyperband schedule with $\eta = 2$ , $r{_{min}} = 1$ and $r{_{max}} = 8$
+#| fig-cap: Hyperband schedule with $\eta = 2$ , $r_{min} = 1$ and $r_{max} = 8$
 #| column: body-outset
 library(reactable)
 library(colorspace)
@@ -179,22 +181,22 @@ The colors in @fig-schedule indicate batches that are evaluated in parallel.
 In this practical example, we will optimize the hyperparameters of XGBoost on the `r ref("mlr_tasks_spam", "Spam")` data set.
 We begin by loading the `r ref("mlr_learners_classif.xgboost", "XGBoost learner.")`.
 
-```{r 2023-01-15-hyperband-xgboost-003}
+```{r index-003}
 #| message: false
 library("mlr3verse")
 
-learner = lrn("classif.xgboost")
+learner = lrn("classif.xgboost", booster = "gbtree")
 ```
 
 The next thing we do is define the search space.
 The `nrounds` parameter controls the number of boosting iterations.
 We set a range from 16 to 128 boosting iterations.
-This is used as $r{_{min}}$ and $r{_{max}}$ by the Hyperband algorithm.
+This is used as $r_{min}$ and $r_{max}$ by the Hyperband algorithm.
 We need to tag the parameter with `"budget"` to identify it as a fidelity parameter.
 For the other hyperparameters, we take the search space for XGBoost from the @bischl_hyperparameter_2021 article.
 This search space works for a wide range of data sets.
 
-```{r 2023-01-15-hyperband-xgboost-004}
+```{r index-004}
 learner$param_set$set_values(
   nrounds           = to_tune(p_int(16, 128, tags = "budget")),
   eta               = to_tune(1e-4, 1, logscale = TRUE),
@@ -210,7 +212,7 @@ learner$param_set$set_values(
 We construct the tuning instance.
 We use the `"none"` terminator because Hyperband terminates itself when all brackets are evaluated.
 
-```{r 2023-01-15-hyperband-xgboost-005}
+```{r index-005}
 instance = ti(
   task = tsk("spam"),
   learner = learner,
@@ -221,12 +223,12 @@ instance = ti(
 instance
 ```
 
-We load the `r ref("TunerHyperband", "Hyperband tuner")` and set `eta = 2`.
+We load the `r ref("TunerBatchHyperband", "Hyperband tuner")` and set `eta = 2`.
 Hyperband can start from the beginning when the last bracket is evaluated.
 We control the number of Hyperband runs with the `repetition` argument.
 The setting `repetition = Inf` is useful when a terminator should stop the optimization.
 
-```{r 2023-01-15-hyperband-xgboost-006}
+```{r index-006}
 #| message: false
 library("mlr3hyperband")
 
@@ -238,7 +240,7 @@ This results in all brackets finishing at approximately the same time.
 You can think of it as going diagonally through @fig-schedule.
 Using `eta = 2` and a range from 16 to 128 boosting iterations results in the following schedule.
 
-```{r 2023-01-15-hyperband-xgboost-007}
+```{r index-007}
 #| echo: false
 library(htmltools)
 library(reactable)
@@ -272,7 +274,7 @@ reactable(data[, .(budget, bracket, stage, n)],
 
 Now we are ready to start the tuning.
 
-```{r 2023-01-15-hyperband-xgboost-008}
+```{r index-008}
 #| output: false
 tuner$optimize(instance)
 ```
@@ -280,13 +282,13 @@ tuner$optimize(instance)
 The result of a run is the configuration with the best performance.
 This does not necessarily have to be a configuration evaluated with the highest budget since we can overfit the data with too many boosting iterations.
 
-```{r 2023-01-15-hyperband-xgboost-009}
+```{r index-009}
 instance$result[, .(nrounds, eta, max_depth, colsample_bytree, colsample_bylevel, lambda, alpha, subsample)]
 ```
 
 The archive of a Hyperband run has the additional columns `"bracket"` and `"stage"`.
 
-```{r 2023-01-15-hyperband-xgboost-010}
+```{r index-010}
 as.data.table(instance$archive)[, .(bracket, stage, classif.ce, eta, max_depth, colsample_bytree)]
 ```
 
@@ -299,4 +301,4 @@ For your optimization, you should use cross-validation and increase the maximum 
 The @bischl_hyperparameter_2021 search space suggests 5000 boosting rounds.
 Check out our [next post](/gallery/optimization/2023-01-16-hyperband-subsampling) on Hyperband which uses the size of the training data set as the fidelity parameter.
 
-
+{{< include ../../_session_info.qmd >}}

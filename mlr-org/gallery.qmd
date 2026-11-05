@@ -3,6 +3,13 @@ sidebar: false
 toc: false
 page-layout: article
 listing:
+  - id: gallery-tags
+    template: gallery-tags.ejs
+    contents:
+      - gallery/basic
+      - gallery/optimization
+      - gallery/pipelines
+      - gallery/technical
   - id: latest-gallery
     template: gallery-latest.ejs
     contents: gallery
@@ -27,6 +34,10 @@ In the gallery, you find case studies and demos.
 The posts are mostly about specific features and cover advanced topics.
 If you are completely new to mlr3 or machine learning, you should start with the [book](book.html).
 Pick a post from one of the four categories or browse [all posts](gallery-all.html) sorted by date.
+Search the posts or pick a tag to find posts on a specific topic.
+
+::: {#gallery-tags}
+:::
 
 ## Latest
 
@@ -129,6 +140,30 @@ Pick a post from one of the four categories or browse [all posts](gallery-all.ht
 ```{=html}
   <span class="gallery__link">
     <a href="gallery-all-technical.html">See all posts <i class="bi-arrow-right-short"> </i></a>
+  </span>
+  </div>
+</div>
+```
+
+## Exercise Collection for Practice and Learning
+
+
+```{=html}
+<div class="gallery">
+  <div class="gallery__icon-column">
+      <i class="bi-pencil-square gallery__icon"> </i>
+  </div>
+  <div class="gallery__list-column">
+```
+
+::: {#applied-exercises}
+:::
+
+This curated exercise collection offers hands-on, solvable exercises focused on core concepts, from basic modeling and resampling to tuning and advanced techniques. Each exercise follows a consistent structure: clear learning goal, prerequisites, structured task list with hints how to solve them, collapsible password-protected solutions, and key take-aways designed to support systematic practice and self-paced learning.
+
+```{=html}
+  <span class="gallery__link">
+    <a href="gallery-all-exercises.html">See all exercises <i class="bi-arrow-right-short"> </i></a>
   </span>
   </div>
 </div>

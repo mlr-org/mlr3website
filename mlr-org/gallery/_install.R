@@ -1,0 +1,23 @@
+# checked for optimization and technical
+pak::pak(c(
+  "mlr3verse",
+  "mlr-org/mlr3website",
+  "sessioninfo",
+  "GGally",
+  "ggparty",
+  "glmnet",
+  "ggfortify",
+  "ggdendro",
+  "xgboost",
+  "tidyterra",
+  "mlr-org/mlr3proba",
+  "BART",
+  "dplyr",
+  "tidyr",
+  "GenSA",
+  "kknn",
+  "DT",
+  "skimr",
+  "DiceKriging",
+  "gbm")
+)

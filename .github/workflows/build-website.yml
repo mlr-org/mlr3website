@@ -1,5 +1,8 @@
 on:
   workflow_dispatch:
+  # overview tables are built from the installed packages, so they go stale without a rebuild
+  schedule:
+    - cron: "0 5 * * 1"
   push:
     branches:
       - main
@@ -12,34 +15,30 @@ name: build-website
 jobs:
   build-website:
     runs-on: ubuntu-latest
+    container: mlrorg/mlr3-website:latest
 
     env:
-      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RENV_CONFIG_AUTOLOADER_ENABLED: false
 
     steps:
       - uses: actions/checkout@v3
 
-      - id: setup
-        uses: r-lib/actions/setup-r@v2
-
-      - uses: quarto-dev/quarto-actions/setup@v2
-        with:
-          version: pre-release
-
-      - uses: r-lib/actions/setup-r-dependencies@v2
-
-      - id: install-mlr3website
-        name:  Install mlr3website package
+      - name: Install mlr3website package
         run: R CMD INSTALL .
 
       - name: Render site
         run: quarto render mlr-org/
 
+      - name: Upload site for link check
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: mlr-org/_site
+          retention-days: 1
+
       - name: Deploy netlify preview
         if: ${{ github.event_name == 'pull_request' }}
-        uses: mlr-org/actions/quarto-netlify-preview@v1
+        uses: mlr-org/mlr3infrastructure/quarto-netlify-preview@v2
         with:
           netlify_auth_token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           netlify_site_id: ${{ secrets.NETLIFY_SITE_ID }}
@@ -48,7 +47,7 @@ jobs:
           netlify_url: mlr3website.netlify.app
 
       - name: Deploy
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -58,3 +57,26 @@ jobs:
           branch: gh-pages
           folder: mlr-org/_site
           single-commit: true
+
+  check-links:
+    needs: build-website
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download site
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: mlr-org/_site
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --config lychee.toml
+            --root-dir ${{ github.workspace }}/mlr-org/_site
+            --no-progress
+            "mlr-org/_site/**/*.html"
+          fail: true

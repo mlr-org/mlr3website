@@ -1,0 +1,37 @@
+```{=html}
+<%
+  const grouped = {};
+  for (const item of items) {
+    if (!item.group) continue;
+    if (!grouped[item.group]) grouped[item.group] = [];
+    grouped[item.group].push(item);
+  }
+
+  // Define your custom group order
+  const customGroupOrder = ["Introduction", "Tuning", "Feature Preprocessing", "Advanced Feature Preprocessing", "Performance Evaluation", "Advanced Performance Evaluation", "Ensembles Stacking", "Parallelization", "Imputation", "Imbalanced"];
+
+  // Optionally include any other groups not listed in the custom order
+  const extraGroups = Object.keys(grouped).filter(g => !customGroupOrder.includes(g)).sort();
+  const finalGroupOrder = [...customGroupOrder, ...extraGroups];
+
+  // Sort items within each group by date descending
+  for (const group of Object.keys(grouped)) {
+    grouped[group].sort((a, b) => new Date(a.date) - new Date(b.date));
+  }
+%>
+
+<% for (const group of finalGroupOrder) { %>
+  <% if (grouped[group]) { %>
+    <h2><%= group %></h2>
+    <ul>
+      <% for (const item of grouped[group]) { %>
+        <li>
+          <a href="<%- item.path %>"><%= item.title %></a>
+          <p><%= item.description %></p>
+          <p><%= item.date %> - <%= item.author %></p>
+        </li>
+      <% } %>
+    </ul>
+  <% } %>
+<% } %>
+```

@@ -22,7 +22,10 @@ The `r ref("mlr_pipeops_filter", text = "Filter PipeOp")` allows to use filters 
 #| echo: false
 #| column: page
 
-content = as.data.table(mlr_filters, objects = TRUE)[, .(key, label, task_types, packages)]
+content = map_dtr(setdiff(mlr_filters$keys(), "ensemble"), function(key) {
+  m = mlr_filters$get(key, .prototype = TRUE)
+  list(key = key, label = m$label, task_types = list(m$task_types), packages = list(m$packages))
+})
 content[, packages := map(packages, function(value) setdiff(value, c("mlr3", "mlr3filters")))]
 
 ref_cell = function(value) {
@@ -44,13 +47,13 @@ reactable(content, columns = list(
 
 ## Example Usage
 
-Use the $-\log_{10}()$-transformed $p$-values of a Kruskal-Wallis rank sum test (implemented in `r ref("kruskal.test()")`) for filtering features of the `r ref("mlr_tasks_pima", text = "Pima Indian Diabetes")` tasks.
+Use the $-\log_{10}()$-transformed $p$-values of a Kruskal-Wallis rank sum test (implemented in `r ref("kruskal.test()")`) for filtering features of the `r ref("mlr_tasks_diabetes", text = "Diabetes")` tasks.
 
 ```{r, echo=TRUE}
 library("mlr3verse")
 
 # retrieve a task
-task = tsk("pima")
+task = tsk("diabetes")
 
 # retrieve a filter
 filter = flt("kruskal_test")

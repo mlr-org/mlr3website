@@ -11,6 +11,9 @@ toc: false
 #| include: false
 
 library("mlr3spatiotempcv")
+library("mlr3torch")
+library("mlr3fda")
+library("mlr3proba")
 requireNamespace("mlr3verse")
 lgr::get_logger("mlr3")$set_threshold("warn")
 ```
@@ -23,6 +26,9 @@ The goal of these tasks is to quickly demonstrate the capabilities of the packag
 #| column: page
 
 content = as.data.table(mlr3::mlr_tasks)[, .(key, label, task_type, nrow, ncol)]
+content = content[key %nin% c(
+  "pbc",
+  "oml")] # oml is no dataset
 
 ref_cell = function(value) {
   if (!length(value)) return(NULL)

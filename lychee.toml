@@ -1,0 +1,19 @@
+# Link checker configuration for the rendered website.
+# Used by the check-links job in .github/workflows/build-website.yml.
+
+max_retries = 3
+retry_wait_time = 5
+timeout = 30
+max_concurrency = 16
+
+# Many sites answer automated requests with 403 or rate-limit them with 429.
+accept = ["200..=299", "403", "429"]
+
+exclude = [
+  "^https?://localhost",
+  "^https?://127\\.0\\.0\\.1",
+  "^https?://(www\\.)?linkedin\\.com",
+  "^https?://(www\\.)?(twitter|x)\\.com",
+  # Valid DOI, but the Journal of the Brazilian Chemical Society website returns 404 for its articles.
+  "^https://doi\\.org/10\\.21577/",
+]

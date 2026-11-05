@@ -11,3 +11,8 @@ header-attr*
 jquery*
 *.js
 *.html
+
+**/*.quarto_ipynb
+
+# Frozen htmlwidget dependencies must be committed, the patterns above would ignore them
+!/_freeze/site_libs/**

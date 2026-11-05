@@ -1,51 +1,177 @@
 ---
 sidebar: false
 toc: false
+title: Frequently Asked Questions
 ---
-
-# Frequently Asked Questions
 
 {{< include _setup.qmd >}}
 
-* [What is the purpose of the `OMP_THREAD_LIMIT` environment variable?](#omp-thread-limit)
-* [Why is tuning slow despite quick model fitting?](#tuning-slow)
-* [Why is `mlr3` using so much disk space / memory?]
+* [Why is there only the rpart learner?](#learner)
+* [How can I use parallelization?](#parallelization)
+* [Why is the parallelization with the future package slow?](#parallelization-slow)
+* [Why is the parallelization of tuning slow?](#tuning-slow)
+* [Why are the CPUs on my system not fully utilized when using parallelization?](#parallelization-cpu)
+* [How can I use time constraints when tuning?](#time-constraints)
+* [Why is method X slower when used via `mlr3`?](#mlr3-default-slower)
+* [Preprocessing factor levels](#factor-levels)
+* [Memory Problems](#memory-problems)
+* [How can I suppress logging output of learners on the R console](#suppress-output)
+* [A learner trained with an old mlr3 version does not work anymore](#old-model-broken)
+* [Caching of knitr/rmarkdown chunks does not work with mlr3](#caching-knitr)
+* [How to keep all mlr3 packages up-to-date?](#update-packages)
 
-## What is the purpose of the `OMP_THREAD_LIMIT` environment variable? {#omp-thread-limit}
+## Why is there only the rpart learner? {#learner}
 
-The `OMP_THREAD_LIMIT` environment variable controls the number of threads used by [OpenMP](https://www.openmp.org/), an API for writing parallel programs in C, C++ or Fortran.
-Many R packages, including many learners in `mlr3`, have algorithms written in these languages.
-When `mlr3` operates in parallel mode through the `future` package, it can potentially conflict with OpenMP's parallelization mechanism. This conflict arises because both systems attempt to utilize the CPU cores simultaneously.
-This can slow down the execution time rather than speeding it up, due to the increased overhead of managing multiple parallel processes.
-We especially observed this when all cores are used for parallelization and there are many cores, e.g. on a high-performance cluster.
-By setting `options("OMP_THREAD_LIMIT" = 1)` in your `.Rprofile` file, you effectively instruct OpenMP to use only one thread.
-This avoids the conflict with `future` and can lead to faster execution times.
+The base package `r ref_pkg("mlr3")` ships only with regression and classification trees from the `r ref_pkg("rpart")` package and some learners for debugging.
+A selection of popular learners can be found in the extension package `r ref_pkg("mlr3learners")`.
+Survival learners are provided by `r ref_pkg("mlr3proba")`, cluster learners via `r ref_pkg("mlr3cluster")`.
+Additional learners can be found in the extension packages `r ref_pkg("mlr3extralearners")`.
+If your favorite learner is missing, please open a learner [request](https://github.com/mlr-org/mlr3extralearners).
+An overview of all learners can be found on our [website](learners.html).
 
-## Why is tuning slow despite quick model fitting? {#tuning-slow}
+## How can I use parallelization? {#parallelization}
 
-Tuning in `mlr3` involves several factors that can affect its speed, even if individual models are fitting quickly:
+Parallelization is supported when training learners, resampling, tuning and predicting.
+We recommend reading the section about [Parallelization](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization) in the `mlr3book`.
 
-1. **Tuner Batch Size:** The tuner in `mlr3` proposes a set of hyperparameter configurations in batches, which are then evaluated using `benchmark()`.
-The `batch_size` parameter controls the size of these batches. A smaller batch size might slow down the tuning process because it increases the frequency of the benchmarking overhead, particularly noticeable when using parallelization.
-We recommend using the largest feasible batch size for efficiency.
-More details can be found in the [tuning section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallel-tuning) of the mlr3book.
+## Why is the parallelization with the future package slow? {#parallelization-slow}
 
-2. **Parallelization Chunk Size:** If the `mlr3.exec_chunk_size` parameter is set too small, the overhead of parallelization can outweigh its benefits.
-A `chunk.size` of 1 means each resampling iteration is handled as a separate computational job.
-Combining multiple resampling iterations into a single job by increasing the `chunk.size` can enhance efficiency.
-See the [parallelization section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization) in the mlr3book for further insights.
+Starting and terminating workers as well as possible communication between workers comes at a price in the form of additionally required runtime which is called [parallelization overhead](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization).
+This overhead strongly varies between parallelization backends and must be carefully weighed against the runtime of the sequential execution to determine if parallelization is worth the effort.
+When resampling or tuning a fast-fitting learner, it helps to chunk multiple resampling iterations into a single computational job.
+The option [`mlr3.exec_chunk_bins`](https://mlr3.mlr-org.com/reference/mlr3-package.html#package-options) determines the number of chunks to split the resampling iterations into.
+For example, when running a benchmark with 100 resampling iterations, `options("mlr3.exec_chunk_bins" = 4)` creates 4 computational jobs with 25 resampling iterations each.
+This reduces the parallelization overhead and speeds up the execution.
+The parallelization of the BLAS library can interfere with future parallelization due to over-utilization of the available cores.
+Install [`RhpcBLASctl`](https://cran.r-project.org/web/packages/RhpcBLASctl/index.html) so that mlr3 can turn off the parallelization of BLAS.
+`RhpcBLASctl` can only be included as an optional dependency due to licensing issues.
 
-3. **Model Fitting Time vs. Parallelization Overhead:** For models that fit extremely quickly, the time saved through parallelization might be less than the overhead it introduces.
-In such cases, parallelization might not be beneficial.
+## Why is the parallelization of tuning slow? {#tuning-slow}
 
-4. **Setting the `OMP_THREAD_LIMIT`:** Not configuring the `OMP_THREAD_LIMIT` appropriately when using `future` can slow down the tuning process.
-Refer to the [OpenMP Thread Limit](#omp-thread-limit) section in this FAQ for guidance.
+Tuning can also suffer from the [parallelization overhead](#parallelization-slow) described above.
+Additionally, the batch size of the tuner can have a large impact on the runtime.
+Setting an optimal batch size is explained in the section [Parallelization of Tuning](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallel-tuning) of the `mlr3book`.
 
-5. **Nested Resampling Strategies:** When employing nested resampling, choosing an effective parallelization strategy is crucial.
-The wrong strategy can lead to inefficiencies.
-For a deeper understanding, refer to the [nested resampling section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-nested-resampling-parallelization) in our book.
+## Why are the CPUs on my system not fully utilized when using parallelization? {#parallelization-cpu}
 
-## Why is `mlr3` using so much disk space / memory?
+If there are few jobs with dissimilar runtimes, the system may end up waiting for the last chunk to finish, while other resources are idle.
+This is referred to as [synchronization overhead](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-parallelization).
+When minimizing the synchronization overhead, a too large chunk size can lead to a situation where the last chunk takes much longer than the others.
+This can be avoided by setting `mlr3.exec_chunk_bins` to a smaller value than the number of cores available on the system.
 
-There are various reasons why `mlr3` might use more memory / disk space than expected.
-We have written a [gallery post](https://mlr-org/gallery/technical/2023-11-09-memory-disk/) that covers various aspects of this topic and offers solutions where possible.
+## How can I use time constraints when tuning?
+
+Time constraints can be set for individual learners, tuning processes, and nested resampling.
+The gallery post [Time constraints in the mlr3 ecosystem](gallery/technical/2023-12-21-time-constraints/) provides an overview of the different options.
+
+## Why is method X slower when used via `mlr3`? {#mlr3-default-slower}
+
+By default, we set the number of threads of learners to 1 to avoid conflicts with parallelization.
+Therefore, the default configuration of a learner may be significantly slower than the default configuration of the method when used directly.
+
+## Preprocessing factor levels {#factor-levels}
+
+When working with `mlr3`, it is important to avoid using special characters in the levels of factor variables.
+The presence of symbols such as `+, -, <, >, =`, or spaces in the factor levels can cause errors during model training (depends on the `learner` used and if the `formula` interface is utilized, e.g. as in the [`surv.parametric`](https://mlr3extralearners.mlr-org.com/reference/mlr_learners_surv.parametric.html) learner).
+While underscores (`_`) and dots (`.`) are generally safe to use, other special characters should be avoided.
+To ensure smooth operation and prevent errors, please follow these guidelines:
+
+1. **Use descriptive labels with no special characters**: Assign meaningful and descriptive labels to factor levels that do not include special characters. For example, instead of `60+` for a factor level of an `age` feature, use `60_above`.
+2. **Use factor encoding**: Incorporate a pre-processing step in your data pipeline (e.g. see [mlr_pipeops_encode](https://mlr3pipelines.mlr-org.com/reference/mlr_pipeops_encode.html) to make sure factors are one-hot encoded, alleviating problems that may arise from factor levels that incorporate strange symbols.
+
+
+## Memory Problems {#memory-problems}
+
+One explanation for why `mlr3` might in some cases use an unusual amount of memory, is when packages are installed with the `--with-keep.source` flag.
+This configuration option is enabled by default when managing dependencies via `renv`, see issue [#1713](https://github.com/rstudio/renv/issues/1713).
+To opt out of this default run the code below, e.g. by adding it to your `.Rprofile`:
+
+```{r faq-001}
+options("install.opts" = "--without-keep.source")
+```
+
+## How can I suppress logging output of learners on the R console {#suppress-output}
+
+Some learners are quite verbose during their train or predict step, and this clutters the R console.
+Note that this is different than controlling the generic mlr3 logger, which is covered under [Logging](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-logging).
+Most of these learners provide some option in their paramset to control output behavior.
+Another option is to simply use [Encapsulation](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-logging), likely in the `evaluate` mode, running the learner in the same R session, but with caught exceptions and redirected output.
+
+```{r faq-002}
+#| eval: false
+library(mlr3)
+library(mlr3learners)
+mytask = tsk("iris")
+# manual option
+mylearner = lrn("classif.nnet", trace = TRUE)
+# generic option
+mylearner$encapsulate(method = "evaluate", fallback = lrn("classif.featureless"))
+mylearner$train(mytask)
+```
+
+## An object saved with an old mlr3 version does not work anymore {#old-model-broken}
+
+It is possible that a saved `Learner` that was trained with an old `mlr3` version does not work with a different version of `mlr3`.
+In general, we recommend saving the computational environment using a tool like [renv](https://github.com/rstudio/renv) so this can later be restored and avoiding such situations alltogether.
+If this is not an option, a possible workaround is to construct the same learner in the currently used `mlr3` version and manually set its `$state` to the one of the saved learner.
+This is illustrated below:
+
+1. Using an old `mlr3` version:
+
+   ```{r faq-003, eval = FALSE}
+   learner = lrn("classif.rpart")
+   learner$train(tsk("iris"))
+   saveRDS(learner, "learner.rds")
+   ```
+
+1. With a subsequent `mlr3` version:
+
+   ```{r faq-004, eval = FALSE}
+   learner = lrn("classif.rpart")
+   learner_old = readRDS("learner.rds")
+   learner$state = learner_old$state
+   ```
+
+Note that this is **risky** and **not** guaranteed to work because of various reasons:
+* You might have now loaded a different version of the learner library (in this case the `rpart` pacakge).
+* The internals (such as the structure of the internal `$state`) might have changed between the versions.
+
+Therefore, be careful when attempting this solution and double-check that the learner behaves sensibly.
+
+Since mlr3 1.0.0 we test if old objects are compatible with the current version of mlr3.
+We found the following incompatibility issues:
+
+* `Task` objects stored with mlr3 <= 1.1.0 cannot be loaded with mlr3 >= 1.2.0 because the `$data()` method of the `DataBackend` class lost the `data_format` argument.
+This also makes the `Task` objects stored in `ResampleResult` and `BenchmarkResult` objects incompatible.
+* `ResampleResult` and `BenchmarkResult` objects stored with paradox <= 1.0.1 cannot be loaded with paradox >= 1.1.0 because `presence` and `allow_token` were added to the `$check()` method of the `ParamSet` class. Other objects with `ParamSet` objects could also be affected.
+* `Task` objects stored with mlr3 <= 1.3.0 cannot be loaded with mlr3 >= 1.4.0 because changes to the `col_info` table.
+This also affects `ResampleResult` and `BenchmarkResult` objects.
+* `Learner` objects stored with mlr3 <= 1.5.0 cannot be loaded with mlr3 >= 1.6.0 because the `$predict_raw` field was added to the `Learner` class.
+This also affects `ResampleResult` and `BenchmarkResult` objects.
+* `Learner` objects stored with mlr3 <= 1.6.0 cannot be loaded with mlr3 >= 1.7.0 because the `$deadline` field was added to the `Learner` class.
+This also affects `ResampleResult` and `BenchmarkResult` objects.
+* `Task` objects stored with mlr3 <= 1.7.0 cannot be loaded with mlr3 >= 1.8.0 because the `private$get_class_freqs()` method was added.
+This also affects `ResampleResult` and `BenchmarkResult` objects.
+
+
+## Caching of knitr/rmarkdown chunks does not work with mlr3 {#caching-knitr}
+
+{knitr} per default uses R's lazy-load database to store the results of individual chunks.
+The lazy-load database is an internal feature of R, and has issues handling active bindings ([https://github.com/r-lib/R6/issues/152](https://github.com/r-lib/R6/issues/152)).
+Fortunately, it is possible to disable lazy-loading by setting the chunk option `cache.lazy` to `FALSE`:
+
+```{r faq-005, eval = FALSE}
+knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE)
+```
+
+## How to keep all mlr3 packages up-to-date? {#update-packages}
+
+Either run R's `update.packages()` to update all installed packages, or run
+
+```r
+devtools::update_packages("mlr3verse", dependencies = TRUE)
+```
+
+to update only packages from the mlr3verse.
+Note that this also updates recursive dependencies not listed as a direct import.
+
