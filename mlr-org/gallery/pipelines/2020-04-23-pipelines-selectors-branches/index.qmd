@@ -198,7 +198,7 @@ Usually, `po("copy")` is required when there are more than one input channels an
 We can not know if the combination of a learner with this preprocessing graph will benefit from the imputation steps and the added missing value indicators.
 Maybe it would have been better to just use [`imputemedian`](https://mlr3pipelines.mlr-org.com/reference/mlr_pipeops_imputemedian.html) on all the variables.
 We could investigate this assumption by adding an alternative path to the graph with the mentioned `imputemedian`.
-This is possible using the ["branch"](https://mlr3pipelines.mlr-org.com/reference/branch.html) `r ref("PipeOp")`:
+This is possible using the ["branch"](https://mlr3pipelines.mlr-org.com/reference/mlr_pipeops_branch.html) `r ref("PipeOp")`:
 
 ```{r index-017, fig.height = 7, fig.width = 7}
 imputer_median_3 = po("imputemedian", id = "simple_median") # add the id so it does not clash with `imputer_median`

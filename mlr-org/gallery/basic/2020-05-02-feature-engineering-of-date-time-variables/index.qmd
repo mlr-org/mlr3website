@@ -20,7 +20,7 @@ Relying on the [Bike Sharing Dataset](https://archive.ics.uci.edu/ml/datasets/bi
 
 ## Motivation
 A single date-time variable (i.e., a `POSIXct` column) contains plenty of information ranging from year, month, day, hour, minute and second to other features such as week of the year, or day of the week.
-Moreover, most of these features are of cyclical nature, i.e., the eleventh and twelfth hour of a day are one hour apart, but so are the 23rd hour and midnight of the other day (see also this [blog post](http://blog.davidkaleko.com/feature-engineering-cyclical-features.html) and [fastai](https://docs.fast.ai/tabular.transform.html#Treating-date-columns) for more information).
+Moreover, most of these features are of cyclical nature, i.e., the eleventh and twelfth hour of a day are one hour apart, but so are the 23rd hour and midnight of the other day (see also this [blog post](http://blog.davidkaleko.com/feature-engineering-cyclical-features.html) and [fastai](https://docs.fast.ai/tabular.core.html#add_datepart) for more information).
 
 Not respecting this cyclical nature results in treating hours on a linear continuum. One way to handle a cyclical feature $\mathbf{x}$ is to compute the sine and cosine transformation of $\frac{2 \pi \mathbf{x}}{\mathbf{x}_{\text{max}}}$, with $\mathbf{x}_{\text{max}} = 24$ for hours and $60$ for minutes and seconds.
 
@@ -100,7 +100,7 @@ ggplot(bike_sharing, aes(x = date, y = count)) +
 
 ## Baseline Random Forest
 
-We construct a new regression task and keep a [holdout set](https://mlr3book.mlr-org.com/tasks.html#tasks-roles).
+We construct a new regression task and keep a [holdout set](https://mlr3book.mlr-org.com/chapters/chapter2/data_and_basic_modeling.html#sec-tasks).
 
 ```{r index-008}
 task = as_task_regr(bike_sharing, target = "count")

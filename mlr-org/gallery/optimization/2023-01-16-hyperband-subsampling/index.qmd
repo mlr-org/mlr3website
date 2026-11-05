@@ -35,7 +35,7 @@ set.seed(2)
 # Scope
 
 We continue working with the *Hyperband* optimization algorithm [@li_2018].
-The [previous post](/gallery/optimization/2022-12-01-hyperband-xgboost) used the number of boosting iterations of an XGBoost model as the resource.
+The [previous post](/gallery/optimization/2023-01-15-hyperband-xgboost) used the number of boosting iterations of an XGBoost model as the resource.
 However, Hyperband is not limited to machine learning algorithms that are trained iteratively.
 The resource can also be the number of features, the training time of a model, or the size of the training data set.
 In this post, we will tune a support vector machine and use the size of the training data set as the fidelity parameter.

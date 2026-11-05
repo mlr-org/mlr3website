@@ -26,7 +26,7 @@ This can be repeated for several iterations until a final learner is trained.
 To avoid overfitting, it is advisable to use test set (out-of-bag) predictions in each level.
 
 In this post, a multilevel stacking example will be created using `r ref_pkg("mlr3pipelines")`  and tuned using `r ref_pkg("mlr3tuning")` .
-A similar example is available in the [mlr3book](https://mlr3book.mlr-org.com/pipe-nonlinear.html#multilevel-stacking).
+A similar example is available in the [mlr3book](https://mlr3book.mlr-org.com/chapters/chapter8/non-sequential_pipelines_and_tuning.html#sec-pipelines-stack).
 However, we additionally explain how to tune the hyperparameters of the whole ensemble and each underlying learner jointly.
 
 In our stacking example, we proceed as follows:

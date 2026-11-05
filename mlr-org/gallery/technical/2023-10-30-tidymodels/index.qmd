@@ -67,7 +67,6 @@ Each run of `microbenchmark` is repeated 100 times, with different seeds applied
 Resulting in a total of 10,000 function calls of each command.
 The computing environment for each worker in the cluster consists of 3 cores and 12 GB of RAM.
 For transparency and reproducibility, the examples of the code used for this experiment are provided as snippets in the article.
-The complete code, along with all details of the experiment, is available in our public repository, [mlr-org/mlr-benchmark](https://github.com/mlr-org/mlr-benchmark/tree/main/tidymodels).
 
 It's important to note that our cluster setup is not specifically optimized for single-core performance.
 Consequently, executing the same benchmark on a local machine with might yield faster results.
