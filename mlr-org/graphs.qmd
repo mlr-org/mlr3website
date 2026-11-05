@@ -7,6 +7,13 @@ toc: false
 
 {{< include _setup.qmd >}}
 
+```{r}
+#| include: false
+
+library("mlr3verse")
+library("mlr3proba")
+```
+
 Graphs are predefined arrangements of `r ref("PipeOp")` objects from the `r ref_pkg("mlr3pipelines")` package.
 The goal is to simplify some popular operations which usually consist of multiple steps.
 
@@ -14,26 +21,43 @@ The goal is to simplify some popular operations which usually consist of multipl
 #| echo: false
 #| column: page
 
-content = rowwise_table(
-  ~ key,          ~label,
-  "bagging",      "Bagging Learner",
-  "greplicate",   "Disjoint Graph Union of Copies of a Graph",
-  "ovr",          "'One vs. Rest' Classification",
-  "robustify",    "Robustify a Learner",
-  "stacking",     "Stacking",
-  "targettrafo",  "Transform and Re-Transform the Target Variable",
-  "survaverager", "Survival Prediction Averaging",
-  "survbagging",  "Survival Prediction Bagging"
-)
+rd_tag = function(rd, tag) {
+  Filter(function(x) identical(attr(x, "Rd_tag"), tag), rd)
+}
 
-ref_cell = function(value) {
-  if (!length(value)) return(NULL)
-  mlr3website::ref(sprintf("%s_%s", "mlr_graphs", value), text = value, format = "htmltools")
+help_pages = rbindlist(map(grep("^mlr3", loadedNamespaces(), value = TRUE), function(pkg) {
+  rbindlist(map(tools::Rd_db(pkg), function(rd) {
+    data.table(
+      alias = unlist(rd_tag(rd, "\\alias")),
+      label = trimws(paste(unlist(rd_tag(rd, "\\title")), collapse = "")),
+      package = pkg
+    )
+  }))
+}))
+
+content = as.data.table(mlr_graphs)
+content[, constructor := map(key, function(value) mlr_graphs$items[[value]]$value)]
+content[, topic := sprintf("mlr_graphs_%s", key)]
+
+documented = content[topic %in% help_pages$alias]
+content[topic %nin% help_pages$alias, topic := map_chr(constructor, function(value) {
+  index = which(map_lgl(documented$constructor, identical, value))
+  if (length(index)) documented$topic[index[1L]] else NA_character_
+})]
+
+content = help_pages[content, .(key, label = sub("\\.$", "", label), package, topic), on = c(alias = "topic"),
+  mult = "first"]
+
+ref_cell = function(value, index) {
+  if (is.na(content$package[index])) return(value)
+  mlr3website::ref(content$topic[index], text = value, format = "htmltools")
 }
 
 reactable(content, columns = list(
     key = colDef(name = "Key", cell = ref_cell),
-    label = colDef(name = "Label")
+    label = colDef(name = "Label", na = ""),
+    package = colDef(name = "Package", cell = function(value) if (is.na(value)) "" else package_cell(value)),
+    topic = colDef(show = FALSE)
   ),
   searchable = TRUE,
   pagination = FALSE,
