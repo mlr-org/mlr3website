@@ -1,0 +1,275 @@
+---
+title: Shrink stored models with butcher
+categories:
+  - resampling
+  - benchmarking
+  - tuning
+  - callbacks
+author:
+  - name: Marc Becker
+    orcid: 0000-0002-8115-0400
+    url: https://github.com/be-marc
+date: 11-05-2026
+description: |
+  Use a callback to remove training data, calls, and environments from models stored during resampling, benchmarking, and tuning.
+---
+
+{{< include ../../_setup.qmd >}}
+
+```{r index-001}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+# Scope
+
+Fitted model objects in R often carry more than they need for prediction.
+A `glm` object keeps the training data, the fitted values, the residuals, and the environment of its formula.
+That is fine for a single model.
+It adds up when `resample()`, `benchmark()`, or `tune()` keep one model per resampling iteration with `store_models = TRUE`.
+
+The `r ref_pkg("butcher")` package from the tidymodels ecosystem removes these components while keeping the model usable for prediction.
+This post shows how to apply it to a single learner and how to wrap it in a callback so that every model stored by `r mlr3` and `r mlr3tuning` gets shrunk right after training.
+
+```{r index-002}
+#| message: false
+library(mlr3)
+library(mlr3learners)
+library(mlr3tuning)
+library(mlr3pipelines)
+library(mlr3misc)
+library(butcher)
+```
+
+We measure the size of an object by serializing it.
+This is the number of bytes the object needs on disk or when it is sent to a parallel worker.
+
+```{r index-003}
+serialized_size = function(x) {
+  round(length(serialize(x, connection = NULL)) / 1024^2, digits = 2L)
+}
+```
+
+# Butcher a single model
+
+We train a logistic regression on the spam task with 4601 emails and 57 features.
+
+```{r index-004}
+#| warning: false
+task = tsk("spam")
+learner = lrn("classif.log_reg", predict_type = "prob")
+learner$train(task)
+
+serialized_size(learner$model)
+```
+
+The model needs about 4.4 MB.
+The function `weigh()` lists the components of the model object sorted by size in MB.
+
+```{r index-005}
+weigh(learner$model)
+```
+
+The QR decomposition is the largest component.
+The residuals, fitted values, linear predictors, weights, and the response each take another 0.33 MB.
+Prediction needs only a fraction of this.
+
+We predict on the task, butcher the model, and write it back into the learner.
+
+```{r index-006}
+prediction = learner$predict(task)
+learner$model = butcher(learner$model)
+
+serialized_size(learner$model)
+```
+
+The model shrank to roughly half its size.
+The predictions of the butchered model are identical to the original predictions.
+
+```{r index-007}
+all.equal(prediction, learner$predict(task))
+```
+
+The function `butcher()` only removes components that the `predict()` method of the model class does not use.
+It keeps the QR decomposition because `predict.glm()` needs it to compute standard errors.
+
+::: {.callout-warning}
+A butchered model has lost information.
+Functions such as `summary()`, `residuals()`, or `fitted()` may fail or return wrong results on it.
+Only butcher models that you need for prediction.
+:::
+
+# Resample callback
+
+We now want to shrink every model that `resample()` stores.
+Callbacks run code at specific stages of the resampling loop.
+We create a resample callback with `r ref("mlr3::callback_resample()")`.
+The stage `on_resample_end` runs after the learner has been trained and has made its predictions.
+The context object gives access to the learner of the current iteration.
+
+```{r index-008}
+callback = callback_resample("butcher",
+  on_resample_end = function(callback, context) {
+    context$learner$model = butcher::butcher(context$learner$model)
+  }
+)
+```
+
+We call `butcher()` with the package prefix because the callback may run on a parallel worker on which `butcher` is not attached.
+
+We run a 5-fold cross-validation twice on the same splits, once without and once with the callback.
+
+```{r index-009}
+#| warning: false
+resampling = rsmp("cv", folds = 5L)
+resampling$instantiate(task)
+
+rr = resample(task, learner, resampling, store_models = TRUE)
+rr_butchered = resample(task, learner, resampling, store_models = TRUE, callbacks = callback)
+```
+
+We compare the size of the stored models.
+
+```{r index-010}
+serialized_size(map(rr$learners, "model"))
+serialized_size(map(rr_butchered$learners, "model"))
+```
+
+The five butchered models need about 9 MB less.
+The callback only touches the stored models, so the performance estimate does not change.
+
+```{r index-011}
+rr$aggregate(msr("classif.auc"))
+rr_butchered$aggregate(msr("classif.auc"))
+```
+
+The stored learners still predict new data.
+
+```{r index-012}
+rr_butchered$learners[[1L]]$predict(task)
+```
+
+# Benchmark
+
+`benchmark()` accepts the same callbacks.
+We compare four learners with a 3-fold cross-validation.
+
+```{r index-013}
+#| warning: false
+learners = list(
+  lrn("classif.log_reg", predict_type = "prob"),
+  lrn("classif.rpart", predict_type = "prob"),
+  lrn("classif.nnet", predict_type = "prob", size = 5L, trace = FALSE),
+  lrn("classif.ranger", predict_type = "prob", num.trees = 100L)
+)
+
+design = benchmark_grid(task, learners, rsmp("cv", folds = 3L))
+
+bmr = benchmark(design, store_models = TRUE)
+bmr_butchered = benchmark(design, store_models = TRUE, callbacks = callback)
+```
+
+We compute the size of the stored models for each learner.
+
+```{r index-014}
+models_size = function(bmr) {
+  map_dbl(bmr$resample_results$resample_result, function(rr) serialized_size(map(rr$learners, "model")))
+}
+
+data.table(
+  learner_id = map_chr(bmr$resample_results$resample_result, function(rr) rr$learner$id),
+  original = models_size(bmr),
+  butchered = models_size(bmr_butchered)
+)
+```
+
+How much `butcher()` saves depends on the model class.
+The logistic regression, the decision tree, and the neural network lose 30 to 50 percent of their size.
+The random forest barely changes because its size comes from the trees, which it needs for prediction.
+For model classes without a `butcher` method, `butcher()` returns the model unchanged.
+You can check which classes are supported in the [butcher documentation](https://butcher.tidymodels.org/articles/available-axe-methods.html).
+
+# Tuning
+
+Tuning with `store_models = TRUE` stores one model per resampling iteration and hyperparameter configuration.
+Tuning instances take tuning callbacks, which can include the resample stages.
+We create one with `r ref("mlr3tuning::callback_batch_tuning()")`.
+
+```{r index-015}
+callback_tuning = callback_batch_tuning("butcher",
+  on_resample_end = function(callback, context) {
+    context$learner$model = butcher::butcher(context$learner$model)
+  }
+)
+```
+
+We tune the complexity parameter of a decision tree with 20 random configurations and a 3-fold cross-validation.
+
+```{r index-016}
+learner_rpart = lrn("classif.rpart", cp = to_tune(1e-4, 1e-1, logscale = TRUE))
+
+instance = tune(
+  tuner = tnr("random_search"),
+  task = task,
+  learner = learner_rpart,
+  resampling = rsmp("cv", folds = 3L),
+  term_evals = 20L,
+  store_models = TRUE,
+  callbacks = callback_tuning
+)
+```
+
+The archive contains a benchmark result with the 60 butchered models.
+
+```{r index-017}
+models = map(instance$archive$benchmark_result$resample_results$resample_result, function(rr) {
+  map(rr$learners, "model")
+})
+
+serialized_size(models)
+```
+
+# Graph learners
+
+The model of a `GraphLearner` is a list with one state per `PipeOp`.
+`butcher()` does not know this list and returns it unchanged.
+We need to butcher the model in each state.
+
+```{r index-018}
+callback_graph = callback_resample("butcher_graph",
+  on_resample_end = function(callback, context) {
+    model = context$learner$model
+    for (id in names(model)) {
+      if (!is.null(model[[id]]$model)) {
+        model[[id]]$model = butcher::butcher(model[[id]]$model)
+      }
+    }
+    context$learner$model = model
+  }
+)
+```
+
+We apply the callback to a pipeline that reduces the features to 10 principal components before fitting the logistic regression.
+
+```{r index-019}
+#| warning: false
+graph_learner = as_learner(po("pca", rank. = 10L) %>>% lrn("classif.log_reg"))
+
+rr_graph = resample(task, graph_learner, resampling, store_models = TRUE)
+rr_graph_butchered = resample(task, graph_learner, resampling, store_models = TRUE, callbacks = callback_graph)
+
+serialized_size(map(rr_graph$learners, "model"))
+serialized_size(map(rr_graph_butchered$learners, "model"))
+```
+
+The stored pipelines shrink by about a third.
+The model of the PCA step has no `butcher` method and stays as it is.
+
+# Conclusion
+
+The `butcher` package removes data, calls, and environments that a model does not need for prediction.
+Wrapped in a callback, it shrinks every model that `resample()`, `benchmark()`, or `tune()` stores.
+This keeps large benchmark results in memory and makes them faster to save and to transfer from parallel workers.
+Check the savings for your model class first.
+For a random forest, there is little to gain.
