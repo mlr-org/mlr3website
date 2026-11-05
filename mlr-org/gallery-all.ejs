@@ -1,12 +1,19 @@
 ```{=html}
-<ul>
+<ul class="list gallery-list">
   <% for (const item of items) {
        if (item.listing === false) continue;
   %>
-    <li>
-      <a href="<%- item.path %>"><%= item.title %></a>
-      <p><%= item.description %></p>
-      <p><%= item.date %> - <%= item.author %></p>
+    <li <%= metadataAttrs(item) %>>
+      <a class="listing-title" href="<%- item.path %>"><%= item.title %></a>
+      <p class="listing-description"><%= item.description %></p>
+      <p><span class="listing-date"><%= item.date %></span> - <span class="listing-author"><%= item.author %></span></p>
+      <% if (item.categories) { %>
+        <div class="listing-categories">
+          <% for (const category of item.categories) { %>
+            <a class="listing-category" href="gallery-all.html#category=<%- encodeURIComponent(category) %>" onclick="if (document.querySelector('.quarto-listing-category')) { window.quartoListingCategory('<%= utils.b64encode(category) %>'); return false; }"><%= category %></a>
+          <% } %>
+        </div>
+      <% } %>
     </li>
   <% } %>
 </ul>

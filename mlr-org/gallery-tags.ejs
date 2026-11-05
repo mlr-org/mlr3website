@@ -1,0 +1,24 @@
+```{=html}
+<%
+  const counts = {};
+  for (const item of items) {
+    if (item.listing === false || !item.categories) continue;
+    for (const category of item.categories) {
+      counts[category] = (counts[category] || 0) + 1;
+    }
+  }
+  const tags = Object.keys(counts).sort((a, b) => a.localeCompare(b));
+%>
+<form class="gallery-search" action="gallery-all.html" method="get" role="search">
+  <div class="input-group">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input type="search" name="filter" class="form-control" placeholder="Search posts, e.g. survival, imputation, xgboost" aria-label="Search gallery posts">
+    <button class="btn btn-primary" type="submit">Search</button>
+  </div>
+</form>
+<div class="gallery-tags">
+  <% for (const tag of tags) { %>
+    <a class="gallery-tags__tag" href="gallery-all.html#category=<%- encodeURIComponent(tag) %>"><%= tag %> <span class="gallery-tags__count"><%= counts[tag] %></span></a>
+  <% } %>
+</div>
+```

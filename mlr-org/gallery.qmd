@@ -3,6 +3,13 @@ sidebar: false
 toc: false
 page-layout: article
 listing:
+  - id: gallery-tags
+    template: gallery-tags.ejs
+    contents:
+      - gallery/basic
+      - gallery/optimization
+      - gallery/pipelines
+      - gallery/technical
   - id: latest-gallery
     template: gallery-latest.ejs
     contents: gallery
@@ -27,6 +34,10 @@ In the gallery, you find case studies and demos.
 The posts are mostly about specific features and cover advanced topics.
 If you are completely new to mlr3 or machine learning, you should start with the [book](book.html).
 Pick a post from one of the four categories or browse [all posts](gallery-all.html) sorted by date.
+Search the posts or pick a tag to find posts on a specific topic.
+
+::: {#gallery-tags}
+:::
 
 ## Latest
 
