@@ -55,6 +55,8 @@ Every gallery post `index.qmd` must have:
 3. **Description**: a single sentence starting with a verb (e.g., "Learn how to...", "Demonstrate...", "Show..."). Do not repeat the title.
 4. **Directory naming**: `YYYY-MM-DD-short-description`.
 5. **Rendered output**: gallery posts are not re-rendered in CI, so the `mlr-org/_freeze/` output must be included in pull requests.
+6. **Categories**: the `categories` are the searchable tags on the gallery pages.
+   Reuse existing tags (lowercase, e.g. `pipelines` not `mlr3pipelines`) and only add a new one when no existing tag fits.
 
 ### Front matter template
 
