@@ -14,7 +14,7 @@ title: Frequently Asked Questions
 * [How can I use time constraints when tuning?](#time-constraints)
 * [Why is method X slower when used via `mlr3`?](#mlr3-default-slower)
 * [Preprocessing factor levels](#factor-levels)
-* [Memory Problems](#memory-problems)
+* [Why do mlr3 objects use so much memory?](#memory-problems)
 * [How can I suppress logging output of learners on the R console](#suppress-output)
 * [A learner trained with an old mlr3 version does not work anymore](#old-model-broken)
 * [Caching of knitr/rmarkdown chunks does not work with mlr3](#caching-knitr)
@@ -80,15 +80,11 @@ To ensure smooth operation and prevent errors, please follow these guidelines:
 2. **Use factor encoding**: Incorporate a pre-processing step in your data pipeline (e.g. see [mlr_pipeops_encode](https://mlr3pipelines.mlr-org.com/reference/mlr_pipeops_encode.html) to make sure factors are one-hot encoded, alleviating problems that may arise from factor levels that incorporate strange symbols.
 
 
-## Memory Problems {#memory-problems}
+## Why do mlr3 objects use so much memory? {#memory-problems}
 
-One explanation for why `mlr3` might in some cases use an unusual amount of memory, is when packages are installed with the `--with-keep.source` flag.
-This configuration option is enabled by default when managing dependencies via `renv`, see issue [#1713](https://github.com/rstudio/renv/issues/1713).
-To opt out of this default run the code below, e.g. by adding it to your `.Rprofile`:
-
-```{r faq-001}
-options("install.opts" = "--without-keep.source")
-```
+Serialized `mlr3` objects can be much larger than expected.
+Common causes are results that store the data backend or the models, functions with source references from packages installed with `--with-keep.source` (the default of `renv`), and functions that capture large enclosing environments.
+The gallery post [Why mlr3 objects use so much memory](gallery/technical/2026-11-05-memory-disk/) explains these causes and how to avoid them.
 
 ## How can I suppress logging output of learners on the R console {#suppress-output}
 

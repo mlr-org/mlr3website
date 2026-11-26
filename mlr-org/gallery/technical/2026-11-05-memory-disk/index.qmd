@@ -1,0 +1,254 @@
+---
+title: Why mlr3 objects use so much memory
+categories:
+  - resampling
+  - tuning
+  - pipelines
+author:
+  - name: Marc Becker
+    orcid: 0000-0002-8115-0400
+    url: https://github.com/be-marc
+  - name: Sebastian Fischer
+    url: https://github.com/sebffischer
+date: 11-05-2026
+description: |
+  Find out why serialized mlr3 objects can be larger than expected and how to keep them small.
+---
+
+{{< include ../../_setup.qmd >}}
+
+```{r index-001}
+#| include: false
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+# Scope
+
+Serialized `r mlr3` objects are sometimes much larger than expected.
+This matters whenever an object is serialized: when it is saved with `saveRDS()`, when it is sent to a parallel worker with `r ref_pkg("future")`, when a learner runs with encapsulation, and when `r ref_pkg("mlr3batchmark")` writes jobs and results to the registry.
+A few extra megabytes per object can add up to gigabytes in a large benchmark experiment.
+This post covers the most common causes and shows how to avoid them.
+We will update it when we learn about new ones.
+
+```{r index-002}
+#| message: false
+library(mlr3)
+library(mlr3pipelines)
+library(mlr3tuning)
+library(lobstr)
+```
+
+We measure the size of an object by serializing it.
+This is the number of bytes the object needs on disk or when it is sent to a parallel worker.
+
+```{r index-003}
+serialized_size = function(x) {
+  round(length(serialize(x, connection = NULL)) / 1024^2, digits = 2L)
+}
+```
+
+# Set the store flags
+
+The easiest way to reduce the size of results is to store only what you need.
+The functions `r ref("resample()")` and `r ref("benchmark()")` have two flags.
+
+* `store_backends` keeps the data backend of the task in the result.
+  It is `TRUE` by default.
+* `store_models` keeps the trained models.
+  It is `FALSE` by default.
+
+We resample a decision tree on the spam task with 4601 emails and 57 features.
+We compare the default with a call that drops the backend and a call that keeps the models.
+
+```{r index-004}
+task = tsk("spam")
+learner = lrn("classif.rpart")
+resampling = rsmp("cv", folds = 3L)
+resampling$instantiate(task)
+
+rr = resample(task, learner, resampling)
+rr_no_backend = resample(task, learner, resampling, store_backends = FALSE)
+rr_models = resample(task, learner, resampling, store_models = TRUE)
+
+serialized_size(rr)
+serialized_size(rr_no_backend)
+serialized_size(rr_models)
+```
+
+Most of the result is the data.
+Without the backend, the result is about ten times smaller.
+The scores can still be computed because they only need the stored predictions.
+
+```{r index-005}
+rr_no_backend$score(msr("classif.ce"))
+```
+
+The three decision trees add about 0.3 MB.
+Models of other learners, such as a random forest, can be much larger than the data itself.
+If you need the models only for prediction, the gallery post [Shrink stored models with butcher](../2026-11-05-butcher/) shows how to remove their training data.
+
+Tuning has similar flags.
+`r ref("mlr3tuning::tune()")` stores the benchmark result of all evaluated configurations in the archive with `store_benchmark_result = TRUE` and the models with `store_models = TRUE`.
+`r ref("mlr3tuning::auto_tuner()")` additionally has `store_tuning_instance`.
+By default, the auto tuner keeps the tuning instance and the benchmark result after training.
+Both are useful to inspect the tuning process but are not needed to make predictions.
+
+```{r index-006}
+learner_rpart = lrn("classif.rpart", cp = to_tune(1e-4, 1e-1, logscale = TRUE))
+
+at = auto_tuner(
+  tuner = tnr("random_search"),
+  learner = learner_rpart,
+  resampling = rsmp("cv", folds = 3L),
+  term_evals = 10L
+)
+at$train(task)
+
+at_lean = auto_tuner(
+  tuner = tnr("random_search"),
+  learner = learner_rpart,
+  resampling = rsmp("cv", folds = 3L),
+  term_evals = 10L,
+  store_tuning_instance = FALSE,
+  store_benchmark_result = FALSE
+)
+at_lean$train(task)
+
+serialized_size(at)
+serialized_size(at_lean)
+```
+
+The lean auto tuner is about ten times smaller.
+The default auto tuner keeps the benchmark result of the 30 resampling iterations in its state, and with it the task data and all predictions.
+The flags matter even more when the auto tuner runs in a nested resampling with `store_models = TRUE`, because every outer iteration then stores its own archive.
+
+# Avoid source references
+
+Some `r mlr3` objects have hyperparameters that are functions.
+An example is the `applicator` of the `r ref("mlr_pipeops_colapply", text = "colapply")` pipe operator.
+Learners and pipe operators keep their hyperparameters in their state after training, so these functions are serialized along with the object.
+
+A function can carry a source reference in its `srcref` attribute.
+The source reference points to an environment that holds every line of the file the function was parsed from, together with the parse data.
+When the function is serialized, the whole file is serialized with it.
+We simulate a source file that contains a short function followed by 10000 other lines.
+We parse it once with and once without source references and evaluate the first expression, which is the function.
+
+```{r index-007}
+code = c("function(x) x - mean(x)", rep("other_code = 1", times = 10000L))
+
+center_srcref = eval(parse(text = code, keep.source = TRUE)[[1L]])
+center = eval(parse(text = code, keep.source = FALSE)[[1L]])
+
+serialized_size(center_srcref)
+serialized_size(center)
+```
+
+The function with source references needs more than 3 MB although its body is a single line.
+Without source references, it needs about 100 bytes, which rounds to 0 MB.
+A pipe operator that uses the function as its `applicator` inherits the problem.
+
+```{r index-008}
+po_srcref = po("colapply", applicator = center_srcref)
+po_center = po("colapply", applicator = center)
+
+serialized_size(po_srcref)
+serialized_size(po_center)
+```
+
+Functions you type into the console or source in an interactive session carry source references because the option `keep.source` is `TRUE` in interactive sessions.
+The more common cause is a package installed with the `--with-keep.source` option.
+Every function of such a package references the source of the complete package.
+`r ref_pkg("renv")` installs packages with this option by default (see [renv issue #1713](https://github.com/rstudio/renv/issues/1713)).
+Since version 1.2.2, `renv` has a configuration option to disable it.
+Set it before installing packages, for example in your `.Rprofile`.
+
+```{r index-009}
+#| eval: false
+options(renv.config.install.keep.source = FALSE)
+```
+
+With older versions of `renv`, set the install options of R instead.
+
+```{r index-010}
+#| eval: false
+options(install.opts = "--without-keep.source")
+```
+
+You can check whether a function carries a source reference with `attr(fun, "srcref")`.
+The function `removeSource()` returns a copy of a function without it.
+
+```{r index-011}
+serialized_size(removeSource(center_srcref))
+```
+
+# Watch the enclosing environment
+
+A function also serializes its enclosing environment, unless it is the global environment or a package namespace.
+A function created inside another function keeps all local variables of the outer function alive.
+We write a helper that inspects the data of a task and returns an applicator.
+
+```{r index-012}
+make_applicator = function(task) {
+  data = task$data()
+  function(x) x - mean(x)
+}
+
+applicator = make_applicator(task)
+serialized_size(applicator)
+```
+
+The returned function is a single line, but its environment contains the task and its data.
+Every pipe operator that uses this applicator carries the complete spam data.
+Create such functions in the global environment, or remove the variables you do not need from the enclosing environment before you return the function.
+
+```{r index-013}
+make_applicator = function(task) {
+  data = task$data()
+  rm(data, task)
+  function(x) x - mean(x)
+}
+
+applicator = make_applicator(task)
+serialized_size(applicator)
+```
+
+# Duplication when serializing
+
+In memory, R shares data between objects until one of them is modified.
+This is called copy-on-write.
+We create a vector `x`, assign it to `y`, and put both in a list.
+
+```{r index-014}
+x = rnorm(1000000L)
+y = x
+
+obj_size(list(x))
+obj_size(list(x, y))
+```
+
+The function `obj_size()` from `r ref_pkg("lobstr")` accounts for shared data.
+Both lists have the same size because `x` and `y` point to the same vector.
+Serialization does not preserve this sharing.
+Each element is written separately, and after deserializing, the two elements are independent copies.
+
+```{r index-015}
+lxy = unserialize(serialize(list(x, y), connection = NULL))
+obj_size(lxy)
+```
+
+The list now needs twice as much memory.
+`r mlr3` objects often share data, for example many resample results that reference the same task.
+In the session that created them, the data exists only once.
+When they are sent to parallel workers or written to disk, the data is copied for each object.
+`r mlr3` reduces the duplication in some places.
+A `r ref("BenchmarkResult")` stores each task, learner, and resampling only once in normalized tables.
+The methods of `r ref_pkg("R6")` classes are moved to the package namespace with `r ref("mlr3misc::leanify_package()")`, so they are not serialized with every object.
+The duplication cannot be avoided completely.
+
+# Conclusion
+
+Large `r mlr3` objects usually have one of four causes.
+Results keep data or models that are not needed, functions carry source references, functions capture large enclosing environments, or shared data is duplicated during serialization.
+Set the `store_*` flags to keep only what you need, install packages without source references, and check the enclosing environment of functions you pass as hyperparameters.
