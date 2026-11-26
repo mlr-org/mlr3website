@@ -18,7 +18,6 @@ date: 2022-12-22
 lgr::get_logger("mlr3")$set_threshold("warn")
 lgr::get_logger("bbotk")$set_threshold("warn")
 set.seed(0)
-requireNamespace("ggparty")
 requireNamespace("glmnet")
 requireNamespace("ggfortify")
 requireNamespace("partykit")
@@ -184,29 +183,6 @@ learner = lrn("regr.glmnet")
 learner$train(task)
 
 autoplot(learner, type = "ggfortify")
-```
-
-## Rpart
-
-We plot a `r ref("mlr_learners_classif.rpart", "classification tree")` of the `r ref_pkg("rpart")` package.
-We have to fit the learner with `keep_model = TRUE` to keep the model object.
-
-```{r index-014}
-task = tsk("penguins")
-learner = lrn("classif.rpart", keep_model = TRUE)
-learner$train(task)
-
-autoplot(learner, type = "ggparty")
-```
-
-We can also plot regression trees.
-
-```{r index-015}
-task = tsk("mtcars")
-learner = lrn("regr.rpart", keep_model = TRUE)
-learner$train(task)
-
-autoplot(learner, type = "ggparty")
 ```
 
 ## ClustHierachical

@@ -97,7 +97,6 @@ Note that different packages exist to plot the decision tree structure in a visu
 
 - The `rpart.plot` function from the equally named package `rpart.plot` which is applied on the raw `rpart` model object.
 - The `plot.party` function from the package `partykit` which is applied to a `rpart` model object after converting it into a `party` model object using the `as.party` function.
-- The `ggparty` function from the equally named package `ggparty` which is applied after converting the `rpart` model object into a `party` model object using the `as.party` function.
 
 </details>
 
@@ -144,19 +143,11 @@ partytree = as.party(lrn_rpart$model)
 plot(partytree)
 ```
 
-- Use [`ggparty`](https://cran.r-project.org/web/packages/ggparty/vignettes/ggparty-graphic-partying.html) to create highly customizable plots:
+- Use `rpart.plot()` from the `rpart.plot` package to plot the raw `rpart` model object with more readable node labels:
 ```{r index-008, fig.width=15, fig.height=15, out.width="100%", eval=params$showsolution, base64encode=params$base64encode}
-library(ggparty)
+library(rpart.plot)
 
-ggparty(partytree) +
-  geom_edge() +
-  geom_edge_label() +
-  geom_node_splitvar() +
-  # pass list to gglist containing all ggplot components we want to plot for each
-  # (default: terminal) node
-  geom_node_plot(gglist = list(geom_bar(aes_string(x = NA, fill = "credit_risk"),
-    position = position_fill()), xlab("Credit Risk")))
-
+rpart.plot(lrn_rpart$model)
 ```
 
 :::
